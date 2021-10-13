@@ -92,24 +92,24 @@ header("Content-Type: text/html; charset=".$CHARSET);
 		}
 		elseif($LANG_TAG=='es'){
 			?>
-			<h1>Bienvenido al portal de diversidad biológica de la comunidad de Gabón</h1>
+			<h1>Bienvenido al Portal de Biodiversidad de la Comunidad de Gabón</h1>
 			<div style="padding: 0px 10px;font-size:130%">
 				<p>
 					Este portal de datos está destinado a servir como un recurso colaborativo que integra contenido de biodiversidad de diversas fuentes.
-					El portal se puede utilizar para administrar datos en vivo directamente dentro del portal o mapear conjuntos de datos administrados dentro de
-					sistemas de administración externos. El tipo de datos disponibles dentro de este recurso incluye datos de especímenes, observaciones de campo,
+					El portal se puede utilizar para administrar datos en vivo directamente dentro del portal, o mapear conjuntos de datos administrados en
+					sistemas de manejo externos. El tipo de datos disponibles dentro de este recurso incluye datos de especímenes, observaciones de campo,
 					inventarios de especies, imágenes de campo, información taxonómica, datos de distribución de especies y más.
 				</p>
 				<p>
-					¿Tiene o conoce un conjunto de datos de biodiversidad compilado de la región de Gabón que le gustaría publicar en el portal?
-					Si es así, comuníquese con nosotros y con gusto lo ayudaremos a configurarlo como contribuidor de datos.
-					A través de un esfuerzo de colaboración, este portal de datos Symbiota puede convertirse en un recurso rico en información que ayudará a los investigadores,
-					educadores y al público en general a explorar la flora y la fauna que se encuentran en Gabón.
+					¿Tiene o conoce un conjunto de datos de biodiversidad de la región de Gabón que le gustaría publicar en el portal?
+					Si es así, comuníquese con nosotros y con gusto lo ayudaremos a establecerse como proveedor de datos.
+					A través de un esfuerzo colaborativo, este portal de datos Symbiota puede convertirse en un recurso rico en información que ayudará a los investigadores,
+					educadores, y al público en general, a explorar la flora y la fauna que se encuentran en Gabón.
 				</p>
 				<p>
 					Si tiene preguntas, comentarios o recomendaciones, comparta sus comentarios con
 					<a class="bodylink" href="mailto:symbiota@asu.edu?subject=Gabon Portal Feedback">Support Hub HelpDesk (symbiota@asu.edu)</a>.
-					Visite la <a href="misc/usagepolicy.php">página política de uso de datos</a> para obtener información sobre cómo citar los datos obtenidos de este recurso web.
+					Visite la <a href="misc/usagepolicy.php">página de Política de Uso de Datos</a> para obtener información acerca de cómo citar los datos obtenidos de este recurso web.
 				</p>
 			</div>
 			<?php
