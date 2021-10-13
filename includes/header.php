@@ -16,7 +16,7 @@ else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 				</div>
 				<div style="margin-left: 50px; color: #fff; font-family: 'Mate', serif; letter-spacing: 1px; text-shadow: 0 0 7px rgba(0,0,0,0.5);">
 					<div style="padding-top:45px; font-size:55px; line-height:48px;">
-						Gabon Biodiversity
+						Biodiversité du Gabon
 					</div>
 				</div>
 			</div>
