@@ -140,14 +140,14 @@ header("Content-Type: text/html; charset=".$CHARSET);
 		}
 		?>
 		<div>
-				<a href="https://biokic.asu.edu/" ><img src="<?php echo $CLIENT_ROOT; ?>/images/ASU_biokic_logo.png" style="height:50px" /></a>
-				<img src="<?php echo $CLIENT_ROOT; ?>/images/ENEF_logo.jpeg" style="height:50px" />
-				<a href="https://www.floridamuseum.ufl.edu/nhdept/" ><img src="<?php echo $CLIENT_ROOT; ?>/images/FM_logo.png" style="height:50px" /></a>
-				<a href="https://www.gbif.org/" ><img src="<?php echo $CLIENT_ROOT; ?>/images/GBIF_logo.png" style="height:50px" /></a>
-				<img src="<?php echo $CLIENT_ROOT; ?>/images/IRET_logo.jpg" style="height:50px" />
-				<a href="https://nationalzoo.si.edu/ccs/gabon-program" ><img src="<?php echo $CLIENT_ROOT; ?>/images/Smithsonian_logo.jpg" style="height:50px" /></a>
-				<a href="https://www.nature.org/en-us/about-us/where-we-work/africa/gabon/" ><img src="<?php echo $CLIENT_ROOT; ?>/images/TNC_logo.png" style="height:50px" /></a>
-				<a href="https://univ-masuku.org/" ><img src="<?php echo $CLIENT_ROOT; ?>/images/USTM_logo.png" style="height:50px" /></a>
+				<a href="https://biokic.asu.edu/" ><img src="<?php echo $CLIENT_ROOT; ?>/images/ASU_biokic_logo.png" style="height:50px; padding: 10px" /></a>
+				<img src="<?php echo $CLIENT_ROOT; ?>/images/ENEF_logo.jpeg" style="height:50px; padding: 10px" />
+				<a href="https://www.floridamuseum.ufl.edu/nhdept/" ><img src="<?php echo $CLIENT_ROOT; ?>/images/FM_logo.png" style="height:50px; padding: 10px" /></a>
+				<a href="https://www.gbif.org/" ><img src="<?php echo $CLIENT_ROOT; ?>/images/GBIF_logo.png" style="height:50px; padding: 10px" /></a>
+				<img src="<?php echo $CLIENT_ROOT; ?>/images/IRET_logo.jpg" style="height:50px; padding: 10px" />
+				<a href="https://nationalzoo.si.edu/ccs/gabon-program" ><img src="<?php echo $CLIENT_ROOT; ?>/images/Smithsonian_logo.jpg" style="height:50px; padding: 10px" /></a>
+				<a href="https://www.nature.org/en-us/about-us/where-we-work/africa/gabon/" ><img src="<?php echo $CLIENT_ROOT; ?>/images/TNC_logo.png" style="height:50px; padding: 10px" /></a>
+				<a href="https://univ-masuku.org/" ><img src="<?php echo $CLIENT_ROOT; ?>/images/USTM_logo.png" style="height:50px; padding: 10px" /></a>
 		</div>
 	</div>
 	<?php
