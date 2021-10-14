@@ -141,7 +141,7 @@ header("Content-Type: text/html; charset=".$CHARSET);
 		?>
 		<div>
 				<img src="<?php echo $CLIENT_ROOT; ?>/images/ENEF_logo.jpeg" style="height:50px; padding: 10px" />
-				<img src="<?php echo $CLIENT_ROOT; ?>/images/iraf.jpeg" style="height:50px; padding: 10px" />
+				<img src="<?php echo $CLIENT_ROOT; ?>/images/iraf.png" style="height:50px; padding: 10px" />
 				<img src="<?php echo $CLIENT_ROOT; ?>/images/IRET_logo.jpg" style="height:50px; padding: 10px" />
 				<a href="https://nationalzoo.si.edu/ccs/gabon-program" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/Smithsonian_logo.jpg" style="height:50px; padding: 10px" /></a>
 				<a href="https://univ-masuku.org/" target="_blank"><img src="<?php echo $CLIENT_ROOT; ?>/images/USTM_logo.png" style="height:50px; padding: 10px" /></a>
