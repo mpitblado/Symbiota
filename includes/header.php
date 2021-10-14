@@ -80,7 +80,7 @@ else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 						</ul>
 					</li>
 					<li>
-						<a href="#" >Images</a>
+						<a href="#" ><?php echo $LANG['H_IMAGES']; ?></a>
 						<ul>
 							<li>
 								<a href="<?php echo $CLIENT_ROOT; ?>/imagelib/index.php"><?php echo (isset($LANG['H_IMAGE_BROWSER'])?$LANG['H_IMAGE_BROWSER']:'Image Browser'); ?></a>
@@ -145,10 +145,10 @@ else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 							<li>
 								<a href="<?php echo $CLIENT_ROOT; ?>/misc/contacts.php" ><?php echo (isset($LANG['H_CONTACTS'])?$LANG['H_CONTACTS']:'Contacts'); ?></a>
 							</li>
-							<li>
-								<a href="http://symbiota.org/docs/symbiota-introduction/symbiota-help-pages/" target="_blank" ><?php echo (isset($LANG['H_HELP'])?$LANG['H_HELP']:'Help'); ?></a>
-							</li>
 							-->
+							<li>
+								<a href="https://github.com/GJongsma/Symbiota-light/blob/master/docs/SymbiotaGuide_v5.pdf" target="_blank" ><?php echo (isset($LANG['H_HELP'])?$LANG['H_HELP']:'Help'); ?></a>
+							</li>
 							<li>
 								<a href='<?php echo $CLIENT_ROOT; ?>/sitemap.php'><?php echo (isset($LANG['H_SITEMAP'])?$LANG['H_SITEMAP']:'Sitemap'); ?></a>
 							</li>
