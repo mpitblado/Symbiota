@@ -14,7 +14,7 @@
 			<?php
 			} else{
 			?>
-				<b>Financement de ce projet généreusement assuré par les organismes suivants :</b>
+				<b>Financement de ce projet généreusement assuré par les organismes suivants:</b>
 			<?php
 				}
 			?>
