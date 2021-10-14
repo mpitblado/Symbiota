@@ -146,12 +146,14 @@ else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 								<a href="<?php echo $CLIENT_ROOT; ?>/misc/contacts.php" ><?php echo (isset($LANG['H_CONTACTS'])?$LANG['H_CONTACTS']:'Contacts'); ?></a>
 							</li>
 							-->
-							<?php if($LANG_TAG=='fr'){
+							<?php 
+							if($LANG_TAG=='fr'){
 							?>
 							<li>
 								<a href="https://github.com/GJongsma/Symbiota-light/blob/master/docs/SymbiotaGuide_French_v1.1.pdf" target="_blank" ><?php echo (isset($LANG['H_HELP'])?$LANG['H_HELP']:'Help'); ?></a>
 							</li>
-							<?php else{
+							<?php 
+							} else{
 							?>
 							<li>
 							<a href="https://github.com/GJongsma/Symbiota-light/blob/master/docs/SymbiotaGuide_v5.pdf" target="_blank" ><?php echo (isset($LANG['H_HELP'])?$LANG['H_HELP']:'Help'); ?></a>
