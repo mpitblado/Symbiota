@@ -10,11 +10,11 @@
 			<?php
 				} else if($LANG_TAG=='es'){
 			?>
-				<b>Financiamiento para este proyecto proporcionado generosamente por las siguientes organizaciones::</b>
+				<b>Financiamiento para este proyecto proporcionado generosamente por las siguientes organizaciones:</b>
 			<?php
 			} else{
 			?>
-				<b>Financement de ce projet généreusement assuré par les organismes suivants ::</b>
+				<b>Financement de ce projet généreusement assuré par les organismes suivants :</b>
 			<?php
 				}
 			?>
