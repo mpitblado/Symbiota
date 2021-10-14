@@ -6,15 +6,15 @@
 			<?php
 				if($LANG_TAG=='en'){
 			?>
-				This project made possible by the following organizations:
+				<b>Funding for this project generously provided by the following organizations:</b>
 			<?php
 				} else if($LANG_TAG=='es'){
 			?>
-				Este proyecto hecho posible por las siguientes organizaciones:
+				<b>Financiamiento para este proyecto proporcionado generosamente por las siguientes organizaciones::</b>
 			<?php
 			} else{
 			?>
-				Ce projet a été rendu possible par les organisations suivantes:
+				<b>Financement de ce projet généreusement assuré par les organismes suivants ::</b>
 			<?php
 				}
 			?>
