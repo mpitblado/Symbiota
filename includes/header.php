@@ -93,11 +93,13 @@ else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 					<li>
 						<a href="<?php echo $CLIENT_ROOT; ?>/projects/index.php"><?php echo (isset($LANG['H_INVENTORIES'])?$LANG['H_INVENTORIES']:'Inventaires'); ?></a>
 						<ul>
+							<!--
 							<li>
 								<a href="<?php echo $CLIENT_ROOT; ?>/projects/index.php?pid=3"><?php echo (isset($LANG['H_HERPS'])?$LANG['H_HERPS']:'Amphibians & Reptiles'); ?></a>
 							</li>
+							 -->
 							<li>
-								<a href="<?php echo $CLIENT_ROOT; ?>/projects/index.php?pid=1"><?php echo (isset($LANG['H_MANNALS'])?$LANG['H_MANNALS']:'Mammals'); ?></a>
+								<a href="<?php echo $CLIENT_ROOT; ?>/projects/index.php?pid=1"><?php echo (isset($LANG['H_ANIMALIA'])?$LANG['H_ANIMALIA']:'Animalia'); ?></a>
 							</li>
 							<li>
 								<a href="<?php echo $CLIENT_ROOT; ?>/projects/index.php?pid=2"><?php echo (isset($LANG['H_PLANTS'])?$LANG['H_PLANTS']:'Plants'); ?></a>
@@ -146,13 +148,13 @@ else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 								<a href="<?php echo $CLIENT_ROOT; ?>/misc/contacts.php" ><?php echo (isset($LANG['H_CONTACTS'])?$LANG['H_CONTACTS']:'Contacts'); ?></a>
 							</li>
 							-->
-							<?php 
+							<?php
 							if($LANG_TAG=='fr'){
 							?>
 							<li>
 								<a href="https://github.com/GJongsma/Symbiota-light/blob/master/docs/SymbiotaGuide_French_v1.1.pdf" target="_blank" ><?php echo (isset($LANG['H_HELP'])?$LANG['H_HELP']:'Help'); ?></a>
 							</li>
-							<?php 
+							<?php
 							} else{
 							?>
 							<li>

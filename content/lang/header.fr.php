@@ -20,6 +20,7 @@ $LANG['H_INVENTORIES'] = 'liste des Espèces';
 $LANG['H_HERPS'] = 'Amphibiens & Reptiles';
 $LANG['H_MANNALS'] = 'Mammifères';
 $LANG['H_PLANTS'] = 'Plantes';
+$LANG['H_ANIMALIA'] = 'Animalia';
 
 $LANG['H_DYN_LISTS'] = 'Listes Dynamiques';
 $LANG['H_DYN_KEYS'] = "Clés d'identification";
