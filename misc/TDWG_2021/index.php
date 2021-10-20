@@ -9,6 +9,9 @@ header("Content-Type: text/html; charset=".$CHARSET);
 		$activateJQuery = false;
 		include_once($SERVER_ROOT.'/includes/head.php');
 		?>
+		<style type="text/css">
+			#page-title{ font-weight:bold; font-size:125%; margin-bottom:20px; }
+		</style>
 	</head>
 	<body>
 		<?php
@@ -21,7 +24,23 @@ header("Content-Type: text/html; charset=".$CHARSET);
 		</div>
 		<!-- This is inner text! -->
 		<div id="innertext">
-			<h2>Creating a National Biodiversity Database in Gabon and the Challenges of Mobilizing Natural History Data for Francophone Countries</h2>
+			<?php
+			if($LANG_TAG=='fr'){
+				?>
+				<div id="page-title">Création d'une base de données nationale sur la biodiversité au Gabon et les défis de la mobilisation des données d'histoire naturelle pour les pays francophones</div>
+				<?php
+			}
+			elseif($LANG_TAG=='es'){
+				?>
+				<div id="page-title">Creación de una base de datos nacional sobre biodiversidad en Gabón y los desafíos de movilizar datos de historia natural para países francófonos</div>
+				<?php
+			}
+			else{
+				?>
+				<div id="page-title">Creating a National Biodiversity Database in Gabon and the Challenges of Mobilizing Natural History Data for Francophone Countries</div>
+				<?php
+			}
+			?>
 			<div style="">
 				Tobi E, Aymar Nziengui Djiembi G, Feistner AT, Midoko Iponga D, Liwouwou JF, Mabala C, Mavoungou J, Moussavou G, Omouendze LP, Gilbert E, Jongsma GF (2021)
 				Creating a National Biodiversity Database in Gabon and the Challenges of Mobilizing Natural History Data for Francophone Countries.
