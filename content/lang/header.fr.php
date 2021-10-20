@@ -36,6 +36,7 @@ $LANG['H_MORE_INFO'] = "Plus d'Information";
 $LANG['H_ABOUT_PROJECT'] = 'À Propos du Projet';
 $LANG['H_PARTNERS'] = 'Partenaires';
 $LANG['H_CONTACTS'] = 'Contacts';
+$LANG['H_TDWG_POSTER'] = 'TDWG-2021 Affiche';
 $LANG['H_HELP'] = 'Assistance de Symbiota';
 $LANG['H_SITEMAP'] = 'Plan du Site';
 

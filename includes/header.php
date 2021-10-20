@@ -143,6 +143,9 @@ else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 							<li>
 								<a href="<?php echo $CLIENT_ROOT; ?>/collections/misc/collprofiles.php" ><?php echo (isset($LANG['H_PARTNERS'])?$LANG['H_PARTNERS']:'Partners'); ?></a>
 							</li>
+							<li>
+								<a href="<?php echo $CLIENT_ROOT; ?>/misc/TDWG_2021/index.php" ><?php echo (isset($LANG['H_TDWG_POSTER'])?$LANG['H_TDWG_POSTER']:'TDWG-2021 Poster'); ?></a>
+							</li>
 							<!--
 							<li>
 								<a href="<?php echo $CLIENT_ROOT; ?>/misc/contacts.php" ><?php echo (isset($LANG['H_CONTACTS'])?$LANG['H_CONTACTS']:'Contacts'); ?></a>
