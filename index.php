@@ -72,20 +72,20 @@ header("Content-Type: text/html; charset=".$CHARSET);
 			<div style="padding: 0px 10px;font-size:130%">
 				<p>
 					Ce portail de données est destiné à servir de ressource collaborative qui intègre le contenu de la biodiversité provenant de diverses sources.
-					Le portail peut être utilisé pour gérer les données en direct directement dans le portail ou mapper vers des ensembles de données gérés dans
-					des systèmes de gestion externes. Le type de données disponibles dans cette ressource comprend des données sur les spécimens,
-					des observations sur le terrain, des inventaires d'espèces, des images de terrain, des informations taxonomiques, des données sur la répartition des espèces, etc.
+					Le portail peut être utilisé pour gérer des données en direct dans le portail ou pour établir une correspondance avec des ensembles de données gérés dans
+					des systèmes de gestion externes. Les types de données disponibles dans cette ressource comprennent des données sur les spécimens,
+					des observations de terrain, des inventaires d'espèces, des images de terrain, des informations taxonomiques, des données sur la répartition des espèces, etc.
 				</p>
 				<p>
-					Avez-vous ou connaissez-vous un jeu de données sur la biodiversité compilé de la région du Gabon que vous aimeriez publier sur le portail?
-					Si tel est le cas, veuillez nous contacter et nous nous ferons un plaisir de vous aider à vous configurer en tant que contributeur de données.
+					Avez-vous ou connaissez-vous un ensemble de données sur la biodiversité compilé dans la région du Gabon que vous aimeriez publier sur le portail?
+					Si c'est le cas, veuillez nous contacter et nous serons heureux de vous aider à devenir contributeur de données.
 					Grâce à un effort de collaboration, ce portail de données Symbiota peut devenir une ressource riche en informations qui aidera les chercheurs,
 					les éducateurs et le grand public à explorer la flore et la faune du Gabon.
 				</p>
 				<p>
-					Si vous avez des questions, des commentaires ou des recommandations, veuillez partager vos commentaires avec le
-					<a class="bodylink" href="mailto:symbiota@asu.edu?subject=Gabon Portal Feedback">Support Hub HelpDesk (symbiota@asu.edu)</a>.
-					Visitez la <a href="misc/usagepolicy.php">page politique d'utilisation des données</a> pour savoir comment citer les données obtenues à partir de cette ressource Web.
+					Si vous avez des questions, des commentaires ou des recommandations, veuillez en faire part au
+					<a class="bodylink" href="mailto:symbiota@asu.edu?subject=Gabon Portal Feedback">HelpDesk du Hub (symbiota@asu.edu)</a>.
+					Consultez la <a href="misc/usagepolicy.php">page Politique d'utilisation des données</a> pour savoir comment citer les données obtenues à partir de cette ressource Web.
 				</p>
 			</div>
 			<?php
