@@ -74,6 +74,33 @@ ALTER TABLE `imagetagkey`
   ADD COLUMN `resourceLink` VARCHAR(250) NULL AFTER `description_en`,
   ADD COLUMN `audubonCoreTarget` VARCHAR(45) NULL AFTER `resourceLink`;
 
+ALTER TABLE `imagetagkey` 
+  CHANGE COLUMN `description_en` `description` VARCHAR(255) NOT NULL ;
+
+CREATE TABLE `imagetaggroup` (
+  `imgTagGroupID` INT NOT NULL AUTO_INCREMENT,
+  `groupName` VARCHAR(45) NOT NULL,
+  `category` VARCHAR(45) NULL,
+  `resourceUrl` VARCHAR(150) NULL,
+  `audubonCoreTarget` VARCHAR(45) NULL,
+  `controlType` VARCHAR(45) NULL,
+  `notes` VARCHAR(250) NULL,
+  `initialTimestamp` TIMESTAMP NULL DEFAULT current_timestamp,
+  PRIMARY KEY (`imgTagGroupID`),
+  INDEX `IX_imagetaggroup` (`groupName` ASC)
+);
+
+ALTER TABLE `imagetagkey` 
+  ADD COLUMN `imgTagGroupID` INT NULL AFTER `tagkey`,
+  ADD INDEX `FK_imageTagKey_imgTagGroupID_idx` (`imgTagGroupID` ASC);
+
+ALTER TABLE `imagetagkey` 
+  ADD CONSTRAINT `FK_imageTagKey_imgTagGroupID`  FOREIGN KEY (`imgTagGroupID`)  REFERENCES `imagetaggroup` (`imgTagGroupID`)  ON DELETE CASCADE  ON UPDATE CASCADE;
+
+ALTER TABLE `imagetag` 
+  ADD COLUMN `imageBoundingBox` VARCHAR(45) NULL AFTER `keyvalue`,
+  ADD COLUMN `notes` VARCHAR(250) NULL AFTER `imageBoundingBox`;
+
 ALTER TABLE `imageprojects` 
   ADD COLUMN `projectType` VARCHAR(45) NULL AFTER `description`,
   ADD COLUMN `collid` INT UNSIGNED NULL AFTER `projectType`,
@@ -85,21 +112,8 @@ ALTER TABLE `imageprojects`
   ADD CONSTRAINT `FK_imageproject_collid`  FOREIGN KEY (`collid`)  REFERENCES `omcollections` (`CollID`)  ON DELETE CASCADE  ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_imageproject_uid`  FOREIGN KEY (`uidcreated`)  REFERENCES `users` (`uid`)  ON DELETE SET NULL  ON UPDATE CASCADE;
 
-CREATE TABLE `omcollproperties` (
-  `collPropID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `collid` INT UNSIGNED NOT NULL,
-  `propCategory` VARCHAR(45) NOT NULL,
-  `propTitle` VARCHAR(45) NOT NULL,
-  `propJson` LONGTEXT NULL,
-  `notes` VARCHAR(255) NULL,
-  `modifiedUid` INT UNSIGNED NULL,
-  `modifiedTimestamp` DATETIME NULL,
-  `initialTimestamp` TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  PRIMARY KEY (`collPropID`),
-  INDEX `FK_omcollproperties_collid_idx` (`collid` ASC),
-  INDEX `FK_omcollproperties_uid_idx` (`modifiedUid` ASC),
-  CONSTRAINT `FK_omcollproperties_collid`  FOREIGN KEY (`collid`)  REFERENCES `omcollections` (`CollID`)   ON DELETE CASCADE   ON UPDATE CASCADE,
-  CONSTRAINT `FK_omcollproperties_uid`   FOREIGN KEY (`modifiedUid`)   REFERENCES `users` (`uid`)   ON DELETE CASCADE   ON UPDATE CASCADE);
+ALTER TABLE `institutions` 
+  ADD COLUMN `institutionID` VARCHAR(45) NULL AFTER `iid`;
 
 ALTER TABLE `geographicthesaurus` 
   ADD COLUMN `geoLevel` INT NOT NULL AFTER `category`;
@@ -119,6 +133,75 @@ DROP TABLE geothescountry;
 DROP TABLE geothesstateprovince;
 DROP TABLE geothescounty;
 DROP TABLE geothesmunicipality;
+
+ALTER TABLE `omcollections` 
+  ADD COLUMN `dwcTermJson` TEXT NULL AFTER `aggKeysStr`;
+
+DROP TABLE omcollectors;
+
+CREATE TABLE `omcollproperties` (
+  `collPropID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `collid` INT UNSIGNED NOT NULL,
+  `propCategory` VARCHAR(45) NOT NULL,
+  `propTitle` VARCHAR(45) NOT NULL,
+  `propJson` LONGTEXT NULL,
+  `notes` VARCHAR(255) NULL,
+  `modifiedUid` INT UNSIGNED NULL,
+  `modifiedTimestamp` DATETIME NULL,
+  `initialTimestamp` TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  PRIMARY KEY (`collPropID`),
+  INDEX `FK_omcollproperties_collid_idx` (`collid` ASC),
+  INDEX `FK_omcollproperties_uid_idx` (`modifiedUid` ASC),
+  CONSTRAINT `FK_omcollproperties_collid`  FOREIGN KEY (`collid`)  REFERENCES `omcollections` (`CollID`)   ON DELETE CASCADE   ON UPDATE CASCADE,
+  CONSTRAINT `FK_omcollproperties_uid`   FOREIGN KEY (`modifiedUid`)   REFERENCES `users` (`uid`)   ON DELETE CASCADE   ON UPDATE CASCADE);
+
+ALTER TABLE `omcollpublications` 
+  DROP FOREIGN KEY `FK_adminpub_collid`;
+
+ALTER TABLE `omcollpublications` 
+  DROP COLUMN `securityguid`,
+  DROP COLUMN `targeturl`,
+  ADD COLUMN `portalIndexID` INT NULL AFTER `collid`,
+  CHANGE COLUMN `collid` `collid` INT(10) UNSIGNED NULL ,
+  CHANGE COLUMN `criteriajson` `criteriaJson` TEXT NULL DEFAULT NULL ,
+  CHANGE COLUMN `includedeterminations` `includeDeterminations` INT(11) NULL DEFAULT 1,
+  CHANGE COLUMN `includeimages` `includeImages` INT(11) NULL DEFAULT 1,
+  CHANGE COLUMN `autoupdate` `autoUpdate` INT(11) NULL DEFAULT 0,
+  CHANGE COLUMN `lastdateupdate` `lastDateUpdate` DATETIME NULL DEFAULT NULL,
+  CHANGE COLUMN `updateinterval` `updateInterval` INT(11) NULL DEFAULT NULL,
+  CHANGE COLUMN `initialtimestamp` `initialTimestamp` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
+  ADD INDEX `FK_collPub_portalID_idx` (`portalIndexID` ASC);
+
+ALTER TABLE `omcollpublications` 
+  ADD CONSTRAINT `FK_collPub_collid`  FOREIGN KEY (`collid`)  REFERENCES `omcollections` (`CollID`)  ON DELETE CASCADE  ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_collPub_portalID`  FOREIGN KEY (`portalIndexID`)  REFERENCES `portalindex` (`portalIndexID`)  ON DELETE RESTRICT  ON UPDATE NO ACTION;
+
+ALTER TABLE `omcollpublications` 
+  ADD COLUMN `pubTitle` VARCHAR(45) NULL AFTER `pubid`,
+  ADD COLUMN `description` VARCHAR(250) NULL AFTER `pubTitle`,
+  ADD COLUMN `createdUid` INT UNSIGNED NULL AFTER `updateInterval`;
+
+ALTER TABLE `omcollpublications` 
+  RENAME TO `ompublication` ;
+
+ALTER TABLE `omcollpuboccurlink` 
+  RENAME TO  `ompublicationoccurlink` ;
+
+ALTER TABLE `ompublicationoccurlink` 
+  DROP FOREIGN KEY `FK_ompubpubid`;
+
+ALTER TABLE `ompublicationoccurlink` 
+  ADD COLUMN `portalIndexID` INT NOT NULL AFTER `occid`,
+  ADD COLUMN `targetOccid` INT NULL AFTER `pubid`,
+  CHANGE COLUMN `occid` `occid` INT(10) UNSIGNED NOT NULL FIRST,
+  CHANGE COLUMN `pubid` `pubid` INT(10) UNSIGNED NULL DEFAULT NULL ,
+  DROP PRIMARY KEY,
+  ADD PRIMARY KEY (`occid`, `portalIndexID`),
+  ADD INDEX `FK_ompub_portalIndexID_idx` (`portalIndexID` ASC);
+
+ALTER TABLE `ompublicationoccurlink` 
+  ADD CONSTRAINT `FK_ompubpubid`  FOREIGN KEY (`pubid`)  REFERENCES `ompublication` (`pubid`)  ON DELETE CASCADE  ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_ompub_portalIndexID`  FOREIGN KEY (`portalIndexID`)  REFERENCES `portalindex` (`portalIndexID`)  ON DELETE CASCADE  ON UPDATE CASCADE;
 
 
 CREATE TABLE `omcrowdsourceproject` (
@@ -163,40 +246,6 @@ ALTER TABLE `omoccurrences`
   DROP COLUMN `recordedbyid`,
   DROP INDEX `FK_recordedbyid` ;
 
-DROP TABLE omcollectors;
-
-ALTER TABLE `omcollpublications` 
-  DROP FOREIGN KEY `FK_adminpub_collid`;
-
-ALTER TABLE `omcollpublications` 
-  DROP COLUMN `securityguid`,
-  DROP COLUMN `targeturl`,
-  ADD COLUMN `portalIndexID` INT NULL AFTER `collid`,
-  CHANGE COLUMN `collid` `collid` INT(10) UNSIGNED NULL ,
-  CHANGE COLUMN `criteriajson` `criteriaJson` TEXT NULL DEFAULT NULL ,
-  CHANGE COLUMN `includedeterminations` `includeDeterminations` INT(11) NULL DEFAULT 1,
-  CHANGE COLUMN `includeimages` `includeImages` INT(11) NULL DEFAULT 1,
-  CHANGE COLUMN `autoupdate` `autoUpdate` INT(11) NULL DEFAULT 0,
-  CHANGE COLUMN `lastdateupdate` `lastDateUpdate` DATETIME NULL DEFAULT NULL,
-  CHANGE COLUMN `updateinterval` `updateInterval` INT(11) NULL DEFAULT NULL,
-  CHANGE COLUMN `initialtimestamp` `initialTimestamp` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
-  ADD INDEX `FK_collPub_portalID_idx` (`portalIndexID` ASC);
-
-ALTER TABLE `omcollpublications` 
-  ADD CONSTRAINT `FK_collPub_collid`  FOREIGN KEY (`collid`)  REFERENCES `omcollections` (`CollID`)  ON DELETE CASCADE  ON UPDATE CASCADE,
-  ADD CONSTRAINT `FK_collPub_portalID`  FOREIGN KEY (`portalIndexID`)  REFERENCES `portalindex` (`portalIndexID`)  ON DELETE RESTRICT  ON UPDATE NO ACTION;
-
-ALTER TABLE `omcollpublications` 
-  ADD COLUMN `pubTitle` VARCHAR(45) NULL AFTER `pubid`,
-  ADD COLUMN `description` VARCHAR(250) NULL AFTER `pubTitle`,
-  ADD COLUMN `createdUid` INT UNSIGNED NULL AFTER `updateInterval`;
-
-ALTER TABLE `omcollpublications` 
-  RENAME TO `ompublication` ;
-
-ALTER TABLE `omcollpuboccurlink` 
-  RENAME TO  `ompublicationoccurlink` ;
-
 CREATE TABLE `portalindex` (
   `portalIndexID` INT NOT NULL AUTO_INCREMENT,
   `portalName` VARCHAR(45) NOT NULL,
@@ -213,6 +262,9 @@ CREATE TABLE `portalindex` (
   `notes` VARCHAR(250) NULL,
   `initialTimestamp` TIMESTAMP NULL DEFAULT current_timestamp,
   PRIMARY KEY (`portalIndexID`));
+
+ALTER TABLE `portalindex` 
+  ADD UNIQUE INDEX `UQ_portalIndex_guid` (`guid` ASC);
 
 ALTER TABLE `specprocessorprojects` 
   ADD COLUMN `customStoredProcedure` VARCHAR(45) NULL AFTER `source`,
@@ -244,8 +296,16 @@ ALTER TABLE `uploadspectemp`
   ADD COLUMN `observeruid` INT NULL AFTER `language`,
   ADD COLUMN `dateEntered` DATETIME NULL AFTER `recordEnteredBy`;
 
+ALTER TABLE `uploadspectemp` 
+  ADD COLUMN `eventID` VARCHAR(45) NULL AFTER `fieldnumber`;
+
+ALTER TABLE `uploadspectemp` 
+  DROP COLUMN `materialSampleID`,
+  ADD COLUMN `materialSampleJSON` TEXT NULL AFTER `paleoJSON`;
+
 
 ALTER TABLE `omoccurrences` 
+  ADD COLUMN `type` VARCHAR(45) NULL AFTER `verbatimEventDate`;
   ADD COLUMN `eventTime` VARCHAR(45) NULL AFTER `verbatimEventDate`;
 
 #Material Sample schema developments
@@ -308,7 +368,7 @@ INSERT INTO ctcontrolvocabterm(cvID, term, resourceUrl, activeStatus) SELECT cvI
 INSERT INTO ctcontrolvocabterm(cvID, term, resourceUrl, activeStatus) SELECT cvID, "concentrationMethod", "http://data.ggbn.org/schemas/ggbn/terms/methodDeterminationConcentrationAndRatios", 1 FROM ctcontrolvocab WHERE tableName = "ommaterialsampleextended" AND fieldName = "fieldName";
 INSERT INTO ctcontrolvocabterm(cvID, term, resourceUrl, activeStatus) SELECT cvID, "ratioOfAbsorbance260_230", "http://data.ggbn.org/schemas/ggbn/terms/ratioOfAbsorbance260_230", 1 FROM ctcontrolvocab WHERE tableName = "ommaterialsampleextended" AND fieldName = "fieldName";
 INSERT INTO ctcontrolvocabterm(cvID, term, resourceUrl, activeStatus) SELECT cvID, "ratioOfAbsorbance260_280", "http://data.ggbn.org/schemas/ggbn/terms/ratioOfAbsorbance260_280", 1 FROM ctcontrolvocab WHERE tableName = "ommaterialsampleextended" AND fieldName = "fieldName";
-INSERT INTO ctcontrolvocabterm(cvID, term, resourceUrl, activeStatus) SELECT cvID, "volume," "http://data.ggbn.org/schemas/ggbn/terms/volume", 1 FROM ctcontrolvocab WHERE tableName = "ommaterialsampleextended" AND fieldName = "fieldName";
+INSERT INTO ctcontrolvocabterm(cvID, term, resourceUrl, activeStatus) SELECT cvID, "volume", "http://data.ggbn.org/schemas/ggbn/terms/volume", 1 FROM ctcontrolvocab WHERE tableName = "ommaterialsampleextended" AND fieldName = "fieldName";
 INSERT INTO ctcontrolvocabterm(cvID, term, resourceUrl, activeStatus) SELECT cvID, "weight", "http://data.ggbn.org/schemas/ggbn/terms/weight", 1 FROM ctcontrolvocab WHERE tableName = "ommaterialsampleextended" AND fieldName = "fieldName";
 INSERT INTO ctcontrolvocabterm(cvID, term, resourceUrl, activeStatus) SELECT cvID, "weightMethod", "http://data.ggbn.org/schemas/ggbn/terms/methodDeterminationWeight", 1 FROM ctcontrolvocab WHERE tableName = "ommaterialsampleextended" AND fieldName = "fieldName";
 INSERT INTO ctcontrolvocabterm(cvID, term, resourceUrl, activeStatus) SELECT cvID, "purificationMethod", "http://data.ggbn.org/schemas/ggbn/terms/purificationMethod", 1 FROM ctcontrolvocab WHERE tableName = "ommaterialsampleextended" AND fieldName = "fieldName";
@@ -321,8 +381,4 @@ INSERT INTO ctcontrolvocabterm(cvID, term, resourceUrl, activeStatus) SELECT cvI
 INSERT INTO ctcontrolvocabterm(cvID, term, resourceUrl, activeStatus) SELECT cvID, "estimatedSize", "http://gensc.org/ns/mixs/estimated_size", 1 FROM ctcontrolvocab WHERE tableName = "ommaterialsampleextended" AND fieldName = "fieldName";
 INSERT INTO ctcontrolvocabterm(cvID, term, resourceUrl, activeStatus) SELECT cvID, "poolDnaExtracts", "http://gensc.org/ns/mixs/pool_dna_extracts", 1 FROM ctcontrolvocab WHERE tableName = "ommaterialsampleextended" AND fieldName = "fieldName";
 INSERT INTO ctcontrolvocabterm(cvID, term, resourceUrl, activeStatus) SELECT cvID, "sampleDesignation", "http://data.ggbn.org/schemas/ggbn/terms/sampleDesignation", 1 FROM ctcontrolvocab WHERE tableName = "ommaterialsampleextended" AND fieldName = "fieldName";
-
-ALTER TABLE `uploadspectemp` 
-  DROP COLUMN `materialSampleID`,
-  ADD COLUMN `materialSampleJSON` TEXT NULL AFTER `paleoJSON`;
 
