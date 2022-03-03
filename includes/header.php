@@ -104,6 +104,9 @@ else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 							<li>
 								<a href="<?php echo $CLIENT_ROOT; ?>/projects/index.php?pid=2"><?php echo (isset($LANG['H_PLANTS'])?$LANG['H_PLANTS']:'Plants'); ?></a>
 							</li>
+							<li>
+								<a href="<?php echo $CLIENT_ROOT; ?>/projects/index.php?pid=6"><?php echo 'CITES'; ?></a>
+							</li>
 						</ul>
 					</li>
 					<li>
@@ -143,12 +146,11 @@ else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 							<li>
 								<a href="<?php echo $CLIENT_ROOT; ?>/collections/misc/collprofiles.php" ><?php echo (isset($LANG['H_PARTNERS'])?$LANG['H_PARTNERS']:'Partners'); ?></a>
 							</li>
-							<li>
+ 							<li>
 								<a href="https://www.gbif.org/project/BID-AF2020-122-NAC/the-gabon-biodiversity-portal" target="_blank">GBIF BID-AF2020-122-NAC</a>
 							</li>
-
 							<li>
-								<a href="<?php echo $CLIENT_ROOT; ?>/misc/TDWG_2021/index.php" target="_blank"><?php echo (isset($LANG['H_TDWG_POSTER'])?$LANG['H_TDWG_POSTER']:'TDWG-2021 Poster'); ?></a>
+								<a href="<?php echo $CLIENT_ROOT; ?>/misc/TDWG_2021/index.php" ><?php echo (isset($LANG['H_TDWG_POSTER'])?$LANG['H_TDWG_POSTER']:'TDWG-2021 Poster'); ?></a>
 							</li>
 							<!--
 							<li>
@@ -157,17 +159,17 @@ else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 							-->
 							<?php
 							if($LANG_TAG=='fr'){
-							?>
-							<li>
-								<a href="https://github.com/GJongsma/Symbiota-light/blob/master/docs/SymbiotaGuide_French_v1.1.pdf" target="_blank" ><?php echo (isset($LANG['H_HELP'])?$LANG['H_HELP']:'Help'); ?></a>
-							</li>
-							<?php
+								?>
+								<li>
+									<a href="https://github.com/GJongsma/Symbiota-light/blob/master/docs/SymbiotaGuide_French_v1.1.pdf" target="_blank" ><?php echo (isset($LANG['H_HELP'])?$LANG['H_HELP']:'Help'); ?></a>
+								</li>
+								<?php
 							} else{
-							?>
-							<li>
-							<a href="https://github.com/GJongsma/Symbiota-light/blob/master/docs/SymbiotaGuide_v5.pdf" target="_blank" ><?php echo (isset($LANG['H_HELP'])?$LANG['H_HELP']:'Help'); ?></a>
-							</li>
-							<?php
+								?>
+								<li>
+								<a href="https://github.com/GJongsma/Symbiota-light/blob/master/docs/SymbiotaGuide_v5.pdf" target="_blank" ><?php echo (isset($LANG['H_HELP'])?$LANG['H_HELP']:'Help'); ?></a>
+								</li>
+								<?php
 							}
 							?>
 							<li>
