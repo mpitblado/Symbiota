@@ -134,6 +134,31 @@ DROP TABLE geothesstateprovince;
 DROP TABLE geothescounty;
 DROP TABLE geothesmunicipality;
 
+#need to remap collectionGuid to recordID within code
+ALTER TABLE `omcollections` 
+  CHANGE COLUMN `CollID` `collID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT ,
+  CHANGE COLUMN `InstitutionCode` `institutionCode` VARCHAR(45) NOT NULL ,
+  CHANGE COLUMN `CollectionCode` `collectionCode` VARCHAR(45) NULL DEFAULT NULL ,
+  CHANGE COLUMN `CollectionName` `collectionName` VARCHAR(150) NOT NULL ,
+  CHANGE COLUMN `collectionId` `collectionID` VARCHAR(100) NULL DEFAULT NULL ,
+  CHANGE COLUMN `fulldescription` `fullDescription` VARCHAR(2000) NULL DEFAULT NULL ,
+  CHANGE COLUMN `Homepage` `homepage` VARCHAR(250) NULL DEFAULT NULL ,
+  CHANGE COLUMN `IndividualUrl` `individualUrl` VARCHAR(500) NULL DEFAULT NULL ,
+  CHANGE COLUMN `latitudedecimal` `latitudeDecimal` DOUBLE(8,6) NULL DEFAULT NULL ,
+  CHANGE COLUMN `longitudedecimal` `longitudeDecimal` DOUBLE(9,6) NULL DEFAULT NULL ,
+  CHANGE COLUMN `CollType` `collType` VARCHAR(45) NOT NULL DEFAULT 'Preserved Specimens' COMMENT 'Preserved Specimens, General Observations, Observations' ,
+  CHANGE COLUMN `ManagementType` `managementType` VARCHAR(45) NULL DEFAULT 'Snapshot' COMMENT 'Snapshot, Live Data' ,
+  CHANGE COLUMN `PublicEdits` `publicEdits` INT(1) UNSIGNED NOT NULL DEFAULT 1 ,
+  CHANGE COLUMN `collectionguid` `collectionGuid` VARCHAR(45) NULL DEFAULT NULL ,
+  CHANGE COLUMN `securitykey` `securityKey` VARCHAR(45) NULL DEFAULT NULL ,
+  CHANGE COLUMN `guidtarget` `guidTarget` VARCHAR(45) NULL DEFAULT NULL ,
+  CHANGE COLUMN `accessrights` `accessRights` VARCHAR(1000) NULL DEFAULT NULL ,
+  CHANGE COLUMN `SortSeq` `sortSeq` INT(10) UNSIGNED NULL DEFAULT NULL ,
+  CHANGE COLUMN `InitialTimeStamp` `initialTimestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ;
+
+ALTER TABLE `omcollections` 
+  CHANGE COLUMN `collectionGuid` `recordID` VARCHAR(45) NULL DEFAULT NULL ;
+
 ALTER TABLE `omcollections` 
   ADD COLUMN `dwcTermJson` TEXT NULL AFTER `aggKeysStr`;
 
@@ -155,14 +180,18 @@ CREATE TABLE `omcollproperties` (
   CONSTRAINT `FK_omcollproperties_collid`  FOREIGN KEY (`collid`)  REFERENCES `omcollections` (`CollID`)   ON DELETE CASCADE   ON UPDATE CASCADE,
   CONSTRAINT `FK_omcollproperties_uid`   FOREIGN KEY (`modifiedUid`)   REFERENCES `users` (`uid`)   ON DELETE CASCADE   ON UPDATE CASCADE);
 
+ALTER TABLE `omoccuredits` 
+  ADD COLUMN `isActive` INT(1) NULL DEFAULT NULL COMMENT '0 = not the value applied within the active field, 1 = valued applied within active field' AFTER `editType`,
+  ADD COLUMN `reapply` INT(1) NULL COMMENT '0 = do not reapply edit; 1 = reapply edit when snapshot is refreshed, if edit isActive and snapshot value still matches old value ' AFTER `isActive`;
+
 CREATE TABLE `portalindex` (
-  `portalIndexID` INT NOT NULL AUTO_INCREMENT,
+  `portalID` INT NOT NULL AUTO_INCREMENT,
   `portalName` VARCHAR(45) NOT NULL,
   `acronym` VARCHAR(45) NULL,
   `portalDescription` VARCHAR(250) NULL,
   `urlRoot` VARCHAR(150) NOT NULL,
   `securityKey` VARCHAR(45) NULL,
-  `symbVersion` VARCHAR(45) NULL,
+  `symbiotaVersion` VARCHAR(45) NULL,
   `guid` VARCHAR(45) NULL,
   `manager` VARCHAR(45) NULL,
   `managerEmail` VARCHAR(45) NULL,
@@ -170,18 +199,21 @@ CREATE TABLE `portalindex` (
   `primaryLeadEmail` VARCHAR(45) NULL,
   `notes` VARCHAR(250) NULL,
   `initialTimestamp` TIMESTAMP NULL DEFAULT current_timestamp,
-  PRIMARY KEY (`portalIndexID`));
+  PRIMARY KEY (`portalID`));
 
 ALTER TABLE `portalindex` 
   ADD UNIQUE INDEX `UQ_portalIndex_guid` (`guid` ASC);
 
 ALTER TABLE `omcollpublications` 
+  RENAME TO `portalpublications` ;
+
+ALTER TABLE `portalpublications` 
   DROP FOREIGN KEY `FK_adminpub_collid`;
 
-ALTER TABLE `omcollpublications` 
+ALTER TABLE `portalpublications` 
   DROP COLUMN `securityguid`,
   DROP COLUMN `targeturl`,
-  ADD COLUMN `portalIndexID` INT NULL AFTER `collid`,
+  ADD COLUMN `portalID` INT NULL AFTER `collid`,
   CHANGE COLUMN `collid` `collid` INT(10) UNSIGNED NULL ,
   CHANGE COLUMN `criteriajson` `criteriaJson` TEXT NULL DEFAULT NULL ,
   CHANGE COLUMN `includedeterminations` `includeDeterminations` INT(11) NULL DEFAULT 1,
@@ -190,38 +222,35 @@ ALTER TABLE `omcollpublications`
   CHANGE COLUMN `lastdateupdate` `lastDateUpdate` DATETIME NULL DEFAULT NULL,
   CHANGE COLUMN `updateinterval` `updateInterval` INT(11) NULL DEFAULT NULL,
   CHANGE COLUMN `initialtimestamp` `initialTimestamp` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
-  ADD INDEX `FK_collPub_portalID_idx` (`portalIndexID` ASC);
+  ADD INDEX `FK_portalpub_portalID_idx` (`portalID` ASC);
 
-ALTER TABLE `omcollpublications` 
-  ADD CONSTRAINT `FK_collPub_collid`  FOREIGN KEY (`collid`)  REFERENCES `omcollections` (`CollID`)  ON DELETE CASCADE  ON UPDATE CASCADE,
-  ADD CONSTRAINT `FK_collPub_portalID`  FOREIGN KEY (`portalIndexID`)  REFERENCES `portalindex` (`portalIndexID`)  ON DELETE RESTRICT  ON UPDATE NO ACTION;
+ALTER TABLE `portalpublications` 
+  ADD CONSTRAINT `FK_portalpub_collid`  FOREIGN KEY (`collid`)  REFERENCES `omcollections` (`CollID`)  ON DELETE CASCADE  ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_portalpub_portalID`  FOREIGN KEY (`portalID`)  REFERENCES `portalindex` (`portalID`)  ON DELETE RESTRICT  ON UPDATE NO ACTION;
 
-ALTER TABLE `omcollpublications` 
+ALTER TABLE `portalpublications` 
   ADD COLUMN `pubTitle` VARCHAR(45) NULL AFTER `pubid`,
   ADD COLUMN `description` VARCHAR(250) NULL AFTER `pubTitle`,
   ADD COLUMN `createdUid` INT UNSIGNED NULL AFTER `updateInterval`;
 
-ALTER TABLE `omcollpublications` 
-  RENAME TO `ompublication` ;
-
 ALTER TABLE `omcollpuboccurlink` 
-  RENAME TO  `ompublicationoccurlink` ;
+  RENAME TO  `portaloccurrences` ;
 
-ALTER TABLE `ompublicationoccurlink` 
+ALTER TABLE `portaloccurrences` 
   DROP FOREIGN KEY `FK_ompubpubid`;
 
-ALTER TABLE `ompublicationoccurlink` 
-  ADD COLUMN `portalIndexID` INT NOT NULL AFTER `occid`,
+ALTER TABLE `portaloccurrences` 
+  ADD COLUMN `portalID` INT NOT NULL AFTER `occid`,
   ADD COLUMN `targetOccid` INT NULL AFTER `pubid`,
   CHANGE COLUMN `occid` `occid` INT(10) UNSIGNED NOT NULL FIRST,
   CHANGE COLUMN `pubid` `pubid` INT(10) UNSIGNED NULL DEFAULT NULL ,
   DROP PRIMARY KEY,
-  ADD PRIMARY KEY (`occid`, `portalIndexID`),
-  ADD INDEX `FK_ompub_portalIndexID_idx` (`portalIndexID` ASC);
+  ADD PRIMARY KEY (`occid`, `portalID`),
+  ADD INDEX `FK_portalOccur_portalID_idx` (`portalID` ASC);
 
-ALTER TABLE `ompublicationoccurlink` 
-  ADD CONSTRAINT `FK_ompubpubid`  FOREIGN KEY (`pubid`)  REFERENCES `ompublication` (`pubid`)  ON DELETE CASCADE  ON UPDATE CASCADE,
-  ADD CONSTRAINT `FK_ompub_portalIndexID`  FOREIGN KEY (`portalIndexID`)  REFERENCES `portalindex` (`portalIndexID`)  ON DELETE CASCADE  ON UPDATE CASCADE;
+ALTER TABLE `portaloccurrences` 
+  ADD CONSTRAINT `FK_portalOccur_pubid`  FOREIGN KEY (`pubid`)  REFERENCES `portalpublications` (`pubid`)  ON DELETE CASCADE  ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_portalOccur_portalID`  FOREIGN KEY (`portalID`)  REFERENCES `portalindex` (`portalID`)  ON DELETE CASCADE  ON UPDATE CASCADE;
 
 
 CREATE TABLE `omcrowdsourceproject` (
@@ -289,6 +318,27 @@ ALTER TABLE `taxstatus`
 ALTER TABLE `uploadspectemp` 
   ADD COLUMN `eventTime` VARCHAR(45) NULL AFTER `verbatimEventDate`,
   CHANGE COLUMN `LatestDateCollected` `eventDate2` DATE NULL DEFAULT NULL AFTER `eventDate`;
+
+ALTER TABLE `uploadspecparameters` 
+  DROP FOREIGN KEY `FK_uploadspecparameters_coll`;
+
+ALTER TABLE `uploadspecparameters` 
+  ADD COLUMN `internalQuery` VARCHAR(250) NULL AFTER `schemaName`,
+  CHANGE COLUMN `CollID` `collid` INT(10) UNSIGNED NOT NULL ,
+  CHANGE COLUMN `UploadType` `uploadType` INT(10) UNSIGNED NOT NULL DEFAULT 1 COMMENT '1 = Direct; 2 = DiGIR; 3 = File' ,
+  CHANGE COLUMN `Platform` `platform` VARCHAR(45) NULL DEFAULT '1' COMMENT '1 = MySQL; 2 = MSSQL; 3 = ORACLE; 11 = MS Access; 12 = FileMaker' ,
+  CHANGE COLUMN `Code` `code` VARCHAR(45) NULL DEFAULT NULL ,
+  CHANGE COLUMN `Path` `path` VARCHAR(500) NULL DEFAULT NULL ,
+  CHANGE COLUMN `PkField` `pkField` VARCHAR(45) NULL DEFAULT NULL ,
+  CHANGE COLUMN `Username` `username` VARCHAR(45) NULL DEFAULT NULL ,
+  CHANGE COLUMN `Password` `password` VARCHAR(45) NULL DEFAULT NULL ,
+  CHANGE COLUMN `SchemaName` `schemaName` VARCHAR(150) NULL DEFAULT NULL ,
+  CHANGE COLUMN `QueryStr` `queryStr` TEXT NULL DEFAULT NULL ,
+  CHANGE COLUMN `cleanupsp` `cleanupSP` VARCHAR(45) NULL DEFAULT NULL ,
+  CHANGE COLUMN `InitialTimeStamp` `initialTimestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ;
+
+ALTER TABLE `uploadspecparameters` 
+  ADD CONSTRAINT `FK_uploadspecparameters_coll`  FOREIGN KEY (`collid`)  REFERENCES `omcollections` (`collID`)  ON DELETE CASCADE  ON UPDATE CASCADE;
 
 ALTER TABLE `uploadspectemp` 
   CHANGE COLUMN `establishmentMeans` `establishmentMeans` VARCHAR(150) NULL DEFAULT NULL,

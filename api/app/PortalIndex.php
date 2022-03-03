@@ -3,22 +3,19 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PortalIndex extends Model
-{
-    protected $table = 'portalindex';
-    protected $primaryKey = 'portalIndexID';
-    protected $fillable = ['portalName', 'acronym', 'portalDescription', 'urlRoot', 'symbVersion', 'guid', 'manager', 'managerEmail', 'primaryLead', 'primaryLeadEmail', 'notes'];
-    protected $guarded = [];
-    protected $hidden = ['securityKey'];
-    public $timestamps = false;
+class PortalIndex extends Model{
+	protected $table = 'portalindex';
+	protected $primaryKey = 'portalID';
+	protected $fillable = ['portalName', 'acronym', 'portalDescription', 'urlRoot', 'symbiotaVersion', 'guid', 'manager', 'managerEmail', 'primaryLead', 'primaryLeadEmail', 'notes'];
+	protected $guarded = [];
+	protected $hidden = ['securityKey'];
+	public $timestamps = false;
 
-    public function ompublications()
-    {
-        return $this->hasMany('App\Ompublication', 'portalIndexID', 'portalIndexID');
-    }
+	public function portalOccurrences(){
+		return $this->hasMany(PortalOccurrences::class, 'portalID', 'portalID');
+	}
 
-    public function ompublicationoccurlinks()
-    {
-        return $this->hasMany('App\Ompublicationoccurlink', 'portalIndexID', 'portalIndexID');
-    }
+	public function portalPublications(){
+		return $this->hasMany('App\portalpublications', 'portalID', 'portalID');
+	}
 }

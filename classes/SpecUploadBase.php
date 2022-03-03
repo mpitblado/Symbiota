@@ -54,6 +54,47 @@ class SpecUploadBase extends SpecUpload{
 		parent::__destruct();
 	}
 
+	public function setFieldMaps($postArr){
+		if(array_key_exists('sf',$postArr)){
+			//Set field map for occurrences using mapping form
+			$targetFields = $postArr['tf'];
+			$sourceFields = $postArr['sf'];
+			for($x = 0;$x<count($targetFields);$x++){
+				if($targetFields[$x]){
+					$tField = $targetFields[$x];
+					if($tField == 'unmapped') $tField .= '-'.$x;
+					$this->fieldMap[$tField]['field'] = $sourceFields[$x];
+				}
+			}
+			if(isset($postArr['dbpk']) && $postArr['dbpk']) $this->fieldMap['dbpk']['field'] = $postArr['dbpk'];
+
+			//Set field map for identification history
+			if(array_key_exists('ID-sf',$postArr)){
+				$targetIdFields = $postArr['ID-tf'];
+				$sourceIdFields = $postArr['ID-sf'];
+				for($x = 0;$x<count($targetIdFields);$x++){
+					if($targetIdFields[$x]){
+						$tIdField = $targetIdFields[$x];
+						if($tIdField == 'unmapped') $tIdField .= '-'.$x;
+						$this->identFieldMap[$tIdField]['field'] = $sourceIdFields[$x];
+					}
+				}
+			}
+			//Set field map for image history
+			if(array_key_exists('IM-sf',$postArr)){
+				$targetImFields = $postArr['IM-tf'];
+				$sourceImFields = $postArr['IM-sf'];
+				for($x = 0;$x<count($targetImFields);$x++){
+					if($targetImFields[$x]){
+						$tImField = $targetImFields[$x];
+						if($tImField == 'unmapped') $tImField .= '-'.$x;
+						$this->imageFieldMap[$tImField]['field'] = $sourceImFields[$x];
+					}
+				}
+			}
+		}
+	}
+
 	public function setFieldMap($fm){
 		$this->fieldMap = $fm;
 	}
@@ -407,48 +448,49 @@ class SpecUploadBase extends SpecUpload{
 
 	public function saveFieldMap($postArr){
 		$statusStr = '';
-		if(!$this->uspid && array_key_exists('profiletitle',$postArr)){
-			$this->uspid = $this->createUploadProfile(array('uploadtype'=>$this->uploadType,'title'=>$postArr['profiletitle']));
-			$this->readUploadParameters();
-		}
-		if($this->uspid){
-			$this->deleteFieldMap();
-			$sqlInsert = "INSERT INTO uploadspecmap(uspid,symbspecfield,sourcefield) ";
-			$sqlValues = "VALUES (".$this->uspid;
-			foreach($this->fieldMap as $k => $v){
-				$sourceField = $v["field"];
-				$sql = $sqlInsert.$sqlValues.",'".$k."','".$sourceField."')";
-				//echo "<div>".$sql."</div>";
-				if(!$this->conn->query($sql)){
-					$statusStr = 'ERROR saving field map: '.$this->conn->error;
-				}
+		if(array_key_exists('sf',$postArr)){
+			if(!$this->uspid && array_key_exists('profiletitle',$postArr)){
+				$this->uspid = $this->createUploadProfile(array('uploadtype'=>$this->uploadType,'title'=>$postArr['profiletitle']));
+				$this->readUploadParameters();
 			}
-			//Save custom occurrence filter variables
-			if($this->filterArr){
-				$sql = 'UPDATE uploadspecparameters SET querystr = "'.$this->cleanInStr(json_encode($this->filterArr)).'" WHERE uspid = '.$this->uspid;
-				if(!$this->conn->query($sql)){
-					$statusStr = 'ERROR saving custom filter variables: '.$this->conn->error;
+			if($this->uspid){
+				$this->deleteFieldMap();
+				$sqlInsert = 'INSERT INTO uploadspecmap(uspid,symbspecfield,sourcefield) ';
+				$sqlValues = 'VALUES ('.$this->uspid;
+				foreach($this->fieldMap as $k => $v){
+					$sourceField = $v['field'];
+					$sql = $sqlInsert.$sqlValues.',"'.$k.'","'.$sourceField.'")';
+					if(!$this->conn->query($sql)){
+						$statusStr = 'ERROR saving field map: '.$this->conn->error;
+					}
 				}
-			}
-			//Save identification field map
-			foreach($this->identFieldMap as $k => $v){
-				$sourceField = $v["field"];
-				$sql = $sqlInsert.$sqlValues.",'ID-".$k."','".$sourceField."')";
-				//echo "<div>".$sql."</div>";
-				if(!$this->conn->query($sql)){
-					$statusStr = 'ERROR saving identification field map: '.$this->conn->error;
+				//Save custom occurrence filter variables
+				if($this->filterArr){
+					$sql = 'UPDATE uploadspecparameters SET querystr = "'.$this->cleanInStr(json_encode($this->filterArr)).'" WHERE uspid = '.$this->uspid;
+					if(!$this->conn->query($sql)){
+						$statusStr = 'ERROR saving custom filter variables: '.$this->conn->error;
+					}
 				}
-			}
-			//Save image field map
-			foreach($this->imageFieldMap as $k => $v){
-				$sourceField = $v["field"];
-				$sql = $sqlInsert.$sqlValues.",'IM-".$k."','".$sourceField."')";
-				//echo "<div>".$sql."</div>";
-				if(!$this->conn->query($sql)){
-					$statusStr = 'ERROR saving image field map: '.$this->conn->error;
+				//Save identification field map
+				foreach($this->identFieldMap as $k => $v){
+					$sourceField = $v["field"];
+					$sql = $sqlInsert.$sqlValues.",'ID-".$k."','".$sourceField."')";
+					//echo "<div>".$sql."</div>";
+					if(!$this->conn->query($sql)){
+						$statusStr = 'ERROR saving identification field map: '.$this->conn->error;
+					}
 				}
-			}
+				//Save image field map
+				foreach($this->imageFieldMap as $k => $v){
+					$sourceField = $v["field"];
+					$sql = $sqlInsert.$sqlValues.",'IM-".$k."','".$sourceField."')";
+					//echo "<div>".$sql."</div>";
+					if(!$this->conn->query($sql)){
+						$statusStr = 'ERROR saving image field map: '.$this->conn->error;
+					}
+				}
 
+			}
 		}
 		return $statusStr;
 	}
@@ -456,16 +498,16 @@ class SpecUploadBase extends SpecUpload{
 	public function deleteFieldMap(){
 		$statusStr = '';
 		if($this->uspid){
-			$sql = "DELETE FROM uploadspecmap WHERE (uspid = ".$this->uspid.") ";
+			$sql = 'DELETE FROM uploadspecmap WHERE (uspid = '.$this->uspid.') ';
 			//echo "<div>$sql</div>";
 			if(!$this->conn->query($sql)){
 				$statusStr = 'ERROR deleting field map: '.$this->conn->error;
 			}
-			$sql = "UPDATE uploadspecparameters SET querystr = NULL WHERE (uspid = ".$this->uspid.") ";
-			//echo "<div>$sql</div>";
+			$sql = 'UPDATE uploadspecparameters SET querystr = NULL WHERE (uspid = '.$this->uspid.') ';
 			if(!$this->conn->query($sql)){
 				$statusStr = 'ERROR deleting field map: '.$this->conn->error;
 			}
+			$this->queryStr = '';
 		}
 		return $statusStr;
 	}
@@ -842,7 +884,6 @@ class SpecUploadBase extends SpecUpload{
 		$rs->free();
 
 		$fieldArr = $this->getTransferFieldArr();
-
 		//Update matching records
 		$sqlFragArr = array();
 		foreach($fieldArr as $v){
@@ -1369,8 +1410,8 @@ class SpecUploadBase extends SpecUpload{
 
 	private function crossMapSymbiotaOccurrences(){
 		if($this->sourcePortalIndex && $this->collMetadataArr['managementtype'] == 'Snapshot'){
-			$sql = 'INSERT INTO ompublicationoccurlink(occid, targetOccid, portalIndexID, refreshTimestamp)
-				SELECT u.occid, u.dbpk, '.$this->sourcePortalIndex.', NOW() FROM uploadspectemp u LEFT JOIN ompublicationoccurlink l ON u.occid = l.occid
+			$sql = 'INSERT INTO portaloccurrences(occid, targetOccid, portalID, refreshTimestamp)
+				SELECT u.occid, u.dbpk, '.$this->sourcePortalIndex.', NOW() FROM uploadspectemp u LEFT JOIN portaloccurrences l ON u.occid = l.occid
 				WHERE u.occid IS NOT NULL AND u.dbpk IS NOT NULL AND u.collid = '.$this->collId.' AND l.occid IS NULL';
 			if($this->conn->query($sql)) $this->outputMsg('<li>Occurrences cross-mapped to Symbiota source portal</li> ');
 			//else $this->outputMsg('<li>ERROR linking occurrences to source portal: '.$this->conn->error.'</li> ');
@@ -1926,7 +1967,7 @@ class SpecUploadBase extends SpecUpload{
 	private function getPaleoSymbTerms(){
 		$paleoTermArr = array('paleo-geologicalcontextid','paleo-lithogroup','paleo-formation','paleo-member','paleo-bed','paleo-eon','paleo-era','paleo-period','paleo-epoch',
 			'paleo-earlyinterval','paleo-lateinterval','paleo-absoluteage','paleo-storageage','paleo-stage','paleo-localstage','paleo-biota','paleo-biostratigraphy',
-			'paleo-taxonenvironment','paleo-lithology','paleo-stratremarks','paleo-lithdescription','paleo-element','paleo-slideproperties');
+			'paleo-taxonenvironment','paleo-lithology','paleo-stratremarks','paleo-element','paleo-slideproperties');
 		return $paleoTermArr;
 	}
 

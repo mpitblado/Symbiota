@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 use App\PortalIndex;
 use Illuminate\Http\Request;
 
-class InstallationController extends Controller
-{
+class InstallationController extends Controller{
 	/**
 	 * Installation controller instance.
 	 *
@@ -19,9 +18,23 @@ class InstallationController extends Controller
 	 *	 path="/api/v2/installation",
 	 *	 operationId="/api/v2/installation",
 	 *	 tags={""},
+	 *	 @OA\Parameter(
+	 *		 name="limit",
+	 *		 in="query",
+	 *		 description="Pagination parameter: maximum number of records per page",
+	 *		 required=false,
+	 *		 @OA\Schema(type="integer", default=100)
+	 *	 ),
+	 *	 @OA\Parameter(
+	 *		 name="offset",
+	 *		 in="query",
+	 *		 description="Pagination parameter: page number",
+	 *		 required=false,
+	 *		 @OA\Schema(type="integer", default=0)
+	 *	 ),
 	 *	 @OA\Response(
 	 *		 response="200",
-	 *		 description="Returns list of installation",
+	 *		 description="Returns list of installations registered within system",
 	 *		 @OA\JsonContent()
 	 *	 ),
 	 *	 @OA\Response(
@@ -43,11 +56,11 @@ class InstallationController extends Controller
 
 		$eor = false;
 		$retObj = [
-				"offset" => $offset,
-				"limit" => $limit,
-				"endOfRecords" => $eor,
-				"count" => $fullCnt,
-				"results" => $result
+			"offset" => (int)$offset,
+			"limit" => (int)$limit,
+			"endOfRecords" => $eor,
+			"count" => $fullCnt,
+			"results" => $result
 		];
 		return response()->json($retObj);
 	}
@@ -66,12 +79,12 @@ class InstallationController extends Controller
 	 *	 ),
 	 *	 @OA\Response(
 	 *		 response="200",
-	 *		 description="Returns occurrence data",
+	 *		 description="Returns metabase on installation registered within system with matching ID",
 	 *		 @OA\JsonContent()
 	 *	 ),
 	 *	 @OA\Response(
 	 *		 response="400",
-	 *		 description="Error: Bad request. Occurrence identifier is required.",
+	 *		 description="Error: Bad request. Installation identifier is required.",
 	 *	 ),
 	 * )
 	 */
@@ -83,6 +96,22 @@ class InstallationController extends Controller
 		return response()->json($portalObj);
 	}
 
+	/**
+	 * @OA\Get(
+	 *	 path="/api/v2/installation/ping",
+	 *	 operationId="/api/v2/installation/ping",
+	 *	 tags={""},
+	 *	 @OA\Response(
+	 *		 response="200",
+	 *		 description="Returns installation metadata",
+	 *		 @OA\JsonContent()
+	 *	 ),
+	 *	 @OA\Response(
+	 *		 response="400",
+	 *		 description="Error: Bad request. ",
+	 *	 ),
+	 * )
+	 */
 	public function pingPortal(Request $request){
 		$portalObj = null;
 		if(isset($_ENV['DEFAULT_TITLE']) && isset($_ENV['PORTAL_GUID'])){
@@ -91,7 +120,7 @@ class InstallationController extends Controller
 			$portalObj['guid'] = $_ENV['PORTAL_GUID'];
 			$portalObj['managerEmail'] = $_ENV['ADMIN_EMAIL'];
 			$portalObj['urlRoot'] = $this->getServerDomain().$_ENV['CLIENT_ROOT'];
-			//$portalObj['symbVersion'] = '';
+			$portalObj['symbiotaVersion'] = $_ENV['SYMBIOTA_VERSION'];
 		}
 		else{
 			$portalObj['status'] = false;
@@ -102,6 +131,36 @@ class InstallationController extends Controller
 		return response()->json($portalObj);
 	}
 
+	/**
+	 * @OA\Get(
+	 *	 path="/api/v2/installation/{identifier}/touch",
+	 *	 operationId="/api/v2/installation/identifier/touch",
+	 *	 tags={""},
+	 *	 @OA\Parameter(
+	 *		 name="identifier",
+	 *		 in="path",
+	 *		 description="Identifier of the remote installation",
+	 *		 required=true,
+	 *		 @OA\Schema(type="string")
+	 *	 ),
+	 *	 @OA\Parameter(
+	 *		 name="urlPath",
+	 *		 in="query",
+	 *		 description="Url to Symbiota root of remote installation",
+	 *		 required=false,
+	 *		 @OA\Schema(type="string")
+	 *	 ),
+	 *	 @OA\Response(
+	 *		 response="200",
+	 *		 description="Returns metabase remote installation, if successfully registered",
+	 *		 @OA\JsonContent()
+	 *	 ),
+	 *	 @OA\Response(
+	 *		 response="400",
+	 *		 description="Error: Bad request. Identifier of remote installation is required.",
+	 *	 ),
+	 * )
+	 */
 	public function portalHandshake($id, Request $request){
 		$responseArr = array();
 		$portalObj = PortalIndex::where('guid',$id)->get();
@@ -171,6 +230,78 @@ class InstallationController extends Controller
 		}
 		$responseArr['results'] = $portalObj;
 		return response()->json($responseArr);
+	}
+
+	/**
+	 * @OA\Get(
+	 *	 path="/api/v2/installation/{identifier}/occurrence",
+	 *	 operationId="/api/v2/installation/identifier/occurrence",
+	 *	 tags={""},
+	 *	 @OA\Parameter(
+	 *		 name="identifier",
+	 *		 in="path",
+	 *		 description="Identifier of the remote installation",
+	 *		 required=true,
+	 *		 @OA\Schema(type="string")
+	 *	 ),
+	 *	 @OA\Parameter(
+	 *		 name="limit",
+	 *		 in="query",
+	 *		 description="Pagination parameter: maximum number of records per page",
+	 *		 required=false,
+	 *		 @OA\Schema(type="integer", default=100)
+	 *	 ),
+	 *	 @OA\Parameter(
+	 *		 name="offset",
+	 *		 in="query",
+	 *		 description="Pagination parameter: page number",
+	 *		 required=false,
+	 *		 @OA\Schema(type="integer", default=0)
+	 *	 ),
+	 *	 @OA\Response(
+	 *		 response="200",
+	 *		 description="Returns list of occurrences associated with an installations",
+	 *		 @OA\JsonContent()
+	 *	 ),
+	 *	 @OA\Response(
+	 *		 response="400",
+	 *		 description="Error: Bad request. Identifier of remote installation is required.",
+	 *	 ),
+	 * )
+	 */
+	public function showOccurrences($id, Request $request){
+		$this->validate($request, [
+			'verification' => ['integer'],
+			'limit' => ['integer', 'max:1000'],
+			'offset' => 'integer'
+		]);
+		$limit = $request->input('limit',100);
+		$offset = $request->input('offset',0);
+
+		$portalObj = null;
+		if(is_numeric($id)) $portalObj = PortalIndex::find($id);
+		else $portalObj = PortalIndex::where('guid',$id)->first();
+
+		$retObj = [];
+		if($portalObj){
+			$conditions = [];
+			if($request->has('verification')){
+				if($request->verification) $conditions[] = ['verification',1];
+				else $conditions[] = ['verification',0];
+			}
+			$fullCnt = $portalObj->portalOccurrences()->where($conditions)->count();
+			$result = $portalObj->portalOccurrences()->where($conditions)->skip($offset)->take($limit)->get();
+			$eor = false;
+			$retObj = [
+				"offset" => (int)$offset,
+				"limit" => (int)$limit,
+				"endOfRecords" => $eor,
+				"count" => $fullCnt,
+				"results" => $result
+			];
+		}
+		else $retObj = ["status"=>false,"error"=>"Unable to locate installation based on identifier"];
+		return response()->json($retObj);
 	}
 
 	public function create(Request $request){

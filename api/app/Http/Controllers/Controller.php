@@ -10,6 +10,7 @@ $_ENV['PORTAL_GUID'] = $PORTAL_GUID;
 $_ENV['DEFAULT_TITLE'] = $DEFAULT_TITLE;
 $_ENV['ADMIN_EMAIL'] = $ADMIN_EMAIL;
 $_ENV['CLIENT_ROOT'] = $CLIENT_ROOT;
+$_ENV['SYMBIOTA_VERSION'] = $CODE_VERSION;
 
 class Controller extends BaseController
 {
@@ -24,5 +25,7 @@ class Controller extends BaseController
 	 * )
 	 */
 
-
+	/**
+	 * @OA\Server(url="portal")
+	 */
 }
