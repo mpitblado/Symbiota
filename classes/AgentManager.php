@@ -16,22 +16,24 @@ class AgentManager extends Manager{
 		$sql = 'SELECT a.agentID, a.familyName, a.firstName	
 			FROM agents a  
 			ORDER BY a.familyName';
-		$rs = $this->conn->query($sql);
-		while($r = $rs->fetch_object()){
-			$retArr[$r->agentID]['familyName'] = $r->familyName;
-			$retArr[$r->agentID]['firstName'] = $r->firstName;
-		}
-		$rs->free();
+		if($rs = $this->conn->query($sql)){
+			while($r = $rs->fetch_object()){
+				$retArr[$r->agentID]['familyName'] = $r->familyName;
+				$retArr[$r->agentID]['firstName'] = $r->firstName;
+			}
+			$rs->free();
 
-		return $retArr;
+			return $retArr;
+		}
+		else return false;
 	}
 
 	public function getAgent($agentID){
 		$retArr = array();
 		if(is_numeric($agentID)){
 			$sql = 'SELECT a.agentID, a.familyName, a.firstName, a.middleName, a.startYearActive, a.endYearActive, a.notes, a.rating, a.guid, a.preferredRecByID, a.biography, a.taxonomicgroups, 
-			a.collectionsat, a.curated, a.nototherwisespecified, a.type, a.prefix, a.suffix, a.nameString, a.mbox_sha1sum, a.yearOfBirth, a.yearOfBirthModifier, a.yearOfDeath, 
-			a.yearOfDeathModifier, a.living, a.recordID
+				a.collectionsat, a.curated, a.nototherwisespecified, a.type, a.prefix, a.suffix, a.nameString, a.mbox_sha1sum, a.yearOfBirth, a.yearOfBirthModifier, a.yearOfDeath, 
+				a.yearOfDeathModifier, a.living, a.recordID
 				FROM agents a 
 				WHERE a.agentID = '.$agentID;
 			$rs = $this->conn->query($sql);
@@ -108,7 +110,6 @@ class AgentManager extends Manager{
 				(is_numeric($postArr['startYearActive'])?'"'.$this->cleanInStr($postArr['startYearActive']).'"':'NULL').', '.
 				(is_numeric($postArr['endYearActive'])?'"'.$this->cleanInStr($postArr['endYearActive']).'"':'NULL').', '.
 				($postArr['notes']?'"'.$this->cleanInStr($postArr['notes']).'"':'NULL').')';
-			//echo $sql;
 			if(!$this->conn->query($sql)){
 				$this->errorMessage = 'ERROR adding unit: '.$this->conn->error;
 				return false;
