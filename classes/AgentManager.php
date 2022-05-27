@@ -32,7 +32,7 @@ class AgentManager extends Manager{
 		$retArr = array();
 		if(is_numeric($agentID)){
 			$sql = 'SELECT a.agentID, a.familyName, a.firstName, a.middleName, a.startYearActive, a.endYearActive, a.notes, a.rating, a.guid, a.preferredRecByID, a.biography, a.taxonomicgroups, 
-				a.collectionsat, a.curated, a.nototherwisespecified, a.type, a.prefix, a.suffix, a.nameString, a.mbox_sha1sum, a.yearOfBirth, a.yearOfBirthModifier, a.yearOfDeath, 
+				a.collectionsat, a.curated, a.nototherwisespecified, a.type, a.prefix, a.suffix, a.nameString, a.yearOfBirth, a.yearOfBirthModifier, a.yearOfDeath, 
 				a.yearOfDeathModifier, a.living, a.recordID
 				FROM agents a 
 				WHERE a.agentID = '.$agentID;
@@ -56,7 +56,6 @@ class AgentManager extends Manager{
 				$retArr['prefix'] = $r->prefix;
 				$retArr['suffix'] = $r->suffix;
 				$retArr['nameString'] = $r->nameString;
-				$retArr['mbox_sha1sum'] = $r->mbox_sha1sum;
 				$retArr['yearOfBirth'] = $r->yearOfBirth;
 				$retArr['yearOfBirthModifier'] = $r->yearOfBirthModifier;
 				$retArr['yearOfDeath'] = $r->yearOfDeath;
