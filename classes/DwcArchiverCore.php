@@ -99,7 +99,6 @@ class DwcArchiverCore extends Manager{
 		//if($this->schemaType != 'backup') $sql .= ' LIMIT 1000000';
 		if($sql){
 			$sql = 'SELECT COUNT(o.occid) as cnt '.$sql;
-			//echo $sql; exit;
 			$rs = $this->conn->query($sql);
 			while($r = $rs->fetch_object()){
 				$retStr = $r->cnt;
@@ -292,6 +291,7 @@ class DwcArchiverCore extends Manager{
 					$taxaManager = new OccurrenceTaxaManager();
 					$taxaArr = array();
 					$taxaArr['taxa'] = implode(';',$condArr['EQUALS']);
+					if($field == 'family') $taxaArr['taxontype'] = 3;
 					$taxaManager->setTaxonRequestVariable($taxaArr);
 					$sqlFrag .= $taxaManager->getTaxonWhereFrag();
 				}
@@ -304,38 +304,16 @@ class DwcArchiverCore extends Manager{
 					else $field = 'o.'.$field;
 					$sqlFrag2 = '';
 					foreach($condArr as $cond => $valueArr){
-						if($cond == 'NULL'){
-							$sqlFrag2 .= 'AND ('.$field.' IS NULL) ';
-						}
-						elseif($cond == 'NOTNULL'){
-							$sqlFrag2 .= 'AND ('.$field.' IS NOT NULL) ';
-						}
-						elseif($cond == 'EQUALS'){
-							$sqlFrag2 .= 'AND ('.$field.' IN("'.implode('","',$valueArr).'")) ';
-						}
-						elseif($cond == 'NOTEQUALS'){
-							$sqlFrag2 .= 'AND ('.$field.' NOT IN("'.implode('","',$valueArr).'")) ';
+						if($field == 'o.otherCatalogNumbers'){
+							$conj = 'OR';
+							if($cond == 'NOTEQUALS' || $cond == 'NOTLIKE' || $cond == 'NULL') $conj = 'AND';
+							$sqlFrag2 .= 'AND ('.substr($this->getSqlFragment($field, $cond, $valueArr),3).' ';
+							$sqlFrag2 .= $conj.' ('.substr($this->getSqlFragment('id.identifierValue', $cond, $valueArr),3);
+							if($cond == 'NOTEQUALS' || $cond == 'NOTLIKE') $sqlFrag2 .= ' OR id.identifierValue IS NULL';
+							$sqlFrag2 .= ')) ';
 						}
 						else{
-							$sqlFrag3 = '';
-							foreach($valueArr as $value){
-								if($cond == 'STARTS'){
-									$sqlFrag3 .= 'OR ('.$field.' LIKE "'.$value.'%") ';
-								}
-								elseif($cond == 'LIKE'){
-									$sqlFrag3 .= 'OR ('.$field.' LIKE "%'.$value.'%") ';
-								}
-								elseif($cond == 'NOTLIKE'){
-									$sqlFrag3 .= 'OR ('.$field.' NOT LIKE "%'.$value.'%") ';
-								}
-								elseif($cond == 'LESSTHAN'){
-									$sqlFrag3 .= 'OR ('.$field.' < "'.$value.'") ';
-								}
-								elseif($cond == 'GREATERTHAN'){
-									$sqlFrag3 .= 'OR ('.$field.' > "'.$value.'") ';
-								}
-							}
-							$sqlFrag2 .= 'AND ('.substr($sqlFrag3,3).') ';
+							$sqlFrag2 = $this->getSqlFragment($field, $cond, $valueArr);
 						}
 					}
 					if($sqlFrag2) $sqlFrag .= 'AND ('.substr($sqlFrag2,4).') ';
@@ -354,6 +332,44 @@ class DwcArchiverCore extends Manager{
 				$this->conditionSql = 'WHERE '.$this->conditionSql;
 			}
 		}
+	}
+
+	private function getSqlFragment($field, $cond, $valueArr){
+		$sql = '';
+		if($cond == 'NULL'){
+			$sql .= 'AND ('.$field.' IS NULL) ';
+		}
+		elseif($cond == 'NOTNULL'){
+			$sql .= 'AND ('.$field.' IS NOT NULL) ';
+		}
+		elseif($cond == 'EQUALS'){
+			$sql .= 'AND ('.$field.' IN("'.implode('","',$valueArr).'")) ';
+		}
+		elseif($cond == 'NOTEQUALS'){
+			$sql .= 'AND ('.$field.' NOT IN("'.implode('","',$valueArr).'") OR '.$field.' IS NULL) ';
+		}
+		else{
+			$sqlFrag = '';
+			foreach($valueArr as $value){
+				if($cond == 'STARTS'){
+					$sqlFrag .= 'OR ('.$field.' LIKE "'.$value.'%") ';
+				}
+				elseif($cond == 'LIKE'){
+					$sqlFrag .= 'OR ('.$field.' LIKE "%'.$value.'%") ';
+				}
+				elseif($cond == 'NOTLIKE'){
+					$sqlFrag .= 'OR ('.$field.' NOT LIKE "%'.$value.'%" OR '.$field.' IS NULL) ';
+				}
+				elseif($cond == 'LESSTHAN'){
+					$sqlFrag .= 'OR ('.$field.' < "'.$value.'") ';
+				}
+				elseif($cond == 'GREATERTHAN'){
+					$sqlFrag .= 'OR ('.$field.' > "'.$value.'") ';
+				}
+			}
+			$sql .= 'AND ('.substr($sqlFrag,3).') ';
+		}
+		return $sql;
 	}
 
 	private function getTableJoins(){
@@ -385,8 +401,10 @@ class DwcArchiverCore extends Manager{
 			}
 			elseif(stripos($this->conditionSql,'s.traitid')){
 				//Search is limited by occurrence trait
-				$sql .= 'INNER JOIN tmattributes a ON o.occid = a.occid '.
-					'INNER JOIN tmstates s ON a.stateid = s.stateid ';
+				$sql .= 'INNER JOIN tmattributes a ON o.occid = a.occid INNER JOIN tmstates s ON a.stateid = s.stateid ';
+			}
+			if(strpos($this->conditionSql,'id.identifierValue')){
+				$sql .= 'LEFT JOIN omoccuridentifiers id ON o.occid = id.occid ';
 			}
 		}
 		return $sql;
@@ -1623,20 +1641,23 @@ class DwcArchiverCore extends Manager{
 			if($collidStr) $this->setCollArr(trim($collidStr,','));
 		}
 
-		//$dwcOccurManager->setUpperTaxonomy();
-		$dwcOccurManager->setTaxonRank();
-
 		$materialSampleHandler = null;
-		if($this->includeMaterialSample){
-			$collid = key($this->collArr);
-			if(isset($this->collArr[$collid]['matSample'])){
-				$this->logOrEcho('Creating material sample extension file ('.date('h:i:s A').')... ');
-				$materialSampleHandler = new DwcArchiverMaterialSample($this->conn);
-				$materialSampleHandler->initiateProcess($this->targetPath.$this->ts.'-matSample'.$this->fileExt);
-				$materialSampleHandler->setSchemaType($this->schemaType);
-				$this->fieldArrMap['materialSample'] = $materialSampleHandler->getFieldArrTerms();
+		if($this->schemaType != 'coge'){
+			//$dwcOccurManager->setUpperTaxonomy();
+			$dwcOccurManager->setTaxonRank();
+
+			if($this->includeMaterialSample){
+				$collid = key($this->collArr);
+				if(isset($this->collArr[$collid]['matSample'])){
+					$this->logOrEcho('Creating material sample extension file ('.date('h:i:s A').')... ');
+					$materialSampleHandler = new DwcArchiverMaterialSample($this->conn);
+					$materialSampleHandler->initiateProcess($this->targetPath.$this->ts.'-matSample'.$this->fileExt);
+					$materialSampleHandler->setSchemaType($this->schemaType);
+					$this->fieldArrMap['materialSample'] = $materialSampleHandler->getFieldArrTerms();
+				}
 			}
 		}
+
 		//echo $sql; exit;
 		if($rs = $this->dataConn->query($sql,MYSQLI_USE_RESULT)){
 			$this->setServerDomain();
@@ -1720,18 +1741,23 @@ class DwcArchiverCore extends Manager{
 				elseif($this->schemaType == 'backup') unset($r['collID']);
 
 				if($ocnStr = $dwcOccurManager->getAdditionalCatalogNumberStr($r['occid'])) $r['otherCatalogNumbers'] = $ocnStr;
-				if($exsStr = $dwcOccurManager->getExsiccateStr($r['occid'])){
-					if(isset($r['occurrenceRemarks']) && $r['occurrenceRemarks']) $exsStr = $r['occurrenceRemarks'].'; '.$exsStr;
-					$r['occurrenceRemarks'] = $exsStr;
+				if($this->schemaType != 'coge'){
+					if($exsArr = $dwcOccurManager->getExsiccateArr($r['occid'])){
+						$exsStr = $exsArr['exsStr'];
+						if(isset($r['occurrenceRemarks']) && $r['occurrenceRemarks']) $exsStr = $r['occurrenceRemarks'].'; '.$exsStr;
+						$r['occurrenceRemarks'] = $exsStr;
+						$dynProp = 'exsiccatae: '.$exsArr['exsJson'];
+						if(isset($r['dynamicProperties']) && $r['dynamicProperties']) $dynProp = $r['dynamicProperties'].'; '.$dynProp;
+						$r['dynamicProperties'] = $dynProp;
+					}
+					if($assocOccurStr = $dwcOccurManager->getAssociationStr($r['occid'])) $r['t_associatedOccurrences'] = $assocOccurStr;
+					if($assocSeqStr = $dwcOccurManager->getAssociatedSequencesStr($r['occid'])) $r['t_associatedSequences'] = $assocSeqStr;
+					if($assocTaxa = $dwcOccurManager->getAssocTaxa($r['occid'])) $r['associatedTaxa'] = $assocTaxa;
 				}
-				if($assocOccurStr = $dwcOccurManager->getAssociationStr($r['occid'])) $r['t_associatedOccurrences'] = $assocOccurStr;
-				if($assocSeqStr = $dwcOccurManager->getAssociatedSequencesStr($r['occid'])) $r['t_associatedSequences'] = $assocSeqStr;
-				if($assocTaxa = $dwcOccurManager->getAssocTaxa($r['occid'])) $r['associatedTaxa'] = $assocTaxa;
 				//$dwcOccurManager->appendUpperTaxonomy($r);
 				$dwcOccurManager->appendUpperTaxonomy2($r);
 				if($rankStr = $dwcOccurManager->getTaxonRank($r['rankid'])) $r['t_taxonRank'] = $rankStr;
 				unset($r['rankid']);
-
 				$this->encodeArr($r);
 				$this->addcslashesArr($r);
 				$this->writeOutRecord($fh,$r);
@@ -1975,7 +2001,7 @@ class DwcArchiverCore extends Manager{
 
 	public function deleteArchive($collid){
 		//Remove archive instance from RSS feed
-		$rssFile = $GLOBALS['SERVER_ROOT'].(substr($GLOBALS['SERVER_ROOT'],-1)=='/'?'':'/').'webservices/dwc/rss.xml';
+		$rssFile = $GLOBALS['SERVER_ROOT'].'/content/dwca/rss.xml';
 		if(!file_exists($rssFile)) return false;
 		$doc = new DOMDocument();
 		$doc->load($rssFile);
@@ -2117,10 +2143,10 @@ class DwcArchiverCore extends Manager{
 			$this->serverDomain = $domain;
 		}
 		elseif(!$this->serverDomain){
-			$this->serverDomain = "http://";
-			if((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443) $this->serverDomain = "https://";
-			$this->serverDomain .= $_SERVER["SERVER_NAME"];
-			if($_SERVER["SERVER_PORT"] && $_SERVER["SERVER_PORT"] != 80 && $_SERVER['SERVER_PORT'] != 443) $this->serverDomain .= ':'.$_SERVER["SERVER_PORT"];
+			$this->serverDomain = 'http://';
+			if((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443) $this->serverDomain = 'https://';
+			$this->serverDomain .= $_SERVER['SERVER_NAME'];
+			if($_SERVER['SERVER_PORT'] && $_SERVER['SERVER_PORT'] != 80 && $_SERVER['SERVER_PORT'] != 443) $this->serverDomain .= ':'.$_SERVER['SERVER_PORT'];
 		}
 	}
 

@@ -120,14 +120,7 @@ if($isEditor && $action){
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET;?>" />
 	<?php
 	$activateJQuery = true;
-	if(file_exists($SERVER_ROOT.'/includes/head.php')){
-		include_once($SERVER_ROOT.'/includes/head.php');
-	}
-	else{
-		echo '<link href="'.$CLIENT_ROOT.'/css/jquery-ui.css" type="text/css" rel="stylesheet" />';
-		echo '<link href="'.$CLIENT_ROOT.'/css/base.css?ver=1" type="text/css" rel="stylesheet" />';
-		echo '<link href="'.$CLIENT_ROOT.'/css/main.css?ver=1" type="text/css" rel="stylesheet" />';
-	}
+	include_once($SERVER_ROOT.'/includes/head.php');
 	?>
 	<script type="text/javascript" src="../../js/symb/shared.js"></script>
 	<script type="text/javascript" src="../../js/jquery.js"></script>
@@ -164,7 +157,7 @@ if($isEditor && $action){
 			if (occWindow.opener == null) occWindow.opener = self;
 		}
 	</script>
-	<script src="../../js/symb/api.taxonomy.taxasuggest.js" type="text/javascript"></script>
+	<script src="../../js/symb/api.taxonomy.taxasuggest.js?ver=4" type="text/javascript"></script>
 	<style type="text/css">
 		.sectionDiv{ clear:both; }
 		.sectionDiv div{ float:left }
@@ -412,7 +405,7 @@ if($isEditor && $action){
 			?>
 			<div style="margin:20px;">
 				<form name="gettidform" action="tpeditor.php" method="post" onsubmit="return checkGetTidForm(this);">
-					<b>Taxon search: </b><input id="taxa" name="taxon" value="<?php echo $taxon; ?>" size="40" />
+					<b>Scientific name: </b><input id="taxa" name="taxon" value="<?php echo $taxon; ?>" size="40" />
 					<input type="hidden" name="tabindex" value="<?php echo $tabIndex; ?>" />
 					<input type="submit" name="action" value="Edit Taxon" />
 				</form>
@@ -433,7 +426,7 @@ if($isEditor && $action){
 			}
 			else{
 				echo '<div style="margin:15px">';
-				if($taxon) echo "<i>".ucfirst($taxon)."</i> not found in system. Check spelleing, or contact administrator to request name to be added into system.";
+				if($taxon) echo "<i>".ucfirst($taxon)."</i> not found in system. Check spelling, or contact administrator to request name to be added into system.";
 				echo '</div>';
 			}
 		}
