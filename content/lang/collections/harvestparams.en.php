@@ -60,4 +60,40 @@ $LANG['HAS_COORDS'] = 'Limit to Specimens with Geocoordinates';
 $LANG['INCLUDE_CULTIVATED'] = 'Include cultivated/captive occurrences';
 $LANG['TRAIT_HEADER'] = 'Trait Criteria';
 $LANG['TRAIT_DESCRIPTION'] = 'Selecting multiple traits will return all records with <b>at least one</b> of those traits';
+
+// Spatial Module
+
+$LANG['PAGE_HEADER'] = 'Enter Search Parameters';
+$LANG['GENERAL_TEXT_1'] = 'Fill in one or more of the following query criteria and click &quot;Search&quot; to view your results.';
+$LANG['TAXON_HEADER'] = 'Taxonomic Criteria:';
+$LANG['TAXON_INPUT'] = 'Taxa:';
+$LANG['TITLE_TEXT_1'] = 'Separate multiple terms w/ commas';
+$LANG['LOCALITY_HEADER'] = 'Locality Criteria:';
+$LANG['COUNTRY_INPUT'] = 'Country:';
+$LANG['STATE_INPUT'] = 'State/Province:';
+$LANG['COUNTY_INPUT'] = 'County:';
+$LANG['LOCALITY_INPUT'] = 'Locality:';
+$LANG['ASSOC_HOST_INPUT'] = 'Host:';
+$LANG['GENERAL_TEXT_2'] = 'Include Synonyms from Taxonomic Thesaurus';
+$LANG['GENERAL_TEXT_2_MAP'] = 'Include Synonyms';
+$LANG['LL_P-RADIUS_TITLE_1'] = 'Find Coordinate';
+$LANG['OTHER_CATNUM'] = 'Other Catalog Number:';
+
+//Following used in mapboundingbox.php
+$LANG['MBB_TITLE'] = 'Coordinate Mapper';
+$LANG['MBB_INSTRUCTIONS'] = 'Click once to start drawing and again to finish rectangle. Click on the Submit button to transfer Coordinates.';
+$LANG['MBB_NORTHERN'] = 'Northern Lat';
+$LANG['MBB_EASTERN'] = 'Eastern Long';
+$LANG['MBB_SOUTHERN'] = 'Southern Lat';
+$LANG['MBB_WESTERN'] = 'Western Long';
+
+//Following used in mappointradius.php
+$LANG['MPR_TITLE'] = 'Coordinate Mapper';
+$LANG['MPR_INSTRUCTIONS'] = 'Click once to capture coordinates. Click on the Submit Coordinate button to transfer Coordinates.';
+$LANG['MPR_LAT'] = 'Latitude';
+$LANG['MPR_LNG'] = 'Longitude';
+$LANG['SUBMIT'] = 'Submit';
+
+
+
 ?>
