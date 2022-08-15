@@ -209,15 +209,15 @@ InfoBox.prototype.createInfoBoxDiv_ = function () {
 
       // Cancel event propagation.
       //
-      this.eventListener1_ = google.maps.event.addDomListener(this.div_, "mousedown", cancelHandler);
-      this.eventListener2_ = google.maps.event.addDomListener(this.div_, "click", cancelHandler);
-      this.eventListener3_ = google.maps.event.addDomListener(this.div_, "dblclick", cancelHandler);
-      this.eventListener4_ = google.maps.event.addDomListener(this.div_, "mouseover", function (e) {
+      this.eventListener1_ = google.maps.event.addListener(this.div_, "mousedown", cancelHandler);
+      this.eventListener2_ = google.maps.event.addListener(this.div_, "click", cancelHandler);
+      this.eventListener3_ = google.maps.event.addListener(this.div_, "dblclick", cancelHandler);
+      this.eventListener4_ = google.maps.event.addListener(this.div_, "mouseover", function (e) {
         this.style.cursor = "default";
       });
     }
 
-    this.contextListener_ = google.maps.event.addDomListener(this.div_, "contextmenu", ignoreHandler);
+    this.contextListener_ = google.maps.event.addListener(this.div_, "contextmenu", ignoreHandler);
 
     /**
      * This event is fired when the DIV containing the InfoBox's content is attached to the DOM.
@@ -262,7 +262,7 @@ InfoBox.prototype.addClickHandler_ = function () {
   if (this.closeBoxURL_ !== "") {
 
     closeBox = this.div_.firstChild;
-    this.closeListener_ = google.maps.event.addDomListener(closeBox, 'click', this.getCloseClickHandler_());
+    this.closeListener_ = google.maps.event.addListener(closeBox, 'click', this.getCloseClickHandler_());
 
   } else {
 

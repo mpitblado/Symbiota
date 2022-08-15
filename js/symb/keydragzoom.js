@@ -354,34 +354,34 @@
     this.boxBorderWidths_ = getBorderWidths(this.boxDiv_);
 
     this.listeners_ = [
-      google.maps.event.addDomListener(document, "keydown", function (e) {
+      google.maps.event.addListener(document, "keydown", function (e) {
         me.onKeyDown_(e);
       }),
-      google.maps.event.addDomListener(document, "keyup", function (e) {
+      google.maps.event.addListener(document, "keyup", function (e) {
         me.onKeyUp_(e);
       }),
-      google.maps.event.addDomListener(this.veilDiv_[0], "mousedown", function (e) {
+      google.maps.event.addListener(this.veilDiv_[0], "mousedown", function (e) {
         me.onMouseDown_(e);
       }),
-      google.maps.event.addDomListener(this.veilDiv_[1], "mousedown", function (e) {
+      google.maps.event.addListener(this.veilDiv_[1], "mousedown", function (e) {
         me.onMouseDown_(e);
       }),
-      google.maps.event.addDomListener(this.veilDiv_[2], "mousedown", function (e) {
+      google.maps.event.addListener(this.veilDiv_[2], "mousedown", function (e) {
         me.onMouseDown_(e);
       }),
-      google.maps.event.addDomListener(this.veilDiv_[3], "mousedown", function (e) {
+      google.maps.event.addListener(this.veilDiv_[3], "mousedown", function (e) {
         me.onMouseDown_(e);
       }),
-      google.maps.event.addDomListener(document, "mousedown", function (e) {
+      google.maps.event.addListener(document, "mousedown", function (e) {
         me.onMouseDownDocument_(e);
       }),
-      google.maps.event.addDomListener(document, "mousemove", function (e) {
+      google.maps.event.addListener(document, "mousemove", function (e) {
         me.onMouseMove_(e);
       }),
-      google.maps.event.addDomListener(document, "mouseup", function (e) {
+      google.maps.event.addListener(document, "mouseup", function (e) {
         me.onMouseUp_(e);
       }),
-      google.maps.event.addDomListener(window, "scroll", getScrollValue)
+      google.maps.event.addListener(window, "scroll", getScrollValue)
     ];
 
     this.hotKeyDown_ = false;

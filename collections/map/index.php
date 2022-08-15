@@ -35,6 +35,16 @@ if(!is_numeric($tabIndex)) $tabIndex = 0;
 
 $activateGeolocation = 0;
 if(isset($ACTIVATE_GEOLOCATION) && $ACTIVATE_GEOLOCATION == 1) $activateGeolocation = 1;
+
+$latCen = 41.0;
+$longCen = -95.0;
+if(isset($MAPPING_BOUNDARIES)){
+	$coorArr = explode(";",$MAPPING_BOUNDARIES);
+	if($coorArr && count($coorArr) == 4){
+		$latCen = ($coorArr[0] + $coorArr[2])/2;
+		$longCen = ($coorArr[1] + $coorArr[3])/2;
+	}
+}
 ?>
 <html>
 <head>
@@ -65,12 +75,13 @@ if(isset($ACTIVATE_GEOLOCATION) && $ACTIVATE_GEOLOCATION == 1) $activateGeolocat
 	<link href="../../js/jquery-ui/jquery-ui.min.css" type="text/css" rel="Stylesheet" />
 	<script src="//maps.googleapis.com/maps/api/js?v=3.exp&libraries=drawing<?php echo (isset($GOOGLE_MAP_KEY) && $GOOGLE_MAP_KEY?'&key='.$GOOGLE_MAP_KEY:''); ?>" ></script>
 	<script src="../../js/jscolor/jscolor.js?ver=1" type="text/javascript"></script>
-	<script src="../../js/symb/collections.map.index.js?ver=3a" type="text/javascript"></script>
+	<script src="../../js/symb/collections.map.index_gm.js?ver=1" type="text/javascript"></script>
+	<script src="../../js/symb/collections.map.index_ui.js?ver=1" type="text/javascript"></script>
 	<script src="../../js/symb/collections.list.js?ver=1" type="text/javascript"></script>
-	<script src="../../js/symb/markerclusterer.js?ver=1" type="text/javascript"></script>
+	<script src="../../js/symb/markerclusterer.js?ver=2" type="text/javascript"></script>
 	<script src="../../js/symb/oms.min.js" type="text/javascript"></script>
-	<script src="../../js/symb/keydragzoom.js" type="text/javascript"></script>
-	<script src="../../js/symb/infobox.js" type="text/javascript"></script>
+	<script src="../../js/symb/keydragzoom.js?ver=2" type="text/javascript"></script>
+	<script src="../../js/symb/infobox.js?ver=2" type="text/javascript"></script>
 	<script type="text/javascript">
 		var clientRoot = "<?php echo $CLIENT_ROOT; ?>";
 
@@ -81,6 +92,9 @@ if(isset($ACTIVATE_GEOLOCATION) && $ACTIVATE_GEOLOCATION == 1) $activateGeolocat
 		});
 
 		var map;
+		var pointArr = [];
+		var latCenroid = <?php echo $latCen; ?>;
+		var lngCenroid = <?php echo $longCen; ?>;
 		var infoWins = [];
 		var puWin;
 		var markers = [];
@@ -171,16 +185,32 @@ if(isset($ACTIVATE_GEOLOCATION) && $ACTIVATE_GEOLOCATION == 1) $activateGeolocat
 
 		function initialize(){
 			<?php
-			$latCen = 41.0;
-			$longCen = -95.0;
-			if(isset($MAPPING_BOUNDARIES)){
-				$coorArr = explode(";",$MAPPING_BOUNDARIES);
-				if($coorArr && count($coorArr) == 4){
-					$latCen = ($coorArr[0] + $coorArr[2])/2;
-					$longCen = ($coorArr[1] + $coorArr[3])/2;
+			$recordCnt = $mapManager->getRecordCnt();
+			if($searchVar){
+				?>
+				if(<?php echo $recordCnt; ?> > 0){
+					var resultCount = <?php echo $recordCnt; ?>;
+					if(resultCount <= <?php echo $recLimit; ?>) {
+						<?php
+						$coordArr = $mapManager->getCoordinateMap(0,$recLimit);
+						echo 'pointArr = '.json_encode($coordArr).";\n";
+						?>
+					}
+					else{
+						alert("Your search produced "+resultCount+" results which exceeds the maximum of <?php echo $recLimit; ?>, please refine your search more.");
+						//hideWorking();
+					}
 				}
+				else{
+					alert('There were no records matching your query.');
+				}
+				initializeGoogleMap();
+				<?php
 			}
 			?>
+		}
+
+		function initializeGoogleMap(){
 			var pos = '';
 			if(gotCoords==true){
 				positionFound = true;
@@ -191,7 +221,7 @@ if(isset($ACTIVATE_GEOLOCATION) && $ACTIVATE_GEOLOCATION == 1) $activateGeolocat
 				document.getElementById("distancegeocriteria").style.display = "block";
 			}
 			else{
-				pos = new google.maps.LatLng(<?php echo $latCen.', '.$longCen; ?>);
+				pos = new google.maps.LatLng(latCenroid, lngCenroid);
 			}
 
 			var dmOptions = {
@@ -269,7 +299,7 @@ if(isset($ACTIVATE_GEOLOCATION) && $ACTIVATE_GEOLOCATION == 1) $activateGeolocat
 
 			drawingManager.setMap(map);
 
-			google.maps.event.addDomListener(
+			google.maps.event.addListener(
 				document.getElementById("distFromMe"),
 				'change',
 				function(){
@@ -417,36 +447,8 @@ if(isset($ACTIVATE_GEOLOCATION) && $ACTIVATE_GEOLOCATION == 1) $activateGeolocat
 
 			<?php
 			echo $mapManager->createShape();
-			if($searchVar) echo "setPoints();";
 			?>
-		}
-
-		function setPoints(){
-			<?php
-			$recordCnt = $mapManager->getRecordCnt();
-			?>
-
-			if(<?php echo $recordCnt; ?> > 0){
-				var result = <?php echo $recordCnt; ?>;
-				if(result <= <?php echo $recLimit; ?>) {
-					<?php
-					$coordArr = $mapManager->getCoordinateMap(0,$recLimit);
-					echo 'var recArr = '.json_encode($coordArr).";\n";
-					?>
-					processPoints(recArr);
-				}
-				else{
-					alert("Your search produced "+result+" results which exceeds the maximum of <?php echo $recLimit; ?>, please refine your search more.");
-					//hideWorking();
-				}
-			}
-			else{
-				alert('There were no records matching your query.');
-			}
-
-			setTimeout(function() {
-				afterEffects();
-			}, 500);
+			processPoints();
 		}
 
 		function afterEffects(){
@@ -464,11 +466,11 @@ if(isset($ACTIVATE_GEOLOCATION) && $ACTIVATE_GEOLOCATION == 1) $activateGeolocat
 			}, 500);
 		}
 
-		function processPoints(pArr){
+		function processPoints(){
 			var fndGrps = [];
 			var finderArr = [];
-			for(var key in pArr) {
-				var iconColor = pArr[key]['c'];
+			for(var key in pointArr) {
+				var iconColor = pointArr[key]['c'];
 				var tempGcntArr = [];
 				var fndGrpCnt = 0;
 				if(!finderArr[key]){
@@ -480,13 +482,13 @@ if(isset($ACTIVATE_GEOLOCATION) && $ACTIVATE_GEOLOCATION == 1) $activateGeolocat
 					fndGrpCnt = finderArr[key];
 				}
 				fndGrps.push(fndGrpCnt);
-				delete pArr[key]['c'];
-				for(var occ in pArr[key]) {
+				delete pointArr[key]['c'];
+				for(var occ in pointArr[key]) {
 					if(occArr.indexOf(occ) < 0){
 						var family = '';
-						var tidinterpreted = pArr[key][occ]['tid'];
-						var sciname = pArr[key][occ]['sn'];
-						//var scinameStr = pArr[key][occ]['ns'];
+						var tidinterpreted = pointArr[key][occ]['tid'];
+						var sciname = pointArr[key][occ]['sn'];
+						//var scinameStr = pointArr[key][occ]['ns'];
 						var scinameStr = tidinterpreted+sciname;
 						scinameStr = scinameStr.replace(" ", "").toLowerCase();
 						var tempArr = [];
@@ -498,13 +500,13 @@ if(isset($ACTIVATE_GEOLOCATION) && $ACTIVATE_GEOLOCATION == 1) $activateGeolocat
 						}
 						tempArr.push(grpCnt);
 						tidArr[scinameStr] = tempArr;
-						if (pArr[key][occ]['sn']) {
-							sciname = pArr[key][occ]['sn'];
+						if (pointArr[key][occ]['sn']) {
+							sciname = pointArr[key][occ]['sn'];
 						}
 						if (sciname) {
 							var tempFamArr = [];
 							var tempScinameArr = [];
-							family = pArr[key][occ]['fam'];
+							family = pointArr[key][occ]['fam'];
 							if ((familyNameArr.indexOf(family) < 0) && (family != 'undefined')) {
 								familyNameArr.push(family);
 							}
@@ -521,13 +523,13 @@ if(isset($ACTIVATE_GEOLOCATION) && $ACTIVATE_GEOLOCATION == 1) $activateGeolocat
 							taxaArr[family] = tempFamArr;
 							taxaArr[family]['sciname_arr'] = tempScinameArr;
 							buildTaxaKeyPiece(scinameStr, tidinterpreted, sciname);
-							var llArr = pArr[key][occ]['llStr'].split(',');
+							var llArr = pointArr[key][occ]['llStr'].split(',');
 							var spStr = '';
-							var titleStr = pArr[key][occ]['llStr'];
+							var titleStr = pointArr[key][occ]['llStr'];
 							var type = '';
-							var displayStr = pArr[key][occ]['id'];
+							var displayStr = pointArr[key][occ]['id'];
 							var iconColorStr = '#' + iconColor;
-							if (obsIDs.indexOf(pArr[key][occ]['collid']) > -1) {
+							if (obsIDs.indexOf(pointArr[key][occ]['collid']) > -1) {
 								type = 'obs';
 								var markerIcon = {
 									path: "m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z",
@@ -658,6 +660,9 @@ if(isset($ACTIVATE_GEOLOCATION) && $ACTIVATE_GEOLOCATION == 1) $activateGeolocat
 
 				grpCnt++;
 			}
+			setTimeout(function() {
+				afterEffects();
+			}, 500);
 		}
 
 		function setPanels(show){
@@ -1090,14 +1095,14 @@ if(isset($ACTIVATE_GEOLOCATION) && $ACTIVATE_GEOLOCATION == 1) $activateGeolocat
 		}
 		*/
 
-		<?php echo ($activateGeolocation?"google.maps.event.addDomListener(window, 'load', getCoords);":""); ?>
+		<?php echo ($activateGeolocation?"google.maps.event.addListener(window, 'load', getCoords);":""); ?>
 	</script>
 	<script src="../../js/symb/api.taxonomy.taxasuggest.js?ver=4" type="text/javascript"></script>
 </head>
 <body style='width:100%;max-width:100%;min-width:500px;' <?php echo (!$activateGeolocation?'onload="initialize();"':''); ?>>
 <div>
 	<div>
-		<button onclick="openNav()" style="position:absolute;top:0;left:0;margin:0px;z-index:10;font-size: 16px;">&#9776; Open Search Panel</button>
+		<button onclick="openNav()" style="position:absolute;top:0;left:0;margin:0px;z-index:10;font-size: 14px;">&#9776; <b>Open Search Panel</b></button>
 	</div>
 	<div id="defaultpanel" class="sidepanel">
 		<div id="accordion" style="" >
@@ -1453,7 +1458,7 @@ if(isset($ACTIVATE_GEOLOCATION) && $ACTIVATE_GEOLOCATION == 1) $activateGeolocat
 			}
 			?>
 		</div>
-		<button type="button" onclick="closeNav()" style="position:absolute;top:2;right:0;margin:1px;padding:3px;z-index:10;font-weight:bold">&times;</button>
+		<button type="button" onclick="closeNav()" style="position:absolute;top:5px;right:5px;margin:1px;padding:3px;z-index:10;font-weight:bold">&lt;&lt;</button>
 	</div><!-- /defaultpanel -->
 </div>
 <div id='map' style='width:100%;height:100%;'></div>
