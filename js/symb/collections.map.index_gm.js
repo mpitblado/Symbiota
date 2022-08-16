@@ -56,13 +56,14 @@ function getCircleCoords(circle) {
 	document.getElementById("leftlong").value = '';
 	document.getElementById("bottomlat").value = '';
 	document.getElementById("rightlong").value = '';
-	document.getElementById("poly_array").value = '';
+	document.getElementById("polycoords").value = '';
 	document.getElementById("distFromMe").value = '';
 	document.getElementById("noshapecriteria").style.display = "none";
 	document.getElementById("polygeocriteria").style.display = "none";
 	document.getElementById("circlegeocriteria").style.display = "block";
 	document.getElementById("rectgeocriteria").style.display = "none";
 	document.getElementById("deleteshapediv").style.display = "block";
+	pointBounds = circle.getBounds();
 }
   
 function getRectangleCoords(rectangle) {
@@ -73,26 +74,28 @@ function getRectangleCoords(rectangle) {
 	document.getElementById("pointlat").value = '';
 	document.getElementById("pointlong").value = '';
 	document.getElementById("radius").value = '';
-	document.getElementById("poly_array").value = '';
+	document.getElementById("polycoords").value = '';
 	document.getElementById("distFromMe").value = '';
 	document.getElementById("noshapecriteria").style.display = "none";
 	document.getElementById("polygeocriteria").style.display = "none";
 	document.getElementById("circlegeocriteria").style.display = "none";
 	document.getElementById("rectgeocriteria").style.display = "block";
 	document.getElementById("deleteshapediv").style.display = "block";
+	pointBounds = rectangle.getBounds();
 }
   
 function getPolygonCoords(polygon) {
 	var coordinates = [];
 	var coordinatesMVC = (polygon.getPath().getArray());
 	for(var i=0;i<coordinatesMVC.length;i++){
+		pointBounds.extend(coordinatesMVC[i]);
 		var mvcString = coordinatesMVC[i].toString();
 		mvcString = mvcString.slice(1, -1);
 		var latlngArr = mvcString.split(",");
 		coordinates.push(parseFloat(latlngArr[0]).toFixed(6)+" "+parseFloat(latlngArr[1]).toFixed(6));
 	}
 	if(coordinates[0] != coordinates[i]) coordinates.push(coordinates[0]);
-	document.getElementById("poly_array").value = "POLYGON(("+coordinates.toString()+"))";
+	document.getElementById("polycoords").value = "POLYGON(("+coordinates.toString()+"))";
 	document.getElementById("pointlat").value = '';
 	document.getElementById("pointlong").value = '';
 	document.getElementById("radius").value = '';

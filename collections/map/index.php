@@ -75,8 +75,8 @@ if(isset($MAPPING_BOUNDARIES)){
 	<link href="../../js/jquery-ui/jquery-ui.min.css" type="text/css" rel="Stylesheet" />
 	<script src="//maps.googleapis.com/maps/api/js?v=3.exp&libraries=drawing<?php echo (isset($GOOGLE_MAP_KEY) && $GOOGLE_MAP_KEY?'&key='.$GOOGLE_MAP_KEY:''); ?>" ></script>
 	<script src="../../js/jscolor/jscolor.js?ver=1" type="text/javascript"></script>
-	<script src="../../js/symb/collections.map.index_gm.js?ver=1" type="text/javascript"></script>
-	<script src="../../js/symb/collections.map.index_ui.js?ver=1" type="text/javascript"></script>
+	<script src="../../js/symb/collections.map.index_gm.js?ver=2" type="text/javascript"></script>
+	<script src="../../js/symb/collections.map.index_ui.js?ver=2" type="text/javascript"></script>
 	<script src="../../js/symb/collections.list.js?ver=1" type="text/javascript"></script>
 	<script src="../../js/symb/markerclusterer.js?ver=2" type="text/javascript"></script>
 	<script src="../../js/symb/oms.min.js" type="text/javascript"></script>
@@ -92,7 +92,7 @@ if(isset($MAPPING_BOUNDARIES)){
 		});
 
 		var map;
-		var pointArr = [];
+		var pointObj;
 		var latCenroid = <?php echo $latCen; ?>;
 		var lngCenroid = <?php echo $longCen; ?>;
 		var infoWins = [];
@@ -146,14 +146,6 @@ if(isset($MAPPING_BOUNDARIES)){
 			document.getElementById("defaultpanel").style.width = "0";
 		}
 
-		function showWorking(){
-			$('#loadingOverlay').popup('show');
-		}
-
-		function hideWorking(){
-			$('#loadingOverlay').popup('hide');
-		}
-
 		function getCoords(){
 			if (navigator.geolocation){
 				var options = {
@@ -193,21 +185,27 @@ if(isset($MAPPING_BOUNDARIES)){
 					if(resultCount <= <?php echo $recLimit; ?>) {
 						<?php
 						$coordArr = $mapManager->getCoordinateMap(0,$recLimit);
-						echo 'pointArr = '.json_encode($coordArr).";\n";
+						echo 'pointObj = '.json_encode($coordArr).";\n";
 						?>
 					}
 					else{
 						alert("Your search produced "+resultCount+" results which exceeds the maximum of <?php echo $recLimit; ?>, please refine your search more.");
-						//hideWorking();
+						$('#loadingOverlay').hide();
 					}
 				}
 				else{
 					alert('There were no records matching your query.');
 				}
-				initializeGoogleMap();
 				<?php
 			}
 			?>
+			initializeGoogleMap();
+			processPoints();
+			$('#loadingOverlay').hide();
+			setTimeout(function() {
+				afterEffects();
+			}, 500);
+
 		}
 
 		function initializeGoogleMap(){
@@ -281,7 +279,7 @@ if(isset($MAPPING_BOUNDARIES)){
 				drawingControlOptions: {
 					position: google.maps.ControlPosition.TOP_CENTER,
 					drawingModes: [
-						<?php if($mapManager->hasFullSpatialSupport()) echo 'google.maps.drawing.OverlayType.POLYGON,'; ?>
+						google.maps.drawing.OverlayType.POLYGON,
 						google.maps.drawing.OverlayType.RECTANGLE,
 						google.maps.drawing.OverlayType.CIRCLE
 					]
@@ -444,33 +442,91 @@ if(isset($MAPPING_BOUNDARIES)){
 			//google.maps.event.addListener(drawingManager, 'drawingmode_changed', clearSelection);
 			//google.maps.event.addListener(map, 'click', clearSelection);
 
+			createShape();
+		}
 
-			<?php
-			echo $mapManager->createShape();
-			?>
-			processPoints();
+		function createShape(){
+			let newShape = null;
+			let f = document.mapsearchform;
+			if(f.upperlat.value != ""){
+				newShape = new google.maps.Rectangle({
+					bounds: new google.maps.LatLngBounds(
+						new google.maps.LatLng(f.bottomlat.value, f.leftlong.value),
+						new google.maps.LatLng(f.upperlat.value, f.rightlong.value)
+					),
+					strokeWeight: 0,
+					fillOpacity: 0.45,
+					editable: true,
+					draggable: true,
+					map: map
+				});
+				newShape.type = "rectangle";
+				google.maps.event.addListener(newShape, 'bounds_changed', function() { setSelection(newShape); });
+			}
+			else if(f.pointlat.value != ""){
+				newShape = new google.maps.Circle({
+					center: new google.maps.LatLng(f.pointlat.value, f.pointlong.value),
+					radius: (f.radius.value / 0.6214) * 1000,
+					strokeWeight: 0,
+					fillOpacity: 0.45,
+					editable: true,
+					draggable: true,
+					map: map
+				});
+				newShape.type = "circle";
+				google.maps.event.addListener(newShape, "radius_changed", function() { setSelection(newShape); });
+				google.maps.event.addListener(newShape, "center_changed", function() { setSelection(newShape); });
+			}
+			else if(f.polycoords.value != ""){
+				let wkt = f.polycoords.value;
+				if(wkt.substring(0,7) == "POLYGON") wkt = wkt.substring(7).trim();
+				while(wkt.substring(0,1) == "(") wkt = wkt.substring(1).trim();
+				while(wkt.substring(wkt.length-1) == ")") wkt = wkt.slice(0, -1).trim();
+				let coordArr = wkt.split(",");
+				let pointArr = [];
+				for(let n=0; n < coordArr.length; n++){
+					let ptArr = coordArr[n].trim().split(" ");
+					pointArr.push( new google.maps.LatLng(ptArr[0], ptArr[1]) );
+				}
+				newShape = new google.maps.Polygon({
+					paths: [ pointArr ],
+					strokeWeight: 0,
+					fillOpacity: 0.45,
+					editable: true,
+					draggable: true,
+					map: map
+				});
+				newShape.type = "polygon";
+				google.maps.event.addListener(newShape.getPath(), "insert_at", function() { setSelection(newShape); });
+				google.maps.event.addListener(newShape.getPath(), "remove_at", function() { setSelection(newShape); });
+				google.maps.event.addListener(newShape.getPath(), "set_at", function() { setSelection(newShape); });
+			}
+			if(newShape){
+				google.maps.event.addListener(newShape, "click", function() { setSelection(newShape); });
+				google.maps.event.addListener(newShape, "dragend", function() { setSelection(newShape); });
+				setSelection(newShape);
+			}
 		}
 
 		function afterEffects(){
-			setPanels(true);
-			$("#accordion").accordion("option",{active: 1});
-			buildCollKey();
-			buildTaxaKey();
-			jscolor.init();
-			if(pointBounds){
-				map.fitBounds(pointBounds);
-				map.panToBounds(pointBounds);
+			if(pointObj){
+				setPanels(true);
+				$("#accordion").accordion("option",{active: 1});
+				buildCollKey();
+				buildTaxaKey();
+				jscolor.init();
+				if(pointBounds){
+					map.fitBounds(pointBounds);
+					map.panToBounds(pointBounds);
+				}
 			}
-			setTimeout(function() {
-				//hideWorking();
-			}, 500);
 		}
 
 		function processPoints(){
 			var fndGrps = [];
 			var finderArr = [];
-			for(var key in pointArr) {
-				var iconColor = pointArr[key]['c'];
+			for(var key in pointObj) {
+				var iconColor = pointObj[key]['c'];
 				var tempGcntArr = [];
 				var fndGrpCnt = 0;
 				if(!finderArr[key]){
@@ -482,13 +538,13 @@ if(isset($MAPPING_BOUNDARIES)){
 					fndGrpCnt = finderArr[key];
 				}
 				fndGrps.push(fndGrpCnt);
-				delete pointArr[key]['c'];
-				for(var occ in pointArr[key]) {
+				delete pointObj[key]['c'];
+				for(var occ in pointObj[key]) {
 					if(occArr.indexOf(occ) < 0){
 						var family = '';
-						var tidinterpreted = pointArr[key][occ]['tid'];
-						var sciname = pointArr[key][occ]['sn'];
-						//var scinameStr = pointArr[key][occ]['ns'];
+						var tidinterpreted = pointObj[key][occ]['tid'];
+						var sciname = pointObj[key][occ]['sn'];
+						//var scinameStr = pointObj[key][occ]['ns'];
 						var scinameStr = tidinterpreted+sciname;
 						scinameStr = scinameStr.replace(" ", "").toLowerCase();
 						var tempArr = [];
@@ -500,13 +556,13 @@ if(isset($MAPPING_BOUNDARIES)){
 						}
 						tempArr.push(grpCnt);
 						tidArr[scinameStr] = tempArr;
-						if (pointArr[key][occ]['sn']) {
-							sciname = pointArr[key][occ]['sn'];
+						if (pointObj[key][occ]['sn']) {
+							sciname = pointObj[key][occ]['sn'];
 						}
 						if (sciname) {
 							var tempFamArr = [];
 							var tempScinameArr = [];
-							family = pointArr[key][occ]['fam'];
+							family = pointObj[key][occ]['fam'];
 							if ((familyNameArr.indexOf(family) < 0) && (family != 'undefined')) {
 								familyNameArr.push(family);
 							}
@@ -523,13 +579,13 @@ if(isset($MAPPING_BOUNDARIES)){
 							taxaArr[family] = tempFamArr;
 							taxaArr[family]['sciname_arr'] = tempScinameArr;
 							buildTaxaKeyPiece(scinameStr, tidinterpreted, sciname);
-							var llArr = pointArr[key][occ]['llStr'].split(',');
+							var llArr = pointObj[key][occ]['llStr'].split(',');
 							var spStr = '';
-							var titleStr = pointArr[key][occ]['llStr'];
+							var titleStr = pointObj[key][occ]['llStr'];
 							var type = '';
-							var displayStr = pointArr[key][occ]['id'];
+							var displayStr = pointObj[key][occ]['id'];
 							var iconColorStr = '#' + iconColor;
-							if (obsIDs.indexOf(pointArr[key][occ]['collid']) > -1) {
+							if (obsIDs.indexOf(pointObj[key][occ]['collid']) > -1) {
 								type = 'obs';
 								var markerIcon = {
 									path: "m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z",
@@ -660,19 +716,18 @@ if(isset($MAPPING_BOUNDARIES)){
 
 				grpCnt++;
 			}
-			setTimeout(function() {
-				afterEffects();
-			}, 500);
 		}
 
 		function setPanels(show){
-			if(show){
-				document.getElementById("recordstaxaheader").style.display = "block";
-				document.getElementById("tabs2").style.display = "block";
-			}
-			else{
-				document.getElementById("recordstaxaheader").style.display = "none";
-				document.getElementById("tabs2").style.display = "none";
+			if(document.getElementById("recordstaxaheader")){
+				if(show){
+					document.getElementById("recordstaxaheader").style.display = "block";
+					document.getElementById("tabs2").style.display = "block";
+				}
+				else{
+					document.getElementById("recordstaxaheader").style.display = "none";
+					document.getElementById("tabs2").style.display = "none";
+				}
 			}
 		}
 
@@ -694,7 +749,7 @@ if(isset($MAPPING_BOUNDARIES)){
 			for(var i=0,l=collNameArr.length;i<l;i++){
 				keyHTML += collKeyArr[collNameArr[i]];
 			}
-			document.getElementById("symbologykeysbox").innerHTML = keyHTML;
+			if(document.getElementById("symbologykeysbox")) document.getElementById("symbologykeysbox").innerHTML = keyHTML;
 		}
 
 		function buildTaxaKeyPiece(key,tidinterpreted,sciname){
@@ -712,7 +767,7 @@ if(isset($MAPPING_BOUNDARIES)){
 		}
 
 		function buildTaxaKey(){
-			document.getElementById("taxaCountNum").innerHTML = taxaCnt;
+			if(document.getElementById("taxaCountNum")) document.getElementById("taxaCountNum").innerHTML = taxaCnt;
 			keyHTML = '';
 			familyNameArr.sort();
 			for(var i=0,l=familyNameArr.length;i<l;i++){
@@ -741,7 +796,7 @@ if(isset($MAPPING_BOUNDARIES)){
 					keyHTML += "</div>";
 				}
 			}
-			document.getElementById("taxasymbologykeysbox").innerHTML = keyHTML;
+			if(document.getElementById("taxasymbologykeysbox")) document.getElementById("taxasymbologykeysbox").innerHTML = keyHTML;
 		}
 
 		function changeMainKey(gCnt,newColor){
@@ -1109,7 +1164,6 @@ if(isset($MAPPING_BOUNDARIES)){
 			<?php
 			/*
 			echo "MySQL Version: ".$mysqlVersion;
-			echo $mapManager->hasFullSpatialSupport()?"yes":"no";
 			echo "Request: ".json_encode($_REQUEST);
 			echo "mapWhere: ".$mapWhere;
 			echo "coordArr: ".json_encode($coordArr);
@@ -1170,14 +1224,27 @@ if(isset($MAPPING_BOUNDARIES)){
 								<input type="hidden" id="gridSizeSetting" name="gridSizeSetting" value="<?php echo $gridSize; ?>" />
 								<input type="hidden" id="minClusterSetting" name="minClusterSetting" value="<?php echo $minClusterSize; ?>" />
 								<input type="hidden" id="clusterSwitch" name="clusterSwitch" value="<?php echo $clusterOff; ?>" />
-								<input type="hidden" id="pointlat" name="pointlat" value='<?php echo $mapManager->getSearchTerm('pointlat'); ?>' />
-								<input type="hidden" id="pointlong" name="pointlong" value='<?php echo $mapManager->getSearchTerm('pointlong'); ?>' />
-								<input type="hidden" id="radius" name="radius" value='<?php echo $mapManager->getSearchTerm('radius'); ?>' />
-								<input type="hidden" id="upperlat" name="upperlat" value='<?php echo $mapManager->getSearchTerm('upperlat'); ?>' />
-								<input type="hidden" id="rightlong" name="rightlong" value='<?php echo $mapManager->getSearchTerm('rightlong'); ?>' />
-								<input type="hidden" id="bottomlat" name="bottomlat" value='<?php echo $mapManager->getSearchTerm('bottomlat'); ?>' />
-								<input type="hidden" id="leftlong" name="leftlong" value='<?php echo $mapManager->getSearchTerm('leftlong'); ?>' />
-								<input type="hidden" id="poly_array" name="poly_array" value='<?php echo $mapManager->getSearchTerm('poly_array'); ?>' />
+								<?php
+								$pointArr = explode(';',$mapManager->getSearchTerm('llpoint'));
+								$pointLat = (isset($pointArr[0])?$pointArr[0]:'');
+								$pointLong = (isset($pointArr[1])?$pointArr[1]:'');
+								$pointRadius = (isset($pointArr[2])?$pointArr[2]:'');
+								?>
+								<input type="hidden" id="pointlat" name="pointlat" value='<?php echo $pointLat; ?>' />
+								<input type="hidden" id="pointlong" name="pointlong" value='<?php echo $pointLong; ?>' />
+								<input type="hidden" id="radius" name="radius" value='<?php echo $pointRadius; ?>' />
+								<?php
+								$boundArr = explode(';',$mapManager->getSearchTerm('llbound'));
+								$upperLat = (isset($boundArr[0])?$boundArr[0]:'');
+								$bottomLat = (isset($boundArr[1])?$boundArr[1]:'');
+								$leftLong = (isset($boundArr[2])?$boundArr[2]:'');
+								$rightLong = (isset($boundArr[3])?$boundArr[3]:'');
+								?>
+								<input type="hidden" id="upperlat" name="upperlat" value='<?php echo $upperLat; ?>' />
+								<input type="hidden" id="rightlong" name="rightlong" value='<?php echo $rightLong; ?>' />
+								<input type="hidden" id="bottomlat" name="bottomlat" value='<?php echo $bottomLat; ?>' />
+								<input type="hidden" id="leftlong" name="leftlong" value='<?php echo $leftLong; ?>' />
+								<input type="hidden" id="polycoords" name="polycoords" value='<?php echo $mapManager->getSearchTerm('polycoords'); ?>' />
 								<button type="button" name="resetbutton" onclick="resetQueryForm(this.form)"><?php echo (isset($LANG['RESET'])?$LANG['RESET']:'Reset'); ?></button>
 								<button type="submit" name="submitform"><?php echo (isset($LANG['SEARCH'])?$LANG['SEARCH']:'Search'); ?></button>
 							</div>
@@ -1246,8 +1313,8 @@ if(isset($MAPPING_BOUNDARIES)){
 						</div>
 						<div style="margin:5 0 5 0;"><hr /></div>
 						<div id="shapecriteria">
-							<div id="noshapecriteria" style="display:<?php echo ((!$mapManager->getSearchTerm('poly_array') && !$mapManager->getSearchTerm('upperlat'))?'block':'none'); ?>;">
-								<div id="geocriteria" style="display:<?php echo ((!$mapManager->getSearchTerm('poly_array') && !$distFromMe && !$mapManager->getSearchTerm('pointlat') && !$mapManager->getSearchTerm('upperlat'))?'block':'none'); ?>;">
+							<div id="noshapecriteria" style="display:<?php echo ((!$mapManager->getSearchTerm('polycoords') && !$mapManager->getSearchTerm('upperlat'))?'block':'none'); ?>;">
+								<div id="geocriteria" style="display:<?php echo ((!$mapManager->getSearchTerm('polycoords') && !$distFromMe && !$mapManager->getSearchTerm('pointlat') && !$mapManager->getSearchTerm('upperlat'))?'block':'none'); ?>;">
 									<div>
 										<?php echo (isset($LANG['SHAPE_TOOLS'])?$LANG['SHAPE_TOOLS']:'Use the shape tools on the map to select occurrences within a given shape'); ?>.
 									</div>
@@ -1462,7 +1529,7 @@ if(isset($MAPPING_BOUNDARIES)){
 	</div><!-- /defaultpanel -->
 </div>
 <div id='map' style='width:100%;height:100%;'></div>
-<div id="loadingOverlay" style="width:100%;position:relative;">
+<div id="loadingOverlay" style="width:100%;">
 	<div id="loadingImage" style="width:100px;height:100px;position:absolute;top:50%;left:50%;margin-top:-50px;margin-left:-50px;">
 		<img style="border:0px;width:100px;height:100px;" src="../../images/ajax-loader.gif" />
 	</div>

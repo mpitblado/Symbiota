@@ -32,10 +32,7 @@ class OccurrenceMapManager extends OccurrenceManager {
 			if($_REQUEST['cltype'] == 'all') $this->searchTermArr['cltype'] = 'all';
 			$this->searchTermArr['cltype'] = 'vouchers';
 		}
-		if(array_key_exists('poly_array',$_REQUEST) && $_REQUEST['poly_array']){
-			$this->searchTermArr['polycoords'] = $_REQUEST['poly_array'];
-		}
-		elseif(array_key_exists('polycoords',$_REQUEST) && $_REQUEST['polycoords']){
+		if(array_key_exists('polycoords',$_REQUEST) && $_REQUEST['polycoords']){
 			$this->searchTermArr['polycoords'] = $_REQUEST['polycoords'];
 		}
 		elseif($this->getClFootprintWkt()){
@@ -43,7 +40,7 @@ class OccurrenceMapManager extends OccurrenceManager {
 		}
 		if(!$this->getSearchTerm('polycoords')){
 			if($this->getSearchTerm('clid') && $this->getClFootprintWkt()){
-				$this->searchTermArr['poly_array'] = $this->getClFootprintWkt();
+				$this->searchTermArr['polycoords'] = $this->getClFootprintWkt();
 			}
 		}
 	}
@@ -242,91 +239,6 @@ class OccurrenceMapManager extends OccurrenceManager {
 		}
 	}
 
-	//Shape functions
-	public function createShape(){
-		$queryShape = '';
-		$properties = 'strokeWeight: 0,';
-		$properties .= 'fillOpacity: 0.45,';
-		$properties .= 'editable: true,';
-		//$properties .= 'draggable: true,';
-		$properties .= 'map: map});';
-
-		if($this->getSearchTerm('upperlat')){
-			$queryShape = 'var queryRectangle = new google.maps.Rectangle({';
-			$queryShape .= 'bounds: new google.maps.LatLngBounds(';
-			$queryShape .= 'new google.maps.LatLng('.$this->getSearchTerm('bottomlat').', '.$this->getSearchTerm('leftlong').'),';
-			$queryShape .= 'new google.maps.LatLng('.$this->getSearchTerm('upperlat').', '.$this->getSearchTerm('rightlong').')),';
-			$queryShape .= $properties;
-			$queryShape .= "queryRectangle.type = 'rectangle';";
-			$queryShape .= "google.maps.event.addListener(queryRectangle, 'click', function() {";
-			$queryShape .= 'setSelection(queryRectangle);});';
-			$queryShape .= "google.maps.event.addListener(queryRectangle, 'dragend', function() {";
-			$queryShape .= 'setSelection(queryRectangle);});';
-			$queryShape .= "google.maps.event.addListener(queryRectangle, 'bounds_changed', function() {";
-			$queryShape .= 'setSelection(queryRectangle);});';
-			$queryShape .= 'setSelection(queryRectangle);';
-			$queryShape .= 'var queryShapeBounds = new google.maps.LatLngBounds();';
-			$queryShape .= 'queryShapeBounds.extend(new google.maps.LatLng('.$this->getSearchTerm('bottomlat').', '.$this->getSearchTerm('leftlong').'));';
-			$queryShape .= 'queryShapeBounds.extend(new google.maps.LatLng('.$this->getSearchTerm('upperlat').', '.$this->getSearchTerm('rightlong').'));';
-			$queryShape .= 'map.fitBounds(queryShapeBounds);';
-			$queryShape .= 'map.panToBounds(queryShapeBounds);';
-		}
-		if($this->getSearchTerm('pointlat')){
-			$radius = (($this->getSearchTerm('radius')/0.6214)*1000);
-			$queryShape = 'var queryCircle = new google.maps.Circle({';
-			$queryShape .= 'center: new google.maps.LatLng('.$this->getSearchTerm('pointlat').', '.$this->getSearchTerm('pointlong').'),';
-			$queryShape .= 'radius: '.$radius.',';
-			$queryShape .= $properties;
-			$queryShape .= "queryCircle.type = 'circle';";
-			$queryShape .= "google.maps.event.addListener(queryCircle, 'click', function() {";
-			$queryShape .= 'setSelection(queryCircle);});';
-			$queryShape .= "google.maps.event.addListener(queryCircle, 'dragend', function() {";
-			$queryShape .= 'setSelection(queryCircle);});';
-			$queryShape .= "google.maps.event.addListener(queryCircle, 'radius_changed', function() {";
-			$queryShape .= 'setSelection(queryCircle);});';
-			$queryShape .= "google.maps.event.addListener(queryCircle, 'center_changed', function() {";
-			$queryShape .= 'setSelection(queryCircle);});';
-			$queryShape .= 'setSelection(queryCircle);';
-			$queryShape .= 'var queryShapeBounds = queryCircle.getBounds();';
-			$queryShape .= 'map.fitBounds(queryShapeBounds);';
-			$queryShape .= 'map.panToBounds(queryShapeBounds);';
-		}
-		if($this->getSearchTerm('polycoords')){
-			$wkt = $this->getSearchTerm('polycoords');
-			if(substr($wkt,0,7) == 'POLYGON') $wkt = substr($wkt,7);
-			$wkt = trim($wkt,' (),');
-			$coordArr = explode(',',$wkt);
-			if($coordArr){
-				$shapeBounds = 'var queryShapeBounds = new google.maps.LatLngBounds();';
-				$queryShape = 'var queryPolygon = new google.maps.Polygon({';
-				$points = '';
-				foreach($coordArr as $k => $ptStr){
-					$ptArr = explode(' ',$ptStr);
-					$points .= ',new google.maps.LatLng('.$ptArr[0].', '.$ptArr[1].')';
-					$shapeBounds .= 'queryShapeBounds.extend(new google.maps.LatLng('.$ptArr[0].', '.$ptArr[1].'));';
-				}
-				$queryShape .= 'paths: ['.substr($points,1).'],';
-				$queryShape .= $properties;
-				$queryShape .= "queryPolygon.type = 'polygon';";
-				$queryShape .= "google.maps.event.addListener(queryPolygon, 'click', function() {";
-				$queryShape .= 'setSelection(queryPolygon);});';
-				$queryShape .= "google.maps.event.addListener(queryPolygon, 'dragend', function() {";
-				$queryShape .= 'setSelection(queryPolygon);});';
-				$queryShape .= "google.maps.event.addListener(queryPolygon.getPath(), 'insert_at', function() {";
-				$queryShape .= 'setSelection(queryPolygon);});';
-				$queryShape .= "google.maps.event.addListener(queryPolygon.getPath(), 'remove_at', function() {";
-				$queryShape .= 'setSelection(queryPolygon);});';
-				$queryShape .= "google.maps.event.addListener(queryPolygon.getPath(), 'set_at', function() {";
-				$queryShape .= 'setSelection(queryPolygon);});';
-				$queryShape .= 'setSelection(queryPolygon);';
-				$queryShape .= $shapeBounds;
-				$queryShape .= 'map.fitBounds(queryShapeBounds);';
-				$queryShape .= 'map.panToBounds(queryShapeBounds);';
-			}
-		}
-		return $queryShape;
-	}
-
 	public function writeKMLFile($recLimit, $extraFieldArr = null){
 		//Output data
 		$fileName = $GLOBALS['DEFAULT_TITLE'];
@@ -479,28 +391,6 @@ class OccurrenceMapManager extends OccurrenceManager {
 		return $retVar;
 	}
 
-	public function hasFullSpatialSupport(){
-		$serverStr = '';
-		if(mysqli_get_server_info($this->conn)) $serverStr = mysqli_get_server_info($this->conn);
-		else $serverStr = shell_exec('mysql -V');
-		if($serverStr){
-			if(strpos($serverStr,'MariaDB') !== false) return true;
-			else{	//db = mysql;
-				preg_match('@[0-9]+\.[0-9]+\.[0-9]+@',$serverStr,$m);
-				$mysqlVerNums = explode(".", $m[0]);
-				if($mysqlVerNums[0] > 5) return true;
-				elseif($mysqlVerNums[0] == 5){
-					if($mysqlVerNums[1] > 6) return true;
-					elseif($mysqlVerNums[1] == 6){
-						if($mysqlVerNums[2] >= 1) return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	//Misc support functions
 	private function htmlEntities($string){
 		return htmlspecialchars($string, ENT_XML1 | ENT_QUOTES, 'UTF-8');
 	}

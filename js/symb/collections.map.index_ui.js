@@ -1,6 +1,4 @@
 $(document).ready(function() {	
-	setHeight()
-	
 	$('#tabs1').tabs({
 		beforeLoad: function( event, ui ) {
 			$(ui.panel).html("<p>Loading...</p>");
@@ -36,18 +34,12 @@ $(document).ready(function() {
 });
 
 $(window).resize(function(){
-	setHeight();
 	$("#accordion").accordion("refresh");
 });
 
 $(document).on("pageloadfailed", function(event, data){
     event.preventDefault();
 });
-
-function setHeight(){
-	var winHeight = $(window).height();
-	document.getElementById('loadingOverlay').style.height = winHeight + "px";
-}
 
 function checkUpperLat(){
 	if(document.mapsearchform.upperlat.value != ""){
@@ -147,7 +139,7 @@ function clearSelection() {
 	document.getElementById("leftlong").value = '';
 	document.getElementById("bottomlat").value = '';
 	document.getElementById("rightlong").value = '';
-	document.getElementById("poly_array").value = '';
+	document.getElementById("polycoords").value = '';
 	document.getElementById("distFromMe").value = '';
 	document.getElementById("noshapecriteria").style.display = "block";
 	document.getElementById("polygeocriteria").style.display = "none";
