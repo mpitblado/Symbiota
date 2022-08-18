@@ -78,11 +78,11 @@ if(isset($MAPPING_BOUNDARIES)){
 	<script src="../../js/symb/collections.map.index_gm.js?ver=2" type="text/javascript"></script>
 	<script src="../../js/symb/collections.map.index_ui.js?ver=2" type="text/javascript"></script>
 	<script src="../../js/symb/collections.list.js?ver=1" type="text/javascript"></script>
-	<script src="../../js/symb/markerclusterer.js?ver=2" type="text/javascript"></script>
+	<script src="../../js/symb/markerclusterer.min.js"></script>
 	<script src="../../js/symb/oms.min.js" type="text/javascript"></script>
 	
 	<script src="../../js/symb/infobox.js?ver=2" type="text/javascript"></script>
-	<script type="text/javascript">
+	<script>
 		var clientRoot = "<?php echo $CLIENT_ROOT; ?>";
 
 		$(document).ready(function() {
@@ -250,7 +250,7 @@ if(isset($MAPPING_BOUNDARIES)){
 
 			map = new google.maps.Map(document.getElementById("map"), dmOptions);
 
-			oms = new OverlappingMarkerSpiderfier(map);
+			oms = new OverlappingMarkerSpiderfier(map, {basicFormatEvents: true});
 
 			var polyOptions = {
 				strokeWeight: 0,
@@ -644,7 +644,7 @@ if(isset($MAPPING_BOUNDARIES)){
 						}],
 						maxZoom: 13,
 						gridSize: <?php echo $gridSize; ?>,
-						minimumClusterSize: <?php echo $minClusterSize; ?>
+						minPoints: <?php echo $minClusterSize; ?>
 					};
 
 					if(clusterOff=="n"){
@@ -652,7 +652,11 @@ if(isset($MAPPING_BOUNDARIES)){
 							clusterCollArr[fndGrps[gc]].clearMarkers();
 							clusterCollArr[fndGrps[gc]].setMap(null);
 						}
-						clusterCollArr[fndGrps[gc]] = new MarkerClusterer(map, markers, optionsCollArr[fndGrps[gc]]);
+						clusterCollArr[fndGrps[gc]] = new markerClusterer.MarkerClusterer({
+							map: map, 
+							markers: markers,
+							algorithm: new markerClusterer.SuperClusterAlgorithm(optionsCollArr[fndGrps[gc]])
+						});
 					}
 				}
 
@@ -756,9 +760,13 @@ if(isset($MAPPING_BOUNDARIES)){
 					}],
 					maxZoom: 13,
 					gridSize: <?php echo $gridSize; ?>,
-					minimumClusterSize: <?php echo $minClusterSize; ?>
+					minPoints: <?php echo $minClusterSize; ?>
 				};
-				clusterCollArr[gCnt] = new MarkerClusterer(map, grpArr[gCnt], optionsCollArr[gCnt]);
+				clusterCollArr[gCnt] = new markerClusterer.MarkerClusterer({
+					map: map,
+					markers: grpArr[gCnt],
+					algorithm: new markerClusterer.SuperClusterAlgorithm(optionsCollArr[gCnt])
+				});
 			}
 		}
 
@@ -927,10 +935,14 @@ if(isset($MAPPING_BOUNDARIES)){
 					}],
 					maxZoom: 13,
 					gridSize: <?php echo $gridSize; ?>,
-					minimumClusterSize: <?php echo $minClusterSize; ?>
+					minPoints: <?php echo $minClusterSize; ?>
 				};
 
-				clusterTaxArr[tid] = new MarkerClusterer(map, tempArr, optionsTaxArr[tid]);
+				clusterTaxArr[tid] = new markerClusterer.MarkerClusterer({
+					map: map,
+					markers: tempArr, 
+					algorithm: new markerClusterer.SuperClusterAlgorithm(optionsTaxArr[tid])
+				});
 			}
 		}
 
