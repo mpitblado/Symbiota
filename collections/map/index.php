@@ -80,7 +80,7 @@ if(isset($MAPPING_BOUNDARIES)){
 	<script src="../../js/symb/collections.list.js?ver=1" type="text/javascript"></script>
 	<script src="../../js/symb/markerclusterer.js?ver=2" type="text/javascript"></script>
 	<script src="../../js/symb/oms.min.js" type="text/javascript"></script>
-	<script src="../../js/symb/keydragzoom.js?ver=2" type="text/javascript"></script>
+	
 	<script src="../../js/symb/infobox.js?ver=2" type="text/javascript"></script>
 	<script type="text/javascript">
 		var clientRoot = "<?php echo $CLIENT_ROOT; ?>";
@@ -107,7 +107,7 @@ if(isset($MAPPING_BOUNDARIES)){
 		var marker;
 		var drawingManager = null;
 		var oms;
-		var dsoms;
+		// var dsoms;
 		var selectedShape = null;
 		var gotCoords = <?php echo ($activateGeolocation?'true':'false'); ?>;
 		var mapSymbol = 'coll';
@@ -252,20 +252,6 @@ if(isset($MAPPING_BOUNDARIES)){
 
 			oms = new OverlappingMarkerSpiderfier(map);
 
-			dsoms = new OverlappingMarkerSpiderfier(map);
-
-			map.enableKeyDragZoom({
-				visualEnabled: true,
-				visualPosition: google.maps.ControlPosition.LEFT,
-				visualPositionOffset: new google.maps.Size(35, 0),
-				visualPositionIndex: null,
-				visualSize: new google.maps.Size(20, 20),
-				visualTips: {
-					off: "Turn on",
-					on: "Turn off"
-				}
-			});
-
 			var polyOptions = {
 				strokeWeight: 0,
 				fillOpacity: 0.45,
@@ -394,53 +380,9 @@ if(isset($MAPPING_BOUNDARIES)){
 				}
 			});
 
-			dsoms.addListener('click', function(marker, event) {
-				occid = marker.occid;
-				chbox = 'dsch'+occid;
-				if(dsselections.indexOf(occid) > -1){
-					var index = dsselections.indexOf(occid);
-					if (index > -1) {
-						dsselections.splice(index, 1);
-					}
-					if(document.getElementById(chbox)){
-						document.getElementById(chbox).checked = false;
-						document.getElementById("dsselectallcheck").checked = false;
-					}
-					deselectDsMarker(marker);
-				}
-				else{
-					dsselections.push(occid);
-					if(document.getElementById(chbox)){
-						document.getElementById(chbox).checked = true;
-						var f = document.getElementById("dsselectform");
-						var boxesChecked = true;
-						for(var i=0;i<f.length;i++){
-							if(f.elements[i].name == "occid[]"){
-								if(f.elements[i].checked == false){
-									boxesChecked = false;
-								}
-							}
-						}
-						if(boxesChecked == true){
-							document.getElementById("dsselectallcheck").checked = true;
-						}
-					}
-					selectDsMarker(marker);
-				}
-			});
-
 			oms.addListener('spiderfy', function(markers) {
 				closeAllInfoWins();
 			});
-
-			dsoms.addListener('spiderfy', function(markers) {
-				closeAllInfoWins();
-			});
-
-			// Clear the current selection when the drawing mode is changed, or when the
-			// map is clicked.
-			//google.maps.event.addListener(drawingManager, 'drawingmode_changed', clearSelection);
-			//google.maps.event.addListener(map, 'click', clearSelection);
 
 			createShape();
 		}
@@ -1154,13 +1096,13 @@ if(isset($MAPPING_BOUNDARIES)){
 	</script>
 	<script src="../../js/symb/api.taxonomy.taxasuggest.js?ver=4" type="text/javascript"></script>
 </head>
-<body style='width:100%;max-width:100%;min-width:500px;' <?php echo (!$activateGeolocation?'onload="initialize();"':''); ?>>
+<body style='width:100%;max-width:100%;min-width:500px;' <?php echo (!$activateGeolocation?'onload="initialize()"':''); ?>>
 <div>
 	<div>
 		<button onclick="openNav()" style="position:absolute;top:0;left:0;margin:0px;z-index:10;font-size: 14px;">&#9776; <b>Open Search Panel</b></button>
 	</div>
 	<div id="defaultpanel" class="sidepanel">
-		<div id="accordion" style="" >
+		<div id="accordion">
 			<?php
 			/*
 			echo "MySQL Version: ".$mysqlVersion;
