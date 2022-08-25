@@ -41,6 +41,14 @@ $(document).on("pageloadfailed", function(event, data){
     event.preventDefault();
 });
 
+function openNav() {
+	document.getElementById("defaultpanel").style.width = "380px";
+}
+
+function closeNav() {
+	document.getElementById("defaultpanel").style.width = "0";
+}
+
 function checkUpperLat(){
 	if(document.mapsearchform.upperlat.value != ""){
 		if(document.mapsearchform.upperlat_NS.value=='N'){
@@ -437,40 +445,14 @@ function prepSelectionKml(f){
 	f.submit();
 }
 
-function closeAllInfoWins(){
-	for( var w = 0; w < infoWins.length; w++ ) {
-		var win = infoWins[w];
-		win.close();
+function closeInfoWin(){
+	if(InformationWindow){
+        InformationWindow.close();
 	}
 }
 
-function openOccidInfoBox(label,lat,lon){
-	var myOptions = {
-		content: label,
-		boxStyle: {
-			border: "1px solid black",
-			background: "#ffffff",
-			textAlign: "center",
-			padding: "2px",
-			fontSize: "12px"
-		},
-		disableAutoPan: true,
-		pixelOffset: new google.maps.Size(-25, 0),
-		position: new google.maps.LatLng(lat, lon),
-		isHidden: false,
-		closeBoxURL: "",
-		pane: "floatPane",
-		enableEventPropagation: false
-	};
-
-	ibLabel = new InfoBox(myOptions);
-	ibLabel.open(map);
-}
-
-function closeOccidInfoBox(){
-	if(ibLabel){
-        ibLabel.close();
-	}
+function openInfoWin(occid){
+	google.maps.event.trigger(markerArr[occid], 'click');
 }
 
 function openIndPopup(occid,clid){

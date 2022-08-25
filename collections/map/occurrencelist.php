@@ -20,7 +20,7 @@ if(!$recLimit || $recCnt < $recLimit){
 	$occArr = $mapManager->getOccurrenceArr($pageNumber,$cntPerPage);
 }
 ?>
-<div id="queryrecordsdiv" style="">
+<div id="queryrecordsdiv">
 	<div style="height:25px;margin-top:-5px;">
 		<div>
 			<div style="float:left;">
@@ -103,7 +103,7 @@ if(!$recLimit || $recCnt < $recLimit){
 						//echo '</td>';
 						echo '<td id="cat'.$occId.'" >'.wordwrap($recArr["cat"], 7, "<br />\n", true).'</td>';
 						echo '<td id="label'.$occId.'" >';
-						echo '<a href="#" onmouseover="openOccidInfoBox(\''.$recArr["c"].'\','.$recArr["lat"].','.$recArr["lon"].');" onmouseout="closeOccidInfoBox();" onclick="openIndPopup('.$occId.'); return false;">'.($recArr["c"]?wordwrap($recArr["c"], 12, "<br />\n", true):"Not available").'</a>';
+						echo '<a href="#" onmouseover="openInfoWin('.$occId.');" onmouseout="closeInfoWin();" onclick="openIndPopup('.$occId.'); return false;">'.($recArr["c"]?wordwrap($recArr["c"], 12, "<br />\n", true):"Not available").'</a>';
 						echo '</td>';
 						echo '<td id="e'.$occId.'" >'.wordwrap($recArr["e"], 10, "<br />\n", true).'</td>';
 						echo '<td id="s'.$occId.'" >'.wordwrap($recArr["s"], 12, "<br />\n", true).'</td>';

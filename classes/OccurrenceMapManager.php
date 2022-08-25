@@ -53,7 +53,7 @@ class OccurrenceMapManager extends OccurrenceManager {
 			$statsManager = new OccurrenceAccessStats();
 			$sql = 'SELECT o.occid, CONCAT_WS(" ",o.recordedby,IFNULL(o.recordnumber,o.eventdate)) AS identifier, '.
 				'o.sciname, o.family, o.tidinterpreted, o.DecimalLatitude, o.DecimalLongitude, o.collid, o.catalognumber, '.
-				'o.othercatalognumbers, c.institutioncode, c.collectioncode, c.CollectionName '.
+				'o.othercatalognumbers, c.institutioncode, c.collectioncode, c.CollectionName, c.CollType '.
 				'FROM omoccurrences o LEFT JOIN omcollections c ON o.collid = c.collid ';
 			$sql .= $this->getTableJoins($this->sqlWhere);
 			$sql .= $this->sqlWhere;
@@ -94,6 +94,57 @@ class OccurrenceMapManager extends OccurrenceManager {
 		}
 		return $coordArr;
 	}
+
+	//Greg Testing
+	public function getCoordinateMap2($start, $limit){
+		//Used within dynamic map
+		$coordArr = Array();
+		if($this->sqlWhere){
+			$statsManager = new OccurrenceAccessStats();
+			$sql = 'SELECT o.occid, CONCAT_WS(" ",o.recordedby,IFNULL(o.recordnumber,o.eventdate)) AS identifier, '.
+				'o.sciname, o.family, o.tidinterpreted, o.DecimalLatitude, o.DecimalLongitude, o.collid, o.catalognumber, '.
+				'o.othercatalognumbers, c.institutioncode, c.collectioncode, c.CollectionName, c.collType '.
+				'FROM omoccurrences o LEFT JOIN omcollections c ON o.collid = c.collid ';
+			$sql .= $this->getTableJoins($this->sqlWhere);
+			$sql .= $this->sqlWhere;
+			if(is_numeric($start) && $limit){
+				$sql .= "LIMIT ".$start.",".$limit;
+			}
+			//echo "<div>SQL: ".$sql."</div>"; exit;
+			$result = $this->conn->query($sql);
+			//$color = 'e69e67';
+			$coordArr = $result->fetch_all(MYSQLI_ASSOC);
+			// while($row = $result->fetch_object()){
+			// 	if(($row->DecimalLongitude <= 180 && $row->DecimalLongitude >= -180) && ($row->DecimalLatitude <= 90 && $row->DecimalLatitude >= -90)){
+			// 		$occidArr[] = $row->occid;
+			// 		$collName = $row->CollectionName;
+			// 		$tidInterpreted = $this->htmlEntities($row->tidinterpreted);
+			// 		$latLngStr = $row->DecimalLatitude.",".$row->DecimalLongitude;
+			// 		$coordArr[$collName][$row->occid]["llStr"] = $latLngStr;
+			// 		$coordArr[$collName][$row->occid]["collid"] = $this->htmlEntities($row->collid);
+			// 		//$tidcode = strtolower(str_replace(" ", "",$tidInterpreted.$row->sciname));
+			// 		//$tidcode = preg_replace( "/[^A-Za-z0-9 ]/","",$tidcode);
+			// 		//$coordArr[$collName][$occId]["ns"] = $this->htmlEntities($tidcode);
+			// 		$coordArr[$collName][$row->occid]["tid"] = $tidInterpreted;
+			// 		$coordArr[$collName][$row->occid]["fam"] = ($row->family?strtoupper($row->family):'undefined');
+			// 		$coordArr[$collName][$row->occid]["sn"] = $row->sciname;
+			// 		$coordArr[$collName][$row->occid]["id"] = $this->htmlEntities($row->identifier);
+			// 		//$coordArr[$collName][$occId]["icode"] = $this->htmlEntities($row->institutioncode);
+			// 		//$coordArr[$collName][$occId]["ccode"] = $this->htmlEntities($row->collectioncode);
+			// 		//$coordArr[$collName][$occId]["cn"] = $this->htmlEntities($row->catalognumber);
+			// 		//$coordArr[$collName][$occId]["ocn"] = $this->htmlEntities($row->othercatalognumbers);
+			// 		$coordArr[$collName]["c"] = $color;
+			// 	}
+			// }
+			//$statsManager->recordAccessEventByArr($occidArr, 'map');
+			//if(array_key_exists('undefined',$coordArr)){
+			//	$coordArr['undefined']['c'] = $color;
+			//}
+			$result->free();
+		}
+		return $coordArr;
+	}
+
 
 	public function getMappingData($recLimit, $extraFieldArr = null){
 		//Used for simple maps occurrence and taxon maps, and also KML download functions

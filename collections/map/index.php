@@ -1,62 +1,73 @@
 <?php
 include_once('../../config/symbini.php');
-include_once($SERVER_ROOT.'/content/lang/collections/map/index.'.$LANG_TAG.'.php');
-include_once($SERVER_ROOT.'/classes/OccurrenceMapManager.php');
+include_once($SERVER_ROOT . '/content/lang/collections/map/index.' . $LANG_TAG . '.php');
+include_once($SERVER_ROOT . '/classes/OccurrenceMapManager.php');
 
-header('Content-Type: text/html; charset='.$CHARSET);
+header('Content-Type: text/html; charset=' . $CHARSET);
 ob_start('ob_gzhandler');
 ini_set('max_execution_time', 180); //180 seconds = 3 minutes
 
-$distFromMe = array_key_exists('distFromMe', $_REQUEST)?$_REQUEST['distFromMe']:'';
-$gridSize = array_key_exists('gridSizeSetting', $_REQUEST) && $_REQUEST['gridSizeSetting']?$_REQUEST['gridSizeSetting']:60;
-$minClusterSize = array_key_exists('minClusterSetting',$_REQUEST)&&$_REQUEST['minClusterSetting']?$_REQUEST['minClusterSetting']:10;
-$clusterOff = array_key_exists('clusterSwitch',$_REQUEST)&&$_REQUEST['clusterSwitch']?$_REQUEST['clusterSwitch']:'n';
-$recLimit = array_key_exists('recordlimit',$_REQUEST)?$_REQUEST['recordlimit']:15000;
-$catId = array_key_exists('catid',$_REQUEST)?$_REQUEST['catid']:0;
-$tabIndex = array_key_exists('tabindex',$_REQUEST)?$_REQUEST['tabindex']:0;
-$submitForm = array_key_exists('submitform',$_REQUEST)?$_REQUEST['submitform']:'';
+$distFromMe = array_key_exists('distFromMe', $_REQUEST) ? $_REQUEST['distFromMe'] : '';
+$gridSize = array_key_exists('gridSizeSetting', $_REQUEST) && $_REQUEST['gridSizeSetting'] ? $_REQUEST['gridSizeSetting'] : 60;
+$minClusterSize = array_key_exists('minClusterSetting', $_REQUEST) && $_REQUEST['minClusterSetting'] ? $_REQUEST['minClusterSetting'] : 10;
+$clusterOff = array_key_exists('clusterSwitch', $_REQUEST) && $_REQUEST['clusterSwitch'] ? $_REQUEST['clusterSwitch'] : 'n';
+$recLimit = array_key_exists('recordlimit', $_REQUEST) ? $_REQUEST['recordlimit'] : 15000;
+$catId = array_key_exists('catid', $_REQUEST) ? $_REQUEST['catid'] : 0;
+$tabIndex = array_key_exists('tabindex', $_REQUEST) ? $_REQUEST['tabindex'] : 0;
+$submitForm = array_key_exists('submitform', $_REQUEST) ? $_REQUEST['submitform'] : '';
 
-if(!$catId && isset($DEFAULTCATID) && $DEFAULTCATID) $catId = $DEFAULTCATID;
+if (!$catId && isset($DEFAULTCATID) && $DEFAULTCATID) $catId = $DEFAULTCATID;
 
 $mapManager = new OccurrenceMapManager();
 $searchVar = $mapManager->getQueryTermStr();
-if($searchVar && $recLimit) $searchVar .= '&reclimit='.$recLimit;
+if ($searchVar && $recLimit) $searchVar .= '&reclimit=' . $recLimit;
 
 $obsIDs = $mapManager->getObservationIds();
 
 //Sanitation
-if(!is_numeric($gridSize)) $gridSize = 60;
-if(!is_numeric($minClusterSize)) $minClusterSize = 10;
-if(!is_string($clusterOff) || strlen($clusterOff) > 1) $clusterOff = 'n';
-if(!is_numeric($recLimit)) $recLimit = 15000;
-if(!is_numeric($distFromMe)) $distFromMe = '';
-if(!is_numeric($catId)) $catId = 0;
-if(!is_numeric($tabIndex)) $tabIndex = 0;
+if (!is_numeric($gridSize)) $gridSize = 60;
+if (!is_numeric($minClusterSize)) $minClusterSize = 10;
+if (!is_string($clusterOff) || strlen($clusterOff) > 1) $clusterOff = 'n';
+if (!is_numeric($recLimit)) $recLimit = 31000;
+$recLimit = 31000;
+if (!is_numeric($distFromMe)) $distFromMe = '';
+if (!is_numeric($catId)) $catId = 0;
+if (!is_numeric($tabIndex)) $tabIndex = 0;
 
 $activateGeolocation = 0;
-if(isset($ACTIVATE_GEOLOCATION) && $ACTIVATE_GEOLOCATION == 1) $activateGeolocation = 1;
+if (isset($ACTIVATE_GEOLOCATION) && $ACTIVATE_GEOLOCATION == 1) $activateGeolocation = 1;
 
-$latCen = 41.0;
-$longCen = -95.0;
-if(isset($MAPPING_BOUNDARIES)){
-	$coorArr = explode(";",$MAPPING_BOUNDARIES);
-	if($coorArr && count($coorArr) == 4){
-		$latCen = ($coorArr[0] + $coorArr[2])/2;
-		$longCen = ($coorArr[1] + $coorArr[3])/2;
+$bound_NorthEast = ['41.0','-95.0'];
+$bound_SouthWest = [];
+
+if (isset($MAPPING_BOUNDARIES) && $MAPPING_BOUNDARIES) {
+	$coorArr = explode(";", $MAPPING_BOUNDARIES);
+	if ($coorArr && count($coorArr) == 4) {
+		$bound_NorthEast = [$coorArr[0],$coorArr[1]];
+		$bound_SouthWest = [$coorArr[2],$coorArr[3]];
 	}
+} 
+else {
+	$bound_SouthWest = $bound_NorthEast;
 }
+
+
 ?>
 <html>
+
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title><?php echo $DEFAULT_TITLE; ?> - Map Interface</title>
 	<?php
-	include_once($SERVER_ROOT.'/includes/head.php');
-	include_once($SERVER_ROOT.'/includes/googleanalytics.php');
+	include_once($SERVER_ROOT . '/includes/head.php');
+	include_once($SERVER_ROOT . '/includes/googleanalytics.php');
 	?>
 	<link href="<?php echo $CLIENT_ROOT; ?>/css/symb/collection.css" type="text/css" rel="stylesheet" />
 	<style type="text/css">
-		.ui-front { z-index: 9999999 !important; }
+		.ui-front {
+			z-index: 9999999 !important;
+		}
+
 		/* The sidepanel menu */
 		.sidepanel {
 			height: 100%;
@@ -73,28 +84,27 @@ if(isset($MAPPING_BOUNDARIES)){
 	<script src="../../js/jquery-3.6.0.min.js" type="text/javascript"></script>
 	<script src="../../js/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
 	<link href="../../js/jquery-ui/jquery-ui.min.css" type="text/css" rel="Stylesheet" />
-	<script src="//maps.googleapis.com/maps/api/js?v=3.exp&libraries=drawing<?php echo (isset($GOOGLE_MAP_KEY) && $GOOGLE_MAP_KEY?'&key='.$GOOGLE_MAP_KEY:''); ?>" ></script>
+	<script src="//maps.googleapis.com/maps/api/js?v=3.exp&libraries=drawing<?php echo (isset($GOOGLE_MAP_KEY) && $GOOGLE_MAP_KEY ? '&key=' . $GOOGLE_MAP_KEY : ''); ?>"></script>
 	<script src="../../js/jscolor/jscolor.js?ver=1" type="text/javascript"></script>
 	<script src="../../js/symb/collections.map.index_gm.js?ver=2" type="text/javascript"></script>
 	<script src="../../js/symb/collections.map.index_ui.js?ver=2" type="text/javascript"></script>
 	<script src="../../js/symb/collections.list.js?ver=1" type="text/javascript"></script>
 	<script src="../../js/symb/markerclusterer.min.js"></script>
 	<script src="../../js/symb/oms.min.js" type="text/javascript"></script>
-	
-	<script src="../../js/symb/infobox.js?ver=2" type="text/javascript"></script>
-	<script>
+	<script type="text/javascript">
+
 		var clientRoot = "<?php echo $CLIENT_ROOT; ?>";
 
 		$(document).ready(function() {
 			<?php
-			if($searchVar) echo 'sessionStorage.querystr = "'.$searchVar.'";';
+			if ($searchVar) echo 'sessionStorage.querystr = "' . $searchVar . '";';
 			?>
 		});
 
 		var map;
 		var pointObj;
-		var latCenroid = <?php echo $latCen; ?>;
-		var lngCenroid = <?php echo $longCen; ?>;
+		var initBoundsNorthEast = <?php echo json_encode($bound_NorthEast); ?>;
+		var initBoundsSouthWest = <?php echo json_encode($bound_SouthWest); ?>;
 		var infoWins = [];
 		var puWin;
 		var markers = [];
@@ -106,15 +116,14 @@ if(isset($MAPPING_BOUNDARIES)){
 		var selecteddsrole = '';
 		var marker;
 		var drawingManager = null;
-		var oms;
-		// var dsoms;
+		var spiderfier;
 		var selectedShape = null;
-		var gotCoords = <?php echo ($activateGeolocation?'true':'false'); ?>;
+		var gotCoords = <?php echo ($activateGeolocation ? 'true' : 'false'); ?>;
 		var mapSymbol = 'coll';
 		var selected = false;
 		var deselected = false;
 		var positionFound = false;
-		var clid = '<?php echo ($mapManager->getSearchTerm('clid')?$mapManager->getSearchTerm('clid'):0); ?>';
+		var clid = '<?php echo ($mapManager->getSearchTerm('clid') ? $mapManager->getSearchTerm('clid') : 0); ?>';
 		var clusterOff = '<?php echo $clusterOff; ?>';
 		var obsIDs = JSON.parse('<?php echo json_encode($obsIDs); ?>');
 		var grpArr = [];
@@ -132,75 +141,39 @@ if(isset($MAPPING_BOUNDARIES)){
 		var optionsCollArr = [];
 		var optionsTaxArr = [];
 		var grpCnt = 1;
-		var ibLabel = '';
+		var InformationWindow = '';
 		var mouseoverTimeout = '';
 		var mouseoutTimeout = '';
 		var pointBounds = new google.maps.LatLngBounds();
 		var occArr = [];
+		var panPoint = new google.maps.LatLng();
 
-		function openNav() {
-			document.getElementById("defaultpanel").style.width = "380px";
-		}
-
-		function closeNav() {
-			document.getElementById("defaultpanel").style.width = "0";
-		}
-
-		function getCoords(){
-			if (navigator.geolocation){
-				var options = {
-					timeout: 4000,
-					maximumAge: 0
-				};
-				setTimeout(function(){
-					if(!positionFound){
-						gotCoords = false;
-						initialize();
-					}
-				},4005)
-				navigator.geolocation.getCurrentPosition(
-					initialize,
-					function (error) {
-						if (error.code){
-							gotCoords = false;
-							initialize();
-						}
-					},
-					options
-				);
-			}
-			else{
-				gotCoords = false;
-				initialize();
-			}
-		}
 
 		function initialize(){
 			<?php
 			$recordCnt = $mapManager->getRecordCnt();
-			if($searchVar){
-				?>
-				if(<?php echo $recordCnt; ?> > 0){
+			if ($searchVar) {
+			?>
+				if (<?php echo $recordCnt; ?> > 0) {
 					var resultCount = <?php echo $recordCnt; ?>;
-					if(resultCount <= <?php echo $recLimit; ?>) {
+					if (resultCount <= <?php echo $recLimit; ?>) {
 						<?php
-						$coordArr = $mapManager->getCoordinateMap(0,$recLimit);
-						echo 'pointObj = '.json_encode($coordArr).";\n";
+						//$coordArr = $mapManager->getCoordinateMap(0,$recLimit);
+						$coordArr = $mapManager->getCoordinateMap2(0, $recLimit);
+						echo 'pointObj = ' . json_encode($coordArr) . ";\n";
 						?>
-					}
-					else{
-						alert("Your search produced "+resultCount+" results which exceeds the maximum of <?php echo $recLimit; ?>, please refine your search more.");
+					} else {
+						alert("Your search produced " + resultCount + " results which exceeds the maximum of <?php echo $recLimit; ?>, please refine your search more.");
 						$('#loadingOverlay').hide();
 					}
-				}
-				else{
+				} else {
 					alert('There were no records matching your query.');
 				}
-				<?php
+			<?php
 			}
 			?>
 			initializeGoogleMap();
-			processPoints();
+			processPoints2();
 			$('#loadingOverlay').hide();
 			setTimeout(function() {
 				afterEffects();
@@ -208,24 +181,15 @@ if(isset($MAPPING_BOUNDARIES)){
 
 		}
 
-		function initializeGoogleMap(){
-			var pos = '';
-			if(gotCoords==true){
-				positionFound = true;
-				pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-				posLat = position.coords.latitude;
-				posLong = position.coords.longitude;
-				document.getElementById("geocriteria").style.display = "none";
-				document.getElementById("distancegeocriteria").style.display = "block";
-			}
-			else{
-				pos = new google.maps.LatLng(latCenroid, lngCenroid);
-			}
+		function initializeGoogleMap() {
+			//var pos = '';
+			//pos = new google.maps.LatLng(latCenroid, lngCenroid);
+
+			
 
 			var dmOptions = {
 				zoom: 6,
 				minZoom: 3,
-				center: pos,
 				mapTypeId: google.maps.MapTypeId.TERRAIN,
 				mapTypeControl: true,
 				mapTypeControlOptions: {
@@ -247,10 +211,18 @@ if(isset($MAPPING_BOUNDARIES)){
 				},
 				streetViewControl: false
 			};
-
+			
 			map = new google.maps.Map(document.getElementById("map"), dmOptions);
+			
+			var initBounds = new google.maps.LatLngBounds();
+			
+			initBounds.extend(new google.maps.LatLng(initBoundsNorthEast[0], initBoundsNorthEast[1]));
+			initBounds.extend(new google.maps.LatLng(initBoundsSouthWest[0], initBoundsSouthWest[1]));
+			map.fitBounds(initBounds);
 
-			oms = new OverlappingMarkerSpiderfier(map, {basicFormatEvents: true});
+			spiderfier = new OverlappingMarkerSpiderfier(map, {
+				basicFormatEvents: true
+			});
 
 			var polyOptions = {
 				strokeWeight: 0,
@@ -283,7 +255,7 @@ if(isset($MAPPING_BOUNDARIES)){
 
 			drawingManager.setMap(map);
 
-			google.maps.event.addListener(
+			/* google.maps.event.addListener(
 				document.getElementById("distFromMe"),
 				'change',
 				function(){
@@ -294,7 +266,7 @@ if(isset($MAPPING_BOUNDARIES)){
 						document.getElementById("radius").value = distance;
 					}
 				}
-			);
+			); */
 
 			google.maps.event.addListener(drawingManager, 'overlaycomplete', function(e) {
 				if (e.type != google.maps.drawing.OverlayType.MARKER) {
@@ -311,7 +283,7 @@ if(isset($MAPPING_BOUNDARIES)){
 					google.maps.event.addListener(newShape, 'dragend', function() {
 						setSelection(newShape);
 					});
-					if (newShapeType == 'circle'){
+					if (newShapeType == 'circle') {
 						getCircleCoords(newShape);
 						google.maps.event.addListener(newShape, 'radius_changed', function() {
 							setSelection(newShape);
@@ -320,13 +292,13 @@ if(isset($MAPPING_BOUNDARIES)){
 							setSelection(newShape);
 						});
 					}
-					if (newShapeType == 'rectangle'){
+					if (newShapeType == 'rectangle') {
 						getRectangleCoords(newShape);
 						google.maps.event.addListener(newShape, 'bounds_changed', function() {
 							setSelection(newShape);
 						});
 					}
-					if (newShapeType == 'polygon'){
+					if (newShapeType == 'polygon') {
 						getPolygonCoords(newShape);
 						google.maps.event.addListener(newShape.getPath(), 'insert_at', function() {
 							setSelection(newShape);
@@ -342,36 +314,35 @@ if(isset($MAPPING_BOUNDARIES)){
 				}
 			});
 
-			oms.addListener('click', function(marker, event) {
+			spiderfier.addListener('click', function(marker, event) {
 				occid = marker.occid;
-				chbox = 'ch'+occid;
-				if(selections.indexOf(occid) > -1){
+				chbox = 'ch' + occid;
+				if (selections.indexOf(occid) > -1) {
 					var index = selections.indexOf(occid);
 					if (index > -1) {
 						selections.splice(index, 1);
 					}
-					if(document.getElementById(chbox)){
+					if (document.getElementById(chbox)) {
 						document.getElementById(chbox).checked = false;
 						document.getElementById("selectallcheck").checked = false;
 					}
 					//removeSelectionRecord(occid);
 					//adjustSelectionsTab();
-					deselectMarker(marker);
-				}
-				else{
+					//deselectMarker(marker);
+				} else {
 					selections.push(occid);
-					if(document.getElementById(chbox)){
+					if (document.getElementById(chbox)) {
 						document.getElementById(chbox).checked = true;
 						var f = document.getElementById("selectform");
 						var boxesChecked = true;
-						for(var i=0;i<f.length;i++){
-							if(f.elements[i].name == "occid[]"){
-								if(f.elements[i].checked == false){
+						for (var i = 0; i < f.length; i++) {
+							if (f.elements[i].name == "occid[]") {
+								if (f.elements[i].checked == false) {
 									boxesChecked = false;
 								}
 							}
 						}
-						if(boxesChecked == true){
+						if (boxesChecked == true) {
 							document.getElementById("selectallcheck").checked = true;
 						}
 					}
@@ -380,17 +351,17 @@ if(isset($MAPPING_BOUNDARIES)){
 				}
 			});
 
-			oms.addListener('spiderfy', function(markers) {
-				closeAllInfoWins();
+			spiderfier.addListener('spiderfy', function(markers) {
+				closeInfoWin();
 			});
 
 			createShape();
 		}
 
-		function createShape(){
+		function createShape() {
 			let newShape = null;
 			let f = document.mapsearchform;
-			if(f.upperlat.value != ""){
+			if (f.upperlat.value != "") {
 				newShape = new google.maps.Rectangle({
 					bounds: new google.maps.LatLngBounds(
 						new google.maps.LatLng(f.bottomlat.value, f.leftlong.value),
@@ -403,9 +374,10 @@ if(isset($MAPPING_BOUNDARIES)){
 					map: map
 				});
 				newShape.type = "rectangle";
-				google.maps.event.addListener(newShape, 'bounds_changed', function() { setSelection(newShape); });
-			}
-			else if(f.pointlat.value != ""){
+				google.maps.event.addListener(newShape, 'bounds_changed', function() {
+					setSelection(newShape);
+				});
+			} else if (f.pointlat.value != "") {
 				newShape = new google.maps.Circle({
 					center: new google.maps.LatLng(f.pointlat.value, f.pointlong.value),
 					radius: (f.radius.value / 0.6214) * 1000,
@@ -416,22 +388,25 @@ if(isset($MAPPING_BOUNDARIES)){
 					map: map
 				});
 				newShape.type = "circle";
-				google.maps.event.addListener(newShape, "radius_changed", function() { setSelection(newShape); });
-				google.maps.event.addListener(newShape, "center_changed", function() { setSelection(newShape); });
-			}
-			else if(f.polycoords.value != ""){
+				google.maps.event.addListener(newShape, "radius_changed", function() {
+					setSelection(newShape);
+				});
+				google.maps.event.addListener(newShape, "center_changed", function() {
+					setSelection(newShape);
+				});
+			} else if (f.polycoords.value != "") {
 				let wkt = f.polycoords.value;
-				if(wkt.substring(0,7) == "POLYGON") wkt = wkt.substring(7).trim();
-				while(wkt.substring(0,1) == "(") wkt = wkt.substring(1).trim();
-				while(wkt.substring(wkt.length-1) == ")") wkt = wkt.slice(0, -1).trim();
+				if (wkt.substring(0, 7) == "POLYGON") wkt = wkt.substring(7).trim();
+				while (wkt.substring(0, 1) == "(") wkt = wkt.substring(1).trim();
+				while (wkt.substring(wkt.length - 1) == ")") wkt = wkt.slice(0, -1).trim();
 				let coordArr = wkt.split(",");
 				let pointArr = [];
-				for(let n=0; n < coordArr.length; n++){
+				for (let n = 0; n < coordArr.length; n++) {
 					let ptArr = coordArr[n].trim().split(" ");
-					pointArr.push( new google.maps.LatLng(ptArr[0], ptArr[1]) );
+					pointArr.push(new google.maps.LatLng(ptArr[0], ptArr[1]));
 				}
 				newShape = new google.maps.Polygon({
-					paths: [ pointArr ],
+					paths: [pointArr],
 					strokeWeight: 0,
 					fillOpacity: 0.45,
 					editable: true,
@@ -439,32 +414,44 @@ if(isset($MAPPING_BOUNDARIES)){
 					map: map
 				});
 				newShape.type = "polygon";
-				google.maps.event.addListener(newShape.getPath(), "insert_at", function() { setSelection(newShape); });
-				google.maps.event.addListener(newShape.getPath(), "remove_at", function() { setSelection(newShape); });
-				google.maps.event.addListener(newShape.getPath(), "set_at", function() { setSelection(newShape); });
+				google.maps.event.addListener(newShape.getPath(), "insert_at", function() {
+					setSelection(newShape);
+				});
+				google.maps.event.addListener(newShape.getPath(), "remove_at", function() {
+					setSelection(newShape);
+				});
+				google.maps.event.addListener(newShape.getPath(), "set_at", function() {
+					setSelection(newShape);
+				});
 			}
-			if(newShape){
-				google.maps.event.addListener(newShape, "click", function() { setSelection(newShape); });
-				google.maps.event.addListener(newShape, "dragend", function() { setSelection(newShape); });
+			if (newShape) {
+				google.maps.event.addListener(newShape, "click", function() {
+					setSelection(newShape);
+				});
+				google.maps.event.addListener(newShape, "dragend", function() {
+					setSelection(newShape);
+				});
 				setSelection(newShape);
 			}
 		}
 
-		function afterEffects(){
-			if(pointObj){
+		function afterEffects() {
+			if (pointObj) {
 				setPanels(true);
-				$("#accordion").accordion("option",{active: 1});
+				$("#accordion").accordion("option", {
+					active: 1
+				});
 				buildCollKey();
 				buildTaxaKey();
 				jscolor.init();
-				if(pointBounds){
+				if (pointBounds) {
 					map.fitBounds(pointBounds);
 					map.panToBounds(pointBounds);
 				}
 			}
 		}
 
-		function processPoints(){
+		/* function processPoints(){
 			var fndGrps = [];
 			var finderArr = [];
 			for(var key in pointObj) {
@@ -554,16 +541,17 @@ if(isset($MAPPING_BOUNDARIES)){
 								position: new google.maps.LatLng(llArr[0], llArr[1]),
 								text: displayStr,
 								<?php
-								if($clusterOff=="y"){
-									?>
-									map: map,
-									<?php
-								}
+								// if($clusterOff=="y"){
+								// 	
 								?>
+								// 	map: map,
+								// 	<?php
+										// }
+										?>
 								icon: markerIcon,
 								selected: false,
 								color: iconColor,
-								customInfo: type,
+								recordType: type,
 								taxatid: scinameStr,
 								occid: occ,
 								clid: 0
@@ -589,8 +577,8 @@ if(isset($MAPPING_BOUNDARIES)){
 								};
 
 								if(mouseoutTimeout){
-									if(ibLabel) {
-										ibLabel.close();
+									if(InformationWindow) {
+										InformationWindow.close();
 									}
 									clearTimeout(mouseoutTimeout);
 									mouseoutTimeout = null;
@@ -598,8 +586,8 @@ if(isset($MAPPING_BOUNDARIES)){
 
 								mouseoverTimeout = setTimeout(
 									function(){
-										ibLabel = new InfoBox(myOptions);
-										ibLabel.open(map);
+										InformationWindow = new InfoBox(myOptions);
+										InformationWindow.open(map);
 									},1000
 								);
 							});
@@ -611,14 +599,14 @@ if(isset($MAPPING_BOUNDARIES)){
 								}
 								mouseoutTimeout = setTimeout(
 									function(){
-										if(ibLabel){
-											ibLabel.close();
+										if(InformationWindow){
+											InformationWindow.close();
 										}
 									},3000
 								);
 							});
 
-							oms.addMarker(m);
+							spiderfier.addMarker(m);
 							var markerPos = m.getPosition();
 							pointBounds.extend(markerPos);
 							if (grpArr[fndGrpCnt]) {
@@ -643,8 +631,10 @@ if(isset($MAPPING_BOUNDARIES)){
 							color: iconColor
 						}],
 						maxZoom: 13,
-						gridSize: <?php echo $gridSize; ?>,
-						minPoints: <?php echo $minClusterSize; ?>
+						gridSize: <?php //echo $gridSize; 
+									?>,
+						minPoints: <?php //echo $minClusterSize; 
+									?>
 					};
 
 					if(clusterOff=="n"){
@@ -662,96 +652,211 @@ if(isset($MAPPING_BOUNDARIES)){
 
 				grpCnt++;
 			}
+		} */
+
+		function processPoints2() {
+
+			for (var key in pointObj) {
+				var iconColor = 'f6ae77';
+				var markerIcon = null;
+
+				buildCollKeyPiece(pointObj[key]['CollectionName'],iconColor);
+
+				//set marker icon based on record type
+				if (pointObj[key]["collType"].includes('Observations')){
+					type = 'obs';
+					markerIcon = {
+						url: '<?= $CLIENT_ROOT?>//collections/map/coloricon.php?shape=triangle&color=' + iconColor,
+						scaledSize: new google.maps.Size(18, 18), 
+					}
+				}
+				else {
+					type = 'spec';
+					markerIcon = {
+						url: '<?= $CLIENT_ROOT?>/collections/map/coloricon.php?shape=circle&color=' + iconColor,
+						scaledSize: new google.maps.Size(18, 18), 
+					}
+
+				}
+
+				//check retreived values
+
+				// Update grouping information and keytables
+				var tempFamArr = [];
+				var tempScinameArr = [];
+				
+				//The scinameStr value is used for DIV element id
+				var scinameStr = ''+pointObj[key]['tidinterpreted']+pointObj[key]['sciname'];
+				scinameStr = scinameStr.replace(/ /g, "").toLowerCase();
+				buildTaxaKeyPiece(scinameStr, pointObj[key]['tidinterpreted'], pointObj[key]['sciname']);
+
+				var family = ''+pointObj[key]['family'];
+				family = family.toUpperCase();
+
+				if ((familyNameArr.indexOf(family) < 0) && (family != 'NULL')) {
+					familyNameArr.push(family);
+				}
+				if (taxaArr[family]) {
+					tempFamArr = taxaArr[family];
+					tempScinameArr = taxaArr[family]['sciname_arr'];
+				}
+				if (keyTidArr.indexOf(scinameStr) < 0) {
+					tempScinameArr.push(pointObj[key]['sciname']);
+					keyTidArr.push(scinameStr);
+					taxaCnt++;
+				}
+				tempFamArr[pointObj[key]['sciname']] = scinameStr;
+				taxaArr[family] = tempFamArr;
+				taxaArr[family]['sciname_arr'] = tempScinameArr;
+
+				
+				
+
+				//Create Marker & Add occurance data to Marker Object
+
+				var m = new google.maps.Marker({
+					position: new google.maps.LatLng(pointObj[key]["DecimalLatitude"], pointObj[key]["DecimalLongitude"]),
+					optimized: true,
+					text: "Collection: " + pointObj[key]["CollectionName"] + " Identifier: " + pointObj[key]["identifier"],
+					icon: markerIcon,
+					selected: false,
+					color: iconColor,
+					recordType: type,
+					collid: pointObj[key]['collid'],
+					identifier: pointObj[key]['identifier'],
+					taxatid: pointObj[key]['sciname'],
+					tidinterpreted: pointObj[key]['tidinterpreted'],
+					family: family,
+					occid: pointObj[key]['occid'],
+					clid: 0,
+				});
+				markerArr[pointObj[key]['occid']] = m;				
+
+				
+				
+
+				// Add marker listener
+				m.addListener('click', function() {
+
+					// prevent multiple information windows from opening at the same time
+					if(InformationWindow){
+						InformationWindow.close();
+					}
+
+					panPoint = this.position;
+					var myOptions = {
+						content: '<div>' + this.text + '<br /><a href="#" onclick="openIndPopup(' + this.occid + ',' + this.clid +
+							 ');return false;"><span style="color:blue;">See Details</span></a></div><div><a onclick="map.panTo(panPoint); map.setZoom(13); return false">Focus</a></div>',
+					};
+					
+					InformationWindow = new google.maps.InfoWindow(myOptions);
+					InformationWindow.open(map, this);
+					
+
+				});
+
+				spiderfier.addMarker(m);
+				var markerPos = m.getPosition();
+				pointBounds.extend(markerPos);
+
+				//var markerCluster = new markerClusterer.MarkerClusterer({
+				//	map: map,
+				//	markers: spiderfier.markerArr,
+				//});
+				
+			}
 		}
 
-		function setPanels(show){
-			if(document.getElementById("recordstaxaheader")){
-				if(show){
+
+		function setPanels(show) {
+			if (document.getElementById("recordstaxaheader")) {
+				if (show) {
 					document.getElementById("recordstaxaheader").style.display = "block";
 					document.getElementById("tabs2").style.display = "block";
-				}
-				else{
+				} else {
 					document.getElementById("recordstaxaheader").style.display = "none";
 					document.getElementById("tabs2").style.display = "none";
 				}
 			}
 		}
 
-		function buildCollKeyPiece(key,iconColor){
-			keyHTML = '';
-			keyHTML += '<div style="display:table-row;">';
-			keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-bottom:5px;" ><input id="keyColor'+grpCnt+'" class="color" style="cursor:pointer;border:1px black solid;height:12px;width:12px;margin-bottom:-2px;font-size:0px;" value="'+iconColor+'" onchange="changeCollColor(this.value,'+grpCnt+');" /></div>';
-			keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-left:8px;"> = </div>';
-			keyHTML += '<div style="display:table-cell;width:250px;vertical-align:middle;padding-left:8px;">'+key+'</div>';
-			keyHTML += '</div>';
-			keyHTML += '<div style="display:table-row;height:8px;"></div>';
-			collKeyArr[key] = keyHTML;
-			collNameArr.push(key);
+		function buildCollKeyPiece(key, iconColor) {
+			if (collNameArr.indexOf(key) < 0){
+				collNameArr.push(key);
+				keyHTML = '';
+				keyHTML += '<div style="display:table-row;">';
+				keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-bottom:5px;" ><input id="keyColor' + collNameArr.length + '" class="color" style="cursor:pointer;border:1px black solid;height:12px;width:12px;margin-bottom:-2px;font-size:0px;" value="' + iconColor + '" onchange="changeCollColor(this.value,' + grpCnt + ');" /></div>';
+				keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-left:8px;"> = </div>';
+				keyHTML += '<div style="display:table-cell;width:250px;vertical-align:middle;padding-left:8px;">' + key + '</div>';
+				keyHTML += '</div>';
+				keyHTML += '<div style="display:table-row;height:8px;"></div>';
+				collKeyArr[key] = keyHTML;
+			}
 		}
 
-		function buildCollKey(){
+		function buildCollKey() {
 			keyHTML = '';
 			collNameArr.sort();
-			for(var i=0,l=collNameArr.length;i<l;i++){
+			for (var i = 0, l = collNameArr.length; i < l; i++) {
 				keyHTML += collKeyArr[collNameArr[i]];
 			}
-			if(document.getElementById("symbologykeysbox")) document.getElementById("symbologykeysbox").innerHTML = keyHTML;
+			if (document.getElementById("symbologykeysbox")) document.getElementById("symbologykeysbox").innerHTML = keyHTML;
 		}
 
-		function buildTaxaKeyPiece(key,tidinterpreted,sciname){
+		function buildTaxaKeyPiece(key, tidinterpreted, sciname) {
 			keyHTML = '';
-			keyLabel = "'"+key+"'";
-			keyHTML += '<div id="'+key+'keyrow">';
+			keyLabel = "'" + key + "'";
+			keyHTML += '<div id="' + key + 'keyrow">';
 			keyHTML += '<div style="display:table-row;">';
-			keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-bottom:5px;" ><input id="taxaColor'+key+'" class="color" style="cursor:pointer;border:1px black solid;height:12px;width:12px;margin-bottom:-2px;font-size:0px;" value="e69e67" onchange="changeTaxaColor(this.value,'+keyLabel+');" /></div>';
+			keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-bottom:5px;" ><input id="taxaColor' + key + '" class="color" style="cursor:pointer;border:1px black solid;height:12px;width:12px;margin-bottom:-2px;font-size:0px;" value="e69e67" onchange="changeTaxaColor(this.value,' + keyLabel + ');" /></div>';
 			keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-left:8px;"> = </div>';
 			keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-left:8px;">';
-			if(tidinterpreted) keyHTML += '<i><a href="#" onclick="openPopup(\'../../taxa/index.php?tid='+tidinterpreted+'&display=1\');return false;">'+sciname+'</a></i>';
-			else keyHTML += "<i>"+sciname+"</i>";
+			if (tidinterpreted) keyHTML += '<i><a href="#" onclick="openPopup(\'../../taxa/index.php?tid=' + tidinterpreted + '&display=1\');return false;">' + sciname + '</a></i>';
+			else keyHTML += "<i>" + sciname + "</i>";
 			keyHTML += '</div></div></div>';
 			taxaKeyArr[key] = keyHTML;
 		}
 
-		function buildTaxaKey(){
-			if(document.getElementById("taxaCountNum")) document.getElementById("taxaCountNum").innerHTML = taxaCnt;
+		function buildTaxaKey() {
+			if (document.getElementById("taxaCountNum")) document.getElementById("taxaCountNum").innerHTML = taxaCnt;
 			keyHTML = '';
 			familyNameArr.sort();
-			for(var i=0,l=familyNameArr.length;i<l;i++){
+			for (var i = 0, l = familyNameArr.length; i < l; i++) {
 				tempArr = taxaArr[familyNameArr[i]]['sciname_arr'];
-				if(tempArr.length > 0){
+				if (tempArr.length > 0) {
 					tempArr.sort();
 					keyHTML += "<div style='margin-left:5px;'><h3 style='margin-top:8px;margin-bottom:5px;'>" + familyNameArr[i] + "</h3></div>";
 					keyHTML += "<div style='display:table;'>";
-					for(var s = 0, w = tempArr.length; s < w; s++){
+					for (var s = 0, w = tempArr.length; s < w; s++) {
 						var tidCode = taxaArr[familyNameArr[i]][tempArr[s]];
 						if (taxaKeyArr[tidCode]) keyHTML += taxaKeyArr[tidCode];
 					}
 					keyHTML += "</div>";
 				}
 			}
-			if(taxaArr['undefined']){
-				tempArr = taxaArr['undefined']['sciname_arr'];
-				if(tempArr.length > 0){
+			if (taxaArr['NULL']) {
+				tempArr = taxaArr['NULL']['sciname_arr'];
+				if (tempArr.length > 0) {
 					tempArr.sort();
 					keyHTML += "<div style='margin-left:5px;'><h3 style='margin-top:8px;margin-bottom:5px;'>Family Not Defined</h3></div>";
 					keyHTML += "<div style='display:table;'>";
-					for(var s = 0, w = tempArr.length; s < w; s++){
-						var tidCode = taxaArr[familyNameArr[i]][tempArr[s]];
+					for (var s = 0, w = tempArr.length; s < w; s++) {
+						var tidCode = taxaArr['NULL'][tempArr[s]];
 						keyHTML += taxaKeyArr[tidCode];
 					}
 					keyHTML += "</div>";
 				}
 			}
-			if(document.getElementById("taxasymbologykeysbox")) document.getElementById("taxasymbologykeysbox").innerHTML = keyHTML;
+			if (document.getElementById("taxasymbologykeysbox")) document.getElementById("taxasymbologykeysbox").innerHTML = keyHTML;
 		}
 
-		function changeMainKey(gCnt,newColor){
-			if(mapSymbol == 'taxa'){
+		function changeMainKey(gCnt, newColor) {
+			if (mapSymbol == 'taxa') {
 				clearTaxaSymbology();
 			}
-			changeKeyColor(newColor,grpArr[gCnt]);
-			if(clusterOff=="n"){
-				if(clusterCollArr[gCnt]){
+			changeKeyColor(newColor, grpArr[gCnt]);
+			if (clusterOff == "n") {
+				if (clusterCollArr[gCnt]) {
 					clusterCollArr[gCnt].clearMarkers();
 				}
 				optionsCollArr[gCnt] = {
@@ -770,35 +875,60 @@ if(isset($MAPPING_BOUNDARIES)){
 			}
 		}
 
-		function findSelection(gCnt,id,dir){
+		function findSelection(gCnt, id, dir) {
 			if (grpArr[gCnt]) {
 				for (i in grpArr[gCnt]) {
-					if(grpArr[gCnt][i].occid==id){
-						if(grpArr[gCnt][i].customInfo=='obs'){
-							var markerColor = '#'+grpArr[gCnt][i].color;
-							if(dir == 'select'){
-								var markerIcon = {path:"m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z",fillColor:markerColor,fillOpacity:1,scale:1,strokeColor:"#10D8E6",strokeWeight:2};
-							}
-							else if(dir == 'deselect'){
-								var markerIcon = {path:"m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z",fillColor:markerColor,fillOpacity:1,scale:1,strokeColor:"#000000",strokeWeight:1};
+					if (grpArr[gCnt][i].occid == id) {
+						if (grpArr[gCnt][i].recordType == 'obs') {
+							var markerColor = '#' + grpArr[gCnt][i].color;
+							if (dir == 'select') {
+								var markerIcon = {
+									path: "m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z",
+									fillColor: markerColor,
+									fillOpacity: 1,
+									scale: 1,
+									strokeColor: "#10D8E6",
+									strokeWeight: 2
+								};
+							} else if (dir == 'deselect') {
+								var markerIcon = {
+									path: "m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z",
+									fillColor: markerColor,
+									fillOpacity: 1,
+									scale: 1,
+									strokeColor: "#000000",
+									strokeWeight: 1
+								};
 							}
 							grpArr[gCnt][i].setIcon(markerIcon);
 						}
-						if(grpArr[gCnt][i].customInfo=='spec'){
-							var markerColor = '#'+grpArr[gCnt][i].color;
-							if(dir == 'select'){
-								var markerIcon = {path:google.maps.SymbolPath.CIRCLE,fillColor:markerColor,fillOpacity:1,scale:7,strokeColor:"#10D8E6",strokeWeight:2};
-							}
-							else if(dir == 'deselect'){
-								var markerIcon = {path:google.maps.SymbolPath.CIRCLE,fillColor:markerColor,fillOpacity:1,scale:7,strokeColor:"#000000",strokeWeight:1};
+						if (grpArr[gCnt][i].recordType == 'spec') {
+							var markerColor = '#' + grpArr[gCnt][i].color;
+							if (dir == 'select') {
+								var markerIcon = {
+									path: google.maps.SymbolPath.CIRCLE,
+									fillColor: markerColor,
+									fillOpacity: 1,
+									scale: 7,
+									strokeColor: "#10D8E6",
+									strokeWeight: 2
+								};
+							} else if (dir == 'deselect') {
+								var markerIcon = {
+									path: google.maps.SymbolPath.CIRCLE,
+									fillColor: markerColor,
+									fillOpacity: 1,
+									scale: 7,
+									strokeColor: "#000000",
+									strokeWeight: 1
+								};
 							}
 							grpArr[gCnt][i].setIcon(markerIcon);
 						}
-						if(dir == 'select'){
+						if (dir == 'select') {
 							grpArr[gCnt][i].selected = true;
 							selected = true;
-						}
-						else if(dir == 'deselect'){
+						} else if (dir == 'deselect') {
 							grpArr[gCnt][i].selected = false;
 							deselected = true;
 						}
@@ -808,21 +938,21 @@ if(isset($MAPPING_BOUNDARIES)){
 			}
 		}
 
-		function findGrpClusterSelection(gCnt,id){
-			if(clusterCollArr[gCnt]){
+		function findGrpClusterSelection(gCnt, id) {
+			if (clusterCollArr[gCnt]) {
 				var clusters = clusterCollArr[gCnt].getClusters();
-				for( var i=0, l=clusters.length; i<l; i++ ){
+				for (var i = 0, l = clusters.length; i < l; i++) {
 					var selCluster = false;
 					var oldHtml = clusters[i].clusterIcon_.div_.innerHTML;
-					for( var j=0, le=clusters[i].markers_.length; j<le; j++ ){
-						if(clusters[i].markers_[j].selected==true){
+					for (var j = 0, le = clusters[i].markers_.length; j < le; j++) {
+						if (clusters[i].markers_[j].selected == true) {
 							selCluster = true;
 						}
 					}
-					if(selCluster == true){
+					if (selCluster == true) {
 						var newHtml = oldHtml.replace('></circle>', ' stroke="#10D8E6" stroke-width="3px"></circle>');
 					}
-					if(selCluster == false){
+					if (selCluster == false) {
 						var newHtml = oldHtml.replace(' stroke="#10D8E6" stroke-width="3px"></circle>', '></circle>');
 					}
 					clusters[i].clusterIcon_.div_.innerHTML = newHtml;
@@ -830,22 +960,22 @@ if(isset($MAPPING_BOUNDARIES)){
 			}
 		}
 
-		function findTaxClusterSelection(id){
-			for(var tid in tidArr) {
-				if(clusterTaxArr[tid]){
+		function findTaxClusterSelection(id) {
+			for (var tid in tidArr) {
+				if (clusterTaxArr[tid]) {
 					var clusters = clusterTaxArr[tid].getClusters();
-					for( var i=0, l=clusters.length; i<l; i++ ){
+					for (var i = 0, l = clusters.length; i < l; i++) {
 						var selCluster = false;
 						var oldHtml = clusters[i].clusterIcon_.div_.innerHTML;
-						for( var j=0, le=clusters[i].markers_.length; j<le; j++ ){
-							if(clusters[i].markers_[j].selected==true){
+						for (var j = 0, le = clusters[i].markers_.length; j < le; j++) {
+							if (clusters[i].markers_[j].selected == true) {
 								selCluster = true;
 							}
 						}
-						if(selCluster == true){
+						if (selCluster == true) {
 							var newHtml = oldHtml.replace('></circle>', ' stroke="#10D8E6" stroke-width="3px"></circle>');
 						}
-						if(selCluster == false){
+						if (selCluster == false) {
 							var newHtml = oldHtml.replace(' stroke="#10D8E6" stroke-width="3px"></circle>', '></circle>');
 						}
 						clusters[i].clusterIcon_.div_.innerHTML = newHtml;
@@ -854,72 +984,98 @@ if(isset($MAPPING_BOUNDARIES)){
 			}
 		}
 
-		function clearTaxaSymbology(){
-			for(var tid in tidArr) {
-				if(clusterTaxArr[tid]){
+		function clearTaxaSymbology() {
+			for (var tid in tidArr) {
+				if (clusterTaxArr[tid]) {
 					clusterTaxArr[tid].clearMarkers();
 				}
-				var keyName = 'taxaColor'+tid;
-				if(document.getElementById(keyName)){
+				var keyName = 'taxaColor' + tid;
+				if (document.getElementById(keyName)) {
 					document.getElementById(keyName).color.fromString("E69E67");
 				}
 			}
 		}
 
-		function resetMainSymbology(){
-			for(var gcnt in grpArr) {
-				changeMainKey(gcnt,"E69E67");
-				var keyName = 'keyColor'+gcnt;
+		function resetMainSymbology() {
+			for (var gcnt in grpArr) {
+				changeMainKey(gcnt, "E69E67");
+				var keyName = 'keyColor' + gcnt;
 				document.getElementById(keyName).color.fromString("E69E67");
 			}
 		}
 
-		function changeCollColor(color,gcnt){
-			changeMainKey(gcnt,color);
+		function changeCollColor(color, gcnt) {
+			changeMainKey(gcnt, color);
 			mapSymbol = 'coll';
 		}
 
-		function changeTaxaColor(color,tidcode){
-			if(mapSymbol == 'coll'){
+		function changeTaxaColor(color, tidcode) {
+			if (mapSymbol == 'coll') {
 				resetMainSymbology();
 			}
-			changeTaxaKey(tidcode,color);
+			changeTaxaKey(tidcode, color);
 			mapSymbol = 'taxa';
 		}
 
-		function changeTaxaKey(tid,newColor){
-			if(clusterTaxArr[tid]){
+		function changeTaxaKey(tid, newColor) {
+			if (clusterTaxArr[tid]) {
 				clusterTaxArr[tid].clearMarkers();
 			}
 			var tempArr = [];
-			for(var gcnt in grpArr) {
-				if(grpArr[gcnt]) {
-					var newMarkerColor = '#'+newColor;
+			for (var gcnt in grpArr) {
+				if (grpArr[gcnt]) {
+					var newMarkerColor = '#' + newColor;
 					for (i in grpArr[gcnt]) {
-						if(grpArr[gcnt][i].taxatid == tid){
-							if(grpArr[gcnt][i].customInfo=='obs'){
-								if(grpArr[gcnt][i].selected==true){
-									var markerIcon = {path:"m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z",fillColor:newMarkerColor,fillOpacity:1,scale:1,strokeColor:"#10D8E6",strokeWeight:2};
-								}
-								else{
-									var markerIcon = {path:"m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z",fillColor:newMarkerColor,fillOpacity:1,scale:1,strokeColor:"#000000",strokeWeight:1};
+						if (grpArr[gcnt][i].taxatid == tid) {
+							if (grpArr[gcnt][i].recordType == 'obs') {
+								if (grpArr[gcnt][i].selected == true) {
+									var markerIcon = {
+										path: "m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z",
+										fillColor: newMarkerColor,
+										fillOpacity: 1,
+										scale: 1,
+										strokeColor: "#10D8E6",
+										strokeWeight: 2
+									};
+								} else {
+									var markerIcon = {
+										path: "m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z",
+										fillColor: newMarkerColor,
+										fillOpacity: 1,
+										scale: 1,
+										strokeColor: "#000000",
+										strokeWeight: 1
+									};
 								}
 								grpArr[gcnt][i].color = newColor;
 								grpArr[gcnt][i].setIcon(markerIcon);
 							}
-							if(grpArr[gcnt][i].customInfo=='spec'){
-								if(grpArr[gcnt][i].selected==true){
-									var markerIcon = {path:google.maps.SymbolPath.CIRCLE,fillColor:newMarkerColor,fillOpacity:1,scale:7,strokeColor:"#10D8E6",strokeWeight:2};
-								}
-								else{
-									var markerIcon = {path:google.maps.SymbolPath.CIRCLE,fillColor:newMarkerColor,fillOpacity:1,scale:7,strokeColor:"#000000",strokeWeight:1};
+							if (grpArr[gcnt][i].recordType == 'spec') {
+								if (grpArr[gcnt][i].selected == true) {
+									var markerIcon = {
+										path: google.maps.SymbolPath.CIRCLE,
+										fillColor: newMarkerColor,
+										fillOpacity: 1,
+										scale: 7,
+										strokeColor: "#10D8E6",
+										strokeWeight: 2
+									};
+								} else {
+									var markerIcon = {
+										path: google.maps.SymbolPath.CIRCLE,
+										fillColor: newMarkerColor,
+										fillOpacity: 1,
+										scale: 7,
+										strokeColor: "#000000",
+										strokeWeight: 1
+									};
 								}
 								grpArr[gcnt][i].color = newColor;
 								grpArr[gcnt][i].setIcon(markerIcon);
 							}
 							tempArr.push(grpArr[gcnt][i]);
-							if(clusterOff=="n"){
-								if(clusterCollArr[gcnt]){
+							if (clusterOff == "n") {
+								if (clusterCollArr[gcnt]) {
 									clusterCollArr[gcnt].removeMarker(grpArr[gcnt][i]);
 								}
 							}
@@ -928,7 +1084,7 @@ if(isset($MAPPING_BOUNDARIES)){
 				}
 			}
 
-			if(clusterOff=="n"){
+			if (clusterOff == "n") {
 				optionsTaxArr[tid] = {
 					styles: [{
 						color: newColor
@@ -940,45 +1096,45 @@ if(isset($MAPPING_BOUNDARIES)){
 
 				clusterTaxArr[tid] = new markerClusterer.MarkerClusterer({
 					map: map,
-					markers: tempArr, 
+					markers: tempArr,
 					algorithm: new markerClusterer.SuperClusterAlgorithm(optionsTaxArr[tid])
 				});
 			}
 		}
 
-		function autoColorColl(){
+		function autoColorColl() {
 			document.getElementById("randomColorColl").disabled = true;
-			if(mapSymbol == 'taxa'){
+			if (mapSymbol == 'taxa') {
 				clearTaxaSymbology();
 			}
 			var usedColors = [];
-			for(var gcnt in grpArr) {
+			for (var gcnt in grpArr) {
 				var randColor = generateRandColor();
 				while (usedColors.indexOf(randColor) > -1) {
 					randColor = generateRandColor();
 				}
 				usedColors.push(randColor);
-				changeMainKey(gcnt,randColor);
-				var keyName = 'keyColor'+gcnt;
+				changeMainKey(gcnt, randColor);
+				var keyName = 'keyColor' + gcnt;
 				document.getElementById(keyName).color.fromString(randColor);
 			}
 			mapSymbol = 'coll';
 			document.getElementById("randomColorColl").disabled = false;
 		}
 
-		function autoColorTaxa(){
+		function autoColorTaxa() {
 			document.getElementById("randomColorTaxa").disabled = true;
 			resetMainSymbology();
 			var usedColors = [];
-			for(var tid in tidArr) {
+			for (var tid in tidArr) {
 				var randColor = generateRandColor();
 				while (usedColors.indexOf(randColor) > -1) {
 					randColor = generateRandColor();
 				}
 				usedColors.push(randColor);
-				changeTaxaKey(tid,randColor);
-				var keyName = 'taxaColor'+tid;
-				if(document.getElementById(keyName)){
+				changeTaxaKey(tid, randColor);
+				var keyName = 'taxaColor' + tid;
+				if (document.getElementById(keyName)) {
 					document.getElementById(keyName).color.fromString(randColor);
 				}
 			}
@@ -986,7 +1142,7 @@ if(isset($MAPPING_BOUNDARIES)){
 			document.getElementById("randomColorTaxa").disabled = false;
 		}
 
-		function resetSymbology(){
+		function resetSymbology() {
 			document.getElementById("symbolizeReset1").disabled = true;
 			document.getElementById("symbolizeReset2").disabled = true;
 			clearTaxaSymbology();
@@ -1104,19 +1260,20 @@ if(isset($MAPPING_BOUNDARIES)){
 		}
 		*/
 
-		<?php echo ($activateGeolocation?"google.maps.event.addListener(window, 'load', getCoords);":""); ?>
+		<?php echo ($activateGeolocation ? "google.maps.event.addListener(window, 'load', getCoords);" : ""); ?>
 	</script>
 	<script src="../../js/symb/api.taxonomy.taxasuggest.js?ver=4" type="text/javascript"></script>
 </head>
-<body style='width:100%;max-width:100%;min-width:500px;' <?php echo (!$activateGeolocation?'onload="initialize()"':''); ?>>
-<div>
+
+<body style='width:100%;max-width:100%;min-width:500px;' <?php echo (!$activateGeolocation ? 'onload="initialize()"' : ''); ?>>
 	<div>
-		<button onclick="openNav()" style="position:absolute;top:0;left:0;margin:0px;z-index:10;font-size: 14px;">&#9776; <b>Open Search Panel</b></button>
-	</div>
-	<div id="defaultpanel" class="sidepanel">
-		<div id="accordion">
-			<?php
-			/*
+		<div>
+			<button onclick="openNav()" style="position:absolute;top:0;left:0;margin:0px;z-index:10;font-size: 14px;">&#9776; <b>Open Search Panel</b></button>
+		</div>
+		<div id="defaultpanel" class="sidepanel">
+			<div id="accordion">
+				<?php
+				/*
 			echo "MySQL Version: ".$mysqlVersion;
 			echo "Request: ".json_encode($_REQUEST);
 			echo "mapWhere: ".$mapWhere;
@@ -1126,367 +1283,386 @@ if(isset($MAPPING_BOUNDARIES)){
 			echo "tIdArr: ".json_encode($tIdArr);
 			echo "minLat:".$minLat."maxLat:".$maxLat."minLng:".$minLng."maxLng:".$maxLng;
 			*/
-			?>
-			<h3 style="padding-left:30px;"><?php echo (isset($LANG['SEARCH_CRITERIA'])?$LANG['SEARCH_CRITERIA']:'Search Criteria and Options'); ?></h3>
-			<div id="tabs1" style="width:379px;padding:0px;">
-				<form name="mapsearchform" id="mapsearchform" action="index.php" method="post" onsubmit="return verifyCollForm(this);">
-					<ul>
-						<li><a href="#searchcollections"><span><?php echo (isset($LANG['COLLECTIONS'])?$LANG['COLLECTIONS']:'Collections'); ?></span></a></li>
-						<li><a href="#searchcriteria"><span><?php echo (isset($LANG['CRITERIA'])?$LANG['CRITERIA']:'Criteria'); ?></span></a></li>
-						<li><a href="#mapoptions"><span><?php echo (isset($LANG['MAP_OPTIONS'])?$LANG['MAP_OPTIONS']:'Map Options'); ?></span></a></li>
-					</ul>
-					<div id="searchcollections" style="">
-						<div class="mapinterface">
-							<?php
-							$collList = $mapManager->getFullCollectionList($catId);
-							$specArr = (isset($collList['spec'])?$collList['spec']:null);
-							$obsArr = (isset($collList['obs'])?$collList['obs']:null);
-							if($specArr || $obsArr){
-								?>
-								<div id="specobsdiv">
-									<div style="margin:0px 0px 10px 5px;">
-										<input id="dballcb" name="db[]" class="specobs" value='all' type="checkbox" onclick="selectAll(this);" <?php echo (!$mapManager->getSearchTerm('db') || $mapManager->getSearchTerm('db')=='all'?'checked':'') ?> />
-								 		<?php echo $LANG['SELECT_DESELECT'].' <a href="misc/collprofiles.php">'.$LANG['ALL_COLLECTIONS'].'</a>'; ?>
-									</div>
-									<?php
-									if($specArr){
-										$mapManager->outputFullCollArr($specArr, $catId, false, false);
-									}
-									if($specArr && $obsArr) echo '<hr style="clear:both;margin:20px 0px;"/>';
-									if($obsArr){
-										$mapManager->outputFullCollArr($obsArr, $catId, false, false);
-									}
-									?>
-									<div style="clear:both;">&nbsp;</div>
-								</div>
+				?>
+				<h3 style="padding-left:30px;"><?php echo (isset($LANG['SEARCH_CRITERIA']) ? $LANG['SEARCH_CRITERIA'] : 'Search Criteria and Options'); ?></h3>
+				<div id="tabs1" style="width:379px;padding:0px;">
+					<form name="mapsearchform" id="mapsearchform" action="index.php" method="post" onsubmit="return verifyCollForm(this);">
+						<ul>
+							<li><a href="#searchcollections"><span><?php echo (isset($LANG['COLLECTIONS']) ? $LANG['COLLECTIONS'] : 'Collections'); ?></span></a></li>
+							<li><a href="#searchcriteria"><span><?php echo (isset($LANG['CRITERIA']) ? $LANG['CRITERIA'] : 'Criteria'); ?></span></a></li>
+							<li><a href="#mapoptions"><span><?php echo (isset($LANG['MAP_OPTIONS']) ? $LANG['MAP_OPTIONS'] : 'Map Options'); ?></span></a></li>
+						</ul>
+						<div id="searchcollections" style="">
+							<div class="mapinterface">
 								<?php
+								$collList = $mapManager->getFullCollectionList($catId);
+								$specArr = (isset($collList['spec']) ? $collList['spec'] : null);
+								$obsArr = (isset($collList['obs']) ? $collList['obs'] : null);
+								if ($specArr || $obsArr) {
+								?>
+									<div id="specobsdiv">
+										<div style="margin:0px 0px 10px 5px;">
+											<input id="dballcb" name="db[]" class="specobs" value='all' type="checkbox" onclick="selectAll(this);" <?php echo (!$mapManager->getSearchTerm('db') || $mapManager->getSearchTerm('db') == 'all' ? 'checked' : '') ?> />
+											<?php echo $LANG['SELECT_DESELECT'] . ' <a href="misc/collprofiles.php">' . $LANG['ALL_COLLECTIONS'] . '</a>'; ?>
+										</div>
+										<?php
+										if ($specArr) {
+											$mapManager->outputFullCollArr($specArr, $catId, false, false);
+										}
+										if ($specArr && $obsArr) echo '<hr style="clear:both;margin:20px 0px;"/>';
+										if ($obsArr) {
+											$mapManager->outputFullCollArr($obsArr, $catId, false, false);
+										}
+										?>
+										<div style="clear:both;">&nbsp;</div>
+									</div>
+								<?php
+								}
+								?>
+							</div>
+						</div>
+						<div id="searchcriteria" style="">
+							<div style="height:25px;">
+								<!-- <div style="float:left;<?php echo (isset($SOLR_MODE) && $SOLR_MODE ? 'display:none;' : ''); ?>">
+								Record Limit:
+								<input type="text" id="recordlimit" style="width:75px;" name="recordlimit" value="<?php echo ($recLimit ? $recLimit : ""); ?>" title="Maximum record amount returned from search." onchange="return checkRecordLimit(this.form);" />
+							</div> -->
+								<div style="float:right;">
+									<input type="hidden" id="selectedpoints" value="" />
+									<input type="hidden" id="deselectedpoints" value="" />
+									<input type="hidden" id="selecteddspoints" value="" />
+									<input type="hidden" id="deselecteddspoints" value="" />
+									<input type="hidden" id="gridSizeSetting" name="gridSizeSetting" value="<?php echo $gridSize; ?>" />
+									<input type="hidden" id="minClusterSetting" name="minClusterSetting" value="<?php echo $minClusterSize; ?>" />
+									<input type="hidden" id="clusterSwitch" name="clusterSwitch" value="<?php echo $clusterOff; ?>" />
+									<?php
+									$pointArr = explode(';', $mapManager->getSearchTerm('llpoint'));
+									$pointLat = (isset($pointArr[0]) ? $pointArr[0] : '');
+									$pointLong = (isset($pointArr[1]) ? $pointArr[1] : '');
+									$pointRadius = (isset($pointArr[2]) ? $pointArr[2] : '');
+									?>
+									<input type="hidden" id="pointlat" name="pointlat" value='<?php echo $pointLat; ?>' />
+									<input type="hidden" id="pointlong" name="pointlong" value='<?php echo $pointLong; ?>' />
+									<input type="hidden" id="radius" name="radius" value='<?php echo $pointRadius; ?>' />
+									<?php
+									$boundArr = explode(';', $mapManager->getSearchTerm('llbound'));
+									$upperLat = (isset($boundArr[0]) ? $boundArr[0] : '');
+									$bottomLat = (isset($boundArr[1]) ? $boundArr[1] : '');
+									$leftLong = (isset($boundArr[2]) ? $boundArr[2] : '');
+									$rightLong = (isset($boundArr[3]) ? $boundArr[3] : '');
+									?>
+									<input type="hidden" id="upperlat" name="upperlat" value='<?php echo $upperLat; ?>' />
+									<input type="hidden" id="rightlong" name="rightlong" value='<?php echo $rightLong; ?>' />
+									<input type="hidden" id="bottomlat" name="bottomlat" value='<?php echo $bottomLat; ?>' />
+									<input type="hidden" id="leftlong" name="leftlong" value='<?php echo $leftLong; ?>' />
+									<input type="hidden" id="polycoords" name="polycoords" value='<?php echo $mapManager->getSearchTerm('polycoords'); ?>' />
+									<button type="button" name="resetbutton" onclick="resetQueryForm(this.form)"><?php echo (isset($LANG['RESET']) ? $LANG['RESET'] : 'Reset'); ?></button>
+									<button type="submit" name="submitform"><?php echo (isset($LANG['SEARCH']) ? $LANG['SEARCH'] : 'Search'); ?></button>
+								</div>
+							</div>
+							<div style="margin:5 0 5 0;">
+								<hr />
+							</div>
+							<div>
+								<span style=""><input type="checkbox" name="usethes" value="1" <?php if ($mapManager->getSearchTerm('usethes') || !$submitForm) echo "CHECKED"; ?>><?php echo (isset($LANG['INCLUDE_SYNONYMS']) ? $LANG['INCLUDE_SYNONYMS'] : 'Include Synonyms'); ?></span>
+							</div>
+							<div>
+								<div style="margin-top:5px;">
+									<select id="taxontype" name="taxontype">
+										<?php
+										$taxonType = 2;
+										if (isset($DEFAULT_TAXON_SEARCH) && $DEFAULT_TAXON_SEARCH) $taxonType = $DEFAULT_TAXON_SEARCH;
+										if ($mapManager->getSearchTerm('taxontype')) $taxonType = $mapManager->getSearchTerm('taxontype');
+										for ($h = 1; $h < 6; $h++) {
+											echo '<option value="' . $h . '" ' . ($taxonType == $h ? 'SELECTED' : '') . '>' . $LANG['SELECT_1-' . $h] . '</option>';
+										}
+										?>
+									</select>
+								</div>
+								<div style="margin-top:5px;">
+									<?php echo (isset($LANG['TAXA']) ? $LANG['TAXA'] : 'Taxa'); ?>:
+									<input id="taxa" name="taxa" type="text" style="width:275px;" value="<?php echo $mapManager->getTaxaSearchTerm(); ?>" title="<?php echo (isset($LANG['SEPARATE_MULTIPLE']) ? $LANG['SEPARATE_MULTIPLE'] : 'Separate multiple taxa w/ commas'); ?>" />
+								</div>
+							</div>
+							<div style="margin:5 0 5 0;">
+								<hr />
+							</div>
+							<?php
+							if ($mapManager->getSearchTerm('clid')) {
+							?>
+								<div>
+									<div style="clear:both;text-decoration: underline;">Species Checklist:</div>
+									<div style="clear:both;margin:5px 0px">
+										<?php echo $mapManager->getClName(); ?><br />
+										<input type="hidden" id="checklistname" name="checklistname" value="<?php echo $mapManager->getClName(); ?>" />
+										<input id="clid" name="clid" type="hidden" value="<?php echo $mapManager->getSearchTerm('clid'); ?>" />
+									</div>
+									<div style="clear:both;margin-top:5px;">
+										<div style="float:left">
+											Display:
+										</div>
+										<div style="float:left;margin-left:10px;">
+											<input name="cltype" type="radio" value="all" <?php if ($mapManager->getSearchTerm('cltype') == 'all') echo 'checked'; ?> />
+											all specimens within polygon<br />
+											<input name="cltype" type="radio" value="vouchers" <?php if (!$mapManager->getSearchTerm('cltype') || $mapManager->getSearchTerm('cltype') == 'vouchers') echo 'checked'; ?> />
+											vouchers only
+										</div>
+										<div style="clear: both"></div>
+									</div>
+								</div>
+								<div style="clear:both;margin:0 0 5 0;">
+									<hr />
+								</div>
+							<?php
 							}
 							?>
-						</div>
-					</div>
-					<div id="searchcriteria" style="">
-						<div style="height:25px;">
-							<!-- <div style="float:left;<?php echo (isset($SOLR_MODE) && $SOLR_MODE?'display:none;':''); ?>">
-								Record Limit:
-								<input type="text" id="recordlimit" style="width:75px;" name="recordlimit" value="<?php echo ($recLimit?$recLimit:""); ?>" title="Maximum record amount returned from search." onchange="return checkRecordLimit(this.form);" />
-							</div> -->
-							<div style="float:right;">
-								<input type="hidden" id="selectedpoints" value="" />
-								<input type="hidden" id="deselectedpoints" value="" />
-								<input type="hidden" id="selecteddspoints" value="" />
-								<input type="hidden" id="deselecteddspoints" value="" />
-								<input type="hidden" id="gridSizeSetting" name="gridSizeSetting" value="<?php echo $gridSize; ?>" />
-								<input type="hidden" id="minClusterSetting" name="minClusterSetting" value="<?php echo $minClusterSize; ?>" />
-								<input type="hidden" id="clusterSwitch" name="clusterSwitch" value="<?php echo $clusterOff; ?>" />
-								<?php
-								$pointArr = explode(';',$mapManager->getSearchTerm('llpoint'));
-								$pointLat = (isset($pointArr[0])?$pointArr[0]:'');
-								$pointLong = (isset($pointArr[1])?$pointArr[1]:'');
-								$pointRadius = (isset($pointArr[2])?$pointArr[2]:'');
-								?>
-								<input type="hidden" id="pointlat" name="pointlat" value='<?php echo $pointLat; ?>' />
-								<input type="hidden" id="pointlong" name="pointlong" value='<?php echo $pointLong; ?>' />
-								<input type="hidden" id="radius" name="radius" value='<?php echo $pointRadius; ?>' />
-								<?php
-								$boundArr = explode(';',$mapManager->getSearchTerm('llbound'));
-								$upperLat = (isset($boundArr[0])?$boundArr[0]:'');
-								$bottomLat = (isset($boundArr[1])?$boundArr[1]:'');
-								$leftLong = (isset($boundArr[2])?$boundArr[2]:'');
-								$rightLong = (isset($boundArr[3])?$boundArr[3]:'');
-								?>
-								<input type="hidden" id="upperlat" name="upperlat" value='<?php echo $upperLat; ?>' />
-								<input type="hidden" id="rightlong" name="rightlong" value='<?php echo $rightLong; ?>' />
-								<input type="hidden" id="bottomlat" name="bottomlat" value='<?php echo $bottomLat; ?>' />
-								<input type="hidden" id="leftlong" name="leftlong" value='<?php echo $leftLong; ?>' />
-								<input type="hidden" id="polycoords" name="polycoords" value='<?php echo $mapManager->getSearchTerm('polycoords'); ?>' />
-								<button type="button" name="resetbutton" onclick="resetQueryForm(this.form)"><?php echo (isset($LANG['RESET'])?$LANG['RESET']:'Reset'); ?></button>
-								<button type="submit" name="submitform"><?php echo (isset($LANG['SEARCH'])?$LANG['SEARCH']:'Search'); ?></button>
-							</div>
-						</div>
-						<div style="margin:5 0 5 0;"><hr /></div>
-						<div>
-							<span style=""><input type="checkbox" name="usethes" value="1" <?php if($mapManager->getSearchTerm('usethes') || !$submitForm) echo "CHECKED"; ?> ><?php echo (isset($LANG['INCLUDE_SYNONYMS'])?$LANG['INCLUDE_SYNONYMS']:'Include Synonyms'); ?></span>
-						</div>
-						<div>
-							<div style="margin-top:5px;">
-								<select id="taxontype" name="taxontype">
-									<?php
-									$taxonType = 2;
-									if(isset($DEFAULT_TAXON_SEARCH) && $DEFAULT_TAXON_SEARCH) $taxonType = $DEFAULT_TAXON_SEARCH;
-									if($mapManager->getSearchTerm('taxontype')) $taxonType = $mapManager->getSearchTerm('taxontype');
-									for($h=1;$h<6;$h++){
-										echo '<option value="'.$h.'" '.($taxonType==$h?'SELECTED':'').'>'.$LANG['SELECT_1-'.$h].'</option>';
-									}
-									?>
-								</select>
-							</div>
-							<div style="margin-top:5px;">
-								<?php echo (isset($LANG['TAXA'])?$LANG['TAXA']:'Taxa'); ?>:
-								<input id="taxa" name="taxa" type="text" style="width:275px;" value="<?php echo $mapManager->getTaxaSearchTerm(); ?>" title="<?php echo (isset($LANG['SEPARATE_MULTIPLE'])?$LANG['SEPARATE_MULTIPLE']:'Separate multiple taxa w/ commas'); ?>" />
-							</div>
-						</div>
-						<div style="margin:5 0 5 0;"><hr /></div>
-						<?php
-						if($mapManager->getSearchTerm('clid')){
-							?>
 							<div>
-								<div style="clear:both;text-decoration: underline;">Species Checklist:</div>
-								<div style="clear:both;margin:5px 0px">
-									<?php echo $mapManager->getClName(); ?><br/>
-									<input type="hidden" id="checklistname" name="checklistname" value="<?php echo $mapManager->getClName(); ?>" />
-									<input id="clid" name="clid" type="hidden"  value="<?php echo $mapManager->getSearchTerm('clid'); ?>" />
+								<?php echo (isset($LANG['COUNTRY']) ? $LANG['COUNTRY'] : 'Country'); ?>: <input type="text" id="country" style="width:225px;" name="country" value="<?php echo $mapManager->getSearchTerm('country'); ?>" title="<?php echo (isset($LANG['SEPARATE_MULTIPLE']) ? $LANG['SEPARATE_MULTIPLE'] : 'Separate multiple taxa w/ commas'); ?>" />
+							</div>
+							<div style="margin-top:5px;">
+								<?php echo (isset($LANG['STATE']) ? $LANG['STATE'] : 'State/Province'); ?>: <input type="text" id="state" style="width:150px;" name="state" value="<?php echo $mapManager->getSearchTerm('state'); ?>" title="<?php echo (isset($LANG['SEPARATE_MULTIPLE']) ? $LANG['SEPARATE_MULTIPLE'] : 'Separate multiple taxa w/ commas'); ?>" />
+							</div>
+							<div style="margin-top:5px;">
+								<?php echo (isset($LANG['COUNTY']) ? $LANG['COUNTY'] : 'County'); ?>: <input type="text" id="county" style="width:225px;" name="county" value="<?php echo $mapManager->getSearchTerm('county'); ?>" title="<?php echo (isset($LANG['SEPARATE_MULTIPLE']) ? $LANG['SEPARATE_MULTIPLE'] : 'Separate multiple taxa w/ commas'); ?>" />
+							</div>
+							<div style="margin-top:5px;">
+								<?php echo (isset($LANG['LOCALITY']) ? $LANG['LOCALITY'] : 'Locality'); ?>: <input type="text" id="locality" style="width:225px;" name="local" value="<?php echo $mapManager->getSearchTerm('local'); ?>" />
+							</div>
+							<div style="margin:5 0 5 0;">
+								<hr />
+							</div>
+							<div id="shapecriteria">
+								<div id="noshapecriteria" style="display:<?php echo ((!$mapManager->getSearchTerm('polycoords') && !$mapManager->getSearchTerm('upperlat')) ? 'block' : 'none'); ?>;">
+									<div id="geocriteria" style="display:<?php echo ((!$mapManager->getSearchTerm('polycoords') && !$distFromMe && !$mapManager->getSearchTerm('pointlat') && !$mapManager->getSearchTerm('upperlat')) ? 'block' : 'none'); ?>;">
+										<div>
+											<?php echo (isset($LANG['SHAPE_TOOLS']) ? $LANG['SHAPE_TOOLS'] : 'Use the shape tools on the map to select occurrences within a given shape'); ?>.
+										</div>
+									</div>
+									<div id="distancegeocriteria" style="display:<?php echo ($distFromMe ? 'block' : 'none'); ?>;">
+										<div>
+											<?php echo (isset($LANG['WITHIN']) ? $LANG['WITHIN'] : 'Within'); ?>
+											<input type="text" id="distFromMe" style="width:40px;" name="distFromMe" value="<?php $distFromMe; ?>" /> miles from me, or
+											<?php echo (isset($LANG['SHAPE_TOOLS']) ? strtolower($LANG['SHAPE_TOOLS']) : 'use the shape tools on the map to select occurrences within a given shape'); ?>.
+										</div>
+									</div>
 								</div>
-								<div style="clear:both;margin-top:5px;">
-									<div style="float:left">
-										Display:
+								<div id="polygeocriteria" style="display:<?php echo (($mapManager->getSearchTerm('polycoords')) ? 'block' : 'none'); ?>;">
+									<div>
+										<?php echo (isset($LANG['WITHIN_POLYGON']) ? $LANG['WITHIN_POLYGON'] : 'Within the selected polygon'); ?>.
 									</div>
-									<div style="float:left;margin-left:10px;">
-										<input name="cltype" type="radio" value="all" <?php if($mapManager->getSearchTerm('cltype') == 'all') echo 'checked'; ?> />
-										all specimens within polygon<br/>
-										<input name="cltype" type="radio" value="vouchers" <?php if(!$mapManager->getSearchTerm('cltype') || $mapManager->getSearchTerm('cltype') == 'vouchers') echo 'checked'; ?> />
-										vouchers only
+								</div>
+								<div id="circlegeocriteria" style="display:<?php echo (($mapManager->getSearchTerm('pointlat') && !$distFromMe) ? 'block' : 'none'); ?>;">
+									<div>
+										<?php echo (isset($LANG['WITHIN_CIRCLE']) ? $LANG['WITHIN_CIRCLE'] : 'Within the selected circle'); ?>.
 									</div>
-									<div style="clear: both"></div>
+								</div>
+								<div id="rectgeocriteria" style="display:<?php echo ($mapManager->getSearchTerm('upperlat') ? 'block' : 'none'); ?>;">
+									<div>
+										<?php echo (isset($LANG['WITHIN_RECTANGLE']) ? $LANG['WITHIN_RECTANGLE'] : 'Within the selected rectangle'); ?>.
+									</div>
+								</div>
+								<div id="deleteshapediv" style="margin-top:5px;display:<?php echo (($mapManager->getSearchTerm('pointlat') || $mapManager->getSearchTerm('upperlat') || $mapManager->getSearchTerm('polycoords')) ? 'block' : 'none'); ?>;">
+									<button type=button onclick="deleteSelectedShape()"><?php echo (isset($LANG['DELETE_SHAPE']) ? $LANG['DELETE_SHAPE'] : 'Delete Selected Shape'); ?></button>
 								</div>
 							</div>
-							<div style="clear:both;margin:0 0 5 0;"><hr /></div>
-							<?php
+							<div style="margin:5 0 5 0;">
+								<hr />
+							</div>
+							<div>
+								<?php echo (isset($LANG['COLLECTOR_LASTNAME']) ? $LANG['COLLECTOR_LASTNAME'] : "Collector's Last Name"); ?>:
+								<input type="text" id="collector" style="width:125px;" name="collector" value="<?php echo $mapManager->getSearchTerm('collector'); ?>" title="" />
+							</div>
+							<div style="margin-top:5px;">
+								<?php echo (isset($LANG['COLLECTOR_NUMBER']) ? $LANG['COLLECTOR_NUMBER'] : "Collector's Number"); ?>:
+								<input type="text" id="collnum" style="width:125px;" name="collnum" value="<?php echo $mapManager->getSearchTerm('collnum'); ?>" title="Separate multiple terms by commas and ranges by ' - ' (space before and after dash required), e.g.: 3542,3602,3700 - 3750" />
+							</div>
+							<div style="margin-top:5px;">
+								<?php echo (isset($LANG['COLLECTOR_DATE']) ? $LANG['COLLECTOR_DATE'] : 'Collection Date'); ?>:
+								<input type="text" id="eventdate1" style="width:80px;" name="eventdate1" style="width:100px;" value="<?php echo $mapManager->getSearchTerm('eventdate1'); ?>" title="Single date or start date of range" /> -
+								<input type="text" id="eventdate2" style="width:80px;" name="eventdate2" style="width:100px;" value="<?php echo $mapManager->getSearchTerm('eventdate2'); ?>" title="End date of range; leave blank if searching for single date" />
+							</div>
+							<div style="margin:10 0 10 0;">
+								<hr>
+							</div>
+							<div>
+								<?php echo (isset($LANG['CATALOG_NUMBER']) ? $LANG['CATALOG_NUMBER'] : 'Catalog Number'); ?>:
+								<input type="text" id="catnum" style="width:150px;" name="catnum" value="<?php echo $mapManager->getSearchTerm('catnum'); ?>" title="" />
+							</div>
+							<div style="margin-left:15px;">
+								<input name="includeothercatnum" type="checkbox" value="1" checked /> <?php echo (isset($LANG['INCLUDE_OTHER_CATNUM']) ? $LANG['INCLUDE_OTHER_CATNUM'] : 'Include other catalog numbers and GUIDs') ?>
+							</div>
+							<div style="margin-top:10px;">
+								<input type='checkbox' name='typestatus' value='1' <?php if ($mapManager->getSearchTerm('typestatus')) echo "CHECKED"; ?>>
+								<?php echo (isset($LANG['LIMIT_TO_TYPE']) ? $LANG['LIMIT_TO_TYPE'] : 'Limit to Type Specimens Only'); ?>
+							</div>
+							<div style="margin-top:5px;">
+								<input type='checkbox' name='hasimages' value='1' <?php if ($mapManager->getSearchTerm('hasimages')) echo "CHECKED"; ?>>
+								<?php echo (isset($LANG['LIMIT_IMAGES']) ? $LANG['LIMIT_IMAGES'] : 'Limit to Specimens with Images Only'); ?>
+							</div>
+							<div style="margin-top:5px;">
+								<input type='checkbox' name='hasgenetic' value='1' <?php if ($mapManager->getSearchTerm('hasgenetic')) echo "CHECKED"; ?>>
+								<?php echo (isset($LANG['LIMIT_GENETIC']) ? $LANG['LIMIT_GENETIC'] : 'Limit to Specimens with Genetic Data Only'); ?>
+							</div>
+							<div style="margin-top:5px;">
+								<input type='checkbox' name='includecult' value='1' <?php if ($mapManager->getSearchTerm('includecult')) echo "CHECKED"; ?>>
+								<?php echo (isset($LANG['INCLUDE_CULTIVATED']) ? $LANG['INCLUDE_CULTIVATED'] : 'Include cultivated/captive specimens'); ?>
+							</div>
+							<div>
+								<hr>
+							</div>
+							<input type="hidden" name="reset" value="1" />
+						</div>
+					</form>
+					<div id="mapoptions" style="">
+						<div style="border:1px black solid;margin-top:10px;padding:5px;">
+							<b><?php echo (isset($LANG['CLUSTERING']) ? $LANG['CLUSTERING'] : 'Clustering'); ?></b>
+							<div style="margin-top:8px;">
+								<div>
+									<?php echo (isset($LANG['GRID_SIZE']) ? $LANG['GRID_SIZE'] : 'Grid Size'); ?>:
+									<input name="gridsize" id="gridsize" type="text" value="<?php echo $gridSize; ?>" style="width:50px;" onchange="setClustering();" />
+								</div>
+								<div>
+									<?php echo (isset($LANG['CLUSTER_SIZE']) ? $LANG['CLUSTER_SIZE'] : 'Min. Cluster Size'); ?>:
+									<input name="minclustersize" id="minclustersize" type="text" value="<?php echo $minClusterSize; ?>" style="width:50px;" onchange="setClustering();" />
+								</div>
+							</div>
+							<div style="clear:both;margin-top:8px;">
+								<?php echo (isset($LANG['TURN_OFF_CLUSTERING']) ? $LANG['TURN_OFF_CLUSTERING'] : 'Turn Off Clustering'); ?>:
+								<input type="checkbox" id="clusteroff" name="clusteroff" value='1' <?php echo ($clusterOff == "y" ? 'checked' : '') ?> onchange="setClustering();" />
+							</div>
+						</div>
+						<?php
+						if (true) {
+						?>
+							<div style="clear:both;">
+								<div style="float:right;margin-top:10px;">
+									<button id="refreshCluster" name="refreshCluster" onclick="refreshClustering();"><?php echo (isset($LANG['REFRESH_MAP']) ? $LANG['REFRESH_MAP'] : 'Refresh Map'); ?></button>
+								</div>
+							</div>
+						<?php
 						}
 						?>
-						<div>
-							<?php echo (isset($LANG['COUNTRY'])?$LANG['COUNTRY']:'Country'); ?>: <input type="text" id="country" style="width:225px;" name="country" value="<?php echo $mapManager->getSearchTerm('country'); ?>" title="<?php echo (isset($LANG['SEPARATE_MULTIPLE'])?$LANG['SEPARATE_MULTIPLE']:'Separate multiple taxa w/ commas'); ?>" />
-						</div>
-						<div style="margin-top:5px;">
-							<?php echo (isset($LANG['STATE'])?$LANG['STATE']:'State/Province'); ?>: <input type="text" id="state" style="width:150px;" name="state" value="<?php echo $mapManager->getSearchTerm('state'); ?>" title="<?php echo (isset($LANG['SEPARATE_MULTIPLE'])?$LANG['SEPARATE_MULTIPLE']:'Separate multiple taxa w/ commas'); ?>" />
-						</div>
-						<div style="margin-top:5px;">
-							<?php echo (isset($LANG['COUNTY'])?$LANG['COUNTY']:'County'); ?>: <input type="text" id="county" style="width:225px;"  name="county" value="<?php echo $mapManager->getSearchTerm('county'); ?>" title="<?php echo (isset($LANG['SEPARATE_MULTIPLE'])?$LANG['SEPARATE_MULTIPLE']:'Separate multiple taxa w/ commas'); ?>" />
-						</div>
-						<div style="margin-top:5px;">
-							<?php echo (isset($LANG['LOCALITY'])?$LANG['LOCALITY']:'Locality'); ?>: <input type="text" id="locality" style="width:225px;" name="local" value="<?php echo $mapManager->getSearchTerm('local'); ?>" />
-						</div>
-						<div style="margin:5 0 5 0;"><hr /></div>
-						<div id="shapecriteria">
-							<div id="noshapecriteria" style="display:<?php echo ((!$mapManager->getSearchTerm('polycoords') && !$mapManager->getSearchTerm('upperlat'))?'block':'none'); ?>;">
-								<div id="geocriteria" style="display:<?php echo ((!$mapManager->getSearchTerm('polycoords') && !$distFromMe && !$mapManager->getSearchTerm('pointlat') && !$mapManager->getSearchTerm('upperlat'))?'block':'none'); ?>;">
-									<div>
-										<?php echo (isset($LANG['SHAPE_TOOLS'])?$LANG['SHAPE_TOOLS']:'Use the shape tools on the map to select occurrences within a given shape'); ?>.
-									</div>
-								</div>
-								<div id="distancegeocriteria" style="display:<?php echo ($distFromMe?'block':'none'); ?>;">
-									<div>
-										<?php echo (isset($LANG['WITHIN'])?$LANG['WITHIN']:'Within'); ?>
-										 <input type="text" id="distFromMe" style="width:40px;" name="distFromMe" value="<?php $distFromMe; ?>" /> miles from me, or
-										<?php echo (isset($LANG['SHAPE_TOOLS'])?strtolower($LANG['SHAPE_TOOLS']):'use the shape tools on the map to select occurrences within a given shape'); ?>.
-									</div>
-								</div>
-							</div>
-							<div id="polygeocriteria" style="display:<?php echo (($mapManager->getSearchTerm('polycoords'))?'block':'none'); ?>;">
-								<div>
-									<?php echo (isset($LANG['WITHIN_POLYGON'])?$LANG['WITHIN_POLYGON']:'Within the selected polygon'); ?>.
-								</div>
-							</div>
-							<div id="circlegeocriteria" style="display:<?php echo (($mapManager->getSearchTerm('pointlat') && !$distFromMe)?'block':'none'); ?>;">
-								<div>
-									<?php echo (isset($LANG['WITHIN_CIRCLE'])?$LANG['WITHIN_CIRCLE']:'Within the selected circle'); ?>.
-								</div>
-							</div>
-							<div id="rectgeocriteria" style="display:<?php echo ($mapManager->getSearchTerm('upperlat')?'block':'none'); ?>;">
-								<div>
-									<?php echo (isset($LANG['WITHIN_RECTANGLE'])?$LANG['WITHIN_RECTANGLE']:'Within the selected rectangle'); ?>.
-								</div>
-							</div>
-							<div id="deleteshapediv" style="margin-top:5px;display:<?php echo (($mapManager->getSearchTerm('pointlat') || $mapManager->getSearchTerm('upperlat') || $mapManager->getSearchTerm('polycoords'))?'block':'none'); ?>;">
-								<button type=button onclick="deleteSelectedShape()"><?php echo (isset($LANG['DELETE_SHAPE'])?$LANG['DELETE_SHAPE']:'Delete Selected Shape'); ?></button>
-							</div>
-						</div>
-						<div style="margin:5 0 5 0;"><hr /></div>
-						<div>
-							<?php echo (isset($LANG['COLLECTOR_LASTNAME'])?$LANG['COLLECTOR_LASTNAME']:"Collector's Last Name"); ?>:
-							<input type="text" id="collector" style="width:125px;" name="collector" value="<?php echo $mapManager->getSearchTerm('collector'); ?>" title="" />
-						</div>
-						<div style="margin-top:5px;">
-							<?php echo (isset($LANG['COLLECTOR_NUMBER'])?$LANG['COLLECTOR_NUMBER']:"Collector's Number"); ?>:
-							<input type="text" id="collnum" style="width:125px;" name="collnum" value="<?php echo $mapManager->getSearchTerm('collnum'); ?>" title="Separate multiple terms by commas and ranges by ' - ' (space before and after dash required), e.g.: 3542,3602,3700 - 3750" />
-						</div>
-						<div style="margin-top:5px;">
-							<?php echo (isset($LANG['COLLECTOR_DATE'])?$LANG['COLLECTOR_DATE']:'Collection Date'); ?>:
-							<input type="text" id="eventdate1" style="width:80px;" name="eventdate1" style="width:100px;" value="<?php echo $mapManager->getSearchTerm('eventdate1'); ?>" title="Single date or start date of range" /> -
-							<input type="text" id="eventdate2" style="width:80px;" name="eventdate2" style="width:100px;" value="<?php echo $mapManager->getSearchTerm('eventdate2'); ?>" title="End date of range; leave blank if searching for single date" />
-						</div>
-						<div style="margin:10 0 10 0;"><hr></div>
-						<div>
-							<?php echo (isset($LANG['CATALOG_NUMBER'])?$LANG['CATALOG_NUMBER']:'Catalog Number'); ?>:
-							<input type="text" id="catnum" style="width:150px;" name="catnum" value="<?php echo $mapManager->getSearchTerm('catnum'); ?>" title="" />
-						</div>
-						<div style="margin-left:15px;">
-							<input name="includeothercatnum" type="checkbox" value="1" checked /> <?php echo (isset($LANG['INCLUDE_OTHER_CATNUM'])?$LANG['INCLUDE_OTHER_CATNUM']:'Include other catalog numbers and GUIDs')?>
-						</div>
-						<div style="margin-top:10px;">
-							<input type='checkbox' name='typestatus' value='1' <?php if($mapManager->getSearchTerm('typestatus')) echo "CHECKED"; ?> >
-							 <?php echo (isset($LANG['LIMIT_TO_TYPE'])?$LANG['LIMIT_TO_TYPE']:'Limit to Type Specimens Only'); ?>
-						</div>
-						<div style="margin-top:5px;">
-							<input type='checkbox' name='hasimages' value='1' <?php if($mapManager->getSearchTerm('hasimages')) echo "CHECKED"; ?> >
-							 <?php echo (isset($LANG['LIMIT_IMAGES'])?$LANG['LIMIT_IMAGES']:'Limit to Specimens with Images Only'); ?>
-						</div>
-						<div style="margin-top:5px;">
-							<input type='checkbox' name='hasgenetic' value='1' <?php if($mapManager->getSearchTerm('hasgenetic')) echo "CHECKED"; ?> >
-							 <?php echo (isset($LANG['LIMIT_GENETIC'])?$LANG['LIMIT_GENETIC']:'Limit to Specimens with Genetic Data Only'); ?>
-						</div>
-						<div style="margin-top:5px;">
-							<input type='checkbox' name='includecult' value='1' <?php if($mapManager->getSearchTerm('includecult')) echo "CHECKED"; ?> >
-							 <?php echo (isset($LANG['INCLUDE_CULTIVATED'])?$LANG['INCLUDE_CULTIVATED']:'Include cultivated/captive specimens'); ?>
-						</div>
-						<div><hr></div>
-						<input type="hidden" name="reset" value="1" />
 					</div>
-				</form>
-				<div id="mapoptions" style="">
-					<div style="border:1px black solid;margin-top:10px;padding:5px;" >
-						<b><?php echo (isset($LANG['CLUSTERING'])?$LANG['CLUSTERING']:'Clustering'); ?></b>
-						<div style="margin-top:8px;">
-							<div>
-								<?php echo (isset($LANG['GRID_SIZE'])?$LANG['GRID_SIZE']:'Grid Size'); ?>:
-								 <input name="gridsize" id="gridsize" type="text" value="<?php echo $gridSize; ?>" style="width:50px;" onchange="setClustering();" />
-							</div>
-							<div>
-								<?php echo (isset($LANG['CLUSTER_SIZE'])?$LANG['CLUSTER_SIZE']:'Min. Cluster Size'); ?>:
-								 <input name="minclustersize" id="minclustersize" type="text" value="<?php echo $minClusterSize; ?>" style="width:50px;" onchange="setClustering();" />
-							</div>
-						</div>
-						<div style="clear:both;margin-top:8px;">
-							<?php echo (isset($LANG['TURN_OFF_CLUSTERING'])?$LANG['TURN_OFF_CLUSTERING']:'Turn Off Clustering'); ?>:
-							 <input type="checkbox" id="clusteroff" name="clusteroff" value='1' <?php echo ($clusterOff=="y"?'checked':'') ?> onchange="setClustering();"/>
-						</div>
-					</div>
-					<?php
-					if(true){
-						?>
-						<div style="clear:both;">
-							<div style="float:right;margin-top:10px;">
-								<button id="refreshCluster" name="refreshCluster" onclick="refreshClustering();" ><?php echo (isset($LANG['REFRESH_MAP'])?$LANG['REFRESH_MAP']:'Refresh Map'); ?></button>
-							</div>
-						</div>
-						<?php
-					}
-					?>
-				</div>
-				<form style="display:none;" name="csvcontrolform" id="csvcontrolform" action="csvdownloadhandler.php" method="post" onsubmit="">
-					<input name="selectionscsv" id="selectionscsv" type="hidden" value="" />
-					<input name="starrcsv" id="starrcsv" type="hidden" value="" />
-					<input name="typecsv" id="typecsv" type="hidden" value="" />
-					<input name="schema" id="schemacsv" type="hidden" value="" />
-					<input name="identifications" id="identificationscsv" type="hidden" value="" />
-					<input name="images" id="imagescsv" type="hidden" value="" />
-					<input name="format" id="formatcsv" type="hidden" value="" />
-					<input name="cset" id="csetcsv" type="hidden" value="" />
-					<input name="zip" id="zipcsv" type="hidden" value="" />
-					<input name="csvreclimit" id="csvreclimit" type="hidden" value="<?php echo $recLimit; ?>" />
-				</form>
-			</div>
-			<?php
-			if($searchVar){
-				?>
-				<h3 id="recordstaxaheader" style="display:none;padding-left:30px;"><?php echo (isset($LANG['RECORDS_TAXA'])?$LANG['RECORDS_TAXA']:'Records and Taxa'); ?></h3>
-				<div id="tabs2" style="display:none;width:379px;padding:0px;">
-					<ul>
-						<li><a href='occurrencelist.php?<?php echo $searchVar; ?>'><span><?php echo (isset($LANG['RECORDS'])?$LANG['RECORDS']:'Records'); ?></span></a></li>
-						<li><a href='#symbology'><span><?php echo (isset($LANG['COLLECTIONS'])?$LANG['COLLECTIONS']:'Collections'); ?></span></a></li>
-						<li><a href='#maptaxalist'><span><?php echo (isset($LANG['TAXA_LIST'])?$LANG['TAXA_LIST']:'Taxa List'); ?></span></a></li>
-					</ul>
-					<div id="symbology" style="">
-						<div style="height:40px;margin-bottom:15px;">
-							<?php
-							if($obsIDs){
-								?>
-								<div style="float:left;">
-									<div>
-										<svg xmlns="http://www.w3.org/2000/svg" style="height:15px;width:15px;margin-bottom:-2px;">">
-											<g>
-												<circle cx="7.5" cy="7.5" r="7" fill="white" stroke="#000000" stroke-width="1px" ></circle>
-											</g>
-										</svg> = <?php echo (isset($LANG['COLLECTION'])?$LANG['COLLECTION']:'Collection'); ?>
-									</div>
-									<div style="margin-top:5px;" >
-										<svg style="height:14px;width:14px;margin-bottom:-2px;">" xmlns="http://www.w3.org/2000/svg">
-											<g>
-												<path stroke="#000000" d="m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z" stroke-width="1px" fill="white"/>
-											</g>
-										</svg> = <?php echo (isset($LANG['OBSERVATION'])?$LANG['OBSERVATION']:'Observation'); ?>
-									</div>
-								</div>
-								<?php
-							}
-							?>
-							<div id="symbolizeResetButt" style='float:right;margin-bottom:5px;' >
-								<div>
-									<button id="symbolizeReset1" name="symbolizeReset1" onclick='resetSymbology();' ><?php echo (isset($LANG['RESET_SYMBOLOGY'])?$LANG['RESET_SYMBOLOGY']:'Reset Symbology'); ?></button>
-								</div>
-								<div style="margin-top:5px;">
-									<button id="randomColorColl" name="randomColorColl" onclick='autoColorColl();' ><?php echo (isset($LANG['AUTO_COLOR'])?$LANG['AUTO_COLOR']:'Auto Color'); ?></button>
-								</div>
-							</div>
-						</div>
-						<div style="margin:5 0 5 0;clear:both;"><hr /></div>
-						<div style="" >
-							<div style="margin-top:8px;">
-								<div style="display:table;">
-									<div id="symbologykeysbox"></div>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div id="maptaxalist" >
-						<div style="height:40px;margin-bottom:15px;">
-							<?php
-							if($obsIDs){
-								?>
-								<div style="float:left;">
-									<div>
-										<svg xmlns="http://www.w3.org/2000/svg" style="height:15px;width:15px;margin-bottom:-2px;">">
-											<g>
-												<circle cx="7.5" cy="7.5" r="7" fill="white" stroke="#000000" stroke-width="1px" ></circle>
-											</g>
-										</svg> = <?php echo (isset($LANG['COLLECTION'])?$LANG['COLLECTION']:'Collection'); ?>
-									</div>
-									<div style="margin-top:5px;" >
-										<svg style="height:14px;width:14px;margin-bottom:-2px;">" xmlns="http://www.w3.org/2000/svg">
-											<g>
-												<path stroke="#000000" d="m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z" stroke-width="1px" fill="white"/>
-											</g>
-										</svg> = <?php echo (isset($LANG['OBSERVATION'])?$LANG['OBSERVATION']:'Observation'); ?>
-									</div>
-								</div>
-								<?php
-							}
-							?>
-							<div id="symbolizeResetButt" style='float:right;margin-bottom:5px;' >
-								<div>
-									<button id="symbolizeReset2" name="symbolizeReset2" onclick='resetSymbology();' ><?php echo (isset($LANG['RESET_SYMBOLOGY'])?$LANG['RESET_SYMBOLOGY']:'Reset Symbology'); ?></button>
-								</div>
-								<div style="margin-top:5px;">
-									<button id="randomColorTaxa" name="randomColorTaxa" onclick='autoColorTaxa();' ><?php echo (isset($LANG['AUTO_COLOR'])?$LANG['AUTO_COLOR']:'Auto Color'); ?></button>
-								</div>
-							</div>
-						</div>
-						<div style="margin:5 0 5 0;clear:both;"><hr /></div>
-						<div style='font-weight:bold;'><?php echo (isset($LANG['TAXA_COUNT'])?$LANG['TAXA_COUNT']:'Taxa Count'); ?>: <span id="taxaCountNum">0</span></div>
-						<div id="taxasymbologykeysbox"></div>
-					</div>
+					<form style="display:none;" name="csvcontrolform" id="csvcontrolform" action="csvdownloadhandler.php" method="post" onsubmit="">
+						<input name="selectionscsv" id="selectionscsv" type="hidden" value="" />
+						<input name="starrcsv" id="starrcsv" type="hidden" value="" />
+						<input name="typecsv" id="typecsv" type="hidden" value="" />
+						<input name="schema" id="schemacsv" type="hidden" value="" />
+						<input name="identifications" id="identificationscsv" type="hidden" value="" />
+						<input name="images" id="imagescsv" type="hidden" value="" />
+						<input name="format" id="formatcsv" type="hidden" value="" />
+						<input name="cset" id="csetcsv" type="hidden" value="" />
+						<input name="zip" id="zipcsv" type="hidden" value="" />
+						<input name="csvreclimit" id="csvreclimit" type="hidden" value="<?php echo $recLimit; ?>" />
+					</form>
 				</div>
 				<?php
-			}
-			?>
-		</div>
-		<button type="button" onclick="closeNav()" style="position:absolute;top:5px;right:5px;margin:1px;padding:3px;z-index:10;font-weight:bold">&lt;&lt;</button>
-	</div><!-- /defaultpanel -->
-</div>
-<div id='map' style='width:100%;height:100%;'></div>
-<div id="loadingOverlay" style="width:100%;">
-	<div id="loadingImage" style="width:100px;height:100px;position:absolute;top:50%;left:50%;margin-top:-50px;margin-left:-50px;">
-		<img style="border:0px;width:100px;height:100px;" src="../../images/ajax-loader.gif" />
+				if ($searchVar) {
+				?>
+					<h3 id="recordstaxaheader" style="display:none;padding-left:30px;"><?php echo (isset($LANG['RECORDS_TAXA']) ? $LANG['RECORDS_TAXA'] : 'Records and Taxa'); ?></h3>
+					<div id="tabs2" style="display:none;width:379px;padding:0px;">
+						<ul>
+							<li><a href='occurrencelist.php?<?php echo $searchVar; ?>'><span><?php echo (isset($LANG['RECORDS']) ? $LANG['RECORDS'] : 'Records'); ?></span></a></li>
+							<li><a href='#symbology'><span><?php echo (isset($LANG['COLLECTIONS']) ? $LANG['COLLECTIONS'] : 'Collections'); ?></span></a></li>
+							<li><a href='#maptaxalist'><span><?php echo (isset($LANG['TAXA_LIST']) ? $LANG['TAXA_LIST'] : 'Taxa List'); ?></span></a></li>
+						</ul>
+						<div id="symbology" style="">
+							<div style="height:40px;margin-bottom:15px;">
+								<?php
+								if ($obsIDs) {
+								?>
+									<div style="float:left;">
+										<div>
+											<svg xmlns="http://www.w3.org/2000/svg" style="height:15px;width:15px;margin-bottom:-2px;">">
+												<g>
+													<circle cx="7.5" cy="7.5" r="7" fill="white" stroke="#000000" stroke-width="1px"></circle>
+												</g>
+											</svg> = <?php echo (isset($LANG['COLLECTION']) ? $LANG['COLLECTION'] : 'Collection'); ?>
+										</div>
+										<div style="margin-top:5px;">
+											<svg style="height:14px;width:14px;margin-bottom:-2px;">" xmlns="http://www.w3.org/2000/svg">
+												<g>
+													<path stroke="#000000" d="m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z" stroke-width="1px" fill="white" />
+												</g>
+											</svg> = <?php echo (isset($LANG['OBSERVATION']) ? $LANG['OBSERVATION'] : 'Observation'); ?>
+										</div>
+									</div>
+								<?php
+								}
+								?>
+								<div id="symbolizeResetButt" style='float:right;margin-bottom:5px;'>
+									<div>
+										<button id="symbolizeReset1" name="symbolizeReset1" onclick='resetSymbology();'><?php echo (isset($LANG['RESET_SYMBOLOGY']) ? $LANG['RESET_SYMBOLOGY'] : 'Reset Symbology'); ?></button>
+									</div>
+									<div style="margin-top:5px;">
+										<button id="randomColorColl" name="randomColorColl" onclick='autoColorColl();'><?php echo (isset($LANG['AUTO_COLOR']) ? $LANG['AUTO_COLOR'] : 'Auto Color'); ?></button>
+									</div>
+								</div>
+							</div>
+							<div style="margin:5 0 5 0;clear:both;">
+								<hr />
+							</div>
+							<div style="">
+								<div style="margin-top:8px;">
+									<div style="display:table;">
+										<div id="symbologykeysbox"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div id="maptaxalist">
+							<div style="height:40px;margin-bottom:15px;">
+								<?php
+								if ($obsIDs) {
+								?>
+									<div style="float:left;">
+										<div>
+											<svg xmlns="http://www.w3.org/2000/svg" style="height:15px;width:15px;margin-bottom:-2px;">">
+												<g>
+													<circle cx="7.5" cy="7.5" r="7" fill="white" stroke="#000000" stroke-width="1px"></circle>
+												</g>
+											</svg> = <?php echo (isset($LANG['COLLECTION']) ? $LANG['COLLECTION'] : 'Collection'); ?>
+										</div>
+										<div style="margin-top:5px;">
+											<svg style="height:14px;width:14px;margin-bottom:-2px;">" xmlns="http://www.w3.org/2000/svg">
+												<g>
+													<path stroke="#000000" d="m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z" stroke-width="1px" fill="white" />
+												</g>
+											</svg> = <?php echo (isset($LANG['OBSERVATION']) ? $LANG['OBSERVATION'] : 'Observation'); ?>
+										</div>
+									</div>
+								<?php
+								}
+								?>
+								<div id="symbolizeResetButt" style='float:right;margin-bottom:5px;'>
+									<div>
+										<button id="symbolizeReset2" name="symbolizeReset2" onclick='resetSymbology();'><?php echo (isset($LANG['RESET_SYMBOLOGY']) ? $LANG['RESET_SYMBOLOGY'] : 'Reset Symbology'); ?></button>
+									</div>
+									<div style="margin-top:5px;">
+										<button id="randomColorTaxa" name="randomColorTaxa" onclick='autoColorTaxa();'><?php echo (isset($LANG['AUTO_COLOR']) ? $LANG['AUTO_COLOR'] : 'Auto Color'); ?></button>
+									</div>
+								</div>
+							</div>
+							<div style="margin:5 0 5 0;clear:both;">
+								<hr />
+							</div>
+							<div style='font-weight:bold;'><?php echo (isset($LANG['TAXA_COUNT']) ? $LANG['TAXA_COUNT'] : 'Taxa Count'); ?>: <span id="taxaCountNum">0</span></div>
+							<div id="taxasymbologykeysbox"></div>
+						</div>
+					</div>
+				<?php
+				}
+				?>
+			</div>
+			<button type="button" onclick="closeNav()" style="position:absolute;top:5px;right:5px;margin:1px;padding:3px;z-index:10;font-weight:bold">&lt;&lt;</button>
+		</div><!-- /defaultpanel -->
 	</div>
-</div>
+	<div id='map' style='width:100%;height:100%;'></div>
+	<div id="loadingOverlay" style="width:100%;">
+		<div id="loadingImage" style="width:100px;height:100px;position:absolute;top:50%;left:50%;margin-top:-50px;margin-left:-50px;">
+			<img style="border:0px;width:100px;height:100px;" src="../../images/ajax-loader.gif" />
+		</div>
+	</div>
 </body>
+
 </html>

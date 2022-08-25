@@ -115,7 +115,7 @@ function changeKeyColor(v,markers){
 	var newMarkerColor = '#'+v;
 	if (markers) {
 		for (i in markers) {
-			if(markers[i].customInfo=='obs'){
+			if(markers[i].recordType=='obs'){
 				if(markers[i].selected==true){
 					var markerIcon = {path:"m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z",fillColor:newMarkerColor,fillOpacity:1,scale:1,strokeColor:"#10D8E6",strokeWeight:2};
 				}
@@ -125,7 +125,7 @@ function changeKeyColor(v,markers){
 				markers[i].color = v;
 				markers[i].setIcon(markerIcon);
 			}
-			if(markers[i].customInfo=='spec'){
+			if(markers[i].recordType=='spec'){
 				if(markers[i].selected==true){
 					var markerIcon = {path:google.maps.SymbolPath.CIRCLE,fillColor:newMarkerColor,fillOpacity:1,scale:7,strokeColor:"#10D8E6",strokeWeight:2};
 				}
@@ -140,13 +140,18 @@ function changeKeyColor(v,markers){
 }
 
 function selectMarker(marker){
-	var markerColor = '#'+marker.color;
-	if(marker.customInfo=='obs'){
-		var markerIcon = {path:"m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z",fillColor:markerColor,fillOpacity:1,scale:1,strokeColor:"#10D8E6",strokeWeight:2};
+	if(marker.recordType=='obs'){
+		var markerIcon = {
+			url: 'coloricon.php?shape=triangle&color=00ff00',
+			scaledSize: new google.maps.Size(20, 20), 
+		};
 		marker.setIcon(markerIcon);
 	}
-	if(marker.customInfo=='spec'){
-		var markerIcon = {path:google.maps.SymbolPath.CIRCLE,fillColor:markerColor,fillOpacity:1,scale:7,strokeColor:"#10D8E6",strokeWeight:2};
+	if(marker.recordType=='spec'){
+		var markerIcon = {
+			url: 'coloricon.php?shape=circle&color=00ff00',
+			scaledSize: new google.maps.Size(20, 20), 
+		};
 		marker.setIcon(markerIcon);
 	}
 	marker.selected = true;
@@ -159,13 +164,18 @@ function selectDsMarker(marker){
 }
 
 function deselectMarker(marker){
-	var markerColor = '#'+marker.color;
-	if(marker.customInfo=='obs'){
-		var markerIcon = {path:"m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z",fillColor:markerColor,fillOpacity:1,scale:1,strokeColor:"#000000",strokeWeight:1};
+	if(marker.recordType=='obs'){
+		var markerIcon = {
+			url: 'coloricon.php?shape=triangle&color='+marker.color,
+			scaledSize: new google.maps.Size(18, 18), 
+		};
 		marker.setIcon(markerIcon);
 	}
-	if(marker.customInfo=='spec'){
-		var markerIcon = {path:google.maps.SymbolPath.CIRCLE,fillColor:markerColor,fillOpacity:1,scale:7,strokeColor:"#000000",strokeWeight:1};
+	if(marker.recordType=='spec'){
+		var markerIcon = {
+			url: 'coloricon.php?shape=circle&color='+marker.color,
+			scaledSize: new google.maps.Size(18, 18), 
+		};
 		marker.setIcon(markerIcon);
 	}
 	marker.selected = false;
