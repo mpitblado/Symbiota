@@ -796,7 +796,11 @@ else {
 
 		function buildCollKey() {
 			keyHTML = '';
-			collNameArr.sort();
+
+			// location aware case insensitive sort
+			collNameArr.sort((a, b) => {
+				return a.localeCompare(b, undefined, {sensitivity: 'base'});
+			});
 			for (var i = 0, l = collNameArr.length; i < l; i++) {
 				keyHTML += collKeyArr[collNameArr[i]];
 			}
