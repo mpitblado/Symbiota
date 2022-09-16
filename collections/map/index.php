@@ -108,11 +108,9 @@ else {
 		var clientRoot = "<?php echo $CLIENT_ROOT; ?>";
 
 		$(document).ready(function() {
-			document.getElementById('defaultmarkercolor').value = defaultMarkerColor;
 			<?php
 			if ($searchVar) echo 'sessionStorage.querystr = "' . $searchVar . '";';
 			?>
-			
 		});
 
 		var map;
@@ -165,6 +163,8 @@ else {
 		var panPoint = new google.maps.LatLng();
 		var heatMapData = new google.maps.MVCArray();
 		var displayMode = 'cluster';
+
+		document.getElementById('defaultmarkercolor').value = defaultMarkerColor;
 
 		function initialize(){
 			<?php
@@ -649,17 +649,22 @@ else {
 				collNameArr[key['collid']] = [key['CollectionName'], key['collid']];
 				keyHTML = '';
 				keyHTML += '<div style="display:table-row;">';
-				keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-bottom:5px;" ><input type="color" id="collColor' + key['collid'] + '" class="small_color_input" value="' + iconColor + '" oninput="changeCollColor(this.value,' + key['collid'] + ');" /></div>';
+				keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-bottom:5px;" ><input type="checkbox" id="chkHideColl' + key['collid'] + '" onchange="hideCollToggle(this.checked,\'' + key['collid'] + '\');" CHECKED><input type="color" id="collColor' + key['collid'] + '" class="small_color_input" value="' + iconColor + '" oninput="changeCollColor(this.value,' + key['collid'] + ');" /></div>';
 				keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-left:8px;"> = </div>';
 				keyHTML += '<div style="display:table-cell;width:250px;vertical-align:middle;padding-left:8px;">' + key['CollectionName'] + '</div>';
 				keyHTML += '</div>';
-				keyHTML += '<div style="display:table-row;height:8px;"></div>';
 				collKeyArr[key['collid']] = keyHTML;
 			}
 		}
 
 		function buildCollKey() {
 			keyHTML = '';
+			keyHTML += "<div style='margin-left:5px;'><h3 style='margin-top:8px;margin-bottom:5px;'>Collections</h3></div>";
+			keyHTML += "<div style='display:table;'>";
+			keyHTML += '<div id="toggleHideAllCollectionsRow">';
+			keyHTML += '<div style="display:table-row;">';	
+			keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-bottom:5px;" ><input type="checkbox" id="chkHideAllColl" onchange="hideAllCollToggle(this.checked);" CHECKED><label for="chkHideAllColl">Show/Hide All Collections</label></div>';
+			keyHTML += '</div></div></div>';
 
 			// location aware case insensitive sort
 			collNameArr.sort((a, b) => {
@@ -695,6 +700,10 @@ else {
 					tempArr.sort();
 					keyHTML += "<div style='margin-left:5px;'><h3 style='margin-top:8px;margin-bottom:5px;'>" + familyNameArr[i] + "</h3></div>";
 					keyHTML += "<div style='display:table;'>";
+					keyHTML += '<div id="toggleHideAllTaxakeyRow">';
+					keyHTML += '<div style="display:table-row;">';	
+					keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-bottom:5px;" ><input type="checkbox" id="chkHideAllTaxa" onchange="hideAllTaxaToggle(this.checked);" CHECKED><label for="chkHideAllTaxa">Show/Hide All Taxa</label></div>';
+					keyHTML += '</div></div></div>';
 					for (var s = 0, w = tempArr.length; s < w; s++) {
 						var tidCode = taxaArr[familyNameArr[i]][tempArr[s]];
 						if (taxaKeyArr[tidCode]) keyHTML += taxaKeyArr[tidCode];
@@ -738,8 +747,42 @@ else {
 			}
 		}
 
+		function hideAllTaxaToggle(checked, myTaxa){
+			for (var t in MarkerGroupings['Taxa']){
+				hideTaxaToggle(checked,t);
+				document.getElementById('chkHideTaxa'+t).checked = checked;
+			}
+		}
+
+		function hideCollToggle(checked, myColl){
+			if(MarkerGroupings['Collections'][myColl]){
+				for (var i in MarkerGroupings['Collections'][myColl]){
+					if(checked){
+						MarkerGroupings['Collections'][myColl][i].setOptions({visible:true});
+					}
+					else{
+						MarkerGroupings['Collections'][myColl][i].setOptions({visible:false});
+					}
+					if(displayMode == 'points'){
+						MarkerGroupings['Collections'][myColl][i].setMap(map);
+					}
+				}
+				if(displayMode == 'cluster'){
+					redrawMarkerClusters();
+				}
+				else if (displayMode == 'heat');
+			}
+		}
+
+		function hideAllCollToggle(checked, myColl){
+			for (var t in MarkerGroupings['Collections']){
+				hideCollToggle(checked,t);
+				document.getElementById('chkHideColl'+t).checked = checked;
+			}
+		}
+
 		function redrawMarkerClusters(){
-			if (!document.getElementById('clusteroff').checked){
+			if (displayMode == 'cluster'){
 				markerCluster.clearMarkers();
 				markerCluster.addMarkers(allMarkers, false);
 			}
@@ -1314,25 +1357,15 @@ else {
 							<div style="margin-top:8px;">
 								<div>
 									<?php echo (isset($LANG['MAPSEARCH_MARKER_COLOR']) ? $LANG['MAPSEARCH_MARKER_COLOR'] : 'Default Marker Color'); ?>:
-									<input class="small_color_input" name="defaultmarkercolor" id="defaultmarkercolor" type="color" value="<?php echo $gridSize; ?>" />
+									<input class="small_color_input" name="defaultmarkercolor" id="defaultmarkercolor" type="color" />
 								</div>
 							</div>
 						</div>
 						<div style="border:1px black solid;margin-top:10px;padding:5px;">
-							<b><?php echo (isset($LANG['CLUSTERING']) ? $LANG['CLUSTERING'] : 'Clustering'); ?></b>
+							<b><?php echo (isset($LANG['CLUSTERING']) ? $LANG['CLUSTERING'] : 'Clustering Options'); ?></b>
 							<div style="margin-top:8px;">
-								<div>
-									<?php echo (isset($LANG['GRID_SIZE']) ? $LANG['GRID_SIZE'] : 'Grid Size'); ?>:
-									<input name="gridsize" id="gridsize" type="text" value="<?php echo $gridSize; ?>" style="width:50px;" onchange="setClusterGridSize(this.value);" />
-								</div>
-								<div>
-									<?php echo (isset($LANG['CLUSTER_SIZE']) ? $LANG['CLUSTER_SIZE'] : 'Min. Cluster Size'); ?>:
-									<input name="minclustersize" id="minclustersize" type="text" value="<?php echo $minClusterSize; ?>" style="width:50px;" onchange="setClustering();" />
-								</div>
 							</div>
 							<div style="clear:both;margin-top:8px;">
-								<?php echo (isset($LANG['TURN_OFF_CLUSTERING']) ? $LANG['TURN_OFF_CLUSTERING'] : 'Turn Off Clustering'); ?>:
-								<input type="checkbox" id="clusteroff" name="clusteroff" value='1' <?php echo ($clusterOff == "y" ? 'checked' : '') ?> onchange="setClustering();" />
 							</div>
 						</div>
 						<?php
@@ -1340,7 +1373,7 @@ else {
 						?>
 							<div style="clear:both;">
 								<div style="float:right;margin-top:10px;">
-									<button id="refreshCluster" name="refreshCluster" onclick="refreshClustering();"><?php echo (isset($LANG['REFRESH_MAP']) ? $LANG['REFRESH_MAP'] : 'Refresh Map'); ?></button>
+									<button id="refreshCluster" name="refreshCluster" onclick=""><?php echo (isset($LANG['REFRESH_MAP']) ? $LANG['REFRESH_MAP'] : 'Refresh Map'); ?></button>
 								</div>
 							</div>
 						<?php

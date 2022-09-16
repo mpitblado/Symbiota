@@ -491,6 +491,3 @@ function setClustering(){
 	
 }
 
-//function refreshClustering(){
-//	processPoints2();
-//}
