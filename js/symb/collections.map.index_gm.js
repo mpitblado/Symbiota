@@ -23,6 +23,22 @@ function checkRecordLimit(f) {
 	}
 }
 
+function buildHeatMapData(){
+	heatMapData = new google.maps.MVCArray();
+	for (var i in allMarkers){
+		if (allMarkers[i].visible)
+			heatMapData.push(allMarkers[i].getPosition());
+		}		
+}
+
+function enableHeatmap(){
+	heatmap.setMap(map);
+}
+
+function disableHeatmap(){
+	heatmap.setMap(null);
+}
+
 function setSelection(shape) {
 	clearSelection();
 	var selectedShapeType = shape.type;
@@ -111,28 +127,40 @@ function getPolygonCoords(polygon) {
 	document.getElementById("deleteshapediv").style.display = "block";
 }
 
-function changeKeyColor(v,markers){
-	var newMarkerColor = '#'+v;
+function changeMarkersColor(iconColor,markers){
+	iconColor = iconColor.replace('#','');
 	if (markers) {
 		for (i in markers) {
 			if(markers[i].recordType=='obs'){
 				if(markers[i].selected==true){
-					var markerIcon = {path:"m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z",fillColor:newMarkerColor,fillOpacity:1,scale:1,strokeColor:"#10D8E6",strokeWeight:2};
+					var markerIcon = {
+						url: clientRoot+'/collections/map/coloricon.php?shape=triangle&color=' + iconColor,
+						scaledSize: new google.maps.Size(18, 18), 
+					}
 				}
 				else{
-					var markerIcon = {path:"m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z",fillColor:newMarkerColor,fillOpacity:1,scale:1,strokeColor:"#000000",strokeWeight:1};
+					var markerIcon = {
+						url: clientRoot+'/collections/map/coloricon.php?shape=triangle&color=' + iconColor,
+						scaledSize: new google.maps.Size(18, 18), 
+					}
 				}
-				markers[i].color = v;
+				//markers[i].color = v;
 				markers[i].setIcon(markerIcon);
 			}
 			if(markers[i].recordType=='spec'){
 				if(markers[i].selected==true){
-					var markerIcon = {path:google.maps.SymbolPath.CIRCLE,fillColor:newMarkerColor,fillOpacity:1,scale:7,strokeColor:"#10D8E6",strokeWeight:2};
+					var markerIcon = {
+						url: clientRoot+'/collections/map/coloricon.php?shape=circle&color=' + iconColor,
+						scaledSize: new google.maps.Size(18, 18), 
+					}
 				}
 				else{
-					var markerIcon = {path:google.maps.SymbolPath.CIRCLE,fillColor:newMarkerColor,fillOpacity:1,scale:7,strokeColor:"#000000",strokeWeight:1};
+					var markerIcon = {
+						url: clientRoot+'/collections/map/coloricon.php?shape=circle&color=' + iconColor,
+						scaledSize: new google.maps.Size(18, 18), 
+					}
 				}
-				markers[i].color = v;
+				//markers[i].color = v;
 				markers[i].setIcon(markerIcon);
 			}
 		}

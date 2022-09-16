@@ -5,8 +5,14 @@
 
 include_once('../../config/symbini.php');
 
+$hexColor = '';
 if (isset($_GET['shape'])){
     
+    if(isset($_GET['color']) && preg_match('/^[0-9A-Fa-f]{6}$/', $_GET['color'])){
+        $hexColor = $_GET['color'];
+    }
+    else $hexColor = 'F6AE77';
+
     $iconFilePath = $SERVER_ROOT . '/images/mapicons/';
     $iconFileName = '';
     $iconFileExtension = '.png';
@@ -18,7 +24,7 @@ if (isset($_GET['shape'])){
         $iconFileName = 'IconCircle50';
     }
     
-    $RBG_array = HexToRGB($_GET['color']);
+    $RBG_array = HexToRGB($hexColor);
 
     $iconFile  = $iconFilePath . $iconFileName . $iconFileExtension;
     $outputFilename = $iconFileName . $RBG_array['r'] .'_' . $RBG_array['g'] .'_' . $RBG_array['b'] . $iconFileExtension;

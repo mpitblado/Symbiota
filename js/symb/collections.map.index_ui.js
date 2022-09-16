@@ -163,7 +163,7 @@ function generateRandColor(){
 	var z = '000000';
 	var z1 = z.substring(0,y);
 	hexColor = z1 + x;
-	return hexColor;
+	return '#'+hexColor;
 }
 
 /*
@@ -472,21 +472,25 @@ function openPopup(urlStr){
 	return false;
 }
 
-function setClustering(){
-	var gridSizeSett = document.getElementById("gridsize").value;
-	var minClusterSett = document.getElementById("minclustersize").value;
-	if(document.getElementById("clusteroff").checked==true){
-		var clstrSwitch = "y";
+function setClusterGridSize(myGridSize){
+	markerGrid.grdSize = myGridSize;
+	if(!document.getElementById("clusteroff").checked){
+		clusterMap();
 	}
-	else{
-		var clstrSwitch = "n";
-	}
-	document.getElementById("gridSizeSetting").value = gridSizeSett;
-	document.getElementById("minClusterSetting").value = minClusterSett;
-	document.getElementById("clusterSwitch").value = clstrSwitch;
+
 }
 
-function refreshClustering(){
-	var searchForm = document.getElementById("mapsearchform");
-	searchForm.submit();
+function setClustering(){
+	
+	if(document.getElementById("clusteroff").checked==true){
+		unclusterMap();
+	}
+	else{
+		clusterMap();
+	}
+	
 }
+
+//function refreshClustering(){
+//	processPoints2();
+//}
