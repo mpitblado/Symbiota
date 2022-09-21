@@ -1,4 +1,6 @@
-$(document).ready(function() {	
+$(document).ready(function() {
+	$('#defaultmarkercolor').value = defaultMarkerColor;
+	
 	$('#tabs1').tabs({
 		beforeLoad: function( event, ui ) {
 			$(ui.panel).html("<p>Loading...</p>");

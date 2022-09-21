@@ -19,7 +19,10 @@ class OccurrenceMapManager extends OccurrenceManager {
 	}
 
 	private function readGeoRequestVariables(){
-		
+
+		if(array_key_exists('recordlimit',$_REQUEST) && $_REQUEST['recordlimit']){
+			$this->searchTermArr['recordlimit'] = $_REQUEST['recordlimit'];
+		}
 		if(array_key_exists('cltype',$_REQUEST) && $_REQUEST['cltype']){
 			if($_REQUEST['cltype'] == 'all') $this->searchTermArr['cltype'] = 'all';
 			$this->searchTermArr['cltype'] = 'vouchers';
@@ -104,34 +107,9 @@ class OccurrenceMapManager extends OccurrenceManager {
 			}
 			//echo "<div>SQL: ".$sql."</div>"; exit;
 			$result = $this->conn->query($sql);
-			//$color = 'e69e67';
 			$coordArr = $result->fetch_all(MYSQLI_ASSOC);
-			// while($row = $result->fetch_object()){
-			// 	if(($row->DecimalLongitude <= 180 && $row->DecimalLongitude >= -180) && ($row->DecimalLatitude <= 90 && $row->DecimalLatitude >= -90)){
-			// 		$occidArr[] = $row->occid;
-			// 		$collName = $row->CollectionName;
-			// 		$tidInterpreted = $this->htmlEntities($row->tidinterpreted);
-			// 		$latLngStr = $row->DecimalLatitude.",".$row->DecimalLongitude;
-			// 		$coordArr[$collName][$row->occid]["llStr"] = $latLngStr;
-			// 		$coordArr[$collName][$row->occid]["collid"] = $this->htmlEntities($row->collid);
-			// 		//$tidcode = strtolower(str_replace(" ", "",$tidInterpreted.$row->sciname));
-			// 		//$tidcode = preg_replace( "/[^A-Za-z0-9 ]/","",$tidcode);
-			// 		//$coordArr[$collName][$occId]["ns"] = $this->htmlEntities($tidcode);
-			// 		$coordArr[$collName][$row->occid]["tid"] = $tidInterpreted;
-			// 		$coordArr[$collName][$row->occid]["fam"] = ($row->family?strtoupper($row->family):'undefined');
-			// 		$coordArr[$collName][$row->occid]["sn"] = $row->sciname;
-			// 		$coordArr[$collName][$row->occid]["id"] = $this->htmlEntities($row->identifier);
-			// 		//$coordArr[$collName][$occId]["icode"] = $this->htmlEntities($row->institutioncode);
-			// 		//$coordArr[$collName][$occId]["ccode"] = $this->htmlEntities($row->collectioncode);
-			// 		//$coordArr[$collName][$occId]["cn"] = $this->htmlEntities($row->catalognumber);
-			// 		//$coordArr[$collName][$occId]["ocn"] = $this->htmlEntities($row->othercatalognumbers);
-			// 		$coordArr[$collName]["c"] = $color;
-			// 	}
-			// }
-			//$statsManager->recordAccessEventByArr($occidArr, 'map');
-			//if(array_key_exists('undefined',$coordArr)){
-			//	$coordArr['undefined']['c'] = $color;
-			//}
+			$statsManager->recordAccessEventByArr(array_column($coordArr,'occid'), 'map');
+			
 			$result->free();
 		}
 		return $coordArr;
@@ -250,36 +228,36 @@ class OccurrenceMapManager extends OccurrenceManager {
 	//SQL where functions
 	private function setGeoSqlWhere(){
 		global $USER_RIGHTS;
-		
-		$sqlWhere = $this->getSqlWhere();
-		$sqlWhere .= ($sqlWhere?'AND ':'WHERE ').'(o.DecimalLatitude IS NOT NULL AND o.DecimalLongitude IS NOT NULL) ';
-		if(array_key_exists('clid',$this->searchTermArr) && $this->searchTermArr['clid']){
-			if(isset($this->searchTermArr['cltype']) && $this->searchTermArr['cltype'] == 'all'){
-				$sqlWhere .= "AND (ST_Within(p.point,GeomFromText('".$this->getClFootprintWkt()." '))) ";
+		if($this->searchTermArr){
+			$sqlWhere = $this->getSqlWhere();
+			$sqlWhere .= ($sqlWhere?'AND ':'WHERE ').'(o.DecimalLatitude IS NOT NULL AND o.DecimalLongitude IS NOT NULL) ';
+			if(array_key_exists('clid',$this->searchTermArr) && $this->searchTermArr['clid']){
+				if(isset($this->searchTermArr['cltype']) && $this->searchTermArr['cltype'] == 'all'){
+					$sqlWhere .= "AND (ST_Within(p.point,GeomFromText('".$this->getClFootprintWkt()." '))) ";
+				}
+				else{
+					//$sqlWhere .= "AND (v.clid IN(".$this->searchTermArr['clid'].")) ";
+				}
+			}
+			elseif(array_key_exists("polycoords",$this->searchTermArr)){
+				$sqlWhere .= "AND (ST_Within(p.point,GeomFromText('".$this->searchTermArr["polycoords"]." '))) ";
+			}
+			//Check and exclude records with sensitive species protections
+			if(array_key_exists('SuperAdmin',$USER_RIGHTS) || array_key_exists('CollAdmin',$USER_RIGHTS) || array_key_exists('RareSppAdmin',$USER_RIGHTS) || array_key_exists('RareSppReadAll',$USER_RIGHTS)){
+				//Is global rare species reader, thus do nothing to sql and grab all records
+			}
+			elseif(isset($USER_RIGHTS['RareSppReader']) || isset($USER_RIGHTS['CollEditor'])){
+				$securityCollArr = array();
+				if(isset($USER_RIGHTS['CollEditor'])) $securityCollArr = $USER_RIGHTS['CollEditor'];
+				if(isset($USER_RIGHTS['RareSppReader'])) $securityCollArr = array_unique(array_merge($securityCollArr, $USER_RIGHTS['RareSppReader']));
+				$sqlWhere .= ' AND (o.CollId IN ('.implode(',',$securityCollArr).') OR (o.LocalitySecurity = 0 OR o.LocalitySecurity IS NULL)) ';
 			}
 			else{
-				//$sqlWhere .= "AND (v.clid IN(".$this->searchTermArr['clid'].")) ";
+				$sqlWhere .= ' AND (o.LocalitySecurity = 0 OR o.LocalitySecurity IS NULL) ';
 			}
+			$this->sqlWhere = $sqlWhere;
+			//echo '<div style="margin-left:10px">sql: '.$this->sqlWhere.'</div>'; exit;
 		}
-		elseif(array_key_exists("polycoords",$this->searchTermArr)){
-			$sqlWhere .= "AND (ST_Within(p.point,GeomFromText('".$this->searchTermArr["polycoords"]." '))) ";
-		}
-		//Check and exclude records with sensitive species protections
-		if(array_key_exists('SuperAdmin',$USER_RIGHTS) || array_key_exists('CollAdmin',$USER_RIGHTS) || array_key_exists('RareSppAdmin',$USER_RIGHTS) || array_key_exists('RareSppReadAll',$USER_RIGHTS)){
-			//Is global rare species reader, thus do nothing to sql and grab all records
-		}
-		elseif(isset($USER_RIGHTS['RareSppReader']) || isset($USER_RIGHTS['CollEditor'])){
-			$securityCollArr = array();
-			if(isset($USER_RIGHTS['CollEditor'])) $securityCollArr = $USER_RIGHTS['CollEditor'];
-			if(isset($USER_RIGHTS['RareSppReader'])) $securityCollArr = array_unique(array_merge($securityCollArr, $USER_RIGHTS['RareSppReader']));
-			$sqlWhere .= ' AND (o.CollId IN ('.implode(',',$securityCollArr).') OR (o.LocalitySecurity = 0 OR o.LocalitySecurity IS NULL)) ';
-		}
-		else{
-			$sqlWhere .= ' AND (o.LocalitySecurity = 0 OR o.LocalitySecurity IS NULL) ';
-		}
-		$this->sqlWhere = $sqlWhere;
-		//echo '<div style="margin-left:10px">sql: '.$this->sqlWhere.'</div>'; exit;
-		
 	}
 
 	public function writeKMLFile($recLimit, $extraFieldArr = null){
@@ -438,4 +416,3 @@ class OccurrenceMapManager extends OccurrenceManager {
 		return htmlspecialchars($string, ENT_XML1 | ENT_QUOTES, 'UTF-8');
 	}
 }
-?>

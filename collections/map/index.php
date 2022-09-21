@@ -17,9 +17,11 @@ if (!$catId && isset($DEFAULTCATID) && $DEFAULTCATID) $catId = $DEFAULTCATID;
 
 $mapManager = new OccurrenceMapManager();
 $searchVar = $mapManager->getQueryTermStr();
+
 if ($searchVar && $recLimit) $searchVar .= '&reclimit=' . $recLimit;
 
 $obsIDs = $mapManager->getObservationIds();
+
 
 //Sanitation
 if (!is_numeric($recLimit)) $recLimit = 15000;
@@ -164,9 +166,8 @@ else {
 		var heatMapData = new google.maps.MVCArray();
 		var displayMode = 'cluster';
 
-		document.getElementById('defaultmarkercolor').value = defaultMarkerColor;
-
 		function initialize(){
+			document.getElementById('defaultmarkercolor').value = defaultMarkerColor;
 			<?php
 			$recordCnt = $mapManager->getRecordCnt();
 			if ($searchVar) {
@@ -176,7 +177,7 @@ else {
 					if (resultCount <= <?php echo $recLimit; ?>) {
 						<?php
 						//$coordArr = $mapManager->getCoordinateMap(0,$recLimit);
-						$coordArr = $mapManager->getCoordinateMap2(0, $recLimit);
+						$coordArr = $mapManager->getCoordinateMap2(0, 50000);
 						echo 'pointObj = ' . json_encode($coordArr) . ";\n";
 						?>
 					} else {
@@ -516,7 +517,7 @@ else {
 				else scinameStr = ''+pointObj[key]['sciname'];
 				
 				scinameStr = scinameStr.replace(/ /g, "").toLowerCase();
-				buildTaxaKeyPiece(scinameStr, pointObj[key]['tidinterpreted'], pointObj[key]['sciname']);
+				buildTaxaKeyPiece(scinameStr, pointObj[key]['tidinterpreted'], pointObj[key]['sciname'],iconColor);
 
 				var family = ''+pointObj[key]['family'];
 				family = family.toUpperCase();
@@ -676,12 +677,12 @@ else {
 			if (document.getElementById("symbologykeysbox")) document.getElementById("symbologykeysbox").innerHTML = keyHTML;
 		}
 
-		function buildTaxaKeyPiece(key, tidinterpreted, sciname) {
+		function buildTaxaKeyPiece(key, tidinterpreted, sciname, iconColor) {
 			keyHTML = '';
 			keyLabel = "'" + key + "'";
 			keyHTML += '<div id="' + key + 'keyrow">';
 			keyHTML += '<div style="display:table-row;">';
-			keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-bottom:5px;" ><input type="checkbox" id="chkHideTaxa' + key + '" onchange="hideTaxaToggle(this.checked,\'' + key + '\');" CHECKED><input type="color" id="taxaColor' + key + '" class="small_color_input"  value="e69e67" onchange="changeTaxaColor(this.value,' + keyLabel + ');" /></div>';
+			keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-bottom:5px;" ><input type="checkbox" id="chkHideTaxa' + key + '" onchange="hideTaxaToggle(this.checked,\'' + key + '\');" CHECKED><input type="color" id="taxaColor' + key + '" class="small_color_input"  value="' + iconColor + '" onchange="changeTaxaColor(this.value,' + keyLabel + ');" /></div>';
 			keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-left:8px;"> = </div>';
 			keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-left:8px;">';
 			if (tidinterpreted) keyHTML += '<i><a href="#" onclick="openPopup(\'../../taxa/index.php?tid=' + tidinterpreted + '&display=1\');return false;">' + sciname + '</a></i>';
@@ -851,53 +852,109 @@ else {
 			}
 		}
 
-		function findGrpClusterSelection(gCnt, id) {
-			if (clusterCollArr[gCnt]) {
-				var clusters = clusterCollArr[gCnt].getClusters();
-				for (var i = 0, l = clusters.length; i < l; i++) {
-					var selCluster = false;
-					var oldHtml = clusters[i].clusterIcon_.div_.innerHTML;
-					for (var j = 0, le = clusters[i].markers_.length; j < le; j++) {
-						if (clusters[i].markers_[j].selected == true) {
-							selCluster = true;
-						}
-					}
-					if (selCluster == true) {
-						var newHtml = oldHtml.replace('></circle>', ' stroke="#10D8E6" stroke-width="3px"></circle>');
-					}
-					if (selCluster == false) {
-						var newHtml = oldHtml.replace(' stroke="#10D8E6" stroke-width="3px"></circle>', '></circle>');
-					}
-					clusters[i].clusterIcon_.div_.innerHTML = newHtml;
+		// function findGrpClusterSelection(gCnt, id) {
+		// 	if (clusterCollArr[gCnt]) {
+		// 		var clusters = clusterCollArr[gCnt].getClusters();
+		// 		for (var i = 0, l = clusters.length; i < l; i++) {
+		// 			var selCluster = false;
+		// 			var oldHtml = clusters[i].clusterIcon_.div_.innerHTML;
+		// 			for (var j = 0, le = clusters[i].markers_.length; j < le; j++) {
+		// 				if (clusters[i].markers_[j].selected == true) {
+		// 					selCluster = true;
+		// 				}
+		// 			}
+		// 			if (selCluster == true) {
+		// 				var newHtml = oldHtml.replace('></circle>', ' stroke="#10D8E6" stroke-width="3px"></circle>');
+		// 			}
+		// 			if (selCluster == false) {
+		// 				var newHtml = oldHtml.replace(' stroke="#10D8E6" stroke-width="3px"></circle>', '></circle>');
+		// 			}
+		// 			clusters[i].clusterIcon_.div_.innerHTML = newHtml;
+		// 		}
+		// 	}
+		// }
+
+		// function findTaxClusterSelection(id) {
+		// 	for (var tid in tidArr) {
+		// 		if (clusterTaxArr[tid]) {
+		// 			var clusters = clusterTaxArr[tid].getClusters();
+		// 			for (var i = 0, l = clusters.length; i < l; i++) {
+		// 				var selCluster = false;
+		// 				var oldHtml = clusters[i].clusterIcon_.div_.innerHTML;
+		// 				for (var j = 0, le = clusters[i].markers_.length; j < le; j++) {
+		// 					if (clusters[i].markers_[j].selected == true) {
+		// 						selCluster = true;
+		// 					}
+		// 				}
+		// 				if (selCluster == true) {
+		// 					var newHtml = oldHtml.replace('></circle>', ' stroke="#10D8E6" stroke-width="3px"></circle>');
+		// 				}
+		// 				if (selCluster == false) {
+		// 					var newHtml = oldHtml.replace(' stroke="#10D8E6" stroke-width="3px"></circle>', '></circle>');
+		// 				}
+		// 				clusters[i].clusterIcon_.div_.innerHTML = newHtml;
+		// 			}
+		// 		}
+		// 	}
+		// }
+
+		function disableCollectionsLegend() {
+			for (var coll in MarkerGroupings['Collections']) {
+				var colorKeyName = 'collColor' + coll;
+				var chkboxKeyName = 'chkHideColl' + coll
+				if (document.getElementById(colorKeyName)) {
+					document.getElementById(colorKeyName).style.visibility = 'hidden';
+					document.getElementById(chkboxKeyName).disabled= true;
 				}
+				document.getElementById('chkHideAllColl').disabled= true;
+
 			}
 		}
 
-		function findTaxClusterSelection(id) {
-			for (var tid in tidArr) {
-				if (clusterTaxArr[tid]) {
-					var clusters = clusterTaxArr[tid].getClusters();
-					for (var i = 0, l = clusters.length; i < l; i++) {
-						var selCluster = false;
-						var oldHtml = clusters[i].clusterIcon_.div_.innerHTML;
-						for (var j = 0, le = clusters[i].markers_.length; j < le; j++) {
-							if (clusters[i].markers_[j].selected == true) {
-								selCluster = true;
-							}
-						}
-						if (selCluster == true) {
-							var newHtml = oldHtml.replace('></circle>', ' stroke="#10D8E6" stroke-width="3px"></circle>');
-						}
-						if (selCluster == false) {
-							var newHtml = oldHtml.replace(' stroke="#10D8E6" stroke-width="3px"></circle>', '></circle>');
-						}
-						clusters[i].clusterIcon_.div_.innerHTML = newHtml;
-					}
+		function enableCollectionsLegend() {
+			for (var coll in MarkerGroupings['Collections']) {
+				var colorKeyName = 'collColor' + coll;
+				var chkboxKeyName = 'chkHideColl' + coll
+				if (document.getElementById(colorKeyName)) {
+					document.getElementById(colorKeyName).style.visibility = 'visible';
+					document.getElementById(chkboxKeyName).disabled = false;
 				}
+				document.getElementById('chkHideAllColl').disabled = false;
+
 			}
 		}
 
-		function resetTaxaLegend(myColor = "#E69E67") {
+		function disableTaxaLegend() {
+			for (var tid in MarkerGroupings['Taxa']) {
+				var colorKeyName = 'taxaColor' + tid;
+				var chkboxKeyName = 'chkHideTaxa' + tid
+				if (document.getElementById(colorKeyName)) {
+					document.getElementById(colorKeyName).style.visibility = 'hidden';
+					document.getElementById(chkboxKeyName).disabled= true;
+				}
+				document.getElementById('chkHideAllTaxa').disabled= true;
+
+			}
+		}
+
+		function enableTaxaLegend() {
+			for (var tid in MarkerGroupings['Taxa']) {
+				var colorKeyName = 'taxaColor' + tid;
+				var chkboxKeyName = 'chkHideTaxa' + tid
+				if (document.getElementById(colorKeyName)) {
+					document.getElementById(colorKeyName).style.visibility = 'visible';
+					document.getElementById(chkboxKeyName).disabled = false;
+				}
+				document.getElementById('chkHideAllTaxa').disabled = false;
+
+			}
+		}
+
+		function resetTaxaLegend(myColor) {
+			enableTaxaLegend();
+			if (!myColor){
+				myColor = document.getElementById("defaultmarkercolor").value;
+			}
 			for (var tid in MarkerGroupings['Taxa']) {
 				var keyName = 'taxaColor' + tid;
 				if (document.getElementById(keyName)) {
@@ -906,7 +963,11 @@ else {
 			}
 		}
 
-		function resetCollectionsLegend(myColor = "#E69E67") {
+		function resetCollectionsLegend(myColor) {
+			enableCollectionsLegend();
+			if (!myColor){
+				myColor = document.getElementById("defaultmarkercolor").value;
+			}
 			for (var coll in MarkerGroupings['Collections']) {
 				var keyName = 'collColor' + coll;
 				document.getElementById(keyName).value = myColor;
@@ -927,6 +988,8 @@ else {
 			document.getElementById("randomColorColl").disabled = true;
 			if (mapSymbol == 'taxa') {
 				resetTaxaLegend();
+				disableTaxaLegend();
+				enableCollectionsLegend();
 			}
 			var usedColors = [];
 			for (var coll in collNameArr) {
@@ -947,6 +1010,8 @@ else {
 			document.getElementById("randomColorTaxa").disabled = true;
 			if (mapSymbol == 'coll') {
 				resetCollectionsLegend();
+				disableCollectionsLegend();
+				enableTaxaLegend();
 			}
 			
 			var usedColors = [];
@@ -975,7 +1040,7 @@ else {
 				changeMarkersColor(color, MarkerGroupings['Collections'][collNameArr[coll][1]]);
 			}
 			mapSymbol = 'coll';
-			resetTaxaLegend();
+			resetTaxaLegend(color);
 			resetCollectionsLegend(color);
 			mapSymbol = 'coll';
 			document.getElementById("symbolizeReset1").disabled = false;
@@ -1132,7 +1197,7 @@ else {
 							<li><a href="#searchcriteria"><span><?php echo (isset($LANG['CRITERIA']) ? $LANG['CRITERIA'] : 'Criteria'); ?></span></a></li>
 							<li><a href="#mapoptions"><span><?php echo (isset($LANG['MAP_OPTIONS']) ? $LANG['MAP_OPTIONS'] : 'Map Options'); ?></span></a></li>
 						</ul>
-						<div id="searchcollections" style="">
+						<div id="searchcollections" >
 							<div class="mapinterface">
 								<?php
 								$collList = $mapManager->getFullCollectionList($catId);
@@ -1161,12 +1226,9 @@ else {
 								?>
 							</div>
 						</div>
-						<div id="searchcriteria" style="">
+						<div id="searchcriteria" >
 							<div style="height:25px;">
-								<!-- <div style="float:left;<?php echo (isset($SOLR_MODE) && $SOLR_MODE ? 'display:none;' : ''); ?>">
-								Record Limit:
-								<input type="text" id="recordlimit" style="width:75px;" name="recordlimit" value="<?php echo ($recLimit ? $recLimit : ""); ?>" title="Maximum record amount returned from search." onchange="return checkRecordLimit(this.form);" />
-							</div> -->
+								
 								<div style="float:right;">
 									<input type="hidden" id="selectedpoints" value="" />
 									<input type="hidden" id="deselectedpoints" value="" />
@@ -1202,7 +1264,14 @@ else {
 								<hr />
 							</div>
 							<div>
-								<span style=""><input type="checkbox" name="usethes" value="1" <?php if ($mapManager->getSearchTerm('usethes') || !$submitForm) echo "CHECKED"; ?>><?php echo (isset($LANG['INCLUDE_SYNONYMS']) ? $LANG['INCLUDE_SYNONYMS'] : 'Include Synonyms'); ?></span>
+								<label for="recordlimit"><?php echo (isset($LANG['MAP_RECORD_LIMIT']) ? $LANG['MAP_RECORD_LIMIT'] : 'Maximum number of records to retreive:'); ?></label>
+								<input id="recordlimit" name="recordlimit" type="number" step="1" min="1000" value=<?php echo ($recLimit ? $recLimit : ""); ?> onchange="return checkRecordLimit(this.form);"/>
+							</div>
+							<div style="margin:5 0 5 0;">
+								<hr />
+							</div>
+							<div>
+								<span ><input type="checkbox" name="usethes" value="1" <?php if ($mapManager->getSearchTerm('usethes') || !$submitForm) echo "CHECKED"; ?>><?php echo (isset($LANG['INCLUDE_SYNONYMS']) ? $LANG['INCLUDE_SYNONYMS'] : 'Include Synonyms'); ?></span>
 							</div>
 							<div>
 								<div style="margin-top:5px;">
@@ -1351,13 +1420,13 @@ else {
 							<input type="hidden" name="reset" value="1" />
 						</div>
 					</form>
-					<div id="mapoptions" style="">
+					<div id="mapoptions" >
 						<div style="border:1px black solid;margin-top:10px;padding:5px;">
 							<b><?php echo (isset($LANG['MAPSEARCH_DEFAULTS']) ? $LANG['MAPSEARCH_DEFAULTS'] : 'Map Search Defaults' ); ?></b>
 							<div style="margin-top:8px;">
 								<div>
 									<?php echo (isset($LANG['MAPSEARCH_MARKER_COLOR']) ? $LANG['MAPSEARCH_MARKER_COLOR'] : 'Default Marker Color'); ?>:
-									<input class="small_color_input" name="defaultmarkercolor" id="defaultmarkercolor" type="color" />
+									<input class="small_color_input" name="defaultmarkercolor" id="defaultmarkercolor" type="color" onchange="resetSymbology();" />
 								</div>
 							</div>
 						</div>
@@ -1403,7 +1472,7 @@ else {
 							<li><a href='#symbology'><span><?php echo (isset($LANG['COLLECTIONS']) ? $LANG['COLLECTIONS'] : 'Collections'); ?></span></a></li>
 							<li><a href='#maptaxalist'><span><?php echo (isset($LANG['TAXA_LIST']) ? $LANG['TAXA_LIST'] : 'Taxa List'); ?></span></a></li>
 						</ul>
-						<div id="symbology" style="">
+						<div id="symbology" >
 							<div style="height:40px;margin-bottom:15px;">
 								<?php
 								if ($obsIDs) {
@@ -1439,7 +1508,7 @@ else {
 							<div style="margin:5 0 5 0;clear:both;">
 								<hr />
 							</div>
-							<div style="">
+							<div >
 								<div style="margin-top:8px;">
 									<div style="display:table;">
 										<div id="symbologykeysbox"></div>
