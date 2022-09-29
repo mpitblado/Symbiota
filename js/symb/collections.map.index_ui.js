@@ -493,3 +493,10 @@ function setClustering(){
 	
 }
 
+function getSortedKeys(obj) {
+	// this function is used to retreive a "sorted" associative array - sorted by value (key:value)
+	// By iterating through the returned array sequentially you can access the original array in sorted order. 
+    var keys = []; for(var key in obj) keys.push(key);
+    return keys.sort(function(a,b){return obj[a].localeCompare(obj[b]);});
+}
+

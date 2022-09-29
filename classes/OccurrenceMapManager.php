@@ -96,7 +96,7 @@ class OccurrenceMapManager extends OccurrenceManager {
 		$coordArr = Array();
 		if($this->sqlWhere){
 			$statsManager = new OccurrenceAccessStats();
-			$sql = 'SELECT o.occid, CONCAT_WS(" ",o.recordedby,IFNULL(o.recordnumber,o.eventdate)) AS identifier, '.
+			$sql = 'SELECT o.occid, o.recordedby, o.recordnumber, o.eventdate, '.
 				'o.sciname, o.family, o.tidinterpreted, o.DecimalLatitude, o.DecimalLongitude, o.collid, o.catalognumber, '.
 				'o.othercatalognumbers, c.institutioncode, c.collectioncode, c.CollectionName, c.collType '.
 				'FROM omoccurrences o LEFT JOIN omcollections c ON o.collid = c.collid ';

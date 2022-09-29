@@ -145,7 +145,7 @@ else {
 		var MarkerGroupings = []; //stores all marker groupings
 		var markerArr = [];
 		var tidArr = [];
-		var taxaArr = [];
+		var taxaLegendArr = [];
 		var taxaCnt = 0;
 		var collKeyArr = []; // stores HTML elements of the Group by Collection key
 		var collNameArr = [];
@@ -165,6 +165,7 @@ else {
 		var panPoint = new google.maps.LatLng();
 		var heatMapData = new google.maps.MVCArray();
 		var displayMode = 'cluster';
+		var taxaKetSet = new Set();
 
 		function initialize(){
 			document.getElementById('defaultmarkercolor').value = defaultMarkerColor;
@@ -472,6 +473,8 @@ else {
 
 		function processPoints() {
 
+			taxaKetSet.clear();
+
 			//setup map marker data structure
 			if (MarkerGroupings.indexOf('Taxa') < 0){
 				MarkerGroupings['Taxa'] = [];
@@ -481,14 +484,42 @@ else {
 				MarkerGroupings['Collections'] = [];
 				//MarkerGroupings['Collections']['iconColors'] = [];
 			}
-			for (var key in pointObj) {
-				var iconColor = document.getElementById('defaultmarkercolor').value;
+			var iconColor = document.getElementById('defaultmarkercolor').value;
+			for (let i = 0; i < pointObj.length; i++) {
+				
 				var markerIcon = null;
 
-				buildCollKeyPiece(pointObj[key],iconColor);
+
+				//create collection based marker legend
+				buildCollKeyPiece(pointObj[i],iconColor);
+
+				//create taxonomy based marker legend
+
+				var tempFamArr = [];
+				var scinameStr = '';
+				//The scinameStr value is used for DIV element id
+	
+				if (pointObj[i]['tidinterpreted'] && pointObj[i]['tidinterpreted'] != 'NULL'){
+					scinameStr = pointObj[i]['sciname']+pointObj[i]['tidinterpreted'];
+				}
+				else scinameStr = pointObj[i]['sciname'];
+
+				scinameStr = scinameStr.replace(/[ .]/g, "").toLowerCase();
+
+				if (!taxaKetSet.has(scinameStr)){
+					taxaKetSet.add(scinameStr)
+				
+					var family = '';
+					if(!pointObj[i]['family']){
+						family = 'NULL'
+					}
+					else family = pointObj[i]['family']
+					family = family.toUpperCase();
+					buildTaxaKeyPiece(scinameStr, pointObj[i]['tidinterpreted'], family, pointObj[i]['sciname'],iconColor);
+				}
 
 				//set marker icon based on record type
-				if (pointObj[key]["collType"].includes('Observations')){
+				if (pointObj[i]["collType"].includes('Observations')){
 					type = 'obs';
 					markerIcon = {
 						url: '<?= $CLIENT_ROOT?>/collections/map/coloricon.php?shape=triangle&color=' + iconColor,
@@ -504,67 +535,39 @@ else {
 
 				}
 
-				//check retreived values
-
-				// Update grouping information and keytables
-				var tempFamArr = [];
-				var tempScinameArr = [];
-				var scinameStr = '';
-				//The scinameStr value is used for DIV element id
-				if (pointObj[key]['tidinterpreted'] && pointObj[key]['tidinterpreted'] != 'NULL'){
-					scinameStr = ''+pointObj[key]['tidinterpreted']+pointObj[key]['sciname'];
-				}
-				else scinameStr = ''+pointObj[key]['sciname'];
-				
-				scinameStr = scinameStr.replace(/ /g, "").toLowerCase();
-				buildTaxaKeyPiece(scinameStr, pointObj[key]['tidinterpreted'], pointObj[key]['sciname'],iconColor);
-
-				var family = ''+pointObj[key]['family'];
-				family = family.toUpperCase();
-
-				if ((familyNameArr.indexOf(family) < 0) && (family != 'NULL')) {
-					familyNameArr.push(family);
-				}
-				if (taxaArr[family]) {
-					tempFamArr = taxaArr[family];
-					tempScinameArr = taxaArr[family]['sciname_arr'];
-				}
-				if (htmlTidArr.indexOf(scinameStr) < 0) {
-					tempScinameArr.push(pointObj[key]['sciname']);
-					htmlTidArr.push(scinameStr);
-					taxaCnt++;
-				}
-				tempFamArr[pointObj[key]['sciname']] = scinameStr;
-				taxaArr[family] = tempFamArr;
-				taxaArr[family]['sciname_arr'] = tempScinameArr;
-
 				
 				
+
+				var identifier = pointObj[i]['recordedby'];
+				if (pointObj[i]['recordnumber']){
+					identifier += ' ' +pointObj[i]['recordnumber'];
+				}
+				else identifier += ' ' + pointObj[i]['eventdate']
 
 				//Create Marker & Add occurance data to Marker Object
 
 				var m = new google.maps.Marker({
-					position: new google.maps.LatLng(pointObj[key]["DecimalLatitude"], pointObj[key]["DecimalLongitude"]),
+					position: new google.maps.LatLng(pointObj[i]["DecimalLatitude"], pointObj[i]["DecimalLongitude"]),
 					optimized: true,
-					text: "Collection: " + pointObj[key]["CollectionName"] + " Identifier: " + pointObj[key]["identifier"],
+					text: "Collection: " + pointObj[i]["CollectionName"] + " Collector: " + identifier,
 					icon: markerIcon,
 					selected: false,
 					color: iconColor,
 					taxaKeyHtmlID: scinameStr,
 					recordType: type,
-					collid: pointObj[key]['collid'],
-					identifier: pointObj[key]['identifier'],
-					taxatid: pointObj[key]['sciname'],
-					tidinterpreted: pointObj[key]['tidinterpreted'],
+					collid: pointObj[i]['collid'],
+					identifier: identifier,
+					taxatid: pointObj[i]['sciname'],
+					tidinterpreted: pointObj[i]['tidinterpreted'],
 					family: family,
-					occid: pointObj[key]['occid'],
+					occid: pointObj[i]['occid'],
 					clid: 0,
 				});
 				allMarkers.push(m)
 				if (!MarkerGroupings['Taxa'][scinameStr]) MarkerGroupings['Taxa'][scinameStr] = [];
 				MarkerGroupings['Taxa'][scinameStr].push(m);
-				if (!MarkerGroupings['Collections'][pointObj[key]['collid']]) MarkerGroupings['Collections'][pointObj[key]['collid']] = [];
-				MarkerGroupings['Collections'][pointObj[key]['collid']].push(m);
+				if (!MarkerGroupings['Collections'][pointObj[i]['collid']]) MarkerGroupings['Collections'][pointObj[i]['collid']] = [];
+				MarkerGroupings['Collections'][pointObj[i]['collid']].push(m);
 				heatMapData.push(m.getPosition());								
 
 				// Add marker listener
@@ -677,58 +680,84 @@ else {
 			if (document.getElementById("symbologykeysbox")) document.getElementById("symbologykeysbox").innerHTML = keyHTML;
 		}
 
-		function buildTaxaKeyPiece(key, tidinterpreted, sciname, iconColor) {
-			keyHTML = '';
-			keyLabel = "'" + key + "'";
-			keyHTML += '<div id="' + key + 'keyrow">';
-			keyHTML += '<div style="display:table-row;">';
-			keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-bottom:5px;" ><input type="checkbox" id="chkHideTaxa' + key + '" onchange="hideTaxaToggle(this.checked,\'' + key + '\');" CHECKED><input type="color" id="taxaColor' + key + '" class="small_color_input"  value="' + iconColor + '" onchange="changeTaxaColor(this.value,' + keyLabel + ');" /></div>';
-			keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-left:8px;"> = </div>';
-			keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-left:8px;">';
-			if (tidinterpreted) keyHTML += '<i><a href="#" onclick="openPopup(\'../../taxa/index.php?tid=' + tidinterpreted + '&display=1\');return false;">' + sciname + '</a></i>';
-			else keyHTML += "<i>" + sciname + "</i>";
-			keyHTML += '</div></div></div>';
-			taxaKeyArr[key] = keyHTML;
+		function buildTaxaKeyPiece(key, tidinterpreted, family, sciname, iconColor) {
+
+			//setup array structure that will be used to group and sort taxa marker legend during buildTaxaKey()
+			if (familyNameArr.indexOf(family) < 0){
+				familyNameArr.push(family);
+				taxaLegendArr[family] = [];
+			}
+			if(!taxaLegendArr[family][key]){
+				taxaLegendArr[family][key] = sciname;
+			}
+			else return;
+
+			if (!taxaKeyArr[key]){
+				keyHTML = '';
+				keyLabel = "'" + key + "'";
+				keyHTML += '<div id="' + key + 'keyrow">';
+				keyHTML += '<div style="display:table-row;">';
+				keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-bottom:5px;" ><input type="checkbox" id="chkHideTaxa' + key + '" onchange="hideTaxaToggle(this.checked,\'' + key + '\');" CHECKED><input type="color" id="taxaColor' + key + '" class="small_color_input"  value="' + iconColor + '" onchange="changeTaxaColor(this.value,' + keyLabel + ');" /></div>';
+				keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-left:8px;"> = </div>';
+				keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-left:8px;">';
+				if (tidinterpreted) keyHTML += '<i><a href="#" onclick="openPopup(\'../../taxa/index.php?tid=' + tidinterpreted + '&display=1\');return false;">' + sciname + '</a></i>';
+				else keyHTML += "<i>" + sciname + "</i>";
+				keyHTML += '</div></div></div>';
+				taxaKeyArr[key] = keyHTML;
+			}
 		}
+		
 
 		function buildTaxaKey() {
+
+			taxaLegendArr.sort(function(a,b) {
+				if(a[1] === b[1]) return a[3] > b[3] ? 1 : -1;
+				return a[1] > b[1] ? 1 : -1;
+			});
+
 			if (document.getElementById("taxaCountNum")) document.getElementById("taxaCountNum").innerHTML = taxaCnt;
 			keyHTML = '';
+			
+			keyHTML += "<div style='display:table;margin-top:8px;margin-bottom:5px;'>";
+			keyHTML += '<div id="toggleHideAllTaxakeyRow">';
+			keyHTML += '<div style="display:table-row;">';	
+			keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-bottom:5px;" ><input type="checkbox" id="chkHideAllTaxa" onchange="hideAllTaxaToggle(this.checked);" CHECKED><label for="chkHideAllTaxa">Show/Hide All Taxa</label></div>';
+			keyHTML += '</div></div></div>';
+			
 			familyNameArr.sort();
-			for (var i = 0; i < familyNameArr.length; i++) {
-				tempArr = taxaArr[familyNameArr[i]]['sciname_arr'];
-				if (tempArr.length > 0) {
-					tempArr.sort();
-					keyHTML += "<div style='margin-left:5px;'><h3 style='margin-top:8px;margin-bottom:5px;'>" + familyNameArr[i] + "</h3></div>";
-					keyHTML += "<div style='display:table;'>";
-					keyHTML += '<div id="toggleHideAllTaxakeyRow">';
-					keyHTML += '<div style="display:table-row;">';	
-					keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-bottom:5px;" ><input type="checkbox" id="chkHideAllTaxa" onchange="hideAllTaxaToggle(this.checked);" CHECKED><label for="chkHideAllTaxa">Show/Hide All Taxa</label></div>';
-					keyHTML += '</div></div></div>';
-					for (var s = 0, w = tempArr.length; s < w; s++) {
-						var tidCode = taxaArr[familyNameArr[i]][tempArr[s]];
-						if (taxaKeyArr[tidCode]) keyHTML += taxaKeyArr[tidCode];
+			var tempFamilyGroup = [];
+			for (let fam = 0; fam < familyNameArr.length; fam++) {
+				if(familyNameArr[fam] !== 'NULL'){
+
+					keyHTML += "<div style='margin-left:5px;'><h3 style='margin-top:8px;margin-bottom:5px;'>" + familyNameArr[fam] + "</h3></div>";
+					tempFamilyGroup = [];
+					tempFamilyGroup = getSortedKeys(taxaLegendArr[familyNameArr[fam]]);
+					//tempFamilyGroup.sort();
+		
+					for (let i = 0; i < tempFamilyGroup.length; i++) {
+						keyHTML += taxaKeyArr[tempFamilyGroup[i]];
 					}
 					keyHTML += "</div>";
+					
 				}
 			}
-			if (taxaArr['NULL']) {
-				tempArr = taxaArr['NULL']['sciname_arr'];
-				if (tempArr.length > 0) {
-					tempArr.sort();
-					keyHTML += "<div style='margin-left:5px;'><h3 style='margin-top:8px;margin-bottom:5px;'>Family Not Defined</h3></div>";
-					keyHTML += "<div style='display:table;'>";
-					for (var s = 0, w = tempArr.length; s < w; s++) {
-						var tidCode = taxaArr['NULL'][tempArr[s]];
-						keyHTML += taxaKeyArr[tidCode];
-					}
-					keyHTML += "</div>";
+			if (taxaLegendArr['NULL']) {
+				tempFamilyGroup = [];
+				tempFamilyGroup = getSortedKeys(taxaLegendArr['NULL']);
+				//tempFamilyGroup.sort();
+				
+				keyHTML += "<div style='margin-left:5px;'><h3 style='margin-top:8px;margin-bottom:5px;'>Family Not Defined</h3></div>";
+				keyHTML += "<div style='display:table;'>";
+				for (let i = 0; i < tempFamilyGroup.length; i++) {
+						keyHTML += taxaKeyArr[tempFamilyGroup[i]];
 				}
+				keyHTML += "</div>";
+				
 			}
 			if (document.getElementById("taxasymbologykeysbox")) document.getElementById("taxasymbologykeysbox").innerHTML = keyHTML;
 		}
 
-		function hideTaxaToggle(checked, myTaxa){
+		function hideTaxaToggle(checked, myTaxa, redraw = true){
 			if(MarkerGroupings['Taxa'][myTaxa]){
 				for (var i in MarkerGroupings['Taxa'][myTaxa]){
 					if(checked){
@@ -741,7 +770,7 @@ else {
 						MarkerGroupings['Taxa'][myTaxa][i].setMap(map);
 					}
 				}
-				if(displayMode == 'cluster'){
+				if(displayMode == 'cluster' && redraw){
 					redrawMarkerClusters();
 				}
 				else if (displayMode == 'heat');
@@ -750,12 +779,13 @@ else {
 
 		function hideAllTaxaToggle(checked, myTaxa){
 			for (var t in MarkerGroupings['Taxa']){
-				hideTaxaToggle(checked,t);
+				hideTaxaToggle(checked,t, false);
 				document.getElementById('chkHideTaxa'+t).checked = checked;
 			}
+			redrawMarkerClusters();
 		}
 
-		function hideCollToggle(checked, myColl){
+		function hideCollToggle(checked, myColl, redraw = true){
 			if(MarkerGroupings['Collections'][myColl]){
 				for (var i in MarkerGroupings['Collections'][myColl]){
 					if(checked){
@@ -768,7 +798,7 @@ else {
 						MarkerGroupings['Collections'][myColl][i].setMap(map);
 					}
 				}
-				if(displayMode == 'cluster'){
+				if(displayMode == 'cluster' && redraw){
 					redrawMarkerClusters();
 				}
 				else if (displayMode == 'heat');
@@ -777,9 +807,10 @@ else {
 
 		function hideAllCollToggle(checked, myColl){
 			for (var t in MarkerGroupings['Collections']){
-				hideCollToggle(checked,t);
+				hideCollToggle(checked,t, false);
 				document.getElementById('chkHideColl'+t).checked = checked;
 			}
+			redrawMarkerClusters();
 		}
 
 		function redrawMarkerClusters(){

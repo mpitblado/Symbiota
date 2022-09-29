@@ -71,6 +71,7 @@ function colorizeBasedOnAplhaChannnel( $file, $targetR, $targetG, $targetB, $tar
 
     }
 
+    header("Cache-Control: max-age=172800");
     header("Content-type: image/png");
     header("Content-Disposition: inline; filename=\"{$targetName}\"");
     imagesavealpha($im_dst, true);
