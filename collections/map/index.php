@@ -95,6 +95,29 @@ else {
 			width: 16px;
 		}
 
+		.mapGroupLegend{
+			list-style-type: none;
+  			margin: 0;
+  			padding: 0;
+		}
+
+		.mapLegendEntry {
+			display: grid;
+			grid-template-columns: max-content auto;
+		}
+
+		.mapLegendEntryInputs {
+			grid-column: 1;
+		}
+
+		.mapLegendEntryText {
+			grid-column: 2;
+		}
+
+		
+
+
+
 	</style>
 	<script src="../../js/jquery-3.6.0.min.js" type="text/javascript"></script>
 	<script src="../../js/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
@@ -232,6 +255,7 @@ else {
 			map = new google.maps.Map(document.getElementById("map"), dmOptions);
 			heatmap = new google.maps.visualization.HeatmapLayer({
 				data: heatMapData,
+				dissipating: false,
 			});
 			
 			var initBounds = new google.maps.LatLngBounds();
@@ -695,14 +719,11 @@ else {
 			if (!taxaKeyArr[key]){
 				keyHTML = '';
 				keyLabel = "'" + key + "'";
-				keyHTML += '<div id="' + key + 'keyrow">';
-				keyHTML += '<div style="display:table-row;">';
-				keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-bottom:5px;" ><input type="checkbox" id="chkHideTaxa' + key + '" onchange="hideTaxaToggle(this.checked,\'' + key + '\');" CHECKED><input type="color" id="taxaColor' + key + '" class="small_color_input"  value="' + iconColor + '" onchange="changeTaxaColor(this.value,' + keyLabel + ');" /></div>';
-				keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-left:8px;"> = </div>';
-				keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-left:8px;">';
-				if (tidinterpreted) keyHTML += '<i><a href="#" onclick="openPopup(\'../../taxa/index.php?tid=' + tidinterpreted + '&display=1\');return false;">' + sciname + '</a></i>';
-				else keyHTML += "<i>" + sciname + "</i>";
-				keyHTML += '</div></div></div>';
+				keyHTML += '<li class="mapLegendEntry"><div class="mapLegendEntryInputs"><input type="checkbox" id="chkHideTaxa' + key + '" onchange="hideTaxaToggle(this.checked,\'' + key + '\');" CHECKED><input type="color" id="taxaColor' + key + '" class="small_color_input"  value="' + iconColor + '" onchange="changeTaxaColor(this.value,' + keyLabel + ');" /></div>';
+				keyHTML += '<span class="mapLegendEntryText">';
+				if (tidinterpreted) keyHTML += '<i> = <a href="#" onclick="openPopup(\'../../taxa/index.php?tid=' + tidinterpreted + '&display=1\');return false;">' + sciname + '</a></i>';
+				else keyHTML += "<i> = " + sciname + "</i>";
+				keyHTML += '</span></li>';
 				taxaKeyArr[key] = keyHTML;
 			}
 		}
@@ -715,14 +736,14 @@ else {
 				return a[1] > b[1] ? 1 : -1;
 			});
 
-			if (document.getElementById("taxaCountNum")) document.getElementById("taxaCountNum").innerHTML = taxaCnt;
-			keyHTML = '';
 			
+			keyHTML = '';
 			keyHTML += "<div style='display:table;margin-top:8px;margin-bottom:5px;'>";
 			keyHTML += '<div id="toggleHideAllTaxakeyRow">';
 			keyHTML += '<div style="display:table-row;">';	
-			keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-bottom:5px;" ><input type="checkbox" id="chkHideAllTaxa" onchange="hideAllTaxaToggle(this.checked);" CHECKED><label for="chkHideAllTaxa">Show/Hide All Taxa</label></div>';
 			keyHTML += '</div></div></div>';
+			keyHTML += '<ul class="mapGroupLegend">';
+			keyHTML += '<li><input type="checkbox" id="chkHideAllTaxa" onchange="hideAllTaxaToggle(this.checked);" CHECKED><label for="chkHideAllTaxa">Show/Hide All Taxa</label></li>';
 			
 			familyNameArr.sort();
 			var tempFamilyGroup = [];
@@ -737,7 +758,8 @@ else {
 					for (let i = 0; i < tempFamilyGroup.length; i++) {
 						keyHTML += taxaKeyArr[tempFamilyGroup[i]];
 					}
-					keyHTML += "</div>";
+
+					taxaCnt += tempFamilyGroup.length;
 					
 				}
 			}
@@ -751,10 +773,11 @@ else {
 				for (let i = 0; i < tempFamilyGroup.length; i++) {
 						keyHTML += taxaKeyArr[tempFamilyGroup[i]];
 				}
-				keyHTML += "</div>";
+				taxaCnt += tempFamilyGroup.length;
 				
 			}
 			if (document.getElementById("taxasymbologykeysbox")) document.getElementById("taxasymbologykeysbox").innerHTML = keyHTML;
+			if (document.getElementById("taxaCountNum")) document.getElementById("taxaCountNum").innerHTML = taxaCnt;
 		}
 
 		function hideTaxaToggle(checked, myTaxa, redraw = true){
@@ -773,7 +796,10 @@ else {
 				if(displayMode == 'cluster' && redraw){
 					redrawMarkerClusters();
 				}
-				else if (displayMode == 'heat');
+				else if (displayMode == 'heat'){
+					buildHeatMapData();
+				}
+					
 			}
 		}
 
@@ -801,7 +827,9 @@ else {
 				if(displayMode == 'cluster' && redraw){
 					redrawMarkerClusters();
 				}
-				else if (displayMode == 'heat');
+				else if (displayMode == 'heat'){
+					buildHeatMapData();
+				}
 			}
 		}
 
@@ -1205,6 +1233,7 @@ else {
 					<label for="modeCluster">Cluster</label><input type="radio" id="modeCluster" name="markerDsiplayMode" onclick="handleModeRadios(this);" value="cluster" checked>
 					<label for="modePoints">Markers</label><input type="radio" id="modePoints" name="markerDsiplayMode" onclick="handleModeRadios(this);" value="points">
 					<label for="modeHeat">Heat Map</label><input type="radio" id="modeHeat" name="markerDsiplayMode" onclick="handleModeRadios(this);" value="heat">
+					<br><a href="#" onclick="activateMapOtions();">View map options</a>
 				</div>
 			
 			<div id="accordion">
@@ -1467,6 +1496,16 @@ else {
 							</div>
 							<div style="clear:both;margin-top:8px;">
 							</div>
+						</div>
+						<div>
+							<fieldset id="heatmap_options_fs">
+									<legend><?php echo (isset($LANG['MAPSEARCH_HEATMAP_OPTIONS']) ? $LANG['MAPSEARCH_HEATMAP_OPTIONS'] : 'Heatmap Options'); ?></legend>
+							<div style="margin-top:8px;">
+							<label><input name="heatmap_dissipating" type="checkbox" onchange="heatmap_dissipating(this);">Dissipate with zoom level</label>
+							<label><input type="number" min="0" step="1" name="heatmap_maxIntensity" onchange="heatmep_changeMaxIntensity(this.value);">Maximum Intensity</label>
+							<label><input type="number" min="0" step="1" name="heatmap_radius" onchange="heatmep_changeRadius(this.value);">Radius</label>
+							<label><input type="number" name="heatmap_opacity" value="0.60" min="0.10" max="1" step="0.05" onchange="heatmep_changeOpacity(this.value);">Opacity</label>
+						</fieldset>
 						</div>
 						<?php
 						if (true) {

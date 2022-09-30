@@ -26,10 +26,31 @@ function checkRecordLimit(f) {
 function buildHeatMapData(){
 	heatMapData = new google.maps.MVCArray();
 	for (var i in allMarkers){
-		if (allMarkers[i].visible)
+		if (allMarkers[i].visible){
 			heatMapData.push(allMarkers[i].getPosition());
-		}		
+		}
+	}
+	heatmap.setData(heatMapData);			
 }
+
+function heatmap_dissipating(checkbox){
+	let dissipating = false;
+	if (checkbox.checked) dissipating = true;
+	heatmap.set("dissipating", dissipating);
+}
+
+function heatmep_changeRadius(radius = 20){
+	heatmap.set("radius", radius);
+  }
+  
+  function heatmep_changeOpacity(opacity = 0.6){
+	heatmap.set("opacity", opacity);
+  }
+
+  function heatmep_changeMaxIntensity(maxIntensity = 10){
+	heatmap.set("maxIntensity", maxIntensity);
+  }
+
 
 function enableHeatmap(){
 	heatmap.setMap(map);

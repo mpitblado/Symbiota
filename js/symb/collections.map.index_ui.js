@@ -500,3 +500,10 @@ function getSortedKeys(obj) {
     return keys.sort(function(a,b){return obj[a].localeCompare(obj[b]);});
 }
 
+function activateMapOtions(){
+	$("#accordion").accordion("option", {
+		active: 0
+	});
+	document.getElementById('ui-id-3').click();
+}
+
