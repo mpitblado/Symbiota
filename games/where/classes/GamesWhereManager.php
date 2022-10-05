@@ -90,10 +90,56 @@ class GamesWhereManager extends Manager {
 		return $resultArray;
 	}
 
-	public function GetImageURL($SciName, $DBNum, $Sort){
-		//Kind of messy.  Determining the best image is not scientific.  If the image sortsequence is 1, then it's probably a good one.  But in many cases the sortsequence is 50 for every image.
-		global $DB;
-		$TIDQuery = "SELECT TID FROM taxa WHERE SciName LIKE '$SciName%'";
+	public function getImageURL($SciName, $DBNum, $Sort){
+		$tidArr = Array($this->tid);
+		$sql1 = 'SELECT DISTINCT ts.tid '.
+				'FROM taxstatus ts INNER JOIN taxaenumtree tn ON ts.tid = tn.tid '.
+				'WHERE tn.taxauthid = 1 AND ts.taxauthid = 1 AND ts.tid = ts.tidaccepted AND tn.parenttid = '.$this->tid;
+		$rs1 = $this->conn->query($sql1);
+		while($r1 = $rs1->fetch_object()){
+			$tidArr[] = $r1->tid;
+		}
+		$rs1->free();
+
+		$tidStr = implode(",",$tidArr);
+		$sql = 'SELECT t.sciname, i.imgid, i.url, i.thumbnailurl, i.originalurl, i.caption, i.occid, i.photographer, CONCAT_WS(" ",u.firstname,u.lastname) AS photographerLinked '.
+				'FROM images i LEFT JOIN users u ON i.photographeruid = u.uid '.
+				'INNER JOIN taxstatus ts ON i.tid = ts.tid '.
+				'INNER JOIN taxa t ON i.tid = t.tid '.
+				'WHERE (ts.taxauthid = 1 AND ts.tidaccepted IN ('.$tidStr.')) AND i.SortSequence < 500 AND i.thumbnailurl IS NOT NULL ';
+		if(!$this->displayLocality) $sql .= 'AND i.occid IS NULL ';
+		$sql .= 'ORDER BY i.sortsequence, i.sortOccurrence LIMIT 100';
+		/*
+		 $sql = 'SELECT t.sciname, i.imgid, i.url, i.thumbnailurl, i.originalurl, i.caption, i.occid, IFNULL(i.photographer,CONCAT_WS(" ",u.firstname,u.lastname)) AS photographer '.
+		 'FROM images i LEFT JOIN users u ON i.photographeruid = u.uid '.
+		 'INNER JOIN taxa t ON i.tid = t.tid '.
+		 'INNER JOIN taxstatus ts ON i.tid = ts.tid '.
+		 'INNER JOIN taxstatus ts2 ON ts.tidaccepted = ts2.tid '.
+		 'INNER JOIN taxaenumtree e ON ts2.tid = e.tid '.
+		 'WHERE ts.taxauthid = 1 AND ts2.taxauthid = 1 AND e.taxauthid = 1 AND ts2.tid = ts2.tidaccepted AND e.parenttid = '.$this->tid.' AND i.SortSequence < 500 AND i.thumbnailurl IS NOT NULL ';
+		 if(!$this->displayLocality) $sql .= 'AND i.occid IS NULL ';
+		 $sql .= 'ORDER BY i.sortsequence LIMIT 100';
+		 */
+		//echo $sql;
+		$result = $this->conn->query($sql);
+		while($row = $result->fetch_object()){
+			$imgUrl = $row->url;
+			if($imgUrl == 'empty') $imgUrl = '';
+			if(!$imgUrl && $row->originalurl) $imgUrl = $row->originalurl;
+			if(!$imgUrl) continue;
+			$this->imageArr[$row->imgid]['url'] = $imgUrl;
+			$this->imageArr[$row->imgid]['thumbnailurl'] = $row->thumbnailurl;
+			if($row->photographerLinked) $this->imageArr[$row->imgid]['photographer'] = $row->photographerLinked;
+			else $this->imageArr[$row->imgid]['photographer'] = $row->photographer;
+			$this->imageArr[$row->imgid]['caption'] = $row->caption;
+			$this->imageArr[$row->imgid]['occid'] = $row->occid;
+			$this->imageArr[$row->imgid]['sciname'] = $row->sciname;
+		}
+		$result->free();
+
+
+
+		$tidSql = 'SELECT TID FROM taxa WHERE SciName LIKE "'.$SciName.'%"';
 		$TIDresult = $DB[$DBNum]->query($TIDQuery);
 		$TID = '';
 		if($TIDresult->num_rows > 0)
