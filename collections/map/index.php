@@ -188,7 +188,8 @@ else {
 		var panPoint = new google.maps.LatLng();
 		var heatMapData = new google.maps.MVCArray();
 		var displayMode = 'cluster';
-		var taxaKetSet = new Set();
+		var taxaKeySet = new Set();
+		var recordsArr = [];
 
 		function initialize(){
 			document.getElementById('defaultmarkercolor').value = defaultMarkerColor;
@@ -255,7 +256,7 @@ else {
 			map = new google.maps.Map(document.getElementById("map"), dmOptions);
 			heatmap = new google.maps.visualization.HeatmapLayer({
 				data: heatMapData,
-				dissipating: false,
+				dissipating: true,
 			});
 			
 			var initBounds = new google.maps.LatLngBounds();
@@ -487,7 +488,9 @@ else {
 				});
 				buildCollKey();
 				buildTaxaKey();
-				//jscolor.init();
+				pointObj = [];
+				buildRecordsTable();
+				recordsArr = [];
 				if (pointBounds) {
 					map.fitBounds(pointBounds);
 					map.panToBounds(pointBounds);
@@ -497,7 +500,7 @@ else {
 
 		function processPoints() {
 
-			taxaKetSet.clear();
+			taxaKeySet.clear();
 
 			//setup map marker data structure
 			if (MarkerGroupings.indexOf('Taxa') < 0){
@@ -513,6 +516,7 @@ else {
 				
 				var markerIcon = null;
 
+				buildRecordTableRow(pointObj[i]);
 
 				//create collection based marker legend
 				buildCollKeyPiece(pointObj[i],iconColor);
@@ -530,8 +534,8 @@ else {
 
 				scinameStr = scinameStr.replace(/[ .]/g, "").toLowerCase();
 
-				if (!taxaKetSet.has(scinameStr)){
-					taxaKetSet.add(scinameStr)
+				if (!taxaKeySet.has(scinameStr)){
+					taxaKeySet.add(scinameStr)
 				
 					var family = '';
 					if(!pointObj[i]['family']){
@@ -670,6 +674,75 @@ else {
 					document.getElementById("tabs2").style.display = "none";
 				}
 			}
+		}
+
+		function renderRecordsRow(){
+			let tableHTML = '';
+			for(let i = 0; i < recordsArr.length; i++){
+				tableHTML += recordsArr[i];
+			}
+			return tableHTML;
+		}
+
+		function buildRecordsTable(){
+			let recordsTableHTMLTempplate = `
+				<div style="height:25px;margin-top:-5px;">
+					<div>
+						<div style="float:left;">
+							<form name="downloadForm" action="../download/index.php" method="post" onsubmit="targetPopup(this)" style="float:left">
+								<button class="ui-button ui-widget ui-corner-all" style="margin:5px;padding:5px;cursor: pointer" title="<?php echo $LANG['DOWNLOAD_SPECIMEN_DATA']; ?>">
+									<img src="../../images/dl2.png" srcset="../../images/download.svg" class="svg-icon" style="width:15px" />
+								</button>
+								<input name="reclimit" type="hidden" value="<?php echo $recLimit; ?>" />
+								<input name="sourcepage" type="hidden" value="map" />
+								<input name="searchvar" type="hidden" value="<?php echo $searchVar; ?>" />
+								<input name="dltype" type="hidden" value="specimen" />
+							</form>
+							<form name="fullquerykmlform" action="kmlhandler.php" method="post" target="_blank" style="float:left;">
+								<input name="reclimit" type="hidden" value="<?php echo $recLimit; ?>" />
+								<input name="sourcepage" type="hidden" value="map" />
+								<input name="searchvar" type="hidden" value="<?php echo $searchVar; ?>" />
+								<button name="submitaction" type="submit" class="ui-button ui-widget ui-corner-all" style="margin:5px;padding:5px;cursor: pointer" title="Download KML file">
+									<img src="../../images/dl2.png" srcset="../../images/download.svg" class="svg-icon" style="width:15px; padding-right: 5px; vertical-align:top" />KML
+								</button>
+							</form>
+							<button class="ui-button ui-widget ui-corner-all" style="margin:5px;padding:5px;cursor: pointer;" onclick="copyUrl()" title="<?php echo (isset($LANG['COPY_TO_CLIPBOARD'])?$LANG['COPY_TO_CLIPBOARD']:'Copy URL to Clipboard'); ?>">
+								<img src="../../images/dl2.png" srcset="../../images/link.svg" class="svg-icon" style="width:15px" /></button>
+						</div>
+					</div>
+				</div>
+				<table class="styledtable" style="font-family:Arial;font-size:12px;margin-left:-15px;">
+					<thead>
+					<tr>
+						<th>Catalog #</th>
+						<th>Collector</th>
+						<th>Date</th>
+						<th>Scientific Name</th>
+					</tr>
+					</thead>
+					<tbody>
+					${renderRecordsRow()}
+					</tbody>
+				</table>
+			`;
+
+			if (document.getElementById("records")) document.getElementById("records").innerHTML = recordsTableHTMLTempplate;
+		}
+	
+
+		function buildRecordTableRow(myRecord){
+			let rowHTML = "";
+			rowHTML += `
+				<tr class="alt" id="tr${myRecord.occid}" >
+					<td id="cat${myRecord.occid}" >${myRecord.catalognumber}</td>
+					<td id="label${myRecord.occid}" ><a href="#" onclick="openIndPopup(${myRecord.occid}); return false;">${myRecord.recordedby}${(myRecord.recordnumber ? ' ' + myRecord.recordnumber : '')}</a></td>
+					<td id="e${myRecord.occid}" >${myRecord.eventdate}</td>
+					<td id="s${myRecord.occid}" >${myRecord.sciname}</td>
+				</tr>
+			`;
+
+			recordsArr.push(rowHTML);
+			
 		}
 
 		function buildCollKeyPiece(key, iconColor) {
@@ -1481,32 +1554,22 @@ else {
 						</div>
 					</form>
 					<div id="mapoptions" >
-						<div style="border:1px black solid;margin-top:10px;padding:5px;">
-							<b><?php echo (isset($LANG['MAPSEARCH_DEFAULTS']) ? $LANG['MAPSEARCH_DEFAULTS'] : 'Map Search Defaults' ); ?></b>
+						<fieldset id="map_options_fs">
+							<legend><?php echo (isset($LANG['MAPSEARCH_DEFAULTS']) ? $LANG['MAPSEARCH_DEFAULTS'] : 'Map Search Defaults' ); ?></legend>
+							<label for="defaultmarkercolor"><?php echo (isset($LANG['MAPSEARCH_MARKER_COLOR']) ? $LANG['MAPSEARCH_MARKER_COLOR'] : 'Default Marker Color'); ?>:<label>
+							<input class="small_color_input" name="defaultmarkercolor" id="defaultmarkercolor" type="color" onchange="resetSymbology();" />
+						</fieldset>
+						<fieldset id="cluster_options_fs">
+						<legend><?php echo (isset($LANG['CLUSTERING']) ? $LANG['CLUSTERING'] : 'Clustering Options'); ?></legend>
+						</fieldset>
+						<fieldset id="heatmap_options_fs">
+							<legend><?php echo (isset($LANG['MAPSEARCH_HEATMAP_OPTIONS']) ? $LANG['MAPSEARCH_HEATMAP_OPTIONS'] : 'Heatmap Options'); ?></legend>
 							<div style="margin-top:8px;">
-								<div>
-									<?php echo (isset($LANG['MAPSEARCH_MARKER_COLOR']) ? $LANG['MAPSEARCH_MARKER_COLOR'] : 'Default Marker Color'); ?>:
-									<input class="small_color_input" name="defaultmarkercolor" id="defaultmarkercolor" type="color" onchange="resetSymbology();" />
-								</div>
-							</div>
-						</div>
-						<div style="border:1px black solid;margin-top:10px;padding:5px;">
-							<b><?php echo (isset($LANG['CLUSTERING']) ? $LANG['CLUSTERING'] : 'Clustering Options'); ?></b>
-							<div style="margin-top:8px;">
-							</div>
-							<div style="clear:both;margin-top:8px;">
-							</div>
-						</div>
-						<div>
-							<fieldset id="heatmap_options_fs">
-									<legend><?php echo (isset($LANG['MAPSEARCH_HEATMAP_OPTIONS']) ? $LANG['MAPSEARCH_HEATMAP_OPTIONS'] : 'Heatmap Options'); ?></legend>
-							<div style="margin-top:8px;">
-							<label><input name="heatmap_dissipating" type="checkbox" onchange="heatmap_dissipating(this);">Dissipate with zoom level</label>
+							<label><input name="heatmap_dissipating" type="checkbox" onchange="heatmap_dissipating(this);" checked>Dissipate with zoom level</label>
 							<label><input type="number" min="0" step="1" name="heatmap_maxIntensity" onchange="heatmep_changeMaxIntensity(this.value);">Maximum Intensity</label>
 							<label><input type="number" min="0" step="1" name="heatmap_radius" onchange="heatmep_changeRadius(this.value);">Radius</label>
 							<label><input type="number" name="heatmap_opacity" value="0.60" min="0.10" max="1" step="0.05" onchange="heatmep_changeOpacity(this.value);">Opacity</label>
 						</fieldset>
-						</div>
 						<?php
 						if (true) {
 						?>
@@ -1538,10 +1601,12 @@ else {
 					<h3 id="recordstaxaheader" style="display:none;padding-left:30px;"><?php echo (isset($LANG['RECORDS_TAXA']) ? $LANG['RECORDS_TAXA'] : 'Records and Taxa'); ?></h3>
 					<div id="tabs2" style="display:none;width:379px;padding:0px;">
 						<ul>
-							<li><a href='occurrencelist.php?<?php echo $searchVar; ?>'><span><?php echo (isset($LANG['RECORDS']) ? $LANG['RECORDS'] : 'Records'); ?></span></a></li>
+							<li><a href='#records'><span><?php echo (isset($LANG['RECORDS']) ? $LANG['RECORDS'] : 'Records'); ?></span></a></li>
 							<li><a href='#symbology'><span><?php echo (isset($LANG['COLLECTIONS']) ? $LANG['COLLECTIONS'] : 'Collections'); ?></span></a></li>
 							<li><a href='#maptaxalist'><span><?php echo (isset($LANG['TAXA_LIST']) ? $LANG['TAXA_LIST'] : 'Taxa List'); ?></span></a></li>
 						</ul>
+						<div id="records" >
+						</div>
 						<div id="symbology" >
 							<div style="height:40px;margin-bottom:15px;">
 								<?php

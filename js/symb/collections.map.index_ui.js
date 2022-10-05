@@ -7,21 +7,21 @@ $(document).ready(function() {
 		},
 		active: 1
 	});
-    var hijax = function(panel) {
-        $('.pagination a', panel).click(function(){
-            $(panel).load(this.href, {}, function() {
-                hijax(this);
-            });
-            return false;
-        });
-    };
+    //var hijax = function(panel) {
+    //    $('.pagination a', panel).click(function(){
+    //        $(panel).load(this.href, {}, function() {
+    //            hijax(this);
+    //        });
+    //        return false;
+    //    });
+    //};
 	$('#tabs2').tabs({
 		beforeLoad: function( event, ui ) {
 			$(ui.panel).html("<p>Loading...</p>");
-		},
-        load: function(event, ui) {
-            hijax(ui.panel);
-        }
+		}//,
+        //load: function(event, ui) {
+        //    hijax(ui.panel);
+        //}
 	});
 	$('#tabs3').tabs({
 		beforeLoad: function( event, ui ) {
