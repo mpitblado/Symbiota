@@ -114,1181 +114,44 @@ else {
 			grid-column: 2;
 		}
 
-		
+		table#mapSearchRecordsTable.styledtable tr:nth-child(odd) td{
+			background-color: #ffffff;
+		}
 
+		#divMapSearchRecords{
+			position: relative;
+			height: 600px;
+			overflow: auto;
+			clear: left;
+			float: left;
+		}
 
+		#mapSearchRecordsTable {
+			font-family:Arial;
+			font-size:12px;
+		}
+
+		#mapSearchRecordsTable th {
+			top: 0;
+			position: sticky;
+		}
+
+		#tabs2 {
+			display:none;
+			width:379px;
+			padding:0px;
+		}
 
 	</style>
 	<script src="../../js/jquery-3.6.0.min.js" type="text/javascript"></script>
 	<script src="../../js/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
 	<link href="../../js/jquery-ui/jquery-ui.min.css" type="text/css" rel="Stylesheet" />
-	<script src="//maps.googleapis.com/maps/api/js?v=quarterly&libraries=drawing,visualization<?php echo (isset($GOOGLE_MAP_KEY) && $GOOGLE_MAP_KEY ? '&key=' . $GOOGLE_MAP_KEY : ''); ?>"></script>
+	<script src="//maps.googleapis.com/maps/api/js?v=quarterly&libraries=drawing,visualization<?php echo (isset($GOOGLE_MAP_KEY) && $GOOGLE_MAP_KEY ? '&key=' . $GOOGLE_MAP_KEY : ''); ?>" defer></script>
 	<script src="../../js/symb/collections.map.index_gm.js?ver=2" type="text/javascript"></script>
 	<script src="../../js/symb/collections.map.index_ui.js?ver=2" type="text/javascript"></script>
 	<script src="../../js/symb/collections.list.js?ver=1" type="text/javascript"></script>
 	<script src="../../js/googlemaps/index.dev.js"></script>
 	<script src="../../js/symb/oms.min.js" type="text/javascript"></script>
-	<script type="text/javascript">
-
-		var clientRoot = "<?php echo $CLIENT_ROOT; ?>";
-
-		$(document).ready(function() {
-			<?php
-			if ($searchVar) echo 'sessionStorage.querystr = "' . $searchVar . '";';
-			?>
-		});
-
-		var map;
-		var heatmap;
-		var pointObj;
-		var initBoundsNorthEast = <?php echo json_encode($bound_NorthEast); ?>;
-		var initBoundsSouthWest = <?php echo json_encode($bound_SouthWest); ?>;
-		var defaultMarkerColor = '#f6ae77';
-		var markerCluster = null;
-		//var infoWins = [];
-		//var puWin;
-		//var markers = [];
-		//var dsmarkers = [];
-		//var dsoccids = [];
-		var selections = [];
-		var dsselections = [];
-		var selectedds = '';
-		var selecteddsrole = '';
-		var allMarkers = [];
-		var drawingManager = null;
-		var spiderfier;
-		var selectedShape = null;
-		var gotCoords = <?php echo ($activateGeolocation ? 'true' : 'false'); ?>;
-		var mapSymbol = 'coll';
-		var selected = false;
-		var deselected = false;
-		var positionFound = false;
-		var clid = '<?php echo ($mapManager->getSearchTerm('clid') ? $mapManager->getSearchTerm('clid') : 0); ?>';
-		var obsIDs = JSON.parse('<?php echo json_encode($obsIDs); ?>');
-		var MarkerGroupings = []; //stores all marker groupings
-		var markerArr = [];
-		var tidArr = [];
-		var taxaLegendArr = [];
-		var taxaCnt = 0;
-		var collKeyArr = []; // stores HTML elements of the Group by Collection key
-		var collNameArr = [];
-		var familyNameArr = []; //populated with list of Families represented in the results and used to group taxa on the map legend/key 
-		var htmlTidArr = []; //maps html id to taxa group
-		var taxaKeyArr = []; //stores HTML elements of the Group by Taxanomy key
-		var clusterCollArr = [];
-		var clusterTaxArr = [];
-		var optionsCollArr = [];
-		var optionsTaxArr = [];
-		var grpCnt = 1;
-		var InformationWindow = '';
-		var mouseoverTimeout = '';
-		var mouseoutTimeout = '';
-		var pointBounds = new google.maps.LatLngBounds();
-		var occArr = [];
-		var panPoint = new google.maps.LatLng();
-		var heatMapData = new google.maps.MVCArray();
-		var displayMode = 'cluster';
-		var taxaKeySet = new Set();
-		var recordsArr = [];
-
-		function initialize(){
-			document.getElementById('defaultmarkercolor').value = defaultMarkerColor;
-			<?php
-			$recordCnt = $mapManager->getRecordCnt();
-			if ($searchVar) {
-			?>
-				if (<?php echo $recordCnt; ?> > 0) {
-					var resultCount = <?php echo $recordCnt; ?>;
-					if (resultCount <= <?php echo $recLimit; ?>) {
-						<?php
-						//$coordArr = $mapManager->getCoordinateMap(0,$recLimit);
-						$coordArr = $mapManager->getCoordinateMap2(0, 50000);
-						echo 'pointObj = ' . json_encode($coordArr) . ";\n";
-						?>
-					} else {
-						alert("Your search produced " + resultCount + " results which exceeds the maximum of <?php echo $recLimit; ?>, please refine your search more.");
-						$('#loadingOverlay').hide();
-					}
-				} else {
-					alert('There were no records matching your query.');
-				}
-			<?php
-			}
-			?>
-			initializeGoogleMap();
-			if (pointObj){
-				processPoints();
-			}
-			$('#loadingOverlay').hide();
-			setTimeout(function() {
-				afterEffects();
-			}, 500);
-
-		}
-
-		function initializeGoogleMap() {
-			
-			var dmOptions = {
-				zoom: 6,
-				minZoom: 3,
-				mapTypeId: google.maps.MapTypeId.TERRAIN,
-				mapTypeControl: true,
-				mapTypeControlOptions: {
-					style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-					position: google.maps.ControlPosition.TOP_RIGHT
-				},
-				panControl: true,
-				panControlOptions: {
-					position: google.maps.ControlPosition.RIGHT_TOP
-				},
-				zoomControl: true,
-				zoomControlOptions: {
-					style: google.maps.ZoomControlStyle.LARGE,
-					position: google.maps.ControlPosition.RIGHT_TOP
-				},
-				scaleControl: true,
-				scaleControlOptions: {
-					position: google.maps.ControlPosition.RIGHT_TOP
-				},
-				streetViewControl: false
-			};
-			
-			map = new google.maps.Map(document.getElementById("map"), dmOptions);
-			heatmap = new google.maps.visualization.HeatmapLayer({
-				data: heatMapData,
-				dissipating: true,
-			});
-			
-			var initBounds = new google.maps.LatLngBounds();
-			
-			initBounds.extend(new google.maps.LatLng(initBoundsNorthEast[0], initBoundsNorthEast[1]));
-			initBounds.extend(new google.maps.LatLng(initBoundsSouthWest[0], initBoundsSouthWest[1]));
-			map.fitBounds(initBounds);
-
-			spiderfier = new OverlappingMarkerSpiderfier(map, {
-				basicFormatEvents: true
-			});
-
-			var polyOptions = {
-				strokeWeight: 0,
-				fillOpacity: 0.45,
-				editable: true,
-				draggable: true
-			};
-
-			var drawingManager = new google.maps.drawing.DrawingManager({
-				drawingMode: null,
-				drawingControl: true,
-				drawingControlOptions: {
-					position: google.maps.ControlPosition.TOP_CENTER,
-					drawingModes: [
-						google.maps.drawing.OverlayType.POLYGON,
-						google.maps.drawing.OverlayType.RECTANGLE,
-						google.maps.drawing.OverlayType.CIRCLE
-					]
-				},
-				markerOptions: {
-					draggable: true
-				},
-				polylineOptions: {
-					editable: true
-				},
-				rectangleOptions: polyOptions,
-				circleOptions: polyOptions,
-				polygonOptions: polyOptions
-			});
-
-			drawingManager.setMap(map);
-
-			/* google.maps.event.addListener(
-				document.getElementById("distFromMe"),
-				'change',
-				function(){
-					var distance = document.getElementById("distFromMe").value;
-					if(distance){
-						document.getElementById("pointlat").value = posLat;
-						document.getElementById("pointlong").value = posLong;
-						document.getElementById("radius").value = distance;
-					}
-				}
-			); */
-
-			google.maps.event.addListener(drawingManager, 'overlaycomplete', function(e) {
-				if (e.type != google.maps.drawing.OverlayType.MARKER) {
-					// Switch back to non-drawing mode after drawing a shape.
-					deleteSelectedShape();
-					drawingManager.setDrawingMode(null);
-
-					var newShapeType = '';
-					newShapeType = e.type;
-					// Add an event listener that selects the newly-drawn shape when the user
-					// mouses down on it.
-					var newShape = e.overlay;
-					newShape.type = e.type;
-					google.maps.event.addListener(newShape, 'dragend', function() {
-						setSelection(newShape);
-					});
-					if (newShapeType == 'circle') {
-						getCircleCoords(newShape);
-						google.maps.event.addListener(newShape, 'radius_changed', function() {
-							setSelection(newShape);
-						});
-						google.maps.event.addListener(newShape, 'center_changed', function() {
-							setSelection(newShape);
-						});
-					}
-					if (newShapeType == 'rectangle') {
-						getRectangleCoords(newShape);
-						google.maps.event.addListener(newShape, 'bounds_changed', function() {
-							setSelection(newShape);
-						});
-					}
-					if (newShapeType == 'polygon') {
-						getPolygonCoords(newShape);
-						google.maps.event.addListener(newShape.getPath(), 'insert_at', function() {
-							setSelection(newShape);
-						});
-						google.maps.event.addListener(newShape.getPath(), 'remove_at', function() {
-							setSelection(newShape);
-						});
-						google.maps.event.addListener(newShape.getPath(), 'set_at', function() {
-							setSelection(newShape);
-						});
-					}
-					setSelection(newShape);
-				}
-			});
-
-			spiderfier.addListener('click', function(marker, event) {
-				occid = marker.occid;
-				chbox = 'ch' + occid;
-				if (selections.indexOf(occid) > -1) {
-					var index = selections.indexOf(occid);
-					if (index > -1) {
-						selections.splice(index, 1);
-					}
-					if (document.getElementById(chbox)) {
-						document.getElementById(chbox).checked = false;
-						document.getElementById("selectallcheck").checked = false;
-					}
-					//removeSelectionRecord(occid);
-					//adjustSelectionsTab();
-					//deselectMarker(marker);
-				} else {
-					selections.push(occid);
-					if (document.getElementById(chbox)) {
-						document.getElementById(chbox).checked = true;
-						var f = document.getElementById("selectform");
-						var boxesChecked = true;
-						for (var i = 0; i < f.length; i++) {
-							if (f.elements[i].name == "occid[]") {
-								if (f.elements[i].checked == false) {
-									boxesChecked = false;
-								}
-							}
-						}
-						if (boxesChecked == true) {
-							document.getElementById("selectallcheck").checked = true;
-						}
-					}
-					//adjustSelectionsTab();
-					selectMarker(marker);
-				}
-			});
-
-			spiderfier.addListener('spiderfy', function(markers) {
-				closeInfoWin();
-			});
-
-			createShape();
-		}
-
-		function createShape() {
-			let newShape = null;
-			let f = document.mapsearchform;
-			if (f.upperlat.value != "") {
-				newShape = new google.maps.Rectangle({
-					bounds: new google.maps.LatLngBounds(
-						new google.maps.LatLng(f.bottomlat.value, f.leftlong.value),
-						new google.maps.LatLng(f.upperlat.value, f.rightlong.value)
-					),
-					strokeWeight: 0,
-					fillOpacity: 0.45,
-					editable: true,
-					draggable: true,
-					map: map
-				});
-				newShape.type = "rectangle";
-				google.maps.event.addListener(newShape, 'bounds_changed', function() {
-					setSelection(newShape);
-				});
-			} else if (f.pointlat.value != "") {
-				newShape = new google.maps.Circle({
-					center: new google.maps.LatLng(f.pointlat.value, f.pointlong.value),
-					radius: (f.radius.value / 0.6214) * 1000,
-					strokeWeight: 0,
-					fillOpacity: 0.45,
-					editable: true,
-					draggable: true,
-					map: map
-				});
-				newShape.type = "circle";
-				google.maps.event.addListener(newShape, "radius_changed", function() {
-					setSelection(newShape);
-				});
-				google.maps.event.addListener(newShape, "center_changed", function() {
-					setSelection(newShape);
-				});
-			} else if (f.polycoords.value != "") {
-				let wkt = f.polycoords.value;
-				if (wkt.substring(0, 7) == "POLYGON") wkt = wkt.substring(7).trim();
-				while (wkt.substring(0, 1) == "(") wkt = wkt.substring(1).trim();
-				while (wkt.substring(wkt.length - 1) == ")") wkt = wkt.slice(0, -1).trim();
-				let coordArr = wkt.split(",");
-				let pointArr = [];
-				for (let n = 0; n < coordArr.length; n++) {
-					let ptArr = coordArr[n].trim().split(" ");
-					pointArr.push(new google.maps.LatLng(ptArr[0], ptArr[1]));
-				}
-				newShape = new google.maps.Polygon({
-					paths: [pointArr],
-					strokeWeight: 0,
-					fillOpacity: 0.45,
-					editable: true,
-					draggable: true,
-					map: map
-				});
-				newShape.type = "polygon";
-				google.maps.event.addListener(newShape.getPath(), "insert_at", function() {
-					setSelection(newShape);
-				});
-				google.maps.event.addListener(newShape.getPath(), "remove_at", function() {
-					setSelection(newShape);
-				});
-				google.maps.event.addListener(newShape.getPath(), "set_at", function() {
-					setSelection(newShape);
-				});
-			}
-			if (newShape) {
-				google.maps.event.addListener(newShape, "click", function() {
-					setSelection(newShape);
-				});
-				google.maps.event.addListener(newShape, "dragend", function() {
-					setSelection(newShape);
-				});
-				setSelection(newShape);
-			}
-		}
-
-		function afterEffects() {
-			if (pointObj) {
-				setPanels(true);
-				$("#accordion").accordion("option", {
-					active: 1
-				});
-				buildCollKey();
-				buildTaxaKey();
-				pointObj = [];
-				buildRecordsTable();
-				recordsArr = [];
-				if (pointBounds) {
-					map.fitBounds(pointBounds);
-					map.panToBounds(pointBounds);
-				}
-			}
-		}
-
-		function processPoints() {
-
-			taxaKeySet.clear();
-
-			//setup map marker data structure
-			if (MarkerGroupings.indexOf('Taxa') < 0){
-				MarkerGroupings['Taxa'] = [];
-				//MarkerGroupings['Taxa']['iconColors'] = [];
-			}
-			if (MarkerGroupings.indexOf('Collections') < 0){
-				MarkerGroupings['Collections'] = [];
-				//MarkerGroupings['Collections']['iconColors'] = [];
-			}
-			var iconColor = document.getElementById('defaultmarkercolor').value;
-			for (let i = 0; i < pointObj.length; i++) {
-				
-				var markerIcon = null;
-
-				buildRecordTableRow(pointObj[i]);
-
-				//create collection based marker legend
-				buildCollKeyPiece(pointObj[i],iconColor);
-
-				//create taxonomy based marker legend
-
-				var tempFamArr = [];
-				var scinameStr = '';
-				//The scinameStr value is used for DIV element id
-	
-				if (pointObj[i]['tidinterpreted'] && pointObj[i]['tidinterpreted'] != 'NULL'){
-					scinameStr = pointObj[i]['sciname']+pointObj[i]['tidinterpreted'];
-				}
-				else scinameStr = pointObj[i]['sciname'];
-
-				scinameStr = scinameStr.replace(/[ .]/g, "").toLowerCase();
-
-				if (!taxaKeySet.has(scinameStr)){
-					taxaKeySet.add(scinameStr)
-				
-					var family = '';
-					if(!pointObj[i]['family']){
-						family = 'NULL'
-					}
-					else family = pointObj[i]['family']
-					family = family.toUpperCase();
-					buildTaxaKeyPiece(scinameStr, pointObj[i]['tidinterpreted'], family, pointObj[i]['sciname'],iconColor);
-				}
-
-				//set marker icon based on record type
-				if (pointObj[i]["collType"].includes('Observations')){
-					type = 'obs';
-					markerIcon = {
-						url: '<?= $CLIENT_ROOT?>/collections/map/coloricon.php?shape=triangle&color=' + iconColor,
-						scaledSize: new google.maps.Size(18, 18), 
-					}
-				}
-				else {
-					type = 'spec';
-					markerIcon = {
-						url: '<?= $CLIENT_ROOT?>/collections/map/coloricon.php?shape=circle&color=' + iconColor,
-						scaledSize: new google.maps.Size(18, 18), 
-					}
-
-				}
-
-				
-				
-
-				var identifier = pointObj[i]['recordedby'];
-				if (pointObj[i]['recordnumber']){
-					identifier += ' ' +pointObj[i]['recordnumber'];
-				}
-				else identifier += ' ' + pointObj[i]['eventdate']
-
-				//Create Marker & Add occurance data to Marker Object
-
-				var m = new google.maps.Marker({
-					position: new google.maps.LatLng(pointObj[i]["DecimalLatitude"], pointObj[i]["DecimalLongitude"]),
-					optimized: true,
-					text: "Collection: " + pointObj[i]["CollectionName"] + " Collector: " + identifier,
-					icon: markerIcon,
-					selected: false,
-					color: iconColor,
-					taxaKeyHtmlID: scinameStr,
-					recordType: type,
-					collid: pointObj[i]['collid'],
-					identifier: identifier,
-					taxatid: pointObj[i]['sciname'],
-					tidinterpreted: pointObj[i]['tidinterpreted'],
-					family: family,
-					occid: pointObj[i]['occid'],
-					clid: 0,
-				});
-				allMarkers.push(m)
-				if (!MarkerGroupings['Taxa'][scinameStr]) MarkerGroupings['Taxa'][scinameStr] = [];
-				MarkerGroupings['Taxa'][scinameStr].push(m);
-				if (!MarkerGroupings['Collections'][pointObj[i]['collid']]) MarkerGroupings['Collections'][pointObj[i]['collid']] = [];
-				MarkerGroupings['Collections'][pointObj[i]['collid']].push(m);
-				heatMapData.push(m.getPosition());								
-
-				// Add marker listener
-				m.addListener('click', function() {
-
-					// prevent multiple information windows from opening at the same time
-					if(InformationWindow){
-						InformationWindow.close();
-					}
-
-					panPoint = this.position;
-					var myOptions = {
-						content: '<div>' + this.text + '<br /><a href="#" onclick="openIndPopup(' + this.occid + ',' + this.clid +
-							 ');return false;"><span style="color:blue;">See Details</span></a></div><div><a onclick="map.panTo(panPoint); map.setZoom(13); return false">Focus</a></div>',
-					};
-					
-					InformationWindow = new google.maps.InfoWindow(myOptions);
-					InformationWindow.open(map, this);
-					
-
-				});
-
-				spiderfier.addMarker(m);
-				var markerPos = m.getPosition();
-				pointBounds.extend(markerPos);
-			}
-			//initialize map with clustering turned on
-			handleModeRadios({
-				value: 'cluster',
-			});
-		}
-
-
-		function handleModeRadios(myMode){
-			
-			switch(myMode.value) {
-				case 'cluster':
-					displayMode = 'cluster';
-					heatmap.setMap(null);
-					for (var i in allMarkers){
-						allMarkers[i].setMap(null);
-					}
-					markerCluster = new markerClusterer.MarkerClusterer({
-						map: map,
-						markers: allMarkers, 
-					});
-					break;
-				case 'points':
-					displayMode = 'points';
-					heatmap.setMap(null);
-					markerCluster.clearMarkers();
-					for (var i in allMarkers){
-						allMarkers[i].setMap(map);
-					}
-					break;
-				case 'heat':
-					displayMode = 'heat';
-					markerCluster.clearMarkers();
-					for (var i in allMarkers){
-						allMarkers[i].setMap(null);
-					}
-					buildHeatMapData();
-					heatmap.setMap(map);
-					break;
-			}
-		}
-
-
-		function setPanels(show) {
-			if (document.getElementById("recordstaxaheader")) {
-				if (show) {
-					document.getElementById("recordstaxaheader").style.display = "block";
-					document.getElementById("tabs2").style.display = "block";
-				} else {
-					document.getElementById("recordstaxaheader").style.display = "none";
-					document.getElementById("tabs2").style.display = "none";
-				}
-			}
-		}
-
-		function renderRecordsRow(){
-			let tableHTML = '';
-			for(let i = 0; i < recordsArr.length; i++){
-				tableHTML += recordsArr[i];
-			}
-			return tableHTML;
-		}
-
-		function buildRecordsTable(){
-			let recordsTableHTMLTempplate = `
-				<div style="height:25px;margin-top:-5px;">
-					<div>
-						<div style="float:left;">
-							<form name="downloadForm" action="../download/index.php" method="post" onsubmit="targetPopup(this)" style="float:left">
-								<button class="ui-button ui-widget ui-corner-all" style="margin:5px;padding:5px;cursor: pointer" title="<?php echo $LANG['DOWNLOAD_SPECIMEN_DATA']; ?>">
-									<img src="../../images/dl2.png" srcset="../../images/download.svg" class="svg-icon" style="width:15px" />
-								</button>
-								<input name="reclimit" type="hidden" value="<?php echo $recLimit; ?>" />
-								<input name="sourcepage" type="hidden" value="map" />
-								<input name="searchvar" type="hidden" value="<?php echo $searchVar; ?>" />
-								<input name="dltype" type="hidden" value="specimen" />
-							</form>
-							<form name="fullquerykmlform" action="kmlhandler.php" method="post" target="_blank" style="float:left;">
-								<input name="reclimit" type="hidden" value="<?php echo $recLimit; ?>" />
-								<input name="sourcepage" type="hidden" value="map" />
-								<input name="searchvar" type="hidden" value="<?php echo $searchVar; ?>" />
-								<button name="submitaction" type="submit" class="ui-button ui-widget ui-corner-all" style="margin:5px;padding:5px;cursor: pointer" title="Download KML file">
-									<img src="../../images/dl2.png" srcset="../../images/download.svg" class="svg-icon" style="width:15px; padding-right: 5px; vertical-align:top" />KML
-								</button>
-							</form>
-							<button class="ui-button ui-widget ui-corner-all" style="margin:5px;padding:5px;cursor: pointer;" onclick="copyUrl()" title="<?php echo (isset($LANG['COPY_TO_CLIPBOARD'])?$LANG['COPY_TO_CLIPBOARD']:'Copy URL to Clipboard'); ?>">
-								<img src="../../images/dl2.png" srcset="../../images/link.svg" class="svg-icon" style="width:15px" /></button>
-						</div>
-					</div>
-				</div>
-				<table class="styledtable" style="font-family:Arial;font-size:12px;margin-left:-15px;">
-					<thead>
-					<tr>
-						<th>Catalog #</th>
-						<th>Collector</th>
-						<th>Date</th>
-						<th>Scientific Name</th>
-					</tr>
-					</thead>
-					<tbody>
-					${renderRecordsRow()}
-					</tbody>
-				</table>
-			`;
-
-			if (document.getElementById("records")) document.getElementById("records").innerHTML = recordsTableHTMLTempplate;
-		}
-	
-
-		function buildRecordTableRow(myRecord){
-			let rowHTML = "";
-			rowHTML += `
-				<tr class="alt" id="tr${myRecord.occid}" >
-					<td id="cat${myRecord.occid}" >${myRecord.catalognumber}</td>
-					<td id="label${myRecord.occid}" ><a href="#" onclick="openIndPopup(${myRecord.occid}); return false;">${myRecord.recordedby}${(myRecord.recordnumber ? ' ' + myRecord.recordnumber : '')}</a></td>
-					<td id="e${myRecord.occid}" >${myRecord.eventdate}</td>
-					<td id="s${myRecord.occid}" >${myRecord.sciname}</td>
-				</tr>
-			`;
-
-			recordsArr.push(rowHTML);
-			
-		}
-
-		function buildCollKeyPiece(key, iconColor) {
-			if (!collNameArr[key['collid']]){
-				collNameArr[key['collid']] = [key['CollectionName'], key['collid']];
-				keyHTML = '';
-				keyHTML += '<div style="display:table-row;">';
-				keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-bottom:5px;" ><input type="checkbox" id="chkHideColl' + key['collid'] + '" onchange="hideCollToggle(this.checked,\'' + key['collid'] + '\');" CHECKED><input type="color" id="collColor' + key['collid'] + '" class="small_color_input" value="' + iconColor + '" oninput="changeCollColor(this.value,' + key['collid'] + ');" /></div>';
-				keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-left:8px;"> = </div>';
-				keyHTML += '<div style="display:table-cell;width:250px;vertical-align:middle;padding-left:8px;">' + key['CollectionName'] + '</div>';
-				keyHTML += '</div>';
-				collKeyArr[key['collid']] = keyHTML;
-			}
-		}
-
-		function buildCollKey() {
-			keyHTML = '';
-			keyHTML += "<div style='margin-left:5px;'><h3 style='margin-top:8px;margin-bottom:5px;'>Collections</h3></div>";
-			keyHTML += "<div style='display:table;'>";
-			keyHTML += '<div id="toggleHideAllCollectionsRow">';
-			keyHTML += '<div style="display:table-row;">';	
-			keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-bottom:5px;" ><input type="checkbox" id="chkHideAllColl" onchange="hideAllCollToggle(this.checked);" CHECKED><label for="chkHideAllColl">Show/Hide All Collections</label></div>';
-			keyHTML += '</div></div></div>';
-
-			// location aware case insensitive sort
-			collNameArr.sort((a, b) => {
-				return a[0].localeCompare(b[0], undefined, {sensitivity: 'base'});
-			});
-			for (var i in collNameArr) {
-				keyHTML += collKeyArr[collNameArr[i][1]];
-			}
-			if (document.getElementById("symbologykeysbox")) document.getElementById("symbologykeysbox").innerHTML = keyHTML;
-		}
-
-		function buildTaxaKeyPiece(key, tidinterpreted, family, sciname, iconColor) {
-
-			//setup array structure that will be used to group and sort taxa marker legend during buildTaxaKey()
-			if (familyNameArr.indexOf(family) < 0){
-				familyNameArr.push(family);
-				taxaLegendArr[family] = [];
-			}
-			if(!taxaLegendArr[family][key]){
-				taxaLegendArr[family][key] = sciname;
-			}
-			else return;
-
-			if (!taxaKeyArr[key]){
-				keyHTML = '';
-				keyLabel = "'" + key + "'";
-				keyHTML += '<li class="mapLegendEntry"><div class="mapLegendEntryInputs"><input type="checkbox" id="chkHideTaxa' + key + '" onchange="hideTaxaToggle(this.checked,\'' + key + '\');" CHECKED><input type="color" id="taxaColor' + key + '" class="small_color_input"  value="' + iconColor + '" onchange="changeTaxaColor(this.value,' + keyLabel + ');" /></div>';
-				keyHTML += '<span class="mapLegendEntryText">';
-				if (tidinterpreted) keyHTML += '<i> = <a href="#" onclick="openPopup(\'../../taxa/index.php?tid=' + tidinterpreted + '&display=1\');return false;">' + sciname + '</a></i>';
-				else keyHTML += "<i> = " + sciname + "</i>";
-				keyHTML += '</span></li>';
-				taxaKeyArr[key] = keyHTML;
-			}
-		}
-		
-
-		function buildTaxaKey() {
-
-			taxaLegendArr.sort(function(a,b) {
-				if(a[1] === b[1]) return a[3] > b[3] ? 1 : -1;
-				return a[1] > b[1] ? 1 : -1;
-			});
-
-			
-			keyHTML = '';
-			keyHTML += "<div style='display:table;margin-top:8px;margin-bottom:5px;'>";
-			keyHTML += '<div id="toggleHideAllTaxakeyRow">';
-			keyHTML += '<div style="display:table-row;">';	
-			keyHTML += '</div></div></div>';
-			keyHTML += '<ul class="mapGroupLegend">';
-			keyHTML += '<li><input type="checkbox" id="chkHideAllTaxa" onchange="hideAllTaxaToggle(this.checked);" CHECKED><label for="chkHideAllTaxa">Show/Hide All Taxa</label></li>';
-			
-			familyNameArr.sort();
-			var tempFamilyGroup = [];
-			for (let fam = 0; fam < familyNameArr.length; fam++) {
-				if(familyNameArr[fam] !== 'NULL'){
-
-					keyHTML += "<div style='margin-left:5px;'><h3 style='margin-top:8px;margin-bottom:5px;'>" + familyNameArr[fam] + "</h3></div>";
-					tempFamilyGroup = [];
-					tempFamilyGroup = getSortedKeys(taxaLegendArr[familyNameArr[fam]]);
-					//tempFamilyGroup.sort();
-		
-					for (let i = 0; i < tempFamilyGroup.length; i++) {
-						keyHTML += taxaKeyArr[tempFamilyGroup[i]];
-					}
-
-					taxaCnt += tempFamilyGroup.length;
-					
-				}
-			}
-			if (taxaLegendArr['NULL']) {
-				tempFamilyGroup = [];
-				tempFamilyGroup = getSortedKeys(taxaLegendArr['NULL']);
-				//tempFamilyGroup.sort();
-				
-				keyHTML += "<div style='margin-left:5px;'><h3 style='margin-top:8px;margin-bottom:5px;'>Family Not Defined</h3></div>";
-				keyHTML += "<div style='display:table;'>";
-				for (let i = 0; i < tempFamilyGroup.length; i++) {
-						keyHTML += taxaKeyArr[tempFamilyGroup[i]];
-				}
-				taxaCnt += tempFamilyGroup.length;
-				
-			}
-			if (document.getElementById("taxasymbologykeysbox")) document.getElementById("taxasymbologykeysbox").innerHTML = keyHTML;
-			if (document.getElementById("taxaCountNum")) document.getElementById("taxaCountNum").innerHTML = taxaCnt;
-		}
-
-		function hideTaxaToggle(checked, myTaxa, redraw = true){
-			if(MarkerGroupings['Taxa'][myTaxa]){
-				for (var i in MarkerGroupings['Taxa'][myTaxa]){
-					if(checked){
-						MarkerGroupings['Taxa'][myTaxa][i].setOptions({visible:true});
-					}
-					else{
-						MarkerGroupings['Taxa'][myTaxa][i].setOptions({visible:false});
-					}
-					if(displayMode == 'points'){
-						MarkerGroupings['Taxa'][myTaxa][i].setMap(map);
-					}
-				}
-				if(displayMode == 'cluster' && redraw){
-					redrawMarkerClusters();
-				}
-				else if (displayMode == 'heat'){
-					buildHeatMapData();
-				}
-					
-			}
-		}
-
-		function hideAllTaxaToggle(checked, myTaxa){
-			for (var t in MarkerGroupings['Taxa']){
-				hideTaxaToggle(checked,t, false);
-				document.getElementById('chkHideTaxa'+t).checked = checked;
-			}
-			redrawMarkerClusters();
-		}
-
-		function hideCollToggle(checked, myColl, redraw = true){
-			if(MarkerGroupings['Collections'][myColl]){
-				for (var i in MarkerGroupings['Collections'][myColl]){
-					if(checked){
-						MarkerGroupings['Collections'][myColl][i].setOptions({visible:true});
-					}
-					else{
-						MarkerGroupings['Collections'][myColl][i].setOptions({visible:false});
-					}
-					if(displayMode == 'points'){
-						MarkerGroupings['Collections'][myColl][i].setMap(map);
-					}
-				}
-				if(displayMode == 'cluster' && redraw){
-					redrawMarkerClusters();
-				}
-				else if (displayMode == 'heat'){
-					buildHeatMapData();
-				}
-			}
-		}
-
-		function hideAllCollToggle(checked, myColl){
-			for (var t in MarkerGroupings['Collections']){
-				hideCollToggle(checked,t, false);
-				document.getElementById('chkHideColl'+t).checked = checked;
-			}
-			redrawMarkerClusters();
-		}
-
-		function redrawMarkerClusters(){
-			if (displayMode == 'cluster'){
-				markerCluster.clearMarkers();
-				markerCluster.addMarkers(allMarkers, false);
-			}
-		}
-
-		function findSelection(gCnt, id, dir) {
-			if (grpArr[gCnt]) {
-				for (i in grpArr[gCnt]) {
-					if (grpArr[gCnt][i].occid == id) {
-						if (grpArr[gCnt][i].recordType == 'obs') {
-							var markerColor = '#' + grpArr[gCnt][i].color;
-							if (dir == 'select') {
-								var markerIcon = {
-									path: "m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z",
-									fillColor: markerColor,
-									fillOpacity: 1,
-									scale: 1,
-									strokeColor: "#10D8E6",
-									strokeWeight: 2
-								};
-							} else if (dir == 'deselect') {
-								var markerIcon = {
-									path: "m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z",
-									fillColor: markerColor,
-									fillOpacity: 1,
-									scale: 1,
-									strokeColor: "#000000",
-									strokeWeight: 1
-								};
-							}
-							grpArr[gCnt][i].setIcon(markerIcon);
-						}
-						if (grpArr[gCnt][i].recordType == 'spec') {
-							var markerColor = '#' + grpArr[gCnt][i].color;
-							if (dir == 'select') {
-								var markerIcon = {
-									path: google.maps.SymbolPath.CIRCLE,
-									fillColor: markerColor,
-									fillOpacity: 1,
-									scale: 7,
-									strokeColor: "#10D8E6",
-									strokeWeight: 2
-								};
-							} else if (dir == 'deselect') {
-								var markerIcon = {
-									path: google.maps.SymbolPath.CIRCLE,
-									fillColor: markerColor,
-									fillOpacity: 1,
-									scale: 7,
-									strokeColor: "#000000",
-									strokeWeight: 1
-								};
-							}
-							grpArr[gCnt][i].setIcon(markerIcon);
-						}
-						if (dir == 'select') {
-							grpArr[gCnt][i].selected = true;
-							selected = true;
-						} else if (dir == 'deselect') {
-							grpArr[gCnt][i].selected = false;
-							deselected = true;
-						}
-						return;
-					}
-				}
-			}
-		}
-
-		// function findGrpClusterSelection(gCnt, id) {
-		// 	if (clusterCollArr[gCnt]) {
-		// 		var clusters = clusterCollArr[gCnt].getClusters();
-		// 		for (var i = 0, l = clusters.length; i < l; i++) {
-		// 			var selCluster = false;
-		// 			var oldHtml = clusters[i].clusterIcon_.div_.innerHTML;
-		// 			for (var j = 0, le = clusters[i].markers_.length; j < le; j++) {
-		// 				if (clusters[i].markers_[j].selected == true) {
-		// 					selCluster = true;
-		// 				}
-		// 			}
-		// 			if (selCluster == true) {
-		// 				var newHtml = oldHtml.replace('></circle>', ' stroke="#10D8E6" stroke-width="3px"></circle>');
-		// 			}
-		// 			if (selCluster == false) {
-		// 				var newHtml = oldHtml.replace(' stroke="#10D8E6" stroke-width="3px"></circle>', '></circle>');
-		// 			}
-		// 			clusters[i].clusterIcon_.div_.innerHTML = newHtml;
-		// 		}
-		// 	}
-		// }
-
-		// function findTaxClusterSelection(id) {
-		// 	for (var tid in tidArr) {
-		// 		if (clusterTaxArr[tid]) {
-		// 			var clusters = clusterTaxArr[tid].getClusters();
-		// 			for (var i = 0, l = clusters.length; i < l; i++) {
-		// 				var selCluster = false;
-		// 				var oldHtml = clusters[i].clusterIcon_.div_.innerHTML;
-		// 				for (var j = 0, le = clusters[i].markers_.length; j < le; j++) {
-		// 					if (clusters[i].markers_[j].selected == true) {
-		// 						selCluster = true;
-		// 					}
-		// 				}
-		// 				if (selCluster == true) {
-		// 					var newHtml = oldHtml.replace('></circle>', ' stroke="#10D8E6" stroke-width="3px"></circle>');
-		// 				}
-		// 				if (selCluster == false) {
-		// 					var newHtml = oldHtml.replace(' stroke="#10D8E6" stroke-width="3px"></circle>', '></circle>');
-		// 				}
-		// 				clusters[i].clusterIcon_.div_.innerHTML = newHtml;
-		// 			}
-		// 		}
-		// 	}
-		// }
-
-		function disableCollectionsLegend() {
-			for (var coll in MarkerGroupings['Collections']) {
-				var colorKeyName = 'collColor' + coll;
-				var chkboxKeyName = 'chkHideColl' + coll
-				if (document.getElementById(colorKeyName)) {
-					document.getElementById(colorKeyName).style.visibility = 'hidden';
-					document.getElementById(chkboxKeyName).disabled= true;
-				}
-				document.getElementById('chkHideAllColl').disabled= true;
-
-			}
-		}
-
-		function enableCollectionsLegend() {
-			for (var coll in MarkerGroupings['Collections']) {
-				var colorKeyName = 'collColor' + coll;
-				var chkboxKeyName = 'chkHideColl' + coll
-				if (document.getElementById(colorKeyName)) {
-					document.getElementById(colorKeyName).style.visibility = 'visible';
-					document.getElementById(chkboxKeyName).disabled = false;
-				}
-				document.getElementById('chkHideAllColl').disabled = false;
-
-			}
-		}
-
-		function disableTaxaLegend() {
-			for (var tid in MarkerGroupings['Taxa']) {
-				var colorKeyName = 'taxaColor' + tid;
-				var chkboxKeyName = 'chkHideTaxa' + tid
-				if (document.getElementById(colorKeyName)) {
-					document.getElementById(colorKeyName).style.visibility = 'hidden';
-					document.getElementById(chkboxKeyName).disabled= true;
-				}
-				document.getElementById('chkHideAllTaxa').disabled= true;
-
-			}
-		}
-
-		function enableTaxaLegend() {
-			for (var tid in MarkerGroupings['Taxa']) {
-				var colorKeyName = 'taxaColor' + tid;
-				var chkboxKeyName = 'chkHideTaxa' + tid
-				if (document.getElementById(colorKeyName)) {
-					document.getElementById(colorKeyName).style.visibility = 'visible';
-					document.getElementById(chkboxKeyName).disabled = false;
-				}
-				document.getElementById('chkHideAllTaxa').disabled = false;
-
-			}
-		}
-
-		function resetTaxaLegend(myColor) {
-			enableTaxaLegend();
-			if (!myColor){
-				myColor = document.getElementById("defaultmarkercolor").value;
-			}
-			for (var tid in MarkerGroupings['Taxa']) {
-				var keyName = 'taxaColor' + tid;
-				if (document.getElementById(keyName)) {
-					document.getElementById(keyName).value = myColor;
-				}
-			}
-		}
-
-		function resetCollectionsLegend(myColor) {
-			enableCollectionsLegend();
-			if (!myColor){
-				myColor = document.getElementById("defaultmarkercolor").value;
-			}
-			for (var coll in MarkerGroupings['Collections']) {
-				var keyName = 'collColor' + coll;
-				document.getElementById(keyName).value = myColor;
-			}
-		}
-
-		function changeCollColor(color, collid) {
-			changeMarkersColor(color, MarkerGroupings['Collections'][collid]);
-			mapSymbol = 'coll';
-		}
-
-		function changeTaxaColor(color, tidcode) {
-			changeMarkersColor(color, MarkerGroupings['Taxa'][tidcode]);
-			mapSymbol = 'taxa';
-		}
-
-		function autoColorColl() {
-			document.getElementById("randomColorColl").disabled = true;
-			if (mapSymbol == 'taxa') {
-				resetTaxaLegend();
-				disableTaxaLegend();
-				enableCollectionsLegend();
-			}
-			var usedColors = [];
-			for (var coll in collNameArr) {
-				var randColor = generateRandColor();
-				while (usedColors.indexOf(randColor) > -1) {
-					randColor = generateRandColor();
-				}
-				usedColors.push(randColor);
-				changeMarkersColor(randColor, MarkerGroupings['Collections'][collNameArr[coll][1]]);
-				var keyName = 'collColor' + collNameArr[coll][1];
-				document.getElementById(keyName).value = randColor;
-			}
-			mapSymbol = 'coll';
-			document.getElementById("randomColorColl").disabled = false;
-		}
-
-		function autoColorTaxa() {
-			document.getElementById("randomColorTaxa").disabled = true;
-			if (mapSymbol == 'coll') {
-				resetCollectionsLegend();
-				disableCollectionsLegend();
-				enableTaxaLegend();
-			}
-			
-			var usedColors = [];
-			for (var tid in MarkerGroupings['Taxa']) {
-				var randColor = generateRandColor();
-				while (usedColors.indexOf(randColor) > -1) {
-					randColor = generateRandColor();
-				}
-				usedColors.push(randColor);
-				changeMarkersColor(randColor, MarkerGroupings['Taxa'][tid]);
-				var keyName = 'taxaColor' + tid;
-				if (document.getElementById(keyName)) {
-					document.getElementById(keyName).value = randColor;
-				}
-			}
-			mapSymbol = 'taxa';
-			document.getElementById("randomColorTaxa").disabled = false;
-		}
-
-		function resetSymbology() {
-			document.getElementById("symbolizeReset1").disabled = true;
-			document.getElementById("symbolizeReset2").disabled = true;
-			
-			var color = document.getElementById("defaultmarkercolor").value;
-			for (var coll in collNameArr) {
-				changeMarkersColor(color, MarkerGroupings['Collections'][collNameArr[coll][1]]);
-			}
-			mapSymbol = 'coll';
-			resetTaxaLegend(color);
-			resetCollectionsLegend(color);
-			mapSymbol = 'coll';
-			document.getElementById("symbolizeReset1").disabled = false;
-			document.getElementById("symbolizeReset2").disabled = false;
-		}
-
-		/*
-		function selectPoints(){
-			var selectedpoints = document.getElementById("selectedpoints");
-			selected = false;
-			var selectedpoint = Number(selectedpoints.value);
-			while (selected == false) {
-				for(var gcnt in grpArr) {
-					findSelection(gcnt,selectedpoint,'select');
-					if(clusterOff=="n"){
-						findGrpClusterSelection(gcnt,selectedpoint);
-					}
-				}
-				if(clusterOff=="n"){
-					findTaxClusterSelection(selectedpoint);
-				}
-			}
-			if(selections.indexOf(selectedpoint) < 0){
-				selections.push(selectedpoint);
-			}
-			adjustSelectionsTab();
-		}
-		*/
-
-		/*
-		function deselectPoints(){
-			deselected = false;
-			var deselectedpoint = Number(deselectedpoints.value);
-			while (deselected == false) {
-				for(var gcnt in grpArr) {
-					findSelection(gcnt,deselectedpoint,'deselect');
-					if(clusterOff=="n"){
-						findGrpClusterSelection(gcnt,deselectedpoint);
-					}
-				}
-				if(clusterOff=="n"){
-					findTaxClusterSelection(deselectedpoint);
-				}
-			}
-			var index = selections.indexOf(deselectedpoint);
-			selections.splice(index, 1);
-			adjustSelectionsTab();
-		}
-		*/
-
-		/*
-		function selectDSPoints(){
-			selected = false;
-			var selectedpoint = Number(selecteddspoints.value);
-			while (selected == false) {
-				if (dsmarkers) {
-					for (i in dsmarkers) {
-						if(dsmarkers[i].occid==selectedpoint){
-							var markerIcon = {path:google.maps.SymbolPath.CIRCLE,fillColor:"#ffffff",fillOpacity:1,scale:5,strokeColor:"#10D8E6",strokeWeight:2};
-							dsmarkers[i].setIcon(markerIcon);
-							dsmarkers[i].selected = true;
-							selected = true;
-						}
-					}
-				}
-			}
-			if(dsselections.indexOf(selectedpoint) < 0){
-				dsselections.push(selectedpoint);
-			}
-		}
-		*/
-
-		/*
-		function deselectDSPoints(){
-			deselected = false;
-			var deselectedpoint = Number(deselecteddspoints.value);
-			while (deselected == false) {
-				if (dsmarkers) {
-					for (i in dsmarkers) {
-						if(dsmarkers[i].occid==deselectedpoint){
-							var markerIcon = {path:google.maps.SymbolPath.CIRCLE,fillColor:"#ffffff",fillOpacity:1,scale:5,strokeColor:"#000000",strokeWeight:2};
-							dsmarkers[i].setIcon(markerIcon);
-							dsmarkers[i].selected = false;
-							deselected = true;
-						}
-					}
-				}
-			}
-			var index = dsselections.indexOf(deselectedpoint);
-			dsselections.splice(index, 1);
-		}
-		*/
-
-		/*
-		function zoomToSelections(){
-			var selectZoomBounds = new google.maps.LatLngBounds();
-			for(var gcnt in grpArr) {
-				for (var i=0; i < selections.length; i++) {
-					occid = Number(selections[i]);
-					if (grpArr[gcnt]) {
-						for (j in grpArr[gcnt]) {
-							if(grpArr[gcnt][j].occid==occid){
-								var markerPos = grpArr[gcnt][j].getPosition();
-								selectZoomBounds.extend(markerPos);
-							}
-						}
-					}
-				}
-			}
-			map.fitBounds(selectZoomBounds);
-			map.panToBounds(selectZoomBounds);
-		}
-		*/
-
-		<?php echo ($activateGeolocation ? "google.maps.event.addListener(window, 'load', getCoords);" : ""); ?>
-	</script>
 	<script src="../../js/symb/api.taxonomy.taxasuggest.js?ver=4" type="text/javascript"></script>
 </head>
 
@@ -1599,7 +462,7 @@ else {
 				if ($searchVar) {
 				?>
 					<h3 id="recordstaxaheader" style="display:none;padding-left:30px;"><?php echo (isset($LANG['RECORDS_TAXA']) ? $LANG['RECORDS_TAXA'] : 'Records and Taxa'); ?></h3>
-					<div id="tabs2" style="display:none;width:379px;padding:0px;">
+					<div id="tabs2">
 						<ul>
 							<li><a href='#records'><span><?php echo (isset($LANG['RECORDS']) ? $LANG['RECORDS'] : 'Records'); ?></span></a></li>
 							<li><a href='#symbology'><span><?php echo (isset($LANG['COLLECTIONS']) ? $LANG['COLLECTIONS'] : 'Collections'); ?></span></a></li>
@@ -1703,6 +566,470 @@ else {
 			<img style="border:0px;width:100px;height:100px;" src="../../images/ajax-loader.gif" />
 		</div>
 	</div>
+	
+	<script defer type="text/javascript">
+
+		var clientRoot = "<?php echo $CLIENT_ROOT; ?>";
+
+		$(document).ready(function() {
+			<?php
+			if ($searchVar) echo 'sessionStorage.querystr = "' . $searchVar . '";';
+			?>
+		});
+
+		var map;
+		var heatmap;
+		var pointObj;
+		var initBoundsNorthEast = <?php echo json_encode($bound_NorthEast); ?>;
+		var initBoundsSouthWest = <?php echo json_encode($bound_SouthWest); ?>;
+		var defaultMarkerColor = '#f6ae77';
+		var markerCluster = null;
+		//var infoWins = [];
+		//var puWin;
+		//var markers = [];
+		//var dsmarkers = [];
+		//var dsoccids = [];
+		var selections = [];
+		var dsselections = [];
+		var selectedds = '';
+		var selecteddsrole = '';
+		var allMarkers = [];
+		var drawingManager = null;
+		var spiderfier;
+		var selectedShape = null;
+		var gotCoords = <?php echo ($activateGeolocation ? 'true' : 'false'); ?>;
+		var mapSymbol = 'coll';
+		var selected = false;
+		var deselected = false;
+		var positionFound = false;
+		var clid = '<?php echo ($mapManager->getSearchTerm('clid') ? $mapManager->getSearchTerm('clid') : 0); ?>';
+		var obsIDs = JSON.parse('<?php echo json_encode($obsIDs); ?>');
+		var MarkerGroupings = []; //stores all marker groupings
+		var markerArr = [];
+		var tidArr = [];
+		var taxaLegendArr = [];
+		var taxaCnt = 0;
+		var collKeyArr = []; // stores HTML elements of the Group by Collection key
+		var collNameArr = [];
+		var familyNameArr = []; //populated with list of Families represented in the results and used to group taxa on the map legend/key 
+		var htmlTidArr = []; //maps html id to taxa group
+		var taxaKeyArr = []; //stores HTML elements of the Group by Taxanomy key
+		var clusterCollArr = [];
+		var clusterTaxArr = [];
+		var optionsCollArr = [];
+		var optionsTaxArr = [];
+		var grpCnt = 1;
+		var InformationWindow = '';
+		var mouseoverTimeout = '';
+		var mouseoutTimeout = '';
+		var pointBounds = null;
+		var occArr = [];
+		var panPoint = null;
+		var heatMapData = null;
+		var displayMode = 'cluster';
+		var taxaKeySet = new Set();
+		var recordsArr = [];
+
+		function initialize(){
+			document.getElementById('defaultmarkercolor').value = defaultMarkerColor;
+			<?php
+			$recordCnt = $mapManager->getRecordCnt();
+			if ($searchVar) {
+			?>
+				if (<?php echo $recordCnt; ?> > 0) {
+					var resultCount = <?php echo $recordCnt; ?>;
+					if (resultCount <= <?php echo $recLimit; ?>) {
+						<?php
+						//$coordArr = $mapManager->getCoordinateMap(0,$recLimit);
+						$coordArr = $mapManager->getCoordinateMap2(0, 50000);
+						echo 'pointObj = ' . json_encode($coordArr) . ";\n";
+						?>
+					} else {
+						alert("Your search produced " + resultCount + " results which exceeds the maximum of <?php echo $recLimit; ?>, please refine your search more.");
+						$('#loadingOverlay').hide();
+					}
+				} else {
+					alert('There were no records matching your query.');
+				}
+			<?php
+			}
+			?>
+			initializeGoogleMap();
+			if (pointObj){
+				processPoints();
+			}
+			setTimeout(function() {
+				afterEffects();
+			}, 500);
+			$('#loadingOverlay').hide();
+
+		}
+
+		
+
+		function afterEffects() {
+			if (pointObj) {
+				setPanels(true);
+				$("#accordion").accordion("option", {
+					active: 1
+				});
+				buildCollKey();
+				buildTaxaKey();
+				pointObj = [];
+				buildRecordsTable();
+				recordsArr = [];
+				if (pointBounds) {
+					map.fitBounds(pointBounds);
+					map.panToBounds(pointBounds);
+				}
+			}
+		}
+
+		function processPoints() {
+
+			taxaKeySet.clear();
+
+			//setup map marker data structure
+			if (MarkerGroupings.indexOf('Taxa') < 0){
+				MarkerGroupings['Taxa'] = [];
+			}
+			if (MarkerGroupings.indexOf('Collections') < 0){
+				MarkerGroupings['Collections'] = [];
+			}
+			var iconColor = document.getElementById('defaultmarkercolor').value;
+			for (let i = 0; i < pointObj.length; i++) {
+				
+				var markerIcon = null;
+
+				buildRecordTableRow(pointObj[i]);
+
+				//create collection based marker legend
+				buildCollKeyPiece(pointObj[i],iconColor);
+
+				//create taxonomy based marker legend
+
+				var tempFamArr = [];
+				var scinameStr = '';
+				//The scinameStr value is used for DIV element id
+	
+				if (pointObj[i]['tidinterpreted'] && pointObj[i]['tidinterpreted'] != 'NULL'){
+					scinameStr = pointObj[i]['sciname']+pointObj[i]['tidinterpreted'];
+				}
+				else scinameStr = pointObj[i]['sciname'];
+
+				scinameStr = scinameStr.replace(/[ .]/g, "").toLowerCase();
+
+				if (!taxaKeySet.has(scinameStr)){
+					taxaKeySet.add(scinameStr)
+				
+					var family = '';
+					if(!pointObj[i]['family']){
+						family = 'NULL'
+					}
+					else family = pointObj[i]['family']
+					family = family.toUpperCase();
+					buildTaxaKeyPiece(scinameStr, pointObj[i]['tidinterpreted'], family, pointObj[i]['sciname'],iconColor);
+				}
+
+				//set marker icon based on record type
+				if (pointObj[i]["collType"].includes('Observations')){
+					type = 'obs';
+					markerIcon = {
+						url: '<?= $CLIENT_ROOT?>/collections/map/coloricon.php?shape=triangle&color=' + iconColor,
+						scaledSize: new google.maps.Size(18, 18), 
+					}
+				}
+				else {
+					type = 'spec';
+					markerIcon = {
+						url: '<?= $CLIENT_ROOT?>/collections/map/coloricon.php?shape=circle&color=' + iconColor,
+						scaledSize: new google.maps.Size(18, 18), 
+					}
+
+				}
+
+				
+				
+
+				var identifier = pointObj[i]['recordedby'];
+				if (pointObj[i]['recordnumber']){
+					identifier += ' ' +pointObj[i]['recordnumber'];
+				}
+				else identifier += ' ' + pointObj[i]['eventdate']
+
+				//Create Marker & Add occurance data to Marker Object
+
+				var m = new google.maps.Marker({
+					position: new google.maps.LatLng(pointObj[i]["DecimalLatitude"], pointObj[i]["DecimalLongitude"]),
+					optimized: true,
+					text: "Collection: " + pointObj[i]["CollectionName"] + " Collector: " + identifier,
+					icon: markerIcon,
+					selected: false,
+					color: iconColor,
+					taxaKeyHtmlID: scinameStr,
+					recordType: type,
+					collid: pointObj[i]['collid'],
+					identifier: identifier,
+					taxatid: pointObj[i]['sciname'],
+					tidinterpreted: pointObj[i]['tidinterpreted'],
+					family: family,
+					occid: pointObj[i]['occid'],
+					clid: 0,
+				});
+				allMarkers.push(m)
+				if (!MarkerGroupings['Taxa'][scinameStr]) MarkerGroupings['Taxa'][scinameStr] = [];
+				MarkerGroupings['Taxa'][scinameStr].push(m);
+				if (!MarkerGroupings['Collections'][pointObj[i]['collid']]) MarkerGroupings['Collections'][pointObj[i]['collid']] = [];
+				MarkerGroupings['Collections'][pointObj[i]['collid']].push(m);
+				heatMapData.push(m.getPosition());								
+
+				// Add marker listener
+				m.addListener('click', function() {
+
+					// prevent multiple information windows from opening at the same time
+					if(InformationWindow){
+						InformationWindow.close();
+					}
+
+					panPoint = this.position;
+					var myOptions = {
+						content: '<div>' + this.text + '<br /><a href="#" onclick="openIndPopup(' + this.occid + ',' + this.clid +
+							 ');return false;"><span style="color:blue;">See Details</span></a></div><div><a onclick="map.panTo(panPoint); map.setZoom(13); return false">Focus</a></div>',
+					};
+					
+					InformationWindow = new google.maps.InfoWindow(myOptions);
+					InformationWindow.open(map, this);
+					
+
+				});
+
+				spiderfier.addMarker(m);
+				var markerPos = m.getPosition();
+				pointBounds.extend(markerPos);
+			}
+			//initialize map with clustering turned on
+			handleModeRadios({
+				value: 'cluster',
+			});
+		}
+
+
+		function handleModeRadios(myMode){
+			
+			switch(myMode.value) {
+				case 'cluster':
+					displayMode = 'cluster';
+					heatmap.setMap(null);
+					for (var i in allMarkers){
+						allMarkers[i].setMap(null);
+					}
+					markerCluster = new markerClusterer.MarkerClusterer({
+						map: map,
+						markers: allMarkers, 
+					});
+					break;
+				case 'points':
+					displayMode = 'points';
+					heatmap.setMap(null);
+					markerCluster.clearMarkers();
+					for (var i in allMarkers){
+						allMarkers[i].setMap(map);
+					}
+					break;
+				case 'heat':
+					displayMode = 'heat';
+					markerCluster.clearMarkers();
+					for (var i in allMarkers){
+						allMarkers[i].setMap(null);
+					}
+					buildHeatMapData();
+					heatmap.setMap(map);
+					break;
+			}
+		}
+
+		function hideTaxaToggle(checked, myTaxa, redraw = true){
+			if(MarkerGroupings['Taxa'][myTaxa]){
+				for (var i in MarkerGroupings['Taxa'][myTaxa]){
+					if(checked){
+						MarkerGroupings['Taxa'][myTaxa][i].setOptions({visible:true});
+					}
+					else{
+						MarkerGroupings['Taxa'][myTaxa][i].setOptions({visible:false});
+					}
+					if(displayMode == 'points'){
+						MarkerGroupings['Taxa'][myTaxa][i].setMap(map);
+					}
+				}
+				if(displayMode == 'cluster' && redraw){
+					redrawMarkerClusters();
+				}
+				else if (displayMode == 'heat'){
+					buildHeatMapData();
+				}
+					
+			}
+		}
+
+		function hideAllTaxaToggle(checked, myTaxa){
+			for (var t in MarkerGroupings['Taxa']){
+				hideTaxaToggle(checked,t, false);
+				document.getElementById('chkHideTaxa'+t).checked = checked;
+			}
+			redrawMarkerClusters();
+		}
+
+		function hideCollToggle(checked, myColl, redraw = true){
+			if(MarkerGroupings['Collections'][myColl]){
+				for (var i in MarkerGroupings['Collections'][myColl]){
+					if(checked){
+						MarkerGroupings['Collections'][myColl][i].setOptions({visible:true});
+					}
+					else{
+						MarkerGroupings['Collections'][myColl][i].setOptions({visible:false});
+					}
+					if(displayMode == 'points'){
+						MarkerGroupings['Collections'][myColl][i].setMap(map);
+					}
+				}
+				if(displayMode == 'cluster' && redraw){
+					redrawMarkerClusters();
+				}
+				else if (displayMode == 'heat'){
+					buildHeatMapData();
+				}
+			}
+		}
+
+		function hideAllCollToggle(checked, myColl){
+			for (var t in MarkerGroupings['Collections']){
+				hideCollToggle(checked,t, false);
+				document.getElementById('chkHideColl'+t).checked = checked;
+			}
+			redrawMarkerClusters();
+		}
+
+		function redrawMarkerClusters(){
+			if (displayMode == 'cluster'){
+				markerCluster.clearMarkers();
+				markerCluster.addMarkers(allMarkers, false);
+			}
+		}
+
+		function findSelection(gCnt, id, dir) {
+			if (grpArr[gCnt]) {
+				for (i in grpArr[gCnt]) {
+					if (grpArr[gCnt][i].occid == id) {
+						if (grpArr[gCnt][i].recordType == 'obs') {
+							var markerColor = '#' + grpArr[gCnt][i].color;
+							if (dir == 'select') {
+								var markerIcon = {
+									path: "m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z",
+									fillColor: markerColor,
+									fillOpacity: 1,
+									scale: 1,
+									strokeColor: "#10D8E6",
+									strokeWeight: 2
+								};
+							} else if (dir == 'deselect') {
+								var markerIcon = {
+									path: "m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z",
+									fillColor: markerColor,
+									fillOpacity: 1,
+									scale: 1,
+									strokeColor: "#000000",
+									strokeWeight: 1
+								};
+							}
+							grpArr[gCnt][i].setIcon(markerIcon);
+						}
+						if (grpArr[gCnt][i].recordType == 'spec') {
+							var markerColor = '#' + grpArr[gCnt][i].color;
+							if (dir == 'select') {
+								var markerIcon = {
+									path: google.maps.SymbolPath.CIRCLE,
+									fillColor: markerColor,
+									fillOpacity: 1,
+									scale: 7,
+									strokeColor: "#10D8E6",
+									strokeWeight: 2
+								};
+							} else if (dir == 'deselect') {
+								var markerIcon = {
+									path: google.maps.SymbolPath.CIRCLE,
+									fillColor: markerColor,
+									fillOpacity: 1,
+									scale: 7,
+									strokeColor: "#000000",
+									strokeWeight: 1
+								};
+							}
+							grpArr[gCnt][i].setIcon(markerIcon);
+						}
+						if (dir == 'select') {
+							grpArr[gCnt][i].selected = true;
+							selected = true;
+						} else if (dir == 'deselect') {
+							grpArr[gCnt][i].selected = false;
+							deselected = true;
+						}
+						return;
+					}
+				}
+			}
+		}
+
+		// function findGrpClusterSelection(gCnt, id) {
+		// 	if (clusterCollArr[gCnt]) {
+		// 		var clusters = clusterCollArr[gCnt].getClusters();
+		// 		for (var i = 0, l = clusters.length; i < l; i++) {
+		// 			var selCluster = false;
+		// 			var oldHtml = clusters[i].clusterIcon_.div_.innerHTML;
+		// 			for (var j = 0, le = clusters[i].markers_.length; j < le; j++) {
+		// 				if (clusters[i].markers_[j].selected == true) {
+		// 					selCluster = true;
+		// 				}
+		// 			}
+		// 			if (selCluster == true) {
+		// 				var newHtml = oldHtml.replace('></circle>', ' stroke="#10D8E6" stroke-width="3px"></circle>');
+		// 			}
+		// 			if (selCluster == false) {
+		// 				var newHtml = oldHtml.replace(' stroke="#10D8E6" stroke-width="3px"></circle>', '></circle>');
+		// 			}
+		// 			clusters[i].clusterIcon_.div_.innerHTML = newHtml;
+		// 		}
+		// 	}
+		// }
+
+		// function findTaxClusterSelection(id) {
+		// 	for (var tid in tidArr) {
+		// 		if (clusterTaxArr[tid]) {
+		// 			var clusters = clusterTaxArr[tid].getClusters();
+		// 			for (var i = 0, l = clusters.length; i < l; i++) {
+		// 				var selCluster = false;
+		// 				var oldHtml = clusters[i].clusterIcon_.div_.innerHTML;
+		// 				for (var j = 0, le = clusters[i].markers_.length; j < le; j++) {
+		// 					if (clusters[i].markers_[j].selected == true) {
+		// 						selCluster = true;
+		// 					}
+		// 				}
+		// 				if (selCluster == true) {
+		// 					var newHtml = oldHtml.replace('></circle>', ' stroke="#10D8E6" stroke-width="3px"></circle>');
+		// 				}
+		// 				if (selCluster == false) {
+		// 					var newHtml = oldHtml.replace(' stroke="#10D8E6" stroke-width="3px"></circle>', '></circle>');
+		// 				}
+		// 				clusters[i].clusterIcon_.div_.innerHTML = newHtml;
+		// 			}
+		// 		}
+		// 	}
+		// }
+
+		
+
+		<?php echo ($activateGeolocation ? "google.maps.event.addListener(window, 'load', getCoords);" : ""); ?>
+	</script>
+
 </body>
 
 </html>

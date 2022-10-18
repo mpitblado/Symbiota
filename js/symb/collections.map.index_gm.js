@@ -1,3 +1,262 @@
+function initializeGoogleMap() {
+			
+	pointBounds = new google.maps.LatLngBounds();
+	panPoint = new google.maps.LatLng();
+	heatMapData = new google.maps.MVCArray();
+
+	var dmOptions = {
+		zoom: 6,
+		minZoom: 3,
+		mapTypeId: google.maps.MapTypeId.TERRAIN,
+		mapTypeControl: true,
+		mapTypeControlOptions: {
+			style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+			position: google.maps.ControlPosition.TOP_RIGHT
+		},
+		panControl: true,
+		panControlOptions: {
+			position: google.maps.ControlPosition.RIGHT_TOP
+		},
+		zoomControl: true,
+		zoomControlOptions: {
+			style: google.maps.ZoomControlStyle.LARGE,
+			position: google.maps.ControlPosition.RIGHT_TOP
+		},
+		scaleControl: true,
+		scaleControlOptions: {
+			position: google.maps.ControlPosition.RIGHT_TOP
+		},
+		streetViewControl: false
+	};
+	
+	map = new google.maps.Map(document.getElementById("map"), dmOptions);
+	heatmap = new google.maps.visualization.HeatmapLayer({
+		data: heatMapData,
+		dissipating: true,
+	});
+	
+	var initBounds = new google.maps.LatLngBounds();
+	
+	initBounds.extend(new google.maps.LatLng(initBoundsNorthEast[0], initBoundsNorthEast[1]));
+	initBounds.extend(new google.maps.LatLng(initBoundsSouthWest[0], initBoundsSouthWest[1]));
+	map.fitBounds(initBounds);
+
+	spiderfier = new OverlappingMarkerSpiderfier(map, {
+		basicFormatEvents: true
+	});
+
+	var polyOptions = {
+		strokeWeight: 0,
+		fillOpacity: 0.45,
+		editable: true,
+		draggable: true
+	};
+
+	var drawingManager = new google.maps.drawing.DrawingManager({
+		drawingMode: null,
+		drawingControl: true,
+		drawingControlOptions: {
+			position: google.maps.ControlPosition.TOP_CENTER,
+			drawingModes: [
+				google.maps.drawing.OverlayType.POLYGON,
+				google.maps.drawing.OverlayType.RECTANGLE,
+				google.maps.drawing.OverlayType.CIRCLE
+			]
+		},
+		markerOptions: {
+			draggable: true
+		},
+		polylineOptions: {
+			editable: true
+		},
+		rectangleOptions: polyOptions,
+		circleOptions: polyOptions,
+		polygonOptions: polyOptions
+	});
+
+	drawingManager.setMap(map);
+
+	/* google.maps.event.addListener(
+		document.getElementById("distFromMe"),
+		'change',
+		function(){
+			var distance = document.getElementById("distFromMe").value;
+			if(distance){
+				document.getElementById("pointlat").value = posLat;
+				document.getElementById("pointlong").value = posLong;
+				document.getElementById("radius").value = distance;
+			}
+		}
+	); */
+
+	google.maps.event.addListener(drawingManager, 'overlaycomplete', function(e) {
+		if (e.type != google.maps.drawing.OverlayType.MARKER) {
+			// Switch back to non-drawing mode after drawing a shape.
+			deleteSelectedShape();
+			drawingManager.setDrawingMode(null);
+
+			var newShapeType = '';
+			newShapeType = e.type;
+			// Add an event listener that selects the newly-drawn shape when the user
+			// mouses down on it.
+			var newShape = e.overlay;
+			newShape.type = e.type;
+			google.maps.event.addListener(newShape, 'dragend', function() {
+				setSelection(newShape);
+			});
+			if (newShapeType == 'circle') {
+				getCircleCoords(newShape);
+				google.maps.event.addListener(newShape, 'radius_changed', function() {
+					setSelection(newShape);
+				});
+				google.maps.event.addListener(newShape, 'center_changed', function() {
+					setSelection(newShape);
+				});
+			}
+			if (newShapeType == 'rectangle') {
+				getRectangleCoords(newShape);
+				google.maps.event.addListener(newShape, 'bounds_changed', function() {
+					setSelection(newShape);
+				});
+			}
+			if (newShapeType == 'polygon') {
+				getPolygonCoords(newShape);
+				google.maps.event.addListener(newShape.getPath(), 'insert_at', function() {
+					setSelection(newShape);
+				});
+				google.maps.event.addListener(newShape.getPath(), 'remove_at', function() {
+					setSelection(newShape);
+				});
+				google.maps.event.addListener(newShape.getPath(), 'set_at', function() {
+					setSelection(newShape);
+				});
+			}
+			setSelection(newShape);
+		}
+	});
+
+	spiderfier.addListener('click', function(marker, event) {
+		occid = marker.occid;
+		chbox = 'ch' + occid;
+		if (selections.indexOf(occid) > -1) {
+			var index = selections.indexOf(occid);
+			if (index > -1) {
+				selections.splice(index, 1);
+			}
+			if (document.getElementById(chbox)) {
+				document.getElementById(chbox).checked = false;
+				document.getElementById("selectallcheck").checked = false;
+			}
+			//removeSelectionRecord(occid);
+			//adjustSelectionsTab();
+			//deselectMarker(marker);
+		} else {
+			selections.push(occid);
+			if (document.getElementById(chbox)) {
+				document.getElementById(chbox).checked = true;
+				var f = document.getElementById("selectform");
+				var boxesChecked = true;
+				for (var i = 0; i < f.length; i++) {
+					if (f.elements[i].name == "occid[]") {
+						if (f.elements[i].checked == false) {
+							boxesChecked = false;
+						}
+					}
+				}
+				if (boxesChecked == true) {
+					document.getElementById("selectallcheck").checked = true;
+				}
+			}
+			//adjustSelectionsTab();
+			selectMarker(marker);
+		}
+	});
+
+	spiderfier.addListener('spiderfy', function(markers) {
+		closeInfoWin();
+	});
+
+	//createShape();
+}
+
+function createShape() {
+	let newShape = null;
+	let f = document.mapsearchform;
+	if (f.upperlat.value != "") {
+		newShape = new google.maps.Rectangle({
+			bounds: new google.maps.LatLngBounds(
+				new google.maps.LatLng(f.bottomlat.value, f.leftlong.value),
+				new google.maps.LatLng(f.upperlat.value, f.rightlong.value)
+			),
+			strokeWeight: 0,
+			fillOpacity: 0.45,
+			editable: true,
+			draggable: true,
+			map: map
+		});
+		newShape.type = "rectangle";
+		google.maps.event.addListener(newShape, 'bounds_changed', function() {
+			setSelection(newShape);
+		});
+	} else if (f.pointlat.value != "") {
+		newShape = new google.maps.Circle({
+			center: new google.maps.LatLng(f.pointlat.value, f.pointlong.value),
+			radius: (f.radius.value / 0.6214) * 1000,
+			strokeWeight: 0,
+			fillOpacity: 0.45,
+			editable: true,
+			draggable: true,
+			map: map
+		});
+		newShape.type = "circle";
+		google.maps.event.addListener(newShape, "radius_changed", function() {
+			setSelection(newShape);
+		});
+		google.maps.event.addListener(newShape, "center_changed", function() {
+			setSelection(newShape);
+		});
+	} else if (f.polycoords.value != "") {
+		let wkt = f.polycoords.value;
+		if (wkt.substring(0, 7) == "POLYGON") wkt = wkt.substring(7).trim();
+		while (wkt.substring(0, 1) == "(") wkt = wkt.substring(1).trim();
+		while (wkt.substring(wkt.length - 1) == ")") wkt = wkt.slice(0, -1).trim();
+		let coordArr = wkt.split(",");
+		let pointArr = [];
+		for (let n = 0; n < coordArr.length; n++) {
+			let ptArr = coordArr[n].trim().split(" ");
+			pointArr.push(new google.maps.LatLng(ptArr[0], ptArr[1]));
+		}
+		newShape = new google.maps.Polygon({
+			paths: [pointArr],
+			strokeWeight: 0,
+			fillOpacity: 0.45,
+			editable: true,
+			draggable: true,
+			map: map
+		});
+		newShape.type = "polygon";
+		google.maps.event.addListener(newShape.getPath(), "insert_at", function() {
+			setSelection(newShape);
+		});
+		google.maps.event.addListener(newShape.getPath(), "remove_at", function() {
+			setSelection(newShape);
+		});
+		google.maps.event.addListener(newShape.getPath(), "set_at", function() {
+			setSelection(newShape);
+		});
+	}
+	if (newShape) {
+		google.maps.event.addListener(newShape, "click", function() {
+			setSelection(newShape);
+		});
+		google.maps.event.addListener(newShape, "dragend", function() {
+			setSelection(newShape);
+		});
+		setSelection(newShape);
+	}
+}
+
+
 function checkRecordLimit(f) {
 	var recordLimit = document.getElementById("recordlimit").value;
 	if(!isNaN(recordLimit) && recordLimit > 0){

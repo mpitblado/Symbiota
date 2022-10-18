@@ -507,3 +507,452 @@ function activateMapOtions(){
 	document.getElementById('ui-id-3').click();
 }
 
+function disableCollectionsLegend() {
+	for (var coll in MarkerGroupings['Collections']) {
+		var colorKeyName = 'collColor' + coll;
+		var chkboxKeyName = 'chkHideColl' + coll
+		if (document.getElementById(colorKeyName)) {
+			document.getElementById(colorKeyName).style.visibility = 'hidden';
+			document.getElementById(chkboxKeyName).disabled= true;
+		}
+		document.getElementById('chkHideAllColl').disabled= true;
+
+	}
+}
+
+function enableCollectionsLegend() {
+	for (var coll in MarkerGroupings['Collections']) {
+		var colorKeyName = 'collColor' + coll;
+		var chkboxKeyName = 'chkHideColl' + coll
+		if (document.getElementById(colorKeyName)) {
+			document.getElementById(colorKeyName).style.visibility = 'visible';
+			document.getElementById(chkboxKeyName).disabled = false;
+		}
+		document.getElementById('chkHideAllColl').disabled = false;
+
+	}
+}
+
+function disableTaxaLegend() {
+	for (var tid in MarkerGroupings['Taxa']) {
+		var colorKeyName = 'taxaColor' + tid;
+		var chkboxKeyName = 'chkHideTaxa' + tid
+		if (document.getElementById(colorKeyName)) {
+			document.getElementById(colorKeyName).style.visibility = 'hidden';
+			document.getElementById(chkboxKeyName).disabled= true;
+		}
+		document.getElementById('chkHideAllTaxa').disabled= true;
+
+	}
+}
+
+function enableTaxaLegend() {
+	for (var tid in MarkerGroupings['Taxa']) {
+		var colorKeyName = 'taxaColor' + tid;
+		var chkboxKeyName = 'chkHideTaxa' + tid
+		if (document.getElementById(colorKeyName)) {
+			document.getElementById(colorKeyName).style.visibility = 'visible';
+			document.getElementById(chkboxKeyName).disabled = false;
+		}
+		document.getElementById('chkHideAllTaxa').disabled = false;
+
+	}
+}
+
+function resetTaxaLegend(myColor) {
+	enableTaxaLegend();
+	if (!myColor){
+		myColor = document.getElementById("defaultmarkercolor").value;
+	}
+	for (var tid in MarkerGroupings['Taxa']) {
+		var keyName = 'taxaColor' + tid;
+		if (document.getElementById(keyName)) {
+			document.getElementById(keyName).value = myColor;
+		}
+	}
+}
+
+function resetCollectionsLegend(myColor) {
+	enableCollectionsLegend();
+	if (!myColor){
+		myColor = document.getElementById("defaultmarkercolor").value;
+	}
+	for (var coll in MarkerGroupings['Collections']) {
+		var keyName = 'collColor' + coll;
+		document.getElementById(keyName).value = myColor;
+	}
+}
+
+function changeCollColor(color, collid) {
+	changeMarkersColor(color, MarkerGroupings['Collections'][collid]);
+	mapSymbol = 'coll';
+}
+
+function changeTaxaColor(color, tidcode) {
+	changeMarkersColor(color, MarkerGroupings['Taxa'][tidcode]);
+	mapSymbol = 'taxa';
+}
+
+function autoColorColl() {
+	document.getElementById("randomColorColl").disabled = true;
+	if (mapSymbol == 'taxa') {
+		resetTaxaLegend();
+		disableTaxaLegend();
+		enableCollectionsLegend();
+	}
+	var usedColors = [];
+	for (var coll in collNameArr) {
+		var randColor = generateRandColor();
+		while (usedColors.indexOf(randColor) > -1) {
+			randColor = generateRandColor();
+		}
+		usedColors.push(randColor);
+		changeMarkersColor(randColor, MarkerGroupings['Collections'][collNameArr[coll][1]]);
+		var keyName = 'collColor' + collNameArr[coll][1];
+		document.getElementById(keyName).value = randColor;
+	}
+	mapSymbol = 'coll';
+	document.getElementById("randomColorColl").disabled = false;
+}
+
+function autoColorTaxa() {
+	document.getElementById("randomColorTaxa").disabled = true;
+	if (mapSymbol == 'coll') {
+		resetCollectionsLegend();
+		disableCollectionsLegend();
+		enableTaxaLegend();
+	}
+	
+	var usedColors = [];
+	for (var tid in MarkerGroupings['Taxa']) {
+		var randColor = generateRandColor();
+		while (usedColors.indexOf(randColor) > -1) {
+			randColor = generateRandColor();
+		}
+		usedColors.push(randColor);
+		changeMarkersColor(randColor, MarkerGroupings['Taxa'][tid]);
+		var keyName = 'taxaColor' + tid;
+		if (document.getElementById(keyName)) {
+			document.getElementById(keyName).value = randColor;
+		}
+	}
+	mapSymbol = 'taxa';
+	document.getElementById("randomColorTaxa").disabled = false;
+}
+
+function resetSymbology() {
+	document.getElementById("symbolizeReset1").disabled = true;
+	document.getElementById("symbolizeReset2").disabled = true;
+	
+	var color = document.getElementById("defaultmarkercolor").value;
+	for (var coll in collNameArr) {
+		changeMarkersColor(color, MarkerGroupings['Collections'][collNameArr[coll][1]]);
+	}
+	mapSymbol = 'coll';
+	resetTaxaLegend(color);
+	resetCollectionsLegend(color);
+	mapSymbol = 'coll';
+	document.getElementById("symbolizeReset1").disabled = false;
+	document.getElementById("symbolizeReset2").disabled = false;
+}
+
+/*
+function selectPoints(){
+	var selectedpoints = document.getElementById("selectedpoints");
+	selected = false;
+	var selectedpoint = Number(selectedpoints.value);
+	while (selected == false) {
+		for(var gcnt in grpArr) {
+			findSelection(gcnt,selectedpoint,'select');
+			if(clusterOff=="n"){
+				findGrpClusterSelection(gcnt,selectedpoint);
+			}
+		}
+		if(clusterOff=="n"){
+			findTaxClusterSelection(selectedpoint);
+		}
+	}
+	if(selections.indexOf(selectedpoint) < 0){
+		selections.push(selectedpoint);
+	}
+	adjustSelectionsTab();
+}
+*/
+
+/*
+function deselectPoints(){
+	deselected = false;
+	var deselectedpoint = Number(deselectedpoints.value);
+	while (deselected == false) {
+		for(var gcnt in grpArr) {
+			findSelection(gcnt,deselectedpoint,'deselect');
+			if(clusterOff=="n"){
+				findGrpClusterSelection(gcnt,deselectedpoint);
+			}
+		}
+		if(clusterOff=="n"){
+			findTaxClusterSelection(deselectedpoint);
+		}
+	}
+	var index = selections.indexOf(deselectedpoint);
+	selections.splice(index, 1);
+	adjustSelectionsTab();
+}
+*/
+
+/*
+function selectDSPoints(){
+	selected = false;
+	var selectedpoint = Number(selecteddspoints.value);
+	while (selected == false) {
+		if (dsmarkers) {
+			for (i in dsmarkers) {
+				if(dsmarkers[i].occid==selectedpoint){
+					var markerIcon = {path:google.maps.SymbolPath.CIRCLE,fillColor:"#ffffff",fillOpacity:1,scale:5,strokeColor:"#10D8E6",strokeWeight:2};
+					dsmarkers[i].setIcon(markerIcon);
+					dsmarkers[i].selected = true;
+					selected = true;
+				}
+			}
+		}
+	}
+	if(dsselections.indexOf(selectedpoint) < 0){
+		dsselections.push(selectedpoint);
+	}
+}
+*/
+
+/*
+function deselectDSPoints(){
+	deselected = false;
+	var deselectedpoint = Number(deselecteddspoints.value);
+	while (deselected == false) {
+		if (dsmarkers) {
+			for (i in dsmarkers) {
+				if(dsmarkers[i].occid==deselectedpoint){
+					var markerIcon = {path:google.maps.SymbolPath.CIRCLE,fillColor:"#ffffff",fillOpacity:1,scale:5,strokeColor:"#000000",strokeWeight:2};
+					dsmarkers[i].setIcon(markerIcon);
+					dsmarkers[i].selected = false;
+					deselected = true;
+				}
+			}
+		}
+	}
+	var index = dsselections.indexOf(deselectedpoint);
+	dsselections.splice(index, 1);
+}
+*/
+
+/*
+function zoomToSelections(){
+	var selectZoomBounds = new google.maps.LatLngBounds();
+	for(var gcnt in grpArr) {
+		for (var i=0; i < selections.length; i++) {
+			occid = Number(selections[i]);
+			if (grpArr[gcnt]) {
+				for (j in grpArr[gcnt]) {
+					if(grpArr[gcnt][j].occid==occid){
+						var markerPos = grpArr[gcnt][j].getPosition();
+						selectZoomBounds.extend(markerPos);
+					}
+				}
+			}
+		}
+	}
+	map.fitBounds(selectZoomBounds);
+	map.panToBounds(selectZoomBounds);
+}
+*/
+
+function setPanels(show) {
+	if (document.getElementById("recordstaxaheader")) {
+		if (show) {
+			document.getElementById("recordstaxaheader").style.display = "block";
+			document.getElementById("tabs2").style.display = "block";
+		} else {
+			document.getElementById("recordstaxaheader").style.display = "none";
+			document.getElementById("tabs2").style.display = "none";
+		}
+	}
+}
+
+function renderRecordsRow(){
+	let tableHTML = '';
+	for(let i = 0; i < recordsArr.length; i++){
+		tableHTML += recordsArr[i];
+	}
+	return tableHTML;
+}
+
+function buildRecordsTable(){
+	let recordsTableHTMLTempplate = `
+		<div style="height:25px;margin-top:-5px;">
+			<div>
+				<div style="float:left;">
+					<form name="downloadForm" action="../download/index.php" method="post" onsubmit="targetPopup(this)" style="float:left">
+						<button class="ui-button ui-widget ui-corner-all" style="margin:5px;padding:5px;cursor: pointer" title="<?php echo $LANG['DOWNLOAD_SPECIMEN_DATA']; ?>">
+							<img src="../../images/dl2.png" srcset="../../images/download.svg" class="svg-icon" style="width:15px" />
+						</button>
+						<input name="reclimit" type="hidden" value="<?php echo $recLimit; ?>" />
+						<input name="sourcepage" type="hidden" value="map" />
+						<input name="searchvar" type="hidden" value="<?php echo $searchVar; ?>" />
+						<input name="dltype" type="hidden" value="specimen" />
+					</form>
+					<form name="fullquerykmlform" action="kmlhandler.php" method="post" target="_blank" style="float:left;">
+						<input name="reclimit" type="hidden" value="<?php echo $recLimit; ?>" />
+						<input name="sourcepage" type="hidden" value="map" />
+						<input name="searchvar" type="hidden" value="<?php echo $searchVar; ?>" />
+						<button name="submitaction" type="submit" class="ui-button ui-widget ui-corner-all" style="margin:5px;padding:5px;cursor: pointer" title="Download KML file">
+							<img src="../../images/dl2.png" srcset="../../images/download.svg" class="svg-icon" style="width:15px; padding-right: 5px; vertical-align:top" />KML
+						</button>
+					</form>
+					<button class="ui-button ui-widget ui-corner-all" style="margin:5px;padding:5px;cursor: pointer;" onclick="copyUrl()" title="<?php echo (isset($LANG['COPY_TO_CLIPBOARD'])?$LANG['COPY_TO_CLIPBOARD']:'Copy URL to Clipboard'); ?>">
+						<img src="../../images/dl2.png" srcset="../../images/link.svg" class="svg-icon" style="width:15px" />
+					</button>
+				</div>
+			</div>
+		</div>
+		<div id="divMapSearchRecords">
+			<table class="styledtable" id="mapSearchRecordsTable">
+				<thead>
+				<tr>
+					<th>Catalog #</th>
+					<th>Collector</th>
+					<th>Date</th>
+					<th>Scientific Name</th>
+				</tr>
+				</thead>
+				<tbody>
+				${renderRecordsRow()}
+				</tbody>
+			</table>
+		</div>
+	`;
+
+	if (document.getElementById("records")) document.getElementById("records").innerHTML = recordsTableHTMLTempplate;
+}
+
+
+function buildRecordTableRow(myRecord){
+	let rowHTML = "";
+	rowHTML += `
+		<tr id="tr${myRecord.occid}" >
+			<td id="cat${myRecord.occid}" >${myRecord.catalognumber}</td>
+			<td id="label${myRecord.occid}" ><a href="#" onclick="openIndPopup(${myRecord.occid}); return false;">${myRecord.recordedby}${(myRecord.recordnumber ? ' ' + myRecord.recordnumber : '')}</a></td>
+			<td id="e${myRecord.occid}" >${myRecord.eventdate}</td>
+			<td id="s${myRecord.occid}" >${myRecord.sciname}</td>
+		</tr>
+	`;
+
+	recordsArr.push(rowHTML);
+	
+}
+
+function buildCollKeyPiece(key, iconColor) {
+	if (!collNameArr[key['collid']]){
+		collNameArr[key['collid']] = [key['CollectionName'], key['collid']];
+		keyHTML = '';
+		keyHTML += '<div style="display:table-row;">';
+		keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-bottom:5px;" ><input type="checkbox" id="chkHideColl' + key['collid'] + '" onchange="hideCollToggle(this.checked,\'' + key['collid'] + '\');" CHECKED><input type="color" id="collColor' + key['collid'] + '" class="small_color_input" value="' + iconColor + '" oninput="changeCollColor(this.value,' + key['collid'] + ');" /></div>';
+		keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-left:8px;"> = </div>';
+		keyHTML += '<div style="display:table-cell;width:250px;vertical-align:middle;padding-left:8px;">' + key['CollectionName'] + '</div>';
+		keyHTML += '</div>';
+		collKeyArr[key['collid']] = keyHTML;
+	}
+}
+
+function buildCollKey() {
+	keyHTML = '';
+	keyHTML += "<div style='margin-left:5px;'><h3 style='margin-top:8px;margin-bottom:5px;'>Collections</h3></div>";
+	keyHTML += "<div style='display:table;'>";
+	keyHTML += '<div id="toggleHideAllCollectionsRow">';
+	keyHTML += '<div style="display:table-row;">';	
+	keyHTML += '<div style="display:table-cell;vertical-align:middle;padding-bottom:5px;" ><input type="checkbox" id="chkHideAllColl" onchange="hideAllCollToggle(this.checked);" CHECKED><label for="chkHideAllColl">Show/Hide All Collections</label></div>';
+	keyHTML += '</div></div></div>';
+
+	// location aware case insensitive sort
+	collNameArr.sort((a, b) => {
+		return a[0].localeCompare(b[0], undefined, {sensitivity: 'base'});
+	});
+	for (var i in collNameArr) {
+		keyHTML += collKeyArr[collNameArr[i][1]];
+	}
+	if (document.getElementById("symbologykeysbox")) document.getElementById("symbologykeysbox").innerHTML = keyHTML;
+}
+
+function buildTaxaKeyPiece(key, tidinterpreted, family, sciname, iconColor) {
+
+	//setup array structure that will be used to group and sort taxa marker legend during buildTaxaKey()
+	if (familyNameArr.indexOf(family) < 0){
+		familyNameArr.push(family);
+		taxaLegendArr[family] = [];
+	}
+	if(!taxaLegendArr[family][key]){
+		taxaLegendArr[family][key] = sciname;
+	}
+	else return;
+
+	if (!taxaKeyArr[key]){
+		keyHTML = '';
+		keyLabel = "'" + key + "'";
+		keyHTML += '<li class="mapLegendEntry"><div class="mapLegendEntryInputs"><input type="checkbox" id="chkHideTaxa' + key + '" onchange="hideTaxaToggle(this.checked,\'' + key + '\');" CHECKED><input type="color" id="taxaColor' + key + '" class="small_color_input"  value="' + iconColor + '" onchange="changeTaxaColor(this.value,' + keyLabel + ');" /></div>';
+		keyHTML += '<span class="mapLegendEntryText">';
+		if (tidinterpreted) keyHTML += '<i> = <a href="#" onclick="openPopup(\'../../taxa/index.php?tid=' + tidinterpreted + '&display=1\');return false;">' + sciname + '</a></i>';
+		else keyHTML += "<i> = " + sciname + "</i>";
+		keyHTML += '</span></li>';
+		taxaKeyArr[key] = keyHTML;
+	}
+}
+
+
+function buildTaxaKey() {
+
+	taxaLegendArr.sort(function(a,b) {
+		if(a[1] === b[1]) return a[3] > b[3] ? 1 : -1;
+		return a[1] > b[1] ? 1 : -1;
+	});
+
+	
+	keyHTML = '';
+	keyHTML += "<div style='display:table;margin-top:8px;margin-bottom:5px;'>";
+	keyHTML += '<div id="toggleHideAllTaxakeyRow">';
+	keyHTML += '<div style="display:table-row;">';	
+	keyHTML += '</div></div></div>';
+	keyHTML += '<ul class="mapGroupLegend">';
+	keyHTML += '<li><input type="checkbox" id="chkHideAllTaxa" onchange="hideAllTaxaToggle(this.checked);" CHECKED><label for="chkHideAllTaxa">Show/Hide All Taxa</label></li>';
+	
+	familyNameArr.sort();
+	var tempFamilyGroup = [];
+	for (let fam = 0; fam < familyNameArr.length; fam++) {
+		if(familyNameArr[fam] !== 'NULL'){
+
+			keyHTML += "<div style='margin-left:5px;'><h3 style='margin-top:8px;margin-bottom:5px;'>" + familyNameArr[fam] + "</h3></div>";
+			tempFamilyGroup = [];
+			tempFamilyGroup = getSortedKeys(taxaLegendArr[familyNameArr[fam]]);
+			
+
+			for (let i = 0; i < tempFamilyGroup.length; i++) {
+				keyHTML += taxaKeyArr[tempFamilyGroup[i]];
+			}
+
+			taxaCnt += tempFamilyGroup.length;
+			
+		}
+	}
+	if (taxaLegendArr['NULL']) {
+		tempFamilyGroup = [];
+		tempFamilyGroup = getSortedKeys(taxaLegendArr['NULL']);
+		//tempFamilyGroup.sort();
+		
+		keyHTML += "<div style='margin-left:5px;'><h3 style='margin-top:8px;margin-bottom:5px;'>Family Not Defined</h3></div>";
+		keyHTML += "<div style='display:table;'>";
+		for (let i = 0; i < tempFamilyGroup.length; i++) {
+				keyHTML += taxaKeyArr[tempFamilyGroup[i]];
+		}
+		taxaCnt += tempFamilyGroup.length;
+		
+	}
+	if (document.getElementById("taxasymbologykeysbox")) document.getElementById("taxasymbologykeysbox").innerHTML = keyHTML;
+	if (document.getElementById("taxaCountNum")) document.getElementById("taxaCountNum").innerHTML = taxaCnt;
+}
+
