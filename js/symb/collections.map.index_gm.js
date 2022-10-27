@@ -49,7 +49,7 @@ function initializeGoogleMap() {
 		strokeWeight: 0,
 		fillOpacity: 0.45,
 		editable: true,
-		draggable: true
+		draggable: false
 	};
 
 	var drawingManager = new google.maps.drawing.DrawingManager({
@@ -176,7 +176,7 @@ function initializeGoogleMap() {
 		closeInfoWin();
 	});
 
-	//createShape();
+	createShape();
 }
 
 function createShape() {
@@ -191,7 +191,7 @@ function createShape() {
 			strokeWeight: 0,
 			fillOpacity: 0.45,
 			editable: true,
-			draggable: true,
+			draggable: false,
 			map: map
 		});
 		newShape.type = "rectangle";
@@ -205,7 +205,7 @@ function createShape() {
 			strokeWeight: 0,
 			fillOpacity: 0.45,
 			editable: true,
-			draggable: true,
+			draggable: false,
 			map: map
 		});
 		newShape.type = "circle";
@@ -231,7 +231,7 @@ function createShape() {
 			strokeWeight: 0,
 			fillOpacity: 0.45,
 			editable: true,
-			draggable: true,
+			draggable: false,
 			map: map
 		});
 		newShape.type = "polygon";
@@ -249,9 +249,9 @@ function createShape() {
 		google.maps.event.addListener(newShape, "click", function() {
 			setSelection(newShape);
 		});
-		google.maps.event.addListener(newShape, "dragend", function() {
-			setSelection(newShape);
-		});
+		//google.maps.event.addListener(newShape, "dragend", function() {
+		//	setSelection(newShape);
+		//});
 		setSelection(newShape);
 	}
 }

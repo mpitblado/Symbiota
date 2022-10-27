@@ -786,7 +786,7 @@ function renderRecordsRow(){
 
 function buildRecordsTable(){
 	let recordsTableHTMLTempplate = `
-		<div style="height:25px;margin-top:-5px;">
+		<div id="mapSearchDownloadData">
 			<div>
 				<div style="float:left;">
 					<form name="downloadForm" action="../download/index.php" method="post" onsubmit="targetPopup(this)" style="float:left">

@@ -119,14 +119,27 @@ else {
 		}
 
 		#divMapSearchRecords{
-			position: relative;
-			height: 600px;
-			overflow: auto;
-			clear: left;
-			float: left;
+			grid-column: 1;
+			height: 100%;
+		}
+
+		#tabs2Items{
+			grid-column: 1;
+		}
+
+		#records{
+			display: grid;
+    		grid-template-columns:	1;
+			grid-auto-rows: minmax(min-content, max-content);
+			height: 100%;
+		}
+
+		#mapSearchDownloadData {
+			grid-column: 1;
 		}
 
 		#mapSearchRecordsTable {
+			
 			font-family:Arial;
 			font-size:12px;
 		}
@@ -138,8 +151,10 @@ else {
 
 		#tabs2 {
 			display:none;
-			width:379px;
 			padding:0px;
+			display: block;
+			height: 100%;
+			/* overflow: scroll; */
 		}
 
 	</style>
@@ -463,11 +478,13 @@ else {
 				?>
 					<h3 id="recordstaxaheader" style="display:none;padding-left:30px;"><?php echo (isset($LANG['RECORDS_TAXA']) ? $LANG['RECORDS_TAXA'] : 'Records and Taxa'); ?></h3>
 					<div id="tabs2">
-						<ul>
-							<li><a href='#records'><span><?php echo (isset($LANG['RECORDS']) ? $LANG['RECORDS'] : 'Records'); ?></span></a></li>
-							<li><a href='#symbology'><span><?php echo (isset($LANG['COLLECTIONS']) ? $LANG['COLLECTIONS'] : 'Collections'); ?></span></a></li>
-							<li><a href='#maptaxalist'><span><?php echo (isset($LANG['TAXA_LIST']) ? $LANG['TAXA_LIST'] : 'Taxa List'); ?></span></a></li>
-						</ul>
+						<div id="tabs2Items">
+							<ul>
+								<li><a href='#records'><span><?php echo (isset($LANG['RECORDS']) ? $LANG['RECORDS'] : 'Records'); ?></span></a></li>
+								<li><a href='#symbology'><span><?php echo (isset($LANG['COLLECTIONS']) ? $LANG['COLLECTIONS'] : 'Collections'); ?></span></a></li>
+								<li><a href='#maptaxalist'><span><?php echo (isset($LANG['TAXA_LIST']) ? $LANG['TAXA_LIST'] : 'Taxa List'); ?></span></a></li>
+							</ul>
+						</div>
 						<div id="records" >
 						</div>
 						<div id="symbology" >
