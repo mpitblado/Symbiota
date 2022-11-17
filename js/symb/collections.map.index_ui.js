@@ -219,20 +219,20 @@ function findDsSelections(c){
 }
 */
 
-function toggleLatLongDivs(){
-	var divs = document.getElementsByTagName("div");
-	for (i = 0; i < divs.length; i++) {
-		var obj = divs[i];
-		if(obj.getAttribute("class") == "latlongdiv" || obj.getAttribute("className") == "latlongdiv"){
-			if(obj.style.display=="none"){
-				obj.style.display="block";
-			}
-			else{
-				obj.style.display="none";
-			}
-		}
-	}
-}
+// function toggleLatLongDivs(){
+// 	var divs = document.getElementsByTagName("div");
+// 	for (i = 0; i < divs.length; i++) {
+// 		var obj = divs[i];
+// 		if(obj.getAttribute("class") == "latlongdiv" || obj.getAttribute("className") == "latlongdiv"){
+// 			if(obj.style.display=="none"){
+// 				obj.style.display="block";
+// 			}
+// 			else{
+// 				obj.style.display="none";
+// 			}
+// 		}
+// 	}
+// }
 
 function toggle(target){
 	var ele = document.getElementById(target);
@@ -784,59 +784,13 @@ function renderRecordsRow(){
 	return tableHTML;
 }
 
-function buildRecordsTable(){
-	let recordsTableHTMLTempplate = `
-		<div id="mapSearchDownloadData">
-			<div>
-				<div style="float:left;">
-					<form name="downloadForm" action="../download/index.php" method="post" onsubmit="targetPopup(this)" style="float:left">
-						<button class="ui-button ui-widget ui-corner-all" style="margin:5px;padding:5px;cursor: pointer" title="<?php echo $LANG['DOWNLOAD_SPECIMEN_DATA']; ?>">
-							<img src="../../images/dl2.png" srcset="../../images/download.svg" class="svg-icon" style="width:15px" />
-						</button>
-						<input name="reclimit" type="hidden" value="<?php echo $recLimit; ?>" />
-						<input name="sourcepage" type="hidden" value="map" />
-						<input name="searchvar" type="hidden" value="<?php echo $searchVar; ?>" />
-						<input name="dltype" type="hidden" value="specimen" />
-					</form>
-					<form name="fullquerykmlform" action="kmlhandler.php" method="post" target="_blank" style="float:left;">
-						<input name="reclimit" type="hidden" value="<?php echo $recLimit; ?>" />
-						<input name="sourcepage" type="hidden" value="map" />
-						<input name="searchvar" type="hidden" value="<?php echo $searchVar; ?>" />
-						<button name="submitaction" type="submit" class="ui-button ui-widget ui-corner-all" style="margin:5px;padding:5px;cursor: pointer" title="Download KML file">
-							<img src="../../images/dl2.png" srcset="../../images/download.svg" class="svg-icon" style="width:15px; padding-right: 5px; vertical-align:top" />KML
-						</button>
-					</form>
-					<button class="ui-button ui-widget ui-corner-all" style="margin:5px;padding:5px;cursor: pointer;" onclick="copyUrl()" title="<?php echo (isset($LANG['COPY_TO_CLIPBOARD'])?$LANG['COPY_TO_CLIPBOARD']:'Copy URL to Clipboard'); ?>">
-						<img src="../../images/dl2.png" srcset="../../images/link.svg" class="svg-icon" style="width:15px" />
-					</button>
-				</div>
-			</div>
-		</div>
-		<div id="divMapSearchRecords">
-			<table class="styledtable" id="mapSearchRecordsTable">
-				<thead>
-				<tr>
-					<th>Catalog #</th>
-					<th>Collector</th>
-					<th>Date</th>
-					<th>Scientific Name</th>
-				</tr>
-				</thead>
-				<tbody>
-				${renderRecordsRow()}
-				</tbody>
-			</table>
-		</div>
-	`;
-
-	if (document.getElementById("records")) document.getElementById("records").innerHTML = recordsTableHTMLTempplate;
-}
 
 
-function buildRecordTableRow(myRecord){
+
+function buildRecordTableRow(myRecord, markerIndex){
 	let rowHTML = "";
 	rowHTML += `
-		<tr id="tr${myRecord.occid}" >
+		<tr id="tr${myRecord.occid}" onclick="activateMarker(${markerIndex})">
 			<td id="cat${myRecord.occid}" >${myRecord.catalognumber}</td>
 			<td id="label${myRecord.occid}" ><a href="#" onclick="openIndPopup(${myRecord.occid}); return false;">${myRecord.recordedby}${(myRecord.recordnumber ? ' ' + myRecord.recordnumber : '')}</a></td>
 			<td id="e${myRecord.occid}" >${myRecord.eventdate}</td>
@@ -954,5 +908,9 @@ function buildTaxaKey() {
 	}
 	if (document.getElementById("taxasymbologykeysbox")) document.getElementById("taxasymbologykeysbox").innerHTML = keyHTML;
 	if (document.getElementById("taxaCountNum")) document.getElementById("taxaCountNum").innerHTML = taxaCnt;
+}
+
+function scrollTo(hash) {
+    location.hash = "#" + hash;
 }
 

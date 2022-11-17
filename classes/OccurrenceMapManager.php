@@ -4,18 +4,33 @@ include_once('OccurrenceAccessStats.php');
 
 class OccurrenceMapManager extends OccurrenceManager {
 
-	private $recordCount = 0;
+	private $totalRecordCount = 0;
+	private $retrievedRecordCount = 0;
 	private $collArrIndex = 0;
 
 	public function __construct(){
-		parent::__construct();
-		$this->readGeoRequestVariables();
-		$this->setGeoSqlWhere();
-		$this->setRecordCnt();
 	}
 
 	public function __destruct(){
 		parent::__destruct();
+	}
+
+	public static function init(){
+		$obj = new  OccurrenceMapManager();
+		$obj->init_parent();
+		$obj->readGeoRequestVariables();
+		$obj->setGeoSqlWhere();
+		$obj->setRecordCnt();
+		return $obj;
+	}
+
+	public static function initAJAX(){
+		$obj = new  OccurrenceMapManager();
+		return $obj;
+	}
+
+	private function init_parent(){
+		parent::__construct();
 	}
 
 	private function readGeoRequestVariables(){
@@ -94,24 +109,37 @@ class OccurrenceMapManager extends OccurrenceManager {
 	public function getCoordinateMap2($start, $limit){
 		//Used within dynamic map
 		$coordArr = Array();
+		$sql = '';
+		$statsManager = null;
 		if($this->sqlWhere){
-			$statsManager = new OccurrenceAccessStats();
 			$sql = 'SELECT o.occid, o.recordedby, o.recordnumber, o.eventdate, '.
 				'o.sciname, o.family, o.tidinterpreted, o.DecimalLatitude, o.DecimalLongitude, o.collid, o.catalognumber, '.
 				'o.othercatalognumbers, c.institutioncode, c.collectioncode, c.CollectionName, c.collType '.
 				'FROM omoccurrences o LEFT JOIN omcollections c ON o.collid = c.collid ';
 			$sql .= $this->getTableJoins($this->sqlWhere);
 			$sql .= $this->sqlWhere;
-			if(is_numeric($start) && $limit){
-				$sql .= "LIMIT ".$start.",".$limit;
-			}
-			//echo "<div>SQL: ".$sql."</div>"; exit;
-			$result = $this->conn->query($sql);
+			$_SESSION['map_current_query'] = $sql;
+		}
+		else if (array_key_exists('map_current_query',$_SESSION)){
+			$sql = $_SESSION['map_current_query'];
+		} else return;
+		if(is_numeric($start) && $limit){
+			$sql .= "LIMIT ".$start.",".$limit;
+		}
+		//echo "<div>SQL: ".$sql."</div>"; exit;
+		if(!$this->conn){
+			$this->conn = $this->getConnection();
+		}
+		$result = $this->conn->query($sql);
+		if($result){
 			$coordArr = $result->fetch_all(MYSQLI_ASSOC);
+			$this->retrievedRecordCount = mysqli_num_rows($result);
+			$statsManager = new OccurrenceAccessStats();
 			$statsManager->recordAccessEventByArr(array_column($coordArr,'occid'), 'map');
-			
+		
 			$result->free();
 		}
+
 		return $coordArr;
 	}
 
@@ -214,15 +242,19 @@ class OccurrenceMapManager extends OccurrenceManager {
 			$result = $this->conn->query($sql);
 			if($result){
 				if($row = $result->fetch_object()){
-					$this->recordCount = $row->cnt;
+					$this->totalRecordCount = $row->cnt;
 				}
 				$result->free();
 			}
 		}
 	}
 
-	public function getRecordCnt(){
-		return $this->recordCount;
+	public function getTotalRecordCnt(){
+		return $this->totalRecordCount;
+	}
+
+	public function getRetrievedRecordCnt(){
+		return $this->retrievedRecordCount;
 	}
 
 	//SQL where functions

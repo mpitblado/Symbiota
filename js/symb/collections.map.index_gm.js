@@ -42,6 +42,8 @@ function initializeGoogleMap() {
 	map.fitBounds(initBounds);
 
 	spiderfier = new OverlappingMarkerSpiderfier(map, {
+		markersWontMove: true,
+		markersWontHide: false,
 		basicFormatEvents: true
 	});
 
@@ -135,7 +137,7 @@ function initializeGoogleMap() {
 		}
 	});
 
-	spiderfier.addListener('click', function(marker, event) {
+	spiderfier.addListener('spider_click', function(marker, event) {
 		occid = marker.occid;
 		chbox = 'ch' + occid;
 		if (selections.indexOf(occid) > -1) {
@@ -168,7 +170,15 @@ function initializeGoogleMap() {
 				}
 			}
 			//adjustSelectionsTab();
-			selectMarker(marker);
+			//selectMarker(marker);
+			let DOMItem = null;
+			if (DOMItem = document.querySelector('.selectedrecord')){
+				DOMItem.classList.toggle('selectedrecord');
+			}
+			if (DOMItem = document.getElementById('tr'+occid)){
+				DOMItem.classList.toggle('selectedrecord');
+			}
+			scrollTo('tr'+occid);
 		}
 	});
 
@@ -465,11 +475,11 @@ function selectMarker(marker){
 	marker.selected = true;
 }
 
-function selectDsMarker(marker){
-	var markerIcon = {path:google.maps.SymbolPath.CIRCLE,fillColor:"#ffffff",fillOpacity:1,scale:5,strokeColor:"#10D8E6",strokeWeight:2};
-	marker.setIcon(markerIcon);
-	marker.selected = true;
-}
+// function selectDsMarker(marker){
+// 	var markerIcon = {path:google.maps.SymbolPath.CIRCLE,fillColor:"#ffffff",fillOpacity:1,scale:5,strokeColor:"#10D8E6",strokeWeight:2};
+// 	marker.setIcon(markerIcon);
+// 	marker.selected = true;
+// }
 
 function deselectMarker(marker){
 	if(marker.recordType=='obs'){
@@ -489,9 +499,26 @@ function deselectMarker(marker){
 	marker.selected = false;
 }
 
-function deselectDsMarker(marker){
-	var markerIcon = {path:google.maps.SymbolPath.CIRCLE,fillColor:"#ffffff",fillOpacity:1,scale:5,strokeColor:"#000000",strokeWeight:2};
-	marker.setIcon(markerIcon);
-	marker.selected = false;
+// function deselectDsMarker(marker){
+// 	var markerIcon = {path:google.maps.SymbolPath.CIRCLE,fillColor:"#ffffff",fillOpacity:1,scale:5,strokeColor:"#000000",strokeWeight:2};
+// 	marker.setIcon(markerIcon);
+// 	marker.selected = false;
+// }
+
+function activateMarker(markerIndex){
+
+	map.setCenter(allMarkers[markerIndex].getPosition());
+	switch(displayMode){
+		case 'points':
+			if (allMarkers[markerIndex].visible){
+				allMarkers[markerIndex].setZIndex(100);
+				google.maps.event.trigger(allMarkers[markerIndex], 'spider_click');
+			}
+		break;
+		case 'cluster':
+			break;
+		case 'heat':
+			break;
+	}
 }
 

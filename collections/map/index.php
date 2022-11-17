@@ -3,10 +3,6 @@ include_once('../../config/symbini.php');
 include_once($SERVER_ROOT . '/content/lang/collections/map/index.' . $LANG_TAG . '.php');
 include_once($SERVER_ROOT . '/classes/OccurrenceMapManager.php');
 
-header('Content-Type: text/html; charset=' . $CHARSET);
-ob_start('ob_gzhandler');
-ini_set('max_execution_time', 180); //180 seconds = 3 minutes
-
 $distFromMe = array_key_exists('distFromMe', $_REQUEST) ? $_REQUEST['distFromMe'] : '';
 $recLimit = array_key_exists('recordlimit', $_REQUEST) ? $_REQUEST['recordlimit'] : 15000;
 $catId = array_key_exists('catid', $_REQUEST) ? $_REQUEST['catid'] : 0;
@@ -15,7 +11,37 @@ $submitForm = array_key_exists('submitform', $_REQUEST) ? $_REQUEST['submitform'
 
 if (!$catId && isset($DEFAULTCATID) && $DEFAULTCATID) $catId = $DEFAULTCATID;
 
-$mapManager = new OccurrenceMapManager();
+//Sanitation
+if (!is_numeric($recLimit)) $recLimit = 15000;
+if (!is_numeric($distFromMe)) $distFromMe = '';
+if (!is_numeric($catId)) $catId = 0;
+if (!is_numeric($tabIndex)) $tabIndex = 0;
+
+//Handle AJAX request for more records from a previous partial load 
+if(array_key_exists('loadMoreMapData',$_REQUEST) && $_SESSION['map_current_query']){
+	
+	$mapManager = OccurrenceMapManager::initAJAX();
+	$retreivedRecords = json_encode($mapManager->getCoordinateMap2($_SESSION['map_retrieved_record_count']+1,$recLimit));
+	$rerievedRecordCount = $mapManager->getRetrievedRecordCnt(); 
+	$_SESSION['map_retrieved_record_count'] = $_SESSION['map_retrieved_record_count'] + $rerievedRecordCount; 
+
+	//generate JSON encoded records.
+	$requestResponse = '{"recordCount": "' . $rerievedRecordCount . '", "records": ' . $retreivedRecords .'}';
+	echo $requestResponse;
+	exit();
+
+} else {
+	unset($_SESSION['map_current_query']);
+	unset($_SESSION['map_retrieved_record_count']);
+}
+
+header('Content-Type: text/html; charset=' . $CHARSET);
+ob_start('ob_gzhandler');
+ini_set('max_execution_time', 180); //180 seconds = 3 minutes
+
+
+
+$mapManager = OccurrenceMapManager::init();
 $searchVar = $mapManager->getQueryTermStr();
 
 if ($searchVar && $recLimit) $searchVar .= '&reclimit=' . $recLimit;
@@ -23,11 +49,7 @@ if ($searchVar && $recLimit) $searchVar .= '&reclimit=' . $recLimit;
 $obsIDs = $mapManager->getObservationIds();
 
 
-//Sanitation
-if (!is_numeric($recLimit)) $recLimit = 15000;
-if (!is_numeric($distFromMe)) $distFromMe = '';
-if (!is_numeric($catId)) $catId = 0;
-if (!is_numeric($tabIndex)) $tabIndex = 0;
+
 
 $activateGeolocation = 0;
 if (isset($ACTIVATE_GEOLOCATION) && $ACTIVATE_GEOLOCATION == 1) $activateGeolocation = 1;
@@ -78,6 +100,11 @@ else {
 			transition: 0.5s;
 		}
 
+		.selectedrecord{
+			border: solid thick greenyellow;
+			font-weight: bold;
+		}
+
 		input[type=color]{
 			border: none;
 			background: none;
@@ -121,6 +148,9 @@ else {
 		#divMapSearchRecords{
 			grid-column: 1;
 			height: 100%;
+		}
+		#mapLoadMoreRecords{
+			display: none;
 		}
 
 		#tabs2Items{
@@ -181,8 +211,8 @@ else {
 				
 				<fieldset>
 					<legend>Display Mode:</legend>
-					<label for="modeCluster">Cluster</label><input type="radio" id="modeCluster" name="markerDsiplayMode" onclick="handleModeRadios(this);" value="cluster" checked>
 					<label for="modePoints">Markers</label><input type="radio" id="modePoints" name="markerDsiplayMode" onclick="handleModeRadios(this);" value="points">
+					<label for="modeCluster">Cluster</label><input type="radio" id="modeCluster" name="markerDsiplayMode" onclick="handleModeRadios(this);" value="cluster">
 					<label for="modeHeat">Heat Map</label><input type="radio" id="modeHeat" name="markerDsiplayMode" onclick="handleModeRadios(this);" value="heat">
 					<br><a href="#" onclick="activateMapOtions();">View map options</a>
 				</div>
@@ -577,12 +607,12 @@ else {
 			</div>
 		</div><!-- /defaultpanel -->
 	</div>
-	<div id='map' style='width:100%;height:100%;'></div>
-	<div id="loadingOverlay" style="width:100%;">
+	<div id="loadingOverlay" style="width:100%; z-index:999999;">
 		<div id="loadingImage" style="width:100px;height:100px;position:absolute;top:50%;left:50%;margin-top:-50px;margin-left:-50px;">
 			<img style="border:0px;width:100px;height:100px;" src="../../images/ajax-loader.gif" />
 		</div>
 	</div>
+	<div id='map' style='width:100%;height:100%;'></div>
 	
 	<script defer type="text/javascript">
 
@@ -606,10 +636,10 @@ else {
 		//var markers = [];
 		//var dsmarkers = [];
 		//var dsoccids = [];
-		var selections = [];
-		var dsselections = [];
-		var selectedds = '';
-		var selecteddsrole = '';
+		//var selections = [];
+		//var dsselections = [];
+		//var selectedds = '';
+		//var selecteddsrole = '';
 		var allMarkers = [];
 		var drawingManager = null;
 		var spiderfier;
@@ -637,54 +667,66 @@ else {
 		var optionsTaxArr = [];
 		var grpCnt = 1;
 		var InformationWindow = '';
-		var mouseoverTimeout = '';
-		var mouseoutTimeout = '';
+		//var mouseoverTimeout = '';
+		//var mouseoutTimeout = '';
 		var pointBounds = null;
-		var occArr = [];
+		//var occArr = [];
 		var panPoint = null;
 		var heatMapData = null;
 		var displayMode = 'cluster';
 		var taxaKeySet = new Set();
 		var recordsArr = [];
+		var resultCount = 0;
+		var retrievedRecordCount = 0;
+		var totalRecordCount = 0;
 
 		function initialize(){
 			document.getElementById('defaultmarkercolor').value = defaultMarkerColor;
 			<?php
-			$recordCnt = $mapManager->getRecordCnt();
+			$coordArr = $mapManager->getCoordinateMap2(0,$recLimit);
+			//$coordArr = $mapManager->getCoordinateMap2(0, 50000);
+			$totalRecordCnt = $mapManager->getTotalRecordCnt();
+			$_SESSION['map_total_record_count'] = $totalRecordCnt;
+			$retrievedRecordCnt = $mapManager->getRetrievedRecordCnt();
+			$_SESSION['map_retrieved_record_count'] = $retrievedRecordCnt;
 			if ($searchVar) {
-			?>
-				if (<?php echo $recordCnt; ?> > 0) {
-					var resultCount = <?php echo $recordCnt; ?>;
-					if (resultCount <= <?php echo $recLimit; ?>) {
-						<?php
-						//$coordArr = $mapManager->getCoordinateMap(0,$recLimit);
-						$coordArr = $mapManager->getCoordinateMap2(0, 50000);
-						echo 'pointObj = ' . json_encode($coordArr) . ";\n";
-						?>
-					} else {
-						alert("Your search produced " + resultCount + " results which exceeds the maximum of <?php echo $recLimit; ?>, please refine your search more.");
-						$('#loadingOverlay').hide();
-					}
-				} else {
+				?>
+				totalRecordCount  = <?php echo $totalRecordCnt; ?>;
+				retrievedRecordCount = <?php echo $retrievedRecordCnt; ?>;
+				if (totalRecordCount < 1) {
 					alert('There were no records matching your query.');
 				}
-			<?php
+				else {
+					<?php
+					echo 'pointObj = ' . json_encode($coordArr) . ";\n";
+					?>
+				}
+
+				<?php
 			}
 			?>
 			initializeGoogleMap();
 			if (pointObj){
 				processPoints();
 			}
-			setTimeout(function() {
-				afterEffects();
-			}, 500);
-			$('#loadingOverlay').hide();
+			loadSidePanel();
+			handleModeRadios({
+				value: 'points',
+			});
+			
 
+			if (totalRecordCount > retrievedRecordCount) {
+					alert("Your search exceeds the current maximum of <?php echo $recLimit; ?> records. Not all records will be shown on the map. Press the 'Load more records' to add additional matching records.");
+					document.getElementById('mapLoadMoreRecords').style.display = 'block';
+			}
+			document.getElementById('recordTotalCount').textContent = totalRecordCount;
+			document.getElementById('recordLoadedCount').textContent = retrievedRecordCount;
+			document.getElementById('loadingOverlay').style.display = 'none';
 		}
 
 		
 
-		function afterEffects() {
+		function loadSidePanel() {
 			if (pointObj) {
 				setPanels(true);
 				$("#accordion").accordion("option", {
@@ -692,14 +734,30 @@ else {
 				});
 				buildCollKey();
 				buildTaxaKey();
-				pointObj = [];
 				buildRecordsTable();
+				document.getElementById("mapLoadMoreRecords").addEventListener("click", function(){
+					requestMoreRecords();
+				});
 				recordsArr = [];
 				if (pointBounds) {
 					map.fitBounds(pointBounds);
 					map.panToBounds(pointBounds);
 				}
 			}
+			
+			switch(displayMode){
+				case 'points':
+					document.getElementById('modePoints').checked = true;
+				break;
+				case 'cluster':
+					document.getElementById('modeCluster').checked = true;
+				break;
+				case 'heat':
+					document.getElementById('modeHeat').checked = true;
+				break;
+			}
+
+
 		}
 
 		function processPoints() {
@@ -717,8 +775,6 @@ else {
 			for (let i = 0; i < pointObj.length; i++) {
 				
 				var markerIcon = null;
-
-				buildRecordTableRow(pointObj[i]);
 
 				//create collection based marker legend
 				buildCollKeyPiece(pointObj[i],iconColor);
@@ -765,9 +821,6 @@ else {
 
 				}
 
-				
-				
-
 				var identifier = pointObj[i]['recordedby'];
 				if (pointObj[i]['recordnumber']){
 					identifier += ' ' +pointObj[i]['recordnumber'];
@@ -801,7 +854,7 @@ else {
 				heatMapData.push(m.getPosition());								
 
 				// Add marker listener
-				m.addListener('click', function() {
+				m.addListener('spider_click', function() {
 
 					// prevent multiple information windows from opening at the same time
 					if(InformationWindow){
@@ -821,13 +874,13 @@ else {
 				});
 
 				spiderfier.addMarker(m);
-				var markerPos = m.getPosition();
-				pointBounds.extend(markerPos);
+				//var markerPos = m.getPosition();
+				pointBounds.extend(m.getPosition());
+
+				buildRecordTableRow(pointObj[i], allMarkers.length-1);
+
 			}
-			//initialize map with clustering turned on
-			handleModeRadios({
-				value: 'cluster',
-			});
+			
 		}
 
 
@@ -848,14 +901,18 @@ else {
 				case 'points':
 					displayMode = 'points';
 					heatmap.setMap(null);
-					markerCluster.clearMarkers();
+					if (markerCluster){
+						markerCluster.clearMarkers();
+					}
 					for (var i in allMarkers){
 						allMarkers[i].setMap(map);
 					}
 					break;
 				case 'heat':
 					displayMode = 'heat';
-					markerCluster.clearMarkers();
+					if (markerCluster){
+						markerCluster.clearMarkers();
+					}
 					for (var i in allMarkers){
 						allMarkers[i].setMap(null);
 					}
@@ -933,68 +990,179 @@ else {
 			}
 		}
 
-		function findSelection(gCnt, id, dir) {
-			if (grpArr[gCnt]) {
-				for (i in grpArr[gCnt]) {
-					if (grpArr[gCnt][i].occid == id) {
-						if (grpArr[gCnt][i].recordType == 'obs') {
-							var markerColor = '#' + grpArr[gCnt][i].color;
-							if (dir == 'select') {
-								var markerIcon = {
-									path: "m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z",
-									fillColor: markerColor,
-									fillOpacity: 1,
-									scale: 1,
-									strokeColor: "#10D8E6",
-									strokeWeight: 2
-								};
-							} else if (dir == 'deselect') {
-								var markerIcon = {
-									path: "m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z",
-									fillColor: markerColor,
-									fillOpacity: 1,
-									scale: 1,
-									strokeColor: "#000000",
-									strokeWeight: 1
-								};
-							}
-							grpArr[gCnt][i].setIcon(markerIcon);
+		function buildRecordsTable(){
+			let recordsTableHTMLTempplate = `
+				<div id="mapSearchDownloadData">
+					<div>
+						<div style="float:left;">
+							<form name="downloadForm" action="../download/index.php" method="post" onsubmit="targetPopup(this)" style="float:left">
+								<button class="ui-button ui-widget ui-corner-all" style="margin:5px;padding:5px;cursor: pointer" title="<?php echo $LANG['DOWNLOAD_SPECIMEN_DATA']; ?>">
+									<img src="../../images/dl2.png" srcset="../../images/download.svg" class="svg-icon" style="width:15px" />
+								</button>
+								<input name="reclimit" type="hidden" value="<?php echo $recLimit; ?>" />
+								<input name="sourcepage" type="hidden" value="map" />
+								<input name="searchvar" type="hidden" value="<?php echo $searchVar; ?>" />
+								<input name="dltype" type="hidden" value="specimen" />
+							</form>
+							<form name="fullquerykmlform" action="kmlhandler.php" method="post" target="_blank" style="float:left;">
+								<input name="reclimit" type="hidden" value="<?php echo $recLimit; ?>" />
+								<input name="sourcepage" type="hidden" value="map" />
+								<input name="searchvar" type="hidden" value="<?php echo $searchVar; ?>" />
+								<button name="submitaction" type="submit" class="ui-button ui-widget ui-corner-all" style="margin:5px;padding:5px;cursor: pointer" title="Download KML file">
+									<img src="../../images/dl2.png" srcset="../../images/download.svg" class="svg-icon" style="width:15px; padding-right: 5px; vertical-align:top" />KML
+								</button>
+							</form>
+							<button class="ui-button ui-widget ui-corner-all" style="margin:5px;padding:5px;cursor: pointer;" onclick="copyUrl()" title="<?php echo (isset($LANG['COPY_TO_CLIPBOARD'])?$LANG['COPY_TO_CLIPBOARD']:'Copy URL to Clipboard'); ?>">
+								<img src="../../images/dl2.png" srcset="../../images/link.svg" class="svg-icon" style="width:15px" />
+							</button>
+						</div>
+					</div>
+				</div>
+				<div id="divMapSearchRecords">
+					<button id="mapLoadMoreRecords" type="button">Load more records</button>
+					<div id="recordState"><span id="recordLoadedCount"></span> of <span id="recordTotalCount"></span></div>
+					<table class="styledtable" id="mapSearchRecordsTable">
+						<thead>
+						<tr>
+							<th>Catalog #</th>
+							<th>Collector</th>
+							<th>Date</th>
+							<th>Scientific Name</th>
+						</tr>
+						</thead>
+						<tbody>
+						${renderRecordsRow()}
+						</tbody>
+					</table>
+				</div>
+			`;
+
+			if (document.getElementById("records")) document.getElementById("records").innerHTML = recordsTableHTMLTempplate;
+		}
+
+		function rebuildRecordsTable(){
+			let mapSearchRecordsTableTemplate = `
+				<table class="styledtable" id="mapSearchRecordsTable">
+					<thead>
+					<tr>
+						<th>Catalog #</th>
+						<th>Collector</th>
+						<th>Date</th>
+						<th>Scientific Name</th>
+					</tr>
+					</thead>
+					<tbody>
+					${renderRecordsRow()}
+					</tbody>
+				</table>`;
+
+			let newRecordsTable = document.createElement('table');
+			newRecordsTable.classList.add('styledtable');
+			newRecordsTable.setAttribute('id', 'mapSearchRecordsTable');
+			newRecordsTable.innerHTML = mapSearchRecordsTableTemplate;
+			let oldTable = document.getElementById("mapSearchRecordsTable");
+			oldTable.parentNode.replaceChild(newRecordsTable, oldTable);
+			
+		}
+
+
+
+		function requestMoreRecords(){
+			var xhr = new XMLHttpRequest();
+			xhr.open("POST", "index.php")
+			let data = new FormData();
+			data.set('loadMoreMapData', true);
+			data.set('recordlimit', document.getElementById('recordlimit').value);
+			xhr.send(data);
+
+    		xhr.onload = function() {
+        	
+				if (xhr.readyState === xhr.DONE) {
+					if (xhr.status == 200) {
+						let response = JSON.parse(xhr.responseText);
+						if (response.recordCount == 0){
+							alert("No records returned");
+							document.getElementById('mapLoadMoreRecords').disabled = true;
 						}
-						if (grpArr[gCnt][i].recordType == 'spec') {
-							var markerColor = '#' + grpArr[gCnt][i].color;
-							if (dir == 'select') {
-								var markerIcon = {
-									path: google.maps.SymbolPath.CIRCLE,
-									fillColor: markerColor,
-									fillOpacity: 1,
-									scale: 7,
-									strokeColor: "#10D8E6",
-									strokeWeight: 2
-								};
-							} else if (dir == 'deselect') {
-								var markerIcon = {
-									path: google.maps.SymbolPath.CIRCLE,
-									fillColor: markerColor,
-									fillOpacity: 1,
-									scale: 7,
-									strokeColor: "#000000",
-									strokeWeight: 1
-								};
-							}
-							grpArr[gCnt][i].setIcon(markerIcon);
+						else {
+							Array.prototype.push.apply(pointObj, response.records);
+							processPoints();
+							buildCollKey();
+							buildTaxaKey();
+							rebuildRecordsTable();
+							retrievedRecordCount += response.recordCount
 						}
-						if (dir == 'select') {
-							grpArr[gCnt][i].selected = true;
-							selected = true;
-						} else if (dir == 'deselect') {
-							grpArr[gCnt][i].selected = false;
-							deselected = true;
-						}
-						return;
+					} else { 
+						alert('Error loading more records');
+						console.log('Response Code: ' + xhr.status + ' Server Response: ' +  xhr.responseText);
 					}
 				}
-			}
+    		};
 		}
+
+
+		// function findSelection(gCnt, id, dir) {
+		// 	if (grpArr[gCnt]) {
+		// 		for (i in grpArr[gCnt]) {
+		// 			if (grpArr[gCnt][i].occid == id) {
+		// 				if (grpArr[gCnt][i].recordType == 'obs') {
+		// 					var markerColor = '#' + grpArr[gCnt][i].color;
+		// 					if (dir == 'select') {
+		// 						var markerIcon = {
+		// 							path: "m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z",
+		// 							fillColor: markerColor,
+		// 							fillOpacity: 1,
+		// 							scale: 1,
+		// 							strokeColor: "#10D8E6",
+		// 							strokeWeight: 2
+		// 						};
+		// 					} else if (dir == 'deselect') {
+		// 						var markerIcon = {
+		// 							path: "m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z",
+		// 							fillColor: markerColor,
+		// 							fillOpacity: 1,
+		// 							scale: 1,
+		// 							strokeColor: "#000000",
+		// 							strokeWeight: 1
+		// 						};
+		// 					}
+		// 					grpArr[gCnt][i].setIcon(markerIcon);
+		// 				}
+		// 				if (grpArr[gCnt][i].recordType == 'spec') {
+		// 					var markerColor = '#' + grpArr[gCnt][i].color;
+		// 					if (dir == 'select') {
+		// 						var markerIcon = {
+		// 							path: google.maps.SymbolPath.CIRCLE,
+		// 							fillColor: markerColor,
+		// 							fillOpacity: 1,
+		// 							scale: 7,
+		// 							strokeColor: "#10D8E6",
+		// 							strokeWeight: 2
+		// 						};
+		// 					} else if (dir == 'deselect') {
+		// 						var markerIcon = {
+		// 							path: google.maps.SymbolPath.CIRCLE,
+		// 							fillColor: markerColor,
+		// 							fillOpacity: 1,
+		// 							scale: 7,
+		// 							strokeColor: "#000000",
+		// 							strokeWeight: 1
+		// 						};
+		// 					}
+		// 					grpArr[gCnt][i].setIcon(markerIcon);
+		// 				}
+		// 				if (dir == 'select') {
+		// 					grpArr[gCnt][i].selected = true;
+		// 					selected = true;
+		// 				} else if (dir == 'deselect') {
+		// 					grpArr[gCnt][i].selected = false;
+		// 					deselected = true;
+		// 				}
+		// 				return;
+		// 			}
+		// 		}
+		// 	}
+		// }
 
 		// function findGrpClusterSelection(gCnt, id) {
 		// 	if (clusterCollArr[gCnt]) {
