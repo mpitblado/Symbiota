@@ -13,11 +13,11 @@ $editorMode = array_key_exists('emode', $_POST) ? $_POST['emode'] : 0;
 $statusStr = array_key_exists('statusstr', $_REQUEST) ? $_REQUEST['statusstr'] : '';
 
 //Sanitation
-$target = filter_var($target, FILTER_SANITIZE_STRING);
+$target = htmlspecialchars($target, HTML_SPECIAL_CHARS_FLAGS);
 $displayAuthor = (is_numeric($displayAuthor) ? $displayAuthor : 0);
 $taxAuthId = (is_numeric($taxAuthId) ? $taxAuthId : 0);
 $editorMode = (is_numeric($editorMode) ? $editorMode : 0);
-$statusStr = filter_var($statusStr, FILTER_SANITIZE_STRING);
+$statusStr = htmlspecialchars($statusStr, HTML_SPECIAL_CHARS_FLAGS);
 
 $taxonDisplayObj = new TaxonomyDisplayManager();
 $taxonDisplayObj->setTargetStr($target);
