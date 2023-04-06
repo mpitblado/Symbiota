@@ -93,6 +93,7 @@ reset($treePath);
 	</div>
 	<!-- This is inner text! -->
 	<div id="innertext">
+		<h1>Taxonomy Explorer</h1>
 		<?php
 		if ($statusStr) {
 		?>
