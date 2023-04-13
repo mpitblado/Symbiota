@@ -1,6 +1,7 @@
 <?php
 include_once('../../config/symbini.php');
 include_once($SERVER_ROOT . '/classes/TaxonomyDisplayManager.php');
+include_once($SERVER_ROOT . '/classes/TaxonomyExporter.php');
 include_once($SERVER_ROOT . '/content/lang/taxa/taxonomy/taxonomydisplay.' . $LANG_TAG . '.php'); //yes, the lang file is the same as taxonomydisplay
 header('Content-Type: text/html; charset=' . $CHARSET);
 header('Cache-Control: no-cache, must-revalidate'); // HTTP/1.1
@@ -105,6 +106,12 @@ reset($treePath);
 		<?php
 		}
 		if ($isEditor) {
+			$taxExporter = new TaxonomyExporter();
+			// display button that triggers taxonomyexporterhandler.php
+			// echo '<button>Download Full Portal Taxonomy</button>';
+			echo '<p">';
+			echo '<button onclick="window.location=\'taxonomyexporterhandler.php?node=0\'">Download Full Portal Taxonomy</button>';
+			echo '</p>';
 		?>
 			<div style="float:right;" title="<?php echo (isset($LANG['ADD_NEW_TAXON']) ? $LANG['ADD_NEW_TAXON'] : 'Add a New Taxon'); ?>">
 				<a href="taxonomyloader.php" target="_blank">
