@@ -65,6 +65,27 @@ class TaxonomyExporter extends Manager
 		return $rootNode;
 	}
 
+	/** Gets the node data
+	 * @param node - the tid to get the data of
+	 * @return array - the data of the node
+	 */
+	function getNode($node)
+	{
+		$stmt = "SELECT t.tid AS taxonID, t.kingdomName AS kingdom, ts.family, t.sciname, t.author, CONCAT_WS(' ', t.unitind1, t.unitname1) AS genus, CONCAT_WS(' ', t.unitind2, t.unitname2) AS specificepithet, t.unitind3 AS taxonrank, t.unitname3 AS infraspecificepithet, t.rankid, tu.rankname, t.source, CONCAT_WS(' ', p.sciname, p.author) AS parentstr FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid LEFT JOIN taxaenumtree e ON ts.tid = e.tid AND ts.taxauthid = e.taxauthid INNER JOIN taxa p ON ts.parentTid = p.tid INNER JOIN taxa a ON ts.tidaccepted = a.tid INNER JOIN taxonunits tu ON t.rankid = tu.rankid WHERE ts.taxauthid = 1 AND t.tid = ? GROUP BY t.tid ORDER BY t.rankid, ts.family, sciname;";
+
+		$stmt = $this->conn->prepare($stmt);
+		$stmt->bind_param('i', $node);
+		$stmt->execute();
+
+		$stmt->bind_result($taxonID, $kingdom, $family, $sciname, $author, $genus, $specificepithet, $taxonrank, $infraspecificepithet, $rankid, $rankname, $source, $parentstr);
+		$nodeDataArr = array();
+		while ($stmt->fetch()) {
+			$nodeDataArr[] = array("taxonID" => $taxonID, "kingdom" => $kingdom, "family" => $family, "sciname" => $sciname, "author" => $author, "genus" => $genus, "specificepithet" => $specificepithet, "taxonrank" => $taxonrank, "infraspecificepithet" => $infraspecificepithet, "rankid" => $rankid, "rankname" => $rankname, "source" => $source, "parentstr" => $parentstr);
+		}
+		$stmt->close();
+		return $nodeDataArr;
+	}
+
 	/** Gets the children of a node
 	 * @param $node - the tid to get the children of (the root tid of the tree)
 	 * @return array - the children of the node
@@ -73,15 +94,20 @@ class TaxonomyExporter extends Manager
 	 */
 	function getNodeChildren($node)
 	{
-		$stmt = "SELECT t.tid AS taxonID, t.kingdomName AS kingdom, ts.family, t.sciname,CONCAT_WS(' ', t.unitind1, t.unitname1) AS unitname1, CONCAT_WS(' ', t.unitind2, t.unitname2) AS unitname2, t.unitind3, t.unitname3, t.author, t.rankid, t.source, p.tid AS parentNameUsageID,  p.sciname AS parentNameUsage, p.author AS parentNameAuthor, a.tid AS acceptedNameUsageID, a.sciname AS acceptedNameUsage, a.author AS acceptedNameAuthor FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid INNER JOIN taxaenumtree e ON ts.tid = e.tid AND ts.taxauthid = e.taxauthid INNER JOIN taxa p ON ts.parentTid = p.tid INNER JOIN taxa a ON ts.tidaccepted = a.tid WHERE ts.taxauthid = 1 AND e.parentTid = ? ORDER BY t.rankid, ts.family, sciname;";
+		// $stmt = "SELECT t.tid AS taxonID, t.kingdomName AS kingdom, ts.family, t.sciname,CONCAT_WS(' ', t.unitind1, t.unitname1) AS unitname1, CONCAT_WS(' ', t.unitind2, t.unitname2) AS unitname2, t.unitind3, t.unitname3, t.author, t.rankid, t.source, p.tid AS parentNameUsageID,  p.sciname AS parentNameUsage, p.author AS parentNameAuthor, a.tid AS acceptedNameUsageID, a.sciname AS acceptedNameUsage, a.author AS acceptedNameAuthor FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid INNER JOIN taxaenumtree e ON ts.tid = e.tid AND ts.taxauthid = e.taxauthid INNER JOIN taxa p ON ts.parentTid = p.tid INNER JOIN taxa a ON ts.tidaccepted = a.tid WHERE ts.taxauthid = 1 AND e.parentTid = ? ORDER BY t.rankid, ts.family, sciname;";
+		$stmt = "SELECT t.tid AS taxonID, t.kingdomName AS kingdom, ts.family, t.sciname, t.author, CONCAT_WS(' ', t.unitind1, t.unitname1) AS genus, CONCAT_WS(' ', t.unitind2, t.unitname2) AS specificepithet, t.unitind3 AS taxonrank, t.unitname3 AS infraspecificepithet, t.rankid, tu.rankname, t.source, CONCAT_WS(' ', p.sciname, p.author) AS parentstr FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid INNER JOIN taxaenumtree e ON ts.tid = e.tid AND ts.taxauthid = e.taxauthid INNER JOIN taxa p ON ts.parentTid = p.tid INNER JOIN taxa a ON ts.tidaccepted = a.tid INNER JOIN taxonunits tu ON t.rankid = tu.rankid WHERE ts.taxauthid = 1 AND e.parentTid = ? AND tu.kingdomName = t.kingdomName GROUP BY t.tid ORDER BY t.rankid, ts.family, sciname;";
 
 		$stmt = $this->conn->prepare($stmt);
 		$stmt->bind_param('i', $node);
 		$stmt->execute();
-		$stmt->bind_result($tid, $kingdomName, $family, $sciname, $unitname1, $unitname2, $unitind3, $unitname3, $author, $rankid, $source, $parentNameUsageID, $parentNameUsage, $parentNameAuthor, $acceptedNameUsageID, $acceptedNameUsage, $acceptedNameAuthor);
+		// $stmt->bind_result($tid, $kingdomName, $family, $sciname, $unitname1, $unitname2, $unitind3, $unitname3, $author, $rankid, $source, $parentNameUsageID, $parentNameUsage, $parentNameAuthor, $acceptedNameUsageID, $acceptedNameUsage, $acceptedNameAuthor);
+		$stmt->bind_result($tid, $kingdom, $family, $sciname, $author, $genus, $specificepithet, $taxonrank, $infraspecificepithet, $rankid, $rankname, $source, $parentstr);
 		$nodeChildrenArr = array();
+		// while ($stmt->fetch()) {
+		// 	$nodeChildrenArr[] = array("taxonID" => $tid, "kingdom" => $kingdomName, "family" => $family, "sciname" => $sciname, "unitname1" => $unitname1, "unitname2" => $unitname2, "unitind3" => $unitind3, "unitname3" => $unitname3, "author" => $author, "rankid" => $rankid, "source" => $source, "parentNameUsageID" => $parentNameUsageID, "parentNameUsage" => $parentNameUsage, "parentNameAuthor" => $parentNameAuthor, "acceptedNameUsageID" => $acceptedNameUsageID, "acceptedNameUsage" => $acceptedNameUsage, "acceptedNameAuthor" => $acceptedNameAuthor);
+		// }
 		while ($stmt->fetch()) {
-			$nodeChildrenArr[] = array("taxonID" => $tid, "kingdom" => $kingdomName, "family" => $family, "sciname" => $sciname, "unitname1" => $unitname1, "unitname2" => $unitname2, "unitind3" => $unitind3, "unitname3" => $unitname3, "author" => $author, "rankid" => $rankid, "source" => $source, "parentNameUsageID" => $parentNameUsageID, "parentNameUsage" => $parentNameUsage, "parentNameAuthor" => $parentNameAuthor, "acceptedNameUsageID" => $acceptedNameUsageID, "acceptedNameUsage" => $acceptedNameUsage, "acceptedNameAuthor" => $acceptedNameAuthor);
+			$nodeChildrenArr[] = array("taxonID" => $tid, "kingdom" => $kingdom, "family" => $family, "sciname" => $sciname, "author" => $author, "genus" => $genus, "specificepithet" => $specificepithet, "taxonrank" => $taxonrank, "infraspecificepithet" => $infraspecificepithet, "rankid" => $rankid, "rankname" => $rankname, "source" => $source, "parentstr" => $parentstr);
 		}
 		$stmt->close();
 		return $nodeChildrenArr;

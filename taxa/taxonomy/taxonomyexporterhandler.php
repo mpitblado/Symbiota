@@ -12,9 +12,10 @@ if (array_key_exists("node", $_REQUEST)) {
 
 $rootNode = $taxonExp->setRootNode($node);
 
-$tree = $taxonExp->getNodeChildren($rootNode["tid"]);
+$rootNodeData = $taxonExp->getNode($rootNode["tid"]);
+$children = $taxonExp->getNodeChildren($rootNode["tid"]);
+$tree = $rootNodeData + $children;
 
-// only downloads if the tree is not empty
 if (!empty($tree)) {
 	$taxFileName = date("Y-m-d") . "_";
 
