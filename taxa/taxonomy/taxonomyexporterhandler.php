@@ -15,9 +15,11 @@ $rootNode = $taxonExp->setRootNode($node);
 $rootNodeData = $taxonExp->getNode($rootNode["tid"]);
 $children = $taxonExp->getNodeChildren($rootNode["tid"]);
 $tree = $rootNodeData + $children;
+$taxFileName = $TEMP_DIR_ROOT . "/downloads/";
 
 if (!empty($tree)) {
-	$taxFileName = date("Y-m-d") . "_";
+
+	$taxFileName .= date("Y-m-d") . "_";
 
 	if ($node == 0) {
 		$DEFAULT_TITLE = str_replace(" ", "_", $DEFAULT_TITLE);
