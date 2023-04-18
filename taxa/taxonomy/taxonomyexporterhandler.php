@@ -15,6 +15,12 @@ $rootNode = $taxonExp->setRootNode($node);
 $rootNodeData = $taxonExp->getNode($rootNode["tid"]);
 $children = $taxonExp->getNodeChildren($rootNode["tid"]);
 $tree = $rootNodeData + $children;
+
+// Check for older versions of Symbiota that don't have the $TEMP_DIR_ROOT variable
+if (empty($TEMP_DIR_ROOT)) {
+	$TEMP_DIR_ROOT = $SERVER_ROOT . '/temp';
+}
+
 $taxFileName = $TEMP_DIR_ROOT . "/downloads/";
 
 if (!empty($tree)) {
