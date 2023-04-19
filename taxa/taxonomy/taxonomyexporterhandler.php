@@ -14,7 +14,7 @@ $rootNode = $taxonExp->setRootNode($node);
 
 $rootNodeData = $taxonExp->getNode($rootNode["tid"]);
 $children = $taxonExp->getNodeChildren($rootNode["tid"]);
-$tree = $rootNodeData + $children;
+$tree = array_merge($rootNodeData, $children);
 
 // Check for older versions of Symbiota that don't have the $TEMP_DIR_ROOT variable
 if (empty($TEMP_DIR_ROOT)) {
@@ -23,6 +23,7 @@ if (empty($TEMP_DIR_ROOT)) {
 
 $taxFileName = $TEMP_DIR_ROOT . "/downloads/";
 
+// Writes full Symbiota taxonomy to a single csv file
 if (!empty($tree)) {
 
 	$taxFileName .= date("Y-m-d") . "_";
@@ -39,4 +40,13 @@ if (!empty($tree)) {
 	$taxFileName .= "taxonomy.csv";
 
 	$taxonExp->writeCsv($tree, $taxFileName);
+
+	// Filter tree to include only higher taxa (rankid between 1 and 160)
+
+	// // Add file to zip file
+	// $zipFileName = $TEMP_DIR_ROOT . "/downloads/" . date("Y-m-d") . "_" . $DEFAULT_TITLE . "_taxonomy.zip";
+	// $zip = new ZipArchive();
+	// $zip->open($zipFileName, ZipArchive::CREATE);
+	// $zip->addFile($taxFileName, basename($taxFileName));
+	// $zip->close();
 }
