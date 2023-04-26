@@ -1,95 +1,68 @@
 <?php
-class SpecProcessorManager extends SpecProcessorBase{
+include_once($SERVER_ROOT.'/classes/Manager.php');
 
-	function __construct() {
-		parent::__construct('write');
+class SpecProcessorBase extends Manager {
+
+	protected $collid = 0;
+	protected $title;
+	protected $collectionName;
+	protected $institutionCode;
+	protected $collectionCode;
+	protected $projectType;
+	protected $managementType;
+	protected $specKeyPattern;
+	protected $patternReplace;
+	protected $replaceStr;
+	protected $coordX1;
+	protected $coordX2;
+	protected $coordY1;
+	protected $coordY2;
+	protected $sourcePath;
+	protected $targetPath;
+	protected $imgUrlBase;
+	protected $webPixWidth = '';
+	protected $tnPixWidth = '';
+	protected $lgPixWidth = '';
+	protected $jpgQuality = 80;
+	protected $webMaxFileSize = 500000;
+	protected $lgMaxFileSize = 10000000;
+	protected $webImg = 1;
+	protected $createTnImg = 1;
+	protected $createLgImg = 2;
+	protected $customStoredProcedure;
+	protected $lastRunDate = '';
+
+	protected $dbMetadata = 1;			//Only used when run as a standalone script
+	protected $processUsingImageMagick = 0;
+
+	function __construct($connType = 'readonly') {
+		parent::__construct(null, $connType);
 	}
 
 	function __destruct(){
 		parent::__destruct();
 	}
 
-	public function editProject($editArr){
-		if(is_numeric($editArr['spprid'])){
-			$sqlFrag = '';
-			$targetFields = array('title','projecttype','speckeypattern','patternreplace','replacestr','sourcepath','targetpath','imgurl',
-				'webpixwidth','tnpixwidth','lgpixwidth','jpgcompression','createtnimg','createlgimg','source');
-			if(!isset($editArr['createtnimg'])) $editArr['createtnimg'] = 0;
-			if(!isset($editArr['createlgimg'])) $editArr['createlgimg'] = 0;
-			foreach($editArr as $k => $v){
-				if(in_array($k,$targetFields)){
-					if(is_numeric($v)){
-						$sqlFrag .= ','.$k.' = '.$this->cleanInStr($v);
-					}
-					elseif($k == 'replacestr'){
-						$sqlFrag .= ','.$k.' = "'.$this->conn->real_escape_string($v).'"';
-					}
-					elseif($v){
-						$sqlFrag .= ','.$k.' = "'.$this->cleanInStr($v).'"';
-					}
-					else{
-						$sqlFrag .= ','.$k.' = NULL';
-					}
+	public function setCollId($id){
+		$this->collid = $id;
+		if($this->collid && is_numeric($this->collid) && !$this->collectionName){
+			$sql = 'SELECT collid, collectionname, institutioncode, collectioncode, managementtype FROM omcollections WHERE (collid = '.$this->collid.')';
+			if($rs = $this->conn->query($sql)){
+				if($row = $rs->fetch_object()){
+					$this->collectionName = $row->collectionname;
+					$this->institutionCode = $row->institutioncode;
+					$this->collectionCode = $row->collectioncode;
+					$this->managementType = $row->managementtype;
 				}
+				else{
+					exit('ABORTED: unable to locate collection in data');
+				}
+				$rs->free();
 			}
-			$sql = 'UPDATE specprocessorprojects SET '.trim($sqlFrag,' ,').' WHERE (spprid = '.$editArr['spprid'].')';
-			//echo '<br/>SQL: '.$sql; exit;
-			if(!$this->conn->query($sql)){
-				echo 'ERROR saving project: '.$this->conn->error;
-				//echo '<br/>SQL: '.$sql;
-			}
-		}
-	}
-
-	public function addProject($addArr){
-		$this->conn->query('DELETE FROM specprocessorprojects WHERE (title = "OCR Harvest") AND (collid = '.$this->collid.')');
-		$sql = '';
-		if(isset($addArr['projecttype'])){
-			$sourcePath = $addArr['sourcepath'];
-			if($sourcePath == '-- Use Default Path --') $sourcePath = '';
-			if($addArr['projecttype'] == 'idigbio' || $addArr['projecttype'] == 'iplant'){
-				$sql = 'INSERT INTO specprocessorprojects(collid,title,speckeypattern,patternreplace,replacestr,projecttype,sourcepath) '.
-					'VALUES('.$this->collid.',"'.$this->cleanInStr($addArr['title']).'","'.$this->cleanInStr($addArr['speckeypattern']).'",'.
-					($addArr['patternreplace']?'"'.$this->cleanInStr($addArr['patternreplace']).'"':'NULL').','.
-					($addArr['replacestr']?'"'.$this->conn->real_escape_string($addArr['replacestr']).'"':'NULL').','.
-					($addArr['projecttype']?'"'.$this->cleanInStr($addArr['projecttype']).'"':'NULL').','.
-					($sourcePath?'"'.$this->cleanInStr($sourcePath).'"':'NULL').')';
-			}
-			elseif($addArr['projecttype'] == 'local'){
-				$sql = 'INSERT INTO specprocessorprojects(collid,title,speckeypattern,patternreplace,replacestr,projecttype,sourcepath,targetpath,'.
-					'imgurl,webpixwidth,tnpixwidth,lgpixwidth,jpgcompression,createtnimg,createlgimg) '.
-					'VALUES('.$this->collid.',"'.$this->cleanInStr($addArr['title']).'","'.
-					$this->cleanInStr($addArr['speckeypattern']).'",'.
-					($addArr['patternreplace']?'"'.$this->cleanInStr($addArr['patternreplace']).'"':'NULL').','.
-					($addArr['replacestr']?'"'.$this->conn->real_escape_string($addArr['replacestr']).'"':'NULL').','.
-					($addArr['projecttype']?'"'.$this->cleanInStr($addArr['projecttype']).'"':'NULL').','.
-					($sourcePath?'"'.$this->cleanInStr($sourcePath).'"':'NULL').','.
-					(isset($addArr['targetpath'])&&$addArr['targetpath']?'"'.$this->cleanInStr($addArr['targetpath']).'"':'NULL').','.
-					(isset($addArr['imgurl'])&&$addArr['imgurl']?'"'.$addArr['imgurl'].'"':'NULL').','.
-					(isset($addArr['webpixwidth'])&&$addArr['webpixwidth']?$addArr['webpixwidth']:'NULL').','.
-					(isset($addArr['tnpixwidth'])&&$addArr['tnpixwidth']?$addArr['tnpixwidth']:'NULL').','.
-					(isset($addArr['lgpixwidth'])&&$addArr['lgpixwidth']?$addArr['lgpixwidth']:'NULL').','.
-					(isset($addArr['jpgcompression'])&&$addArr['jpgcompression']?$addArr['jpgcompression']:'NULL').','.
-					(isset($addArr['createtnimg'])&&$addArr['createtnimg']?$addArr['createtnimg']:'NULL').','.
-					(isset($addArr['createlgimg'])&&$addArr['createlgimg']?$addArr['createlgimg']:'NULL').')';
+			else{
+				exit('ABORTED: unable run SQL to obtain collectionName');
 			}
 		}
-		elseif($addArr['title'] == 'OCR Harvest' && $addArr['newprofile']){
-			$sql = 'INSERT INTO specprocessorprojects(collid,title,speckeypattern) '.
-				'VALUES('.$this->collid.',"'.$this->cleanInStr($addArr['title']).'","'.
-				$this->cleanInStr($addArr['speckeypattern']).'")';
-		}
-		if($sql){
-			if(!$this->conn->query($sql)){
-				echo 'ERROR saving project: '.$this->conn->error;
-				//echo '<br/>SQL: '.$sql;
-			}
-		}
-	}
-
-	public function deleteProject($spprid){
-		$sql = 'DELETE FROM specprocessorprojects WHERE (spprid = '.$spprid.')';
-		$this->conn->query($sql);
 	}
 
 	public function setProjVariables($crit){
@@ -239,35 +212,6 @@ class SpecProcessorManager extends SpecProcessorBase{
 		return $retArr;
 	}
 
-	//Report functions
-	public function getProcessingStats(){
-		$retArr = array();
-		$retArr['total'] = $this->getTotalCount();
-		$retArr['ps'] = $this->getProcessingStatusCountArr();
-		$retArr['noimg'] = $this->getSpecNoImageCount();
-		$retArr['unprocnoimg'] = $this->getUnprocSpecNoImage();
-		$retArr['noskel'] = $this->getSpecNoSkel();
-		$retArr['unprocwithdata'] = $this->getUnprocWithData();
-		return $retArr;
-	}
-
-	private function getTotalCount(){
-		$totalCnt = 0;
-		if($this->collid){
-			//Get processing status counts
-			$psArr = array();
-			$sql = 'SELECT count(*) AS cnt '.
-				'FROM omoccurrences '.
-				'WHERE collid = '.$this->collid;
-			$rs = $this->conn->query($sql);
-			if($r = $rs->fetch_object()){
-				$totalCnt = $r->cnt;
-			}
-			$rs->free();
-		}
-		return $totalCnt;
-	}
-
 	public function getProcessingStatusCount($ps){
 		$cnt = 0;
 		if($this->collid){
@@ -283,198 +227,6 @@ class SpecProcessorManager extends SpecProcessorBase{
 			$rs->free();
 		}
 		return $cnt;
-	}
-
-	private function getProcessingStatusCountArr(){
-		$retArr = array();
-		if($this->collid){
-			//Get processing status counts
-			$psArr = array();
-			$sql = 'SELECT processingstatus, count(*) AS cnt '.
-				'FROM omoccurrences '.
-				'WHERE collid = '.$this->collid.' GROUP BY processingstatus';
-			$rs = $this->conn->query($sql);
-			while($r = $rs->fetch_object()){
-				$psArr[strtolower($r->processingstatus)] = $r->cnt;
-			}
-			$rs->free();
-			//Load into $retArr in a specific order
-			$statusArr = array('unprocessed','stage 1','stage 2','stage 3','pending duplicate','pending review-nfn','pending review','expert required','reviewed','closed','empty status');
-			foreach($statusArr as $v){
-				if(array_key_exists($v,$psArr)){
-					$retArr[$v] = $psArr[$v];
-					unset($psArr[$v]);
-				}
-			}
-			//Grab untraditional processing statuses
-			foreach($psArr as $k => $cnt){
-				$retArr[$k] = $cnt;
-			}
-		}
-		return $retArr;
-	}
-
-	private function getSpecNoImageCount(){
-		//Count specimens without images
-		$cnt = 0;
-		if($this->collid){
-			$sql = 'SELECT count(o.occid) AS cnt '.
-				'FROM omoccurrences o LEFT JOIN images i ON o.occid = i.occid '.
-				'WHERE o.collid = '.$this->collid.' AND i.imgid IS NULL ';
-			$rs = $this->conn->query($sql);
-			while($r = $rs->fetch_object()){
-				$cnt = $r->cnt;
-			}
-			$rs->free();
-		}
-		return $cnt;
-	}
-
-	public function getUnprocSpecNoImage(){
-		//Count unprocessed specimens without images (e.g. generated from skeletal file)
-		$cnt = 0;
-		if($this->collid){
-			$sql = 'SELECT count(o.occid) AS cnt '.
-				'FROM omoccurrences o LEFT JOIN images i ON o.occid = i.occid '.
-				'WHERE (o.collid = '.$this->collid.') AND (i.imgid IS NULL) AND (o.processingstatus = "unprocessed") ';
-			$rs = $this->conn->query($sql);
-			while($r = $rs->fetch_object()){
-				$cnt = $r->cnt;
-			}
-			$rs->free();
-		}
-		return $cnt;
-	}
-
-	private function getSpecNoSkel(){
-		//Count unprocessed specimens without skeletal data
-		$cnt = 0;
-		if($this->collid){
-			$sql = 'SELECT count(o.occid) AS cnt '.
-				'FROM omoccurrences o '.
-				'WHERE (o.collid = '.$this->collid.') AND (o.processingstatus = "unprocessed") '.
-				'AND (o.sciname IS NULL) AND (o.stateprovince IS NULL)';
-			$rs = $this->conn->query($sql);
-			while($r = $rs->fetch_object()){
-				$cnt = $r->cnt;
-			}
-			$rs->free();
-		}
-		return $cnt;
-	}
-
-	private function getUnprocWithData(){
-		$cnt = 0;
-		if($this->collid){
-			$sql = 'SELECT count(*) AS cnt FROM omoccurrences '.
-				'WHERE (processingstatus = "unprocessed") AND (stateProvince IS NOT NULL) AND (locality IS NOT NULL) AND (collid = '.$this->collid.')';
-			//echo $sql;
-			$rs = $this->conn->query($sql);
-			while($r = $rs->fetch_object()){
-				$cnt = $r->cnt;
-			}
-			$rs->free();
-		}
-		return $cnt;
-	}
-
-	//Detailed user stats
-	public function getUserList(){
-		$retArr = array();
-		$sql = 'SELECT DISTINCT e.uid FROM omoccurrences o INNER JOIN omoccuredits e ON o.occid = e.occid WHERE (o.collid = '.$this->collid.')';
-		$rs = $this->conn->query($sql);
-		while($r = $rs->fetch_object()){
-			$retArr[$r->uid] = '';
-		}
-		$rs->free();
-
-		$sql = 'SELECT DISTINCT uid, CONCAT(CONCAT_WS(", ", lastname, firstname)," (", username,")") AS username FROM users WHERE (uid IN('.implode(',', array_keys($retArr)).')) ';
-		$rs = $this->conn->query($sql);
-		while($r = $rs->fetch_object()){
-			$retArr[$r->uid] = $r->username;
-		}
-		$rs->free();
-		asort($retArr);
-		return $retArr;
-	}
-
-	public function getFullStatReport($getArr){
-		$retArr = array();
-		$startDate = (preg_match('/^[\d-]+$/', $getArr['startdate'])?$getArr['startdate']:'');
-		$endDate = (preg_match('/^[\d-]+$/', $getArr['enddate'])?$getArr['enddate']:'');
-		$uid = (is_numeric($getArr['uid'])?$getArr['uid']:'');
-		$interval = $getArr['interval'];
-		$processingStatus = $this->cleanInStr($getArr['processingstatus']);
-
-		$dateFormat = '';
-		$dfgb = '';
-		if($interval == 'hour'){
-			$dateFormat = '%Y-%m-%d %Hhr, %W';
-			$dfgb = '%Y-%m-%d %H';
-		}
-		elseif($interval == 'day'){
-			$dateFormat= '%Y-%m-%d, %W';
-			$dfgb = '%Y-%m-%d';
-		}
-		elseif($interval == 'week'){
-			$dateFormat= '%Y-%m week %U';
-			$dfgb = '%Y-%m-%U';
-		}
-		elseif($interval == 'month'){
-			$dateFormat= '%Y-%m';
-			$dfgb = '%Y-%m';
-		}
-		$sql = 'SELECT DATE_FORMAT(e.initialtimestamp, "'.$dateFormat.'") AS timestr, u.username';
-		if($processingStatus) $sql .= ', e.fieldvalueold, e.fieldvaluenew, o.processingstatus';
-		$sql .= ', count(DISTINCT o.occid) AS cnt ';
-		$hasEditType = $this->hasEditType();
-		if($hasEditType){
-			$sql .= ', COUNT(DISTINCT CASE WHEN e.editType = 0 THEN o.occid ELSE NULL END) as cntexcbatch ';
-		}
-		$sql .= 'FROM omoccurrences o INNER JOIN omoccuredits e ON o.occid = e.occid '.
-			'INNER JOIN users u ON e.uid = u.uid '.
-			'WHERE (o.collid = '.$this->collid.') ';
-		if($startDate && $endDate){
-			$sql .= 'AND (e.initialtimestamp BETWEEN "'.$startDate.'" AND "'.$endDate.'") ';
-		}
-		elseif($startDate){
-			$sql .= 'AND (DATE(e.initialtimestamp) > "'.$startDate.'") ';
-		}
-		elseif($endDate){
-			$sql .= 'AND (DATE(e.initialtimestamp) < "'.$endDate.'") ';
-		}
-		if($uid){
-			$sql .= 'AND (e.uid = '.$uid.') ';
-		}
-		if($processingStatus){
-			$sql .= 'AND e.fieldname = "processingstatus" ';
-			if($processingStatus != 'all'){
-				$sql .= 'AND (e.fieldvaluenew = "'.$processingStatus.'") ';
-			}
-		}
-		$sql .= 'GROUP BY DATE_FORMAT(e.initialtimestamp, "'.$dfgb.'"), u.username ';
-		if($processingStatus) $sql .= ', e.fieldvalueold, e.fieldvaluenew, o.processingstatus ';
-		//echo $sql;
-		$rs = $this->conn->query($sql);
-		while($r = $rs->fetch_object()){
-			$retArr[$r->timestr][$r->username]['cnt'] = $r->cnt;
-			if($hasEditType) $retArr[$r->timestr][$r->username]['cntexcbatch'] = $r->cntexcbatch;
-			if($processingStatus){
-				$retArr[$r->timestr][$r->username]['os'] = $r->fieldvalueold;
-				$retArr[$r->timestr][$r->username]['ns'] = $r->fieldvaluenew;
-				$retArr[$r->timestr][$r->username]['cs'] = $r->processingstatus;
-			}
-		}
-		$rs->free();
-		return $retArr;
-	}
-
-	public function hasEditType(){
-		$hasEditType = false;
-		$rsTest = $this->conn->query('SHOW COLUMNS FROM omoccuredits WHERE field = "editType"');
-		if($rsTest->num_rows) $hasEditType = true;
-		$rsTest->free();
-		return $hasEditType;
 	}
 
  	//Misc Stats functions
@@ -500,29 +252,30 @@ class SpecProcessorManager extends SpecProcessorBase{
 		$headerArr[] = 'processingstatus';
 		$sql = 'SELECT o.'.implode(',',$headerArr).' '.$sqlFrag;
 		//echo $sql;
-		$result = $this->conn->query($sql);
+		$rs = $this->conn->query($sql);
 		//Write column names out to file
-		if($result){
+		if($rs){
     		$outstream = fopen("php://output", "w");
 			fputcsv($outstream, $headerArr);
-			while($row = $result->fetch_assoc()){
+			while($row = $rs->fetch_assoc()){
 				fputcsv($outstream, $row);
 			}
 			fclose($outstream);
+			$rs->free();
 		}
 		else{
 			echo "Recordset is empty.\n";
 		}
-        if($result) $result->close();
 	}
 
 	public function getLogListing(){
 		$retArr = array();
 		if($this->collid){
 			$dirArr = array('imgProccessing','cyverse','iplant','processing/imgmap');
+			$logPath = $GLOBALS['SERVER_ROOT'].(substr($GLOBALS['SERVER_ROOT'],-1) == '/'?'':'/').'content/logs/';
 			foreach($dirArr as $dirPath){
-				if(file_exists($this->logPath.$dirPath)){
-					if($fh = opendir($this->logPath.$dirPath)){
+				if(file_exists($logPath.$dirPath)){
+					if($fh = opendir($logPath.$dirPath)){
 						while($fileName = readdir($fh)){
 							if(strpos($fileName,$this->collid.'_') === 0){
 								$retArr[$dirPath][] = $fileName;
@@ -771,17 +524,5 @@ class SpecProcessorManager extends SpecProcessorBase{
  	public function getUseImageMagick(){
  		return $this->processUsingImageMagick;
  	}
-
- 	public function getConn(){
- 		return $this->conn;
- 	}
-
- 	//Misc functions
-	protected function cleanInStr($str){
-		$newStr = trim($str);
-		//$newStr = preg_replace('/\s\s+/', ' ',$newStr);
-		$newStr = $this->conn->real_escape_string($newStr);
-		return $newStr;
-	}
 }
 ?>

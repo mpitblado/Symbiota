@@ -1,6 +1,6 @@
 <?php
 include_once('../../config/symbini.php');
-include_once($SERVER_ROOT.'/classes/SpecProcessorManager.php');
+include_once($SERVER_ROOT.'/classes/SpecProcessorOcrNlp.php');
 include_once($SERVER_ROOT.'/classes/SpecProcNlpBryophyte.php');
 include_once($SERVER_ROOT.'/classes/SpecProcNlpLichen.php');
 include_once($SERVER_ROOT.'/classes/SpecProcNlpSalix.php');
@@ -11,8 +11,8 @@ $collid = $_REQUEST['collid'];
 $parserTarget = $_REQUEST['parser'];
 $action = array_key_exists('formsubmit',$_REQUEST)?$_REQUEST['formsubmit']:'';
 
-$procManager = new SpecProcessorManager();
-$procManager->setCollId($collid);
+$procManager = new SpecProcessorOcrNlp();
+$procManager->setCollid($collid);
 
 $nlpManager = null;
 if($parserTarget == 'lbcc'){
@@ -38,36 +38,36 @@ if($isEditor){
 <!-- This is inner text! -->
 <div id="innertext">
 	<h1>NLP Processor</h1>
-	<?php 
-	if($status){ 
+	<?php
+	if($status){
 		?>
 		<div style='margin:20px 0px 20px 0px;'>
 			<hr/>
 			<?php echo $status; ?>
 			<hr/>
 		</div>
-		<?php 
+		<?php
 	}
 	if($isEditor && $collid){
 		$unprocessedCnt = $procManager->getProcessingStatusCount('unprocessed');
 		?>
 		<div style="height:400px;">
 			<div style="margin:5px;">
-				Unprocessed Specimens: 
-				<?php 
-				echo $unprocessedCnt; 
+				Unprocessed Specimens:
+				<?php
+				echo $unprocessedCnt;
 				?>
 			</div>
 			<div style="margin:5px;">
-				Unprocessed Specimens without Images: 
-				<?php 
-				echo $procManager->getUnprocSpecNoImage(); 
+				Unprocessed Specimens without Images:
+				<?php
+				echo $procManager->getUnprocSpecNoImage();
 				?>
 			</div>
 			<div style="margin:5px;">
-				Unprocessed Specimens without OCR: 
-				<?php 
-				echo $procManager->getSpecNoOcr(); 
+				Unprocessed Specimens without OCR:
+				<?php
+				echo $procManager->getSpecNoOcr();
 				?>
 			</div>
 		</div>
@@ -75,7 +75,7 @@ if($isEditor){
 		if($unprocessedCnt){
 			?>
 			<div>
-				
+
 			</div>
 			<?php
 		}

@@ -61,7 +61,7 @@ $statusStr = "";
 				$specManager->setProjVariables($spprid);
 				if($action == 'Process Images'){
 					if($specManager->getProjectType() == 'iplant'){
-						$imageProcessor = new ImageProcessor($specManager->getConn());
+						$imageProcessor = new ImageProcessor();
 						echo '<ul>';
 						$imageProcessor->setLogMode(3);
 						$imageProcessor->setCollid($collid);
@@ -111,7 +111,7 @@ $statusStr = "";
 				}
 				elseif($action == 'mapImageFile'){
 					//Process csv file with remote image urls
-					$imageProcessor = new ImageProcessor($specManager->getConn());
+					$imageProcessor = new ImageProcessor();
 					echo '<ul>';
 					$imageProcessor->setLogMode(3);
 					$imageProcessor->setCollid($collid);
