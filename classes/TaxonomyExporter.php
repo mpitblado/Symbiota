@@ -71,7 +71,7 @@ class TaxonomyExporter extends Manager
 	 */
 	function getNode($node)
 	{
-		$stmt = "SELECT t.tid AS taxonID, t.kingdomName AS kingdom, ts.family, t.sciname, t.author, CONCAT_WS(' ', t.unitind1, t.unitname1) AS genus, CONCAT_WS(' ', t.unitind2, t.unitname2) AS specificepithet, t.unitind3 AS taxonrank, t.unitname3 AS infraspecificepithet, t.rankid, tu.rankname, t.source, CONCAT_WS(' ', p.sciname, p.author) AS parentstr FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid LEFT JOIN taxaenumtree e ON ts.tid = e.tid AND ts.taxauthid = e.taxauthid INNER JOIN taxa p ON ts.parentTid = p.tid INNER JOIN taxa a ON ts.tidaccepted = a.tid INNER JOIN taxonunits tu ON t.rankid = tu.rankid WHERE ts.taxauthid = 1 AND t.tid = ? GROUP BY t.tid ORDER BY t.rankid, ts.family, sciname;";
+		$stmt = "SELECT t.tid AS taxonID, t.kingdomName AS kingdom, ts.family, t.sciname, t.author, CONCAT_WS(' ', t.unitind1, t.unitname1) AS genus, CONCAT_WS(' ', t.unitind2, t.unitname2) AS specificepithet, t.unitind3 AS taxonrank, t.unitname3 AS infraspecificepithet, t.rankid, tu.rankname, t.source, p.sciname AS parentstr FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid LEFT JOIN taxaenumtree e ON ts.tid = e.tid AND ts.taxauthid = e.taxauthid INNER JOIN taxa p ON ts.parentTid = p.tid INNER JOIN taxa a ON ts.tidaccepted = a.tid INNER JOIN taxonunits tu ON t.rankid = tu.rankid WHERE ts.taxauthid = 1 AND t.tid = ? GROUP BY t.tid ORDER BY t.rankid, ts.family, sciname;";
 
 		$stmt = $this->conn->prepare($stmt);
 		$stmt->bind_param('i', $node);
@@ -95,7 +95,7 @@ class TaxonomyExporter extends Manager
 	function getNodeChildren($node)
 	{
 		// $stmt = "SELECT t.tid AS taxonID, t.kingdomName AS kingdom, ts.family, t.sciname,CONCAT_WS(' ', t.unitind1, t.unitname1) AS unitname1, CONCAT_WS(' ', t.unitind2, t.unitname2) AS unitname2, t.unitind3, t.unitname3, t.author, t.rankid, t.source, p.tid AS parentNameUsageID,  p.sciname AS parentNameUsage, p.author AS parentNameAuthor, a.tid AS acceptedNameUsageID, a.sciname AS acceptedNameUsage, a.author AS acceptedNameAuthor FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid INNER JOIN taxaenumtree e ON ts.tid = e.tid AND ts.taxauthid = e.taxauthid INNER JOIN taxa p ON ts.parentTid = p.tid INNER JOIN taxa a ON ts.tidaccepted = a.tid WHERE ts.taxauthid = 1 AND e.parentTid = ? ORDER BY t.rankid, ts.family, sciname;";
-		$stmt = "SELECT t.tid AS taxonID, t.kingdomName AS kingdom, ts.family, t.sciname, t.author, CONCAT_WS(' ', t.unitind1, t.unitname1) AS genus, CONCAT_WS(' ', t.unitind2, t.unitname2) AS specificepithet, t.unitind3 AS taxonrank, t.unitname3 AS infraspecificepithet, t.rankid, tu.rankname, t.source, CONCAT_WS(' ', p.sciname, p.author) AS parentstr FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid INNER JOIN taxaenumtree e ON ts.tid = e.tid AND ts.taxauthid = e.taxauthid INNER JOIN taxa p ON ts.parentTid = p.tid INNER JOIN taxa a ON ts.tidaccepted = a.tid INNER JOIN taxonunits tu ON t.rankid = tu.rankid WHERE ts.taxauthid = 1 AND e.parentTid = ? AND tu.kingdomName = t.kingdomName GROUP BY t.tid ORDER BY t.rankid, ts.family, sciname;";
+		$stmt = "SELECT t.tid AS taxonID, t.kingdomName AS kingdom, ts.family, t.sciname, t.author, CONCAT_WS(' ', t.unitind1, t.unitname1) AS genus, CONCAT_WS(' ', t.unitind2, t.unitname2) AS specificepithet, t.unitind3 AS taxonrank, t.unitname3 AS infraspecificepithet, t.rankid, tu.rankname, t.source, p.sciname AS parentstr FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid INNER JOIN taxaenumtree e ON ts.tid = e.tid AND ts.taxauthid = e.taxauthid INNER JOIN taxa p ON ts.parentTid = p.tid INNER JOIN taxa a ON ts.tidaccepted = a.tid INNER JOIN taxonunits tu ON t.rankid = tu.rankid WHERE ts.taxauthid = 1 AND e.parentTid = ? GROUP BY t.tid ORDER BY t.rankid, ts.family, sciname;";
 
 		$stmt = $this->conn->prepare($stmt);
 		$stmt->bind_param('i', $node);
@@ -113,9 +113,53 @@ class TaxonomyExporter extends Manager
 		return $nodeChildrenArr;
 	}
 
+	/** Filters a tree array by rankid range. Returns a new array with only the nodes that have a rankid within the range.
+	 * @param $treeArr - the tree array to be filtered
+	 * @param $minRank - the minimum rankid to be included in the filtered array
+	 * @param $maxRank - the maximum rankid to be included in the filtered array
+	 * @return array - the filtered array
+	 */
+	function filterTreeByRank($treeArr, $minRank, $maxRank)
+	{
+		$filteredTreeArr = array();
+		foreach ($treeArr as $node) {
+			if ($node['rankid'] >= $minRank && $node['rankid'] <= $maxRank) {
+				$filteredTreeArr[] = $node;
+			}
+		}
+		return $filteredTreeArr;
+	}
+
+	// function that manipulates the tree array
+	function conformTree($treeArr, $format)
+	{
+		$conformedTree = array();
+		if (isset($treeArr) && !empty($treeArr)) {
+			// checks that $format is not empty
+			if (!empty($format)) {
+				if ($format == 'symbiota') {
+					foreach ($treeArr as $node) {
+						if ($node['rankname'] == 'Family') {
+							$node['family'] = $node['sciname'];
+						}
+						// if rankid is below 180, make "genus" = NULL
+						if ($node['rankid'] < 180) {
+							$node['genus'] = NULL;
+						}
+						$conformedTree[] = $node;
+					}
+				}
+			}
+		}
+		return $conformedTree;
+	}
+
+
+
 	/** Writes a csv file
 	 * @param $array - the array to be written to the csv file (with header row)
 	 * @param $filename - the name of the file to be written
+	 * @return string - the name of the file that was written
 	 */
 	function writeCsv($array, $filename)
 	{
@@ -125,20 +169,21 @@ class TaxonomyExporter extends Manager
 			fputcsv($fp, $fields);
 		}
 		fclose($fp);
+		return $filename;
 
-		if (file_exists($filename)) {
-			header('Content-Description: File Transfer');
-			header('Content-Type: application/octet-stream');
-			header('Content-Disposition: attachment; filename="' . basename($filename) . '"');
-			header('Expires: 0');
-			header('Cache-Control: must-revalidate');
-			header('Pragma: public');
-			header('Content-Length: ' . filesize($filename));
-			readfile($filename);
-			exit;
-		} else {
-			echo "There was an error downloading the file.";
-		}
+		// if (file_exists($filename)) {
+		// 	header('Content-Description: File Transfer');
+		// 	header('Content-Type: application/octet-stream');
+		// 	header('Content-Disposition: attachment; filename="' . basename($filename) . '"');
+		// 	header('Expires: 0');
+		// 	header('Cache-Control: must-revalidate');
+		// 	header('Pragma: public');
+		// 	header('Content-Length: ' . filesize($filename));
+		// 	readfile($filename);
+		// 	exit;
+		// } else {
+		// 	echo "There was an error downloading the file.";
+		// }
 	}
 
 	// write nex tree

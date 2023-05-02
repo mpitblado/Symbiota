@@ -24,7 +24,11 @@ if (empty($TEMP_DIR_ROOT)) {
 $taxFileName = $TEMP_DIR_ROOT . "/downloads/";
 
 // Writes full Symbiota taxonomy to a single csv file
-if (!empty($tree)) {
+$symbtree = $taxonExp->conformTree($tree, "symbiota");
+
+// print_r($symbtree);
+
+if (!empty($symbtree)) {
 
 	$taxFileName .= date("Y-m-d") . "_";
 
@@ -39,7 +43,23 @@ if (!empty($tree)) {
 
 	$taxFileName .= "taxonomy.csv";
 
-	$taxonExp->writeCsv($tree, $taxFileName);
+	$taxonExp->writeCsv($symbtree, $taxFileName);
+
+	// Download $symbcsv file if it exists
+
+	if (file_exists($taxFileName)) {
+		header('Content-Description: File Transfer');
+		header('Content-Type: application/octet-stream');
+		header('Content-Disposition: attachment; filename="' . basename($taxFileName) . '"');
+		header('Expires: 0');
+		header('Cache-Control: must-revalidate');
+		header('Pragma: public');
+		header('Content-Length: ' . filesize($taxFileName));
+		readfile($taxFileName);
+		exit;
+	} else {
+		echo "There was an error downloading the file.";
+	}
 
 	// Filter tree to include only higher taxa (rankid between 1 and 160)
 
