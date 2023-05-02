@@ -130,7 +130,14 @@ class TaxonomyExporter extends Manager
 		return $filteredTreeArr;
 	}
 
-	// function that manipulates the tree array
+	/**
+	 * Manipulates a tree array to conform to a specified format. 
+	 * Returns a new array with the manipulated data.
+	 *
+	 * @param $treeArr
+	 * @param [string] $format ("symbiota", "dwc")
+	 * @return array - the manipulated array
+	 */
 	function conformTree($treeArr, $format)
 	{
 		$conformedTree = array();
