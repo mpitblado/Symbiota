@@ -95,12 +95,12 @@ $IS_ADMIN = true;
 							</select>
 						</div>
 						<div class="form-section">
-							<label for="username">Username: </label>
-							<input id="username" name="username" type="text" value="<?php echo $username; ?>" required autocomplete="off">
+							<label>Username:</label>
+							<input name="username" type="text" value="<?php echo $username; ?>" required autocomplete="off">
 						</div>
 						<div class="form-section">
-							<label for="password">Password: </label>
-							<input id="password" name="password" type="password" value="" required autocomplete="off">
+							<label>Password: </label>
+							<input name="password" type="password" value="" required autocomplete="off">
 						</div>
 						<div class="form-section">
 							<label>Host:</label>

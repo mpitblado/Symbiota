@@ -47,7 +47,7 @@ header("Content-Type: text/html; charset=".$CHARSET);
 		<fieldset style="width:450px;">
 			<legend><b><?php echo $LANG['ASSOC_SPP_AID']; ?></b></legend>
 			<div style="">
-				<label for="taxonname"><?php echo $LANG['TAXON']; ?>:</label>
+				<?php echo $LANG['TAXON']; ?>:
 				<input id="taxonname" type="text" style="width:350px;" /><br/>
 				<button id="transbutton" type="button" value="Add Name" onclick="addName();"><?php echo $LANG['ADD_NAME']; ?></button>
 			</div>

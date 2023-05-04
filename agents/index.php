@@ -48,8 +48,7 @@ function searchform($name="") {
    global $CLIENT_ROOT;
    $result  = "<div id='formDiv'>";
    $result .= "<form method='GET' id='queryForm' style='display:inline;' >\n";
-   $result .= "<label for='name'>Name</label>";
-   $result .= "<input type='text' id='name' name='name' value='$name'>";
+   $result .= "<input type='text' name='name' value='$name'>";
    $result .= "<input type='submit'>";
    $result .= "</form>\n";
    $result .= "<span id='plinkSpan'></span></div>\n";

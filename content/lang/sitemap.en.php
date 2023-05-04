@@ -127,4 +127,5 @@ $LANG['ADDNEWIMG'] = 'Add a new image';
 $LANG['DATASETS'] = 'Datasets';
 $LANG['ALLPUBDAT'] = 'All Publicly Viewable Datasets';
 $LANG['DATMANPAG'] = 'Dataset Management Page</a> - datasets you are authorized to edit';
+
 ?>

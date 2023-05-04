@@ -81,6 +81,4 @@ $LANG['COMMENTS'] = 'Commentaires';
 $LANG['PAGE'] = 'Page';
 $LANG['OF'] = 'des';
 $LANG['RESCHECK'] = 'Liste de la Recherche';
-$LANG['SEARCHSYNONYMS'] = "Rechercher des synonymes";
-$LANG['TAXONFILTER'] = 'Filtre de Taxon';
 ?>
