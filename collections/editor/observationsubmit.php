@@ -140,31 +140,27 @@ $clArr = $obsManager->getChecklists();
 						<legend><b><?php echo $LANG['IMAGES']; ?></b></legend>
 				    	<!-- following line sets MAX_FILE_SIZE (must precede the file input field)  -->
 						<input type='hidden' name='MAX_FILE_SIZE' value='<?php echo $maxUpload; ?>' />
-						<div style="margin:15px;float:right">
-							<input type="hidden" name="collid" value="<?php echo $collId; ?>" />
-							<input type="submit" name="action" value="Submit Observation" />
-						</div>
 						<?php
 						for($x=1;$x<6;$x++){
 							?>
 							<div class="imgSubmitDiv" id="img<?php echo $x; ?>div" style="<?php if($x > 1) echo 'display:none'; ?>">
 								<div>
-									<b><?php echo $LANG['IMAGE'].' '.$x; ?>:</b>
-									<input name='imgfile<?php echo $x; ?>' type='file' onchange="verifyImageSize(this)" <?php if($x == 1) echo 'required'; ?> />
+									<label for="imgfile<?php echo $x; ?>"><?php echo $LANG['IMAGE'].' '.$x; ?>:</label>
+									<input name='imgfile<?php echo $x; ?>' id='imgfile<?php echo $x; ?>' type='file' onchange="verifyImageSize(this)" <?php if($x == 1) echo 'required'; ?> />
 								</div>
-								<div style="margin:5px;">
-									<div style="float:left;">
-										<?php echo $LANG['CAPTION']; ?>:
-										<input name="caption<?php echo $x; ?>" type="text" style="width:200px;" />
+								<div>
+									<div>
+										<label for="caption<?php echo $x; ?>"><?php echo $LANG['CAPTION']; ?>:</label>
+										<input name="caption<?php echo $x; ?>" id="caption<?php echo $x; ?>" type="text" style="width:200px;" />
 									</div>
-									<div style="float:left;margin-left:20px;">
-										<?php echo $LANG['IMG_REMARKS']; ?>:
-										<input name="notes<?php echo $x; ?>" type="text" style="width:275px;" />
+									<div style="margin-bottom: 10px;">
+										<label for="notes<?php echo $x; ?>"><?php echo $LANG['IMG_REMARKS']; ?>:</label>
+										<input name="notes<?php echo $x; ?>" id="notes<?php echo $x; ?>" type="text" style="width:275px;" />
 									</div>
 									<?php
 									if($x < 5){
 										?>
-										<div style="clear:both;float:right;margin:10px 40px;">
+										<div style="margin-bottom: 10px; box-sizing:'content-box';">
 											<a href="#" onclick="toggle('img<?php echo ($x+1); ?>div');return false">
 												<?php echo $LANG['ADD_ANOTHER']; ?>
 											</a>
@@ -177,6 +173,10 @@ $clArr = $obsManager->getChecklists();
 							<?php
 						}
 						?>
+						<div style="margin:15px">
+							<input type="hidden" name="collid" value="<?php echo $collId; ?>" />
+							<input type="submit" name="action" value="Submit Observation" />
+						</div>
 						<!-- <div style="margin-left:10px;clear:both">* Uploading web-ready images recommended. Upload image size can not be greater than <?php echo ($maxUpload/1000000); ?>MB</div>  -->
 					</fieldset>
 					<fieldset>
