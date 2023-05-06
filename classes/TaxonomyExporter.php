@@ -193,17 +193,18 @@ class TaxonomyExporter extends Manager
 	{
 		$conformedTree = array();
 		if (isset($treeArr) && !empty($treeArr)) {
-			// checks that $format is not empty
 			if (!empty($format)) {
 				if ($format == 'symbiota') {
 					foreach ($treeArr as $node) {
-						if ($node['rankname'] == 'Family') {
-							$node['family'] = $node['sciname'];
+						if ($node) {
+							if (isset($node['rankname']) && $node['rankname'] == 'Family') {
+								$node['family'] = $node['sciname'];
+							}
+							if (isset($node['rankid']) && $node['rankid'] < 180) {
+								$node['genus'] = NULL;
+							}
+							$conformedTree[] = $node;
 						}
-						if ($node['rankid'] < 180) {
-							$node['genus'] = NULL;
-						}
-						$conformedTree[] = $node;
 					}
 				}
 			}
@@ -219,7 +220,7 @@ class TaxonomyExporter extends Manager
 	 */
 	function writeCsv($array, $filename)
 	{
-		$fp = fopen($filename, 'w');
+		$fp = fopen($filename, 'w+');
 		fputcsv($fp, array_keys($array[0]));
 		foreach ($array as $fields) {
 			fputcsv($fp, $fields);

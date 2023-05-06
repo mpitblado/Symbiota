@@ -9,7 +9,7 @@ if (empty($TEMP_DIR_ROOT)) {
 	$TEMP_DIR_ROOT = $SERVER_ROOT . '/temp';
 }
 
-$taxFileName = $TEMP_DIR_ROOT . "/downloads/";
+$filesDir = $TEMP_DIR_ROOT . "/downloads/";
 
 if (array_key_exists("node", $_REQUEST)) {
 	$node = filter_var($_REQUEST["node"], FILTER_SANITIZE_NUMBER_INT);
@@ -18,11 +18,11 @@ if (array_key_exists("node", $_REQUEST)) {
 }
 
 $rootNodes = $taxonExp->setRootNode($node);
-echo ("<h2>Root Nodes</h2>");
-echo "<pre>" . print_r($rootNodes, true) . "</pre>";
-echo ("<br><br>");
-echo ("<hr>");
-echo ("<hr>");
+// echo ("<h2>Root Nodes</h2>");
+// echo "<pre>" . print_r($rootNodes, true) . "</pre>";
+// echo ("<br><br>");
+// echo ("<hr>");
+// echo ("<hr>");
 
 /****************************************/
 /** Use below to traverse tree node per node */
@@ -48,7 +48,7 @@ echo ("<hr>");
 
 $kingdomRankId = $taxonExp->getRankId("kingdom");
 $kingdomRankId = $kingdomRankId[0];
-echo ("<h2>Kingdom Rank ID " . $kingdomRankId . "</h2>");
+// echo ("<h2>Kingdom Rank ID " . $kingdomRankId . "</h2>");
 
 
 $rootNodesData = array();
@@ -63,11 +63,10 @@ foreach ($rootNodes as $rootNode) {
 	$rootNodesData[] = $rootNodeData;
 
 	$children = $taxonExp->getNodeChildren($rootNode["tid"], 1, $kingdomRankId);
-
-	echo ("<h3>Children:</h3>");
-	echo $children ?  "<pre>" . print_r($children, true) . "</pre>" : "No children found.";
-	echo ("<br><br>");
-	echo ("<hr>");
+	// echo ("<h3>Children:</h3>");
+	// echo $children ?  "<pre>" . print_r($children, true) . "</pre>" : "No children found.";
+	// echo ("<br><br>");
+	// echo ("<hr>");
 	$kingdomsData[] = $children;
 }
 
@@ -76,7 +75,55 @@ foreach ($rootNodes as $rootNode) {
 // echo "<h3>Children Data (All Children):</h3>";
 // echo "<pre>" . print_r($childrenData, true) . "</pre>";
 
+/** 
+ * File names primers
+ */
+$fileDate = date("Y-m-d");
+$portalName = $DEFAULT_TITLE = str_replace(" ", "_", $DEFAULT_TITLE);
+$zipFilename = $filesDir . $fileDate . '_' . $portalName . "_taxonomy.zip";
+$zip = new ZipArchive;
+
+/** 
+ * Symbiota files */
+
 // 1. Create CSV with higher taxa (Organisms -> Kingdoms)
+$higherTree = array_merge($rootNodesData, array_merge(...$kingdomsData));
+$higherTree = $taxonExp->conformTree($higherTree, "symbiota");
+// echo "<pre>" . print_r($higherTree, true) . "</pre>";
+if (!empty($higherTree)) {
+	$higherTreeFilename = $filesDir . $fileDate . "_" . $portalName . "_symb_higher.csv";
+	$taxonExp->writeCsv($higherTree, $higherTreeFilename);
+	// if (file_exists($higherTreeFilename)) {
+	// 	header('Content-Description: File Transfer');
+	// 	header('Content-Type: application/octet-stream');
+	// 	header('Content-Disposition: attachment; filename="' . basename($higherTreeFilename) . '"');
+	// 	header('Expires: 0');
+	// 	header('Cache-Control: must-revalidate');
+	// 	header('Pragma: public');
+	// 	header('Content-Length: ' . filesize($higherTreeFilename));
+	// 	readfile($higherTreeFilename);
+	// 	exit;
+	// } else {
+	// 	echo "There was an error downloading the file.";
+	// }
+}
+// echo $higherTreeFilename;
+if ($zip->open($zipFilename, ZipArchive::CREATE) === TRUE) {
+	$zip->addFile($higherTreeFilename, basename($higherTreeFilename));
+	$zip->addFromString('new.txt', 'text to be added to the new.txt file');
+	$zip->close();
+}
+
+if (file_exists($zipFilename)) {
+	header('Content-Type: application/zip');
+	header('Content-Disposition: attachment; filename="' . basename($zipFilename) . '"');
+	header('Content-Length: ' . filesize($zipFilename));
+
+	flush();
+	readfile($zipFilename);
+	unlink($zipFilename);
+}
+
 // 2. Create one CSV per kingdom with all the children in that given kingdom
 
 // $tree = array_merge($rootNodeData, $children);
