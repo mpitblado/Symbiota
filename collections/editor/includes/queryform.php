@@ -235,7 +235,7 @@ else{
 			<div class="fieldGroupDiv">
 				<hr>
 				<div style="margin-bottom: 10px">
-					<?php echo $LANG['CUSTOM_FIELD_1']; ?>
+					<?php echo $LANG['CUSTOM_FIELD_1']; ?>:
 				</div>
 				<div>
 					<label for="q_customopenparen1"><?php echo $LANG['PARENTHESES']; ?>:</label>
@@ -348,261 +348,399 @@ else{
 						<option <?php echo ($qCustomCloseParen2=='))'?'SELECTED':''); ?> value="))">))</option>
 					</select>
 				</div>
-				<a href="#" onclick="toggleCustomDiv3();return false;" title="<?php echo $LANG['NEW_CUSTOM_FIELD'] ?>">
-					<img class="editimg" src="../../images/editplus.png" alt="pencil with a plus sign indicating the creation of another custom field" />
-				</a>
+				<div style="margin-bottom: 10px;">
+					<a href="#" onclick="toggleCustomDiv3();return false;" title="<?php echo $LANG['NEW_CUSTOM_FIELD'] ?>">
+						<img class="editimg" src="../../images/editplus.png" alt="pencil with a plus sign indicating the creation of another custom field" />
+					</a>
+				</div>
 			</div>
 			<div id="customdiv3" class="fieldGroupDiv" style="display:<?php echo ($qCustomValue3||$qCustomType3=='NULL'||$qCustomType3=='NOTNULL'?'block':'none');?>;">
-				<?php echo $LANG['CUSTOM_FIELD_3']; ?>:
-				<select name="q_customandor3" onchange="customSelectChanged(3)">
-					<option>AND</option>
-					<option <?php echo ($qCustomAndOr3=='OR'?'SELECTED':''); ?> value="OR">OR</option>
-				</select>
-				<select name="q_customopenparen3" onchange="customSelectChanged(3)">
-					<option value="">---</option>
-					<option <?php echo ($qCustomOpenParen3=='('?'SELECTED':''); ?> value="(">(</option>
-					<option <?php echo ($qCustomOpenParen3=='(('?'SELECTED':''); ?> value="((">((</option>
-					<option <?php echo ($qCustomOpenParen3=='((('?'SELECTED':''); ?> value="(((">(((</option>
-				</select>
-				<select name="q_customfield3" onchange="customSelectChanged(3)">
-					<option value=""><?php echo $LANG['SELECT_FIELD_NAME']; ?></option>
-					<option value="">---------------------------------</option>
-					<?php
-					foreach($advFieldArr as $k => $v){
-						echo '<option value="'.$k.'" '.($k==$qCustomField3?'SELECTED':'').'>'.$v.'</option>';
-					}
-					?>
-				</select>
-				<select name="q_customtype3">
-					<option><?php echo $LANG['EQUALS']; ?></option>
-					<option <?php echo ($qCustomType3=='NOT EQUALS'?'SELECTED':''); ?> value="NOT EQUALS"><?php echo $LANG['NOT_EQUALS']; ?></option>
-					<option <?php echo ($qCustomType3=='STARTS'?'SELECTED':''); ?> value="STARTS"><?php echo $LANG['STARTS_WITH']; ?></option>
-					<option <?php echo ($qCustomType3=='LIKE'?'SELECTED':''); ?> value="LIKE"><?php echo $LANG['CONTAINS']; ?></option>
-					<option <?php echo ($qCustomType3=='NOT LIKE'?'SELECTED':''); ?> value="NOT LIKE"><?php echo $LANG['DOESNT_CONTAIN']; ?></option>
-					<option <?php echo ($qCustomType3=='GREATER'?'SELECTED':''); ?> value="GREATER"><?php echo $LANG['GREATER_THAN']; ?></option>
-					<option <?php echo ($qCustomType3=='LESS'?'SELECTED':''); ?> value="LESS"><?php echo $LANG['LESS_THAN']; ?></option>
-					<option <?php echo ($qCustomType3=='NULL'?'SELECTED':''); ?> value="NULL"><?php echo $LANG['IS_NULL']; ?></option>
-					<option <?php echo ($qCustomType3=='NOTNULL'?'SELECTED':''); ?> value="NOTNULL"><?php echo $LANG['IS_NOT_NULL']; ?></option>
-				</select>
-				<input name="q_customvalue3" type="text" value="<?php echo $qCustomValue3; ?>" style="width:200px;" />
-				<select name="q_customcloseparen3" onchange="customSelectChanged(3)">
-					<option value="">---</option>
-					<option <?php echo ($qCustomCloseParen3==')'?'SELECTED':''); ?> value=")">)</option>
-					<option <?php echo ($qCustomCloseParen3=='))'?'SELECTED':''); ?> value="))">))</option>
-					<option <?php echo ($qCustomCloseParen3==')))'?'SELECTED':''); ?> value=")))">)))</option>
-				</select>
-				<a href="#" onclick="toggleCustomDiv4();return false;">
-					<img class="editimg" src="../../images/editplus.png" />
-				</a>
+			<hr>
+				<div style="margin-bottom: 10px;">
+					<?php echo $LANG['CUSTOM_FIELD_3']; ?>:
+				</div>
+				<div>
+					<label for="q_customandor3"><?php echo $LANG['OPERATOR'] ?>:</label>
+					<select name="q_customandor3" id="q_customandor3" onchange="customSelectChanged(3)">
+						<option>AND</option>
+						<option <?php echo ($qCustomAndOr3=='OR'?'SELECTED':''); ?> value="OR">OR</option>
+					</select>
+				</div>
+				<div>
+					<label for="q_customopenparen3"><?php echo $LANG['PARENTHESES'] ?>:</label>
+					<select name="q_customopenparen3" id="q_customopenparen3" onchange="customSelectChanged(3)">
+						<option value="">---</option>
+						<option <?php echo ($qCustomOpenParen3=='('?'SELECTED':''); ?> value="(">(</option>
+						<option <?php echo ($qCustomOpenParen3=='(('?'SELECTED':''); ?> value="((">((</option>
+						<option <?php echo ($qCustomOpenParen3=='((('?'SELECTED':''); ?> value="(((">(((</option>
+					</select>
+				</div>
+				<div>
+					<label for="q_customfield3"><?php echo $LANG['SELECT_FIELD'] ?>:</label>
+					<select name="q_customfield3" id="q_customfield3" onchange="customSelectChanged(3)">
+						<option value=""><?php echo $LANG['SELECT_FIELD_NAME']; ?></option>
+						<option value="">---------------------------------</option>
+						<?php
+						foreach($advFieldArr as $k => $v){
+							echo '<option value="'.$k.'" '.($k==$qCustomField3?'SELECTED':'').'>'.$v.'</option>';
+						}
+						?>
+					</select>
+				</div>
+				<div>
+					<label for="q_customtype3"><?php echo $LANG['OPERATOR'] ?>:</label>
+					<select name="q_customtype3" id="q_customtype3">
+						<option><?php echo $LANG['EQUALS']; ?></option>
+						<option <?php echo ($qCustomType3=='NOT EQUALS'?'SELECTED':''); ?> value="NOT EQUALS"><?php echo $LANG['NOT_EQUALS']; ?></option>
+						<option <?php echo ($qCustomType3=='STARTS'?'SELECTED':''); ?> value="STARTS"><?php echo $LANG['STARTS_WITH']; ?></option>
+						<option <?php echo ($qCustomType3=='LIKE'?'SELECTED':''); ?> value="LIKE"><?php echo $LANG['CONTAINS']; ?></option>
+						<option <?php echo ($qCustomType3=='NOT LIKE'?'SELECTED':''); ?> value="NOT LIKE"><?php echo $LANG['DOESNT_CONTAIN']; ?></option>
+						<option <?php echo ($qCustomType3=='GREATER'?'SELECTED':''); ?> value="GREATER"><?php echo $LANG['GREATER_THAN']; ?></option>
+						<option <?php echo ($qCustomType3=='LESS'?'SELECTED':''); ?> value="LESS"><?php echo $LANG['LESS_THAN']; ?></option>
+						<option <?php echo ($qCustomType3=='NULL'?'SELECTED':''); ?> value="NULL"><?php echo $LANG['IS_NULL']; ?></option>
+						<option <?php echo ($qCustomType3=='NOTNULL'?'SELECTED':''); ?> value="NOTNULL"><?php echo $LANG['IS_NOT_NULL']; ?></option>
+					</select>
+				</div>
+				<div>
+					<label for="q_customvalue3"><?php echo $LANG['EXPRESSION'] ?>:</label>	
+					<input name="q_customvalue3" id="q_customvalue3" type="text" value="<?php echo $qCustomValue3; ?>" style="width:200px;" />
+				</div>
+				<div>
+					<label for="q_customcloseparen3"><?php echo $LANG['PARENTHESES'] ?>:</label>
+					<select name="q_customcloseparen3" onchange="customSelectChanged(3)">
+						<option value="">---</option>
+						<option <?php echo ($qCustomCloseParen3==')'?'SELECTED':''); ?> value=")">)</option>
+						<option <?php echo ($qCustomCloseParen3=='))'?'SELECTED':''); ?> value="))">))</option>
+						<option <?php echo ($qCustomCloseParen3==')))'?'SELECTED':''); ?> value=")))">)))</option>
+					</select>
+				</div>
+				<div style="margin-bottom: 10px;">
+					<a href="#" onclick="toggleCustomDiv4();return false;" title="<?php echo $LANG['NEW_CUSTOM_FIELD'] ?>">
+						<img class="editimg" src="../../images/editplus.png" alt="pencil with a plus sign indicating the creation of another custom field" />
+					</a>
+				</div>
 			</div>
 			<div id="customdiv4" class="fieldGroupDiv" style="display:<?php echo ($qCustomValue4||$qCustomType4=='NULL'||$qCustomType4=='NOTNULL'?'block':'none');?>;">
-				Custom Field 4:
-				<select name="q_customandor4" onchange="customSelectChanged(4)">
-					<option>AND</option>
-					<option <?php echo ($qCustomAndOr4=='OR'?'SELECTED':''); ?> value="OR">OR</option>
-				</select>
-				<select name="q_customopenparen4" onchange="customSelectChanged(4)">
-					<option value="">---</option>
-					<option <?php echo ($qCustomOpenParen4=='('?'SELECTED':''); ?> value="(">(</option>
-					<option <?php echo ($qCustomOpenParen4=='(('?'SELECTED':''); ?> value="((">((</option>
-					<option <?php echo ($qCustomOpenParen4=='((('?'SELECTED':''); ?> value="(((">(((</option>
-				</select>
-				<select name="q_customfield4" onchange="customSelectChanged(4)">
-					<option value="">Select Field Name</option>
-					<option value="">---------------------------------</option>
-					<?php
-					foreach($advFieldArr as $k => $v){
-						echo '<option value="'.$k.'" '.($k==$qCustomField4?'SELECTED':'').'>'.$v.'</option>';
-					}
-					?>
-				</select>
-				<select name="q_customtype4">
-					<option>EQUALS</option>
-					<option <?php echo ($qCustomType4=='NOT EQUALS'?'SELECTED':''); ?> value="NOT EQUALS">NOT EQUALS</option>
-					<option <?php echo ($qCustomType4=='STARTS'?'SELECTED':''); ?> value="STARTS">STARTS WITH</option>
-					<option <?php echo ($qCustomType4=='LIKE'?'SELECTED':''); ?> value="LIKE">CONTAINS</option>
-					<option <?php echo ($qCustomType4=='NOT LIKE'?'SELECTED':''); ?> value="NOT LIKE">DOES NOT CONTAIN</option>
-					<option <?php echo ($qCustomType4=='GREATER'?'SELECTED':''); ?> value="GREATER">GREATER THAN</option>
-					<option <?php echo ($qCustomType4=='LESS'?'SELECTED':''); ?> value="LESS">LESS THAN</option>
-					<option <?php echo ($qCustomType4=='NULL'?'SELECTED':''); ?> value="NULL">IS NULL</option>
-					<option <?php echo ($qCustomType4=='NOTNULL'?'SELECTED':''); ?> value="NOTNULL">IS NOT NULL</option>
-				</select>
-				<input name="q_customvalue4" type="text" value="<?php echo $qCustomValue4; ?>" style="width:200px;" />
-				<select name="q_customcloseparen4" onchange="customSelectChanged(4)">
-					<option value="">---</option>
-					<option <?php echo ($qCustomCloseParen4==')'?'SELECTED':''); ?> value=")">)</option>
-					<option <?php echo ($qCustomCloseParen4=='))'?'SELECTED':''); ?> value="))">))</option>
-					<option <?php echo ($qCustomCloseParen4==')))'?'SELECTED':''); ?> value=")))">)))</option>
-				</select>
-				<a href="#" onclick="toggleCustomDiv5();return false;">
-					<img class="editimg" src="../../images/editplus.png" />
-				</a>
+				<hr>
+				<div style="margin-bottom: 10px;">
+					<?php echo $LANG['CUSTOM_FIELD_4'] ?>:
+				</div>
+				<div>
+					<label for="q_customandor4"><?php echo $LANG['OPERATOR'] ?>:</label>	
+					<select name="q_customandor4" id="q_customandor4" onchange="customSelectChanged(4)">
+						<option>AND</option>
+						<option <?php echo ($qCustomAndOr4=='OR'?'SELECTED':''); ?> value="OR">OR</option>
+					</select>
+				</div>
+				<div>
+					<label for="q_customopenparen4"><?php echo $LANG['PARENTHESES']; ?>:</label>	
+					<select name="q_customopenparen4" id="q_customopenparen4" onchange="customSelectChanged(4)">
+						<option value="">---</option>
+						<option <?php echo ($qCustomOpenParen4=='('?'SELECTED':''); ?> value="(">(</option>
+						<option <?php echo ($qCustomOpenParen4=='(('?'SELECTED':''); ?> value="((">((</option>
+						<option <?php echo ($qCustomOpenParen4=='((('?'SELECTED':''); ?> value="(((">(((</option>
+					</select>
+				</div>
+				<div>
+					<label for="q_customfield4"><?php echo $LANG['SELECT_FIELD'] ?>:</label>
+					<select name="q_customfield4" id="q_customfield4" onchange="customSelectChanged(4)">
+						<option value=""><?php echo $LANG['SELECT_FIELD_NAME'] ?></option>
+						<option value="">---------------------------------</option>
+						<?php
+						foreach($advFieldArr as $k => $v){
+							echo '<option value="'.$k.'" '.($k==$qCustomField4?'SELECTED':'').'>'.$v.'</option>';
+						}
+						?>
+					</select>
+				</div>
+				<div>
+					<label for="q_customtype4"><?php echo $LANG['OPERATOR'] ?>:</label>
+					<select name="q_customtype4" id="q_customtype4">
+						<option>EQUALS</option>
+						<option <?php echo ($qCustomType4=='NOT EQUALS'?'SELECTED':''); ?> value="NOT EQUALS">NOT EQUALS</option>
+						<option <?php echo ($qCustomType4=='STARTS'?'SELECTED':''); ?> value="STARTS">STARTS WITH</option>
+						<option <?php echo ($qCustomType4=='LIKE'?'SELECTED':''); ?> value="LIKE">CONTAINS</option>
+						<option <?php echo ($qCustomType4=='NOT LIKE'?'SELECTED':''); ?> value="NOT LIKE">DOES NOT CONTAIN</option>
+						<option <?php echo ($qCustomType4=='GREATER'?'SELECTED':''); ?> value="GREATER">GREATER THAN</option>
+						<option <?php echo ($qCustomType4=='LESS'?'SELECTED':''); ?> value="LESS">LESS THAN</option>
+						<option <?php echo ($qCustomType4=='NULL'?'SELECTED':''); ?> value="NULL">IS NULL</option>
+						<option <?php echo ($qCustomType4=='NOTNULL'?'SELECTED':''); ?> value="NOTNULL">IS NOT NULL</option>
+					</select>
+				</div>
+				<div>
+					<label for="q_customvalue4"><?php echo $LANG['EXPRESSION'] ?>:</label>
+					<input name="q_customvalue4" id="q_customvalue4" type="text" value="<?php echo $qCustomValue4; ?>" style="width:200px;" />
+				</div>
+				<div>
+					<label for="q_customcloseparen4"><?php echo $LANG['PARENTHESES'] ?>:</label>	
+					<select name="q_customcloseparen4" id="q_customcloseparen4" onchange="customSelectChanged(4)">
+						<option value="">---</option>
+						<option <?php echo ($qCustomCloseParen4==')'?'SELECTED':''); ?> value=")">)</option>
+						<option <?php echo ($qCustomCloseParen4=='))'?'SELECTED':''); ?> value="))">))</option>
+						<option <?php echo ($qCustomCloseParen4==')))'?'SELECTED':''); ?> value=")))">)))</option>
+					</select>
+				</div>
+				<div style="margin-bottom: 10px;">
+					<a href="#" onclick="toggleCustomDiv5();return false;" title="<?php echo $LANG['NEW_CUSTOM_FIELD'] ?>">
+						<img class="editimg" src="../../images/editplus.png" alt="pencil with a plus sign indicating the creation of another custom field" />
+					</a>
+				</div>
 			</div>
 			<div id="customdiv5" class="fieldGroupDiv" style="display:<?php echo ($qCustomValue5||$qCustomType5=='NULL'||$qCustomType5=='NOTNULL'?'block':'none');?>;">
-				Custom Field 5:
-				<select name="q_customandor5" onchange="customSelectChanged(5)">
-					<option>AND</option>
-					<option <?php echo ($qCustomAndOr5=='OR'?'SELECTED':''); ?> value="OR">OR</option>
-				</select>
-				<select name="q_customopenparen5" onchange="customSelectChanged(5)">
-					<option value="">---</option>
-					<option <?php echo ($qCustomOpenParen5=='('?'SELECTED':''); ?> value="(">(</option>
-					<option <?php echo ($qCustomOpenParen5=='(('?'SELECTED':''); ?> value="((">((</option>
-					<option <?php echo ($qCustomOpenParen5=='((('?'SELECTED':''); ?> value="(((">(((</option>
-				</select>
-				<select name="q_customfield5" onchange="customSelectChanged(5)">
-					<option value="">Select Field Name</option>
-					<option value="">---------------------------------</option>
-					<?php
-					foreach($advFieldArr as $k => $v){
-						echo '<option value="'.$k.'" '.($k==$qCustomField5?'SELECTED':'').'>'.$v.'</option>';
-					}
-					?>
-				</select>
-				<select name="q_customtype5">
-					<option>EQUALS</option>
-					<option <?php echo ($qCustomType5=='NOT EQUALS'?'SELECTED':''); ?> value="NOT EQUALS">NOT EQUALS</option>
-					<option <?php echo ($qCustomType5=='STARTS'?'SELECTED':''); ?> value="STARTS">STARTS WITH</option>
-					<option <?php echo ($qCustomType5=='LIKE'?'SELECTED':''); ?> value="LIKE">CONTAINS</option>
-					<option <?php echo ($qCustomType5=='NOT LIKE'?'SELECTED':''); ?> value="NOT LIKE">DOES NOT CONTAIN</option>
-					<option <?php echo ($qCustomType5=='GREATER'?'SELECTED':''); ?> value="GREATER">GREATER THAN</option>
-					<option <?php echo ($qCustomType5=='LESS'?'SELECTED':''); ?> value="LESS">LESS THAN</option>
-					<option <?php echo ($qCustomType5=='NULL'?'SELECTED':''); ?> value="NULL">IS NULL</option>
-					<option <?php echo ($qCustomType5=='NOTNULL'?'SELECTED':''); ?> value="NOTNULL">IS NOT NULL</option>
-				</select>
-				<input name="q_customvalue5" type="text" value="<?php echo $qCustomValue5; ?>" style="width:200px;" />
-				<select name="q_customcloseparen5" onchange="customSelectChanged(5)">
-					<option value="">---</option>
-					<option <?php echo ($qCustomCloseParen5==')'?'SELECTED':''); ?> value=")">)</option>
-					<option <?php echo ($qCustomCloseParen5=='))'?'SELECTED':''); ?> value="))">))</option>
-					<option <?php echo ($qCustomCloseParen5==')))'?'SELECTED':''); ?> value=")))">)))</option>
-				</select>
-				<a href="#" onclick="toggleCustomDiv6();return false;">
-					<img class="editimg" src="../../images/editplus.png" />
-				</a>
+				<hr>
+				<div style="margin-bottom: 10px;">
+					<?php echo $LANG['CUSTOM_FIELD_5']; ?>:
+				</div>
+				<div>
+					<label for="q_customandor5"><?php echo $LANG['OPERATOR'] ?>:</label>
+					<select name="q_customandor5" id="q_customandor5" onchange="customSelectChanged(5)">
+						<option>AND</option>
+						<option <?php echo ($qCustomAndOr5=='OR'?'SELECTED':''); ?> value="OR">OR</option>
+					</select>
+				</div>
+				<div>
+					<label for="q_customopenparen5"><?php echo $LANG['PARENTHESES']; ?>:</label>
+					<select name="q_customopenparen5" id="q_customopenparen5" onchange="customSelectChanged(5)">
+						<option value="">---</option>
+						<option <?php echo ($qCustomOpenParen5=='('?'SELECTED':''); ?> value="(">(</option>
+						<option <?php echo ($qCustomOpenParen5=='(('?'SELECTED':''); ?> value="((">((</option>
+						<option <?php echo ($qCustomOpenParen5=='((('?'SELECTED':''); ?> value="(((">(((</option>
+					</select>
+				</div>
+				<div>
+					<label for="q_customfield5"><?php echo $LANG['SELECT_FIELD'] ?>:</label>
+					<select name="q_customfield5" id="q_customfield5" onchange="customSelectChanged(5)">
+						<option value=""><?php echo $LANG['SELECT_FIELD_NAME'] ?></option>
+						<option value="">---------------------------------</option>
+						<?php
+						foreach($advFieldArr as $k => $v){
+							echo '<option value="'.$k.'" '.($k==$qCustomField5?'SELECTED':'').'>'.$v.'</option>';
+						}
+						?>
+					</select>
+				</div>
+				<div>
+					<label for="q_customtype5"><?php echo $LANG['OPERATOR'] ?>:</label>
+					<select name="q_customtype5" id="q_customtype5">
+						<option>EQUALS</option>
+						<option <?php echo ($qCustomType5=='NOT EQUALS'?'SELECTED':''); ?> value="NOT EQUALS">NOT EQUALS</option>
+						<option <?php echo ($qCustomType5=='STARTS'?'SELECTED':''); ?> value="STARTS">STARTS WITH</option>
+						<option <?php echo ($qCustomType5=='LIKE'?'SELECTED':''); ?> value="LIKE">CONTAINS</option>
+						<option <?php echo ($qCustomType5=='NOT LIKE'?'SELECTED':''); ?> value="NOT LIKE">DOES NOT CONTAIN</option>
+						<option <?php echo ($qCustomType5=='GREATER'?'SELECTED':''); ?> value="GREATER">GREATER THAN</option>
+						<option <?php echo ($qCustomType5=='LESS'?'SELECTED':''); ?> value="LESS">LESS THAN</option>
+						<option <?php echo ($qCustomType5=='NULL'?'SELECTED':''); ?> value="NULL">IS NULL</option>
+						<option <?php echo ($qCustomType5=='NOTNULL'?'SELECTED':''); ?> value="NOTNULL">IS NOT NULL</option>
+					</select>
+				</div>
+				<div>
+					<label for="q_customvalue5"><?php echo $LANG['EXPRESSION'] ?>:</label>
+					<input name="q_customvalue5" id="q_customvalue5" type="text" value="<?php echo $qCustomValue5; ?>" style="width:200px;" />
+				</div>
+				<div>
+					<label for="q_customcloseparen5"><?php echo $LANG['PARENTHESES'] ?>:</label>
+					<select name="q_customcloseparen5" id="q_customcloseparen5" onchange="customSelectChanged(5)">
+						<option value="">---</option>
+						<option <?php echo ($qCustomCloseParen5==')'?'SELECTED':''); ?> value=")">)</option>
+						<option <?php echo ($qCustomCloseParen5=='))'?'SELECTED':''); ?> value="))">))</option>
+						<option <?php echo ($qCustomCloseParen5==')))'?'SELECTED':''); ?> value=")))">)))</option>
+					</select>
+				</div>
+				<div style="margin-bottom: 10px;">
+					<a href="#" onclick="toggleCustomDiv6();return false;" title="<?php echo $LANG['NEW_CUSTOM_FIELD'] ?>">
+						<img class="editimg" src="../../images/editplus.png" alt="pencil with a plus sign indicating the creation of another custom field" />
+					</a>
+				</div>
 			</div>
 			<div id="customdiv6" class="fieldGroupDiv" style="display:<?php echo ($qCustomValue6||$qCustomType6=='NULL'||$qCustomType6=='NOTNULL'?'block':'none');?>;">
-				Custom Field 6:
-				<select name="q_customandor6" onchange="customSelectChanged(6)">
-					<option>AND</option>
-					<option <?php echo ($qCustomAndOr6=='OR'?'SELECTED':''); ?> value="OR">OR</option>
-				</select>
-				<select name="q_customopenparen6" onchange="customSelectChanged(6)">
-					<option value="">---</option>
-					<option <?php echo ($qCustomOpenParen6=='('?'SELECTED':''); ?> value="(">(</option>
-					<option <?php echo ($qCustomOpenParen6=='(('?'SELECTED':''); ?> value="((">((</option>
-					<option <?php echo ($qCustomOpenParen6=='((('?'SELECTED':''); ?> value="(((">(((</option>
-				</select>
-				<select name="q_customfield6" onchange="customSelectChanged(6)">
-					<option value="">Select Field Name</option>
-					<option value="">---------------------------------</option>
-					<?php
-					foreach($advFieldArr as $k => $v){
-						echo '<option value="'.$k.'" '.($k==$qCustomField6?'SELECTED':'').'>'.$v.'</option>';
-					}
-					?>
-				</select>
-				<select name="q_customtype6">
-					<option>EQUALS</option>
-					<option <?php echo ($qCustomType6=='NOT EQUALS'?'SELECTED':''); ?> value="NOT EQUALS">NOT EQUALS</option>
-					<option <?php echo ($qCustomType6=='STARTS'?'SELECTED':''); ?> value="STARTS">STARTS WITH</option>
-					<option <?php echo ($qCustomType6=='LIKE'?'SELECTED':''); ?> value="LIKE">CONTAINS</option>
-					<option <?php echo ($qCustomType6=='NOT LIKE'?'SELECTED':''); ?> value="NOT LIKE">DOES NOT CONTAIN</option>
-					<option <?php echo ($qCustomType6=='GREATER'?'SELECTED':''); ?> value="GREATER">GREATER THAN</option>
-					<option <?php echo ($qCustomType6=='LESS'?'SELECTED':''); ?> value="LESS">LESS THAN</option>
-					<option <?php echo ($qCustomType6=='NULL'?'SELECTED':''); ?> value="NULL">IS NULL</option>
-					<option <?php echo ($qCustomType6=='NOTNULL'?'SELECTED':''); ?> value="NOTNULL">IS NOT NULL</option>
-				</select>
-				<input name="q_customvalue6" type="text" value="<?php echo $qCustomValue6; ?>" style="width:200px;" />
-				<select name="q_customcloseparen6" onchange="customSelectChanged(6)">
-					<option value="">---</option>
-					<option <?php echo ($qCustomCloseParen6==')'?'SELECTED':''); ?> value=")">)</option>
-					<option <?php echo ($qCustomCloseParen6=='))'?'SELECTED':''); ?> value="))">))</option>
-					<option <?php echo ($qCustomCloseParen6==')))'?'SELECTED':''); ?> value=")))">)))</option>
-				</select>
-				<a href="#" onclick="toggleCustomDiv7();return false;">
-					<img class="editimg" src="../../images/editplus.png" />
-				</a>
+				<hr>
+				<div style="margin-bottom: 10px;">
+					<?php echo $LANG['CUSTOM_FIELD_6']; ?>:
+				</div>
+				<div>
+					<label for="q_customandor6"><?php echo $LANG['OPERATOR'] ?>:</label>
+					<select name="q_customandor6" id="q_customandor6" onchange="customSelectChanged(6)">
+						<option>AND</option>
+						<option <?php echo ($qCustomAndOr6=='OR'?'SELECTED':''); ?> value="OR">OR</option>
+					</select>
+				</div>
+				<div>
+					<label for="q_customopenparen6"><?php echo $LANG['PARENTHESES']; ?>:</label>
+					<select name="q_customopenparen6" id="q_customopenparen6" onchange="customSelectChanged(6)">
+						<option value="">---</option>
+						<option <?php echo ($qCustomOpenParen6=='('?'SELECTED':''); ?> value="(">(</option>
+						<option <?php echo ($qCustomOpenParen6=='(('?'SELECTED':''); ?> value="((">((</option>
+						<option <?php echo ($qCustomOpenParen6=='((('?'SELECTED':''); ?> value="(((">(((</option>
+					</select>
+				</div>
+				<div>
+					<label for="q_customfield6"><?php echo $LANG['SELECT_FIELD'] ?>:</label>
+					<select name="q_customfield6" id="q_customfield6" onchange="customSelectChanged(6)">
+						<option value=""><?php echo $LANG['SELECT_FIELD_NAME'] ?></option>
+						<option value="">---------------------------------</option>
+						<?php
+						foreach($advFieldArr as $k => $v){
+							echo '<option value="'.$k.'" '.($k==$qCustomField6?'SELECTED':'').'>'.$v.'</option>';
+						}
+						?>
+					</select>
+				</div>
+				<div>
+					<label for="q_customtype6"><?php echo $LANG['OPERATOR'] ?>:</label>
+					<select name="q_customtype6" id="q_customtype6">
+						<option>EQUALS</option>
+						<option <?php echo ($qCustomType6=='NOT EQUALS'?'SELECTED':''); ?> value="NOT EQUALS">NOT EQUALS</option>
+						<option <?php echo ($qCustomType6=='STARTS'?'SELECTED':''); ?> value="STARTS">STARTS WITH</option>
+						<option <?php echo ($qCustomType6=='LIKE'?'SELECTED':''); ?> value="LIKE">CONTAINS</option>
+						<option <?php echo ($qCustomType6=='NOT LIKE'?'SELECTED':''); ?> value="NOT LIKE">DOES NOT CONTAIN</option>
+						<option <?php echo ($qCustomType6=='GREATER'?'SELECTED':''); ?> value="GREATER">GREATER THAN</option>
+						<option <?php echo ($qCustomType6=='LESS'?'SELECTED':''); ?> value="LESS">LESS THAN</option>
+						<option <?php echo ($qCustomType6=='NULL'?'SELECTED':''); ?> value="NULL">IS NULL</option>
+						<option <?php echo ($qCustomType6=='NOTNULL'?'SELECTED':''); ?> value="NOTNULL">IS NOT NULL</option>
+					</select>
+				</div>
+				<div>
+					<label for="q_customvalue6"><?php echo $LANG['EXPRESSION'] ?>:</label>
+					<input name="q_customvalue6" id="q_customvalue6" type="text" value="<?php echo $qCustomValue6; ?>" style="width:200px;" />
+				</div>
+				<div>
+					<label for="q_customcloseparen6"><?php echo $LANG['PARENTHESES'] ?>:</label>
+					<select name="q_customcloseparen6" id="q_customcloseparen6" onchange="customSelectChanged(6)">
+						<option value="">---</option>
+						<option <?php echo ($qCustomCloseParen6==')'?'SELECTED':''); ?> value=")">)</option>
+						<option <?php echo ($qCustomCloseParen6=='))'?'SELECTED':''); ?> value="))">))</option>
+						<option <?php echo ($qCustomCloseParen6==')))'?'SELECTED':''); ?> value=")))">)))</option>
+					</select>
+				</div>
+				<div style="margin-bottom: 10px;">
+					<a href="#" onclick="toggleCustomDiv7();return false;" title="<?php echo $LANG['NEW_CUSTOM_FIELD'] ?>">
+						<img class="editimg" src="../../images/editplus.png" alt="pencil with a plus sign indicating the creation of another custom field" />
+					</a>
+				</div>
 			</div>
 			<div id="customdiv7" class="fieldGroupDiv" style="display:<?php echo ($qCustomValue7||$qCustomType7=='NULL'||$qCustomType7=='NOTNULL'?'block':'none');?>;">
-				Custom Field 7:
-				<select name="q_customandor7" onchange="customSelectChanged(7)">
-					<option>AND</option>
-					<option <?php echo ($qCustomAndOr7=='OR'?'SELECTED':''); ?> value="OR">OR</option>
-				</select>
-				<select name="q_customopenparen7" onchange="customSelectChanged(7)">
-					<option value="">---</option>
-					<option <?php echo ($qCustomOpenParen7=='('?'SELECTED':''); ?> value="(">(</option>
-					<option <?php echo ($qCustomOpenParen7=='(('?'SELECTED':''); ?> value="((">((</option>
-				</select>
-				<select name="q_customfield7" onchange="customSelectChanged(7)">
-					<option value="">Select Field Name</option>
-					<option value="">---------------------------------</option>
-					<?php
-					foreach($advFieldArr as $k => $v){
-						echo '<option value="'.$k.'" '.($k==$qCustomField7?'SELECTED':'').'>'.$v.'</option>';
-					}
-					?>
-				</select>
-				<select name="q_customtype7">
-					<option>EQUALS</option>
-					<option <?php echo ($qCustomType7=='NOT EQUALS'?'SELECTED':''); ?> value="NOT EQUALS">NOT EQUALS</option>
-					<option <?php echo ($qCustomType7=='STARTS'?'SELECTED':''); ?> value="STARTS">STARTS WITH</option>
-					<option <?php echo ($qCustomType7=='LIKE'?'SELECTED':''); ?> value="LIKE">CONTAINS</option>
-					<option <?php echo ($qCustomType7=='NOT LIKE'?'SELECTED':''); ?> value="NOT LIKE">DOES NOT CONTAIN</option>
-					<option <?php echo ($qCustomType7=='GREATER'?'SELECTED':''); ?> value="GREATER">GREATER THAN</option>
-					<option <?php echo ($qCustomType7=='LESS'?'SELECTED':''); ?> value="LESS">LESS THAN</option>
-					<option <?php echo ($qCustomType7=='NULL'?'SELECTED':''); ?> value="NULL">IS NULL</option>
-					<option <?php echo ($qCustomType7=='NOTNULL'?'SELECTED':''); ?> value="NOTNULL">IS NOT NULL</option>
-				</select>
-				<input name="q_customvalue7" type="text" value="<?php echo $qCustomValue7; ?>" style="width:200px;" />
-				<select name="q_customcloseparen7" onchange="customSelectChanged(7)">
-					<option value="">---</option>
-					<option <?php echo ($qCustomCloseParen7==')'?'SELECTED':''); ?> value=")">)</option>
-					<option <?php echo ($qCustomCloseParen7=='))'?'SELECTED':''); ?> value="))">))</option>
-					<option <?php echo ($qCustomCloseParen7==')))'?'SELECTED':''); ?> value=")))">)))</option>
-				</select>
-				<a href="#" onclick="toggleCustomDiv8();return false;">
-					<img class="editimg" src="../../images/editplus.png" />
-				</a>
+				<hr>
+				<div style="margin-bottom: 10px;">
+					<?php echo $LANG['CUSTOM_FIELD_7']; ?>:
+				</div>
+				<div>
+					<label for="q_customandor7"><?php echo $LANG['OPERATOR'] ?>:</label>	
+					<select name="q_customandor7" id="q_customandor7" onchange="customSelectChanged(7)">
+						<option>AND</option>
+						<option <?php echo ($qCustomAndOr7=='OR'?'SELECTED':''); ?> value="OR">OR</option>
+					</select>
+				</div>
+				<div>
+					<label for="q_customopenparen7"><?php echo $LANG['PARENTHESES']; ?>:</label>
+					<select name="q_customopenparen7" id="q_customopenparen7" onchange="customSelectChanged(7)">
+						<option value="">---</option>
+						<option <?php echo ($qCustomOpenParen7=='('?'SELECTED':''); ?> value="(">(</option>
+						<option <?php echo ($qCustomOpenParen7=='(('?'SELECTED':''); ?> value="((">((</option>
+					</select>
+				</div>
+				<div>
+					<label for="q_customfield7"><?php echo $LANG['SELECT_FIELD'] ?>:</label>
+					<select name="q_customfield7" id="q_customfield7" onchange="customSelectChanged(7)">
+						<option value=""><?php echo $LANG['SELECT_FIELD_NAME'] ?></option>
+						<option value="">---------------------------------</option>
+						<?php
+						foreach($advFieldArr as $k => $v){
+							echo '<option value="'.$k.'" '.($k==$qCustomField7?'SELECTED':'').'>'.$v.'</option>';
+						}
+						?>
+					</select>
+				</div>
+				<div>
+					<label for="q_customtype7"><?php echo $LANG['OPERATOR'] ?>:</label>	
+					<select name="q_customtype7" id="q_customtype7">
+						<option>EQUALS</option>
+						<option <?php echo ($qCustomType7=='NOT EQUALS'?'SELECTED':''); ?> value="NOT EQUALS">NOT EQUALS</option>
+						<option <?php echo ($qCustomType7=='STARTS'?'SELECTED':''); ?> value="STARTS">STARTS WITH</option>
+						<option <?php echo ($qCustomType7=='LIKE'?'SELECTED':''); ?> value="LIKE">CONTAINS</option>
+						<option <?php echo ($qCustomType7=='NOT LIKE'?'SELECTED':''); ?> value="NOT LIKE">DOES NOT CONTAIN</option>
+						<option <?php echo ($qCustomType7=='GREATER'?'SELECTED':''); ?> value="GREATER">GREATER THAN</option>
+						<option <?php echo ($qCustomType7=='LESS'?'SELECTED':''); ?> value="LESS">LESS THAN</option>
+						<option <?php echo ($qCustomType7=='NULL'?'SELECTED':''); ?> value="NULL">IS NULL</option>
+						<option <?php echo ($qCustomType7=='NOTNULL'?'SELECTED':''); ?> value="NOTNULL">IS NOT NULL</option>
+					</select>
+				</div>
+				<div>
+					<label for="q_customvalue7"><?php echo $LANG['EXPRESSION'] ?>:</label>
+					<input name="q_customvalue7" id="q_customvalue7" type="text" value="<?php echo $qCustomValue7; ?>" style="width:200px;" />
+				</div>
+				<div>
+					<label for="q_customcloseparen7"><?php echo $LANG['PARENTHESES'] ?>:</label>
+					<select name="q_customcloseparen7" id="q_customcloseparen7" onchange="customSelectChanged(7)">
+						<option value="">---</option>
+						<option <?php echo ($qCustomCloseParen7==')'?'SELECTED':''); ?> value=")">)</option>
+						<option <?php echo ($qCustomCloseParen7=='))'?'SELECTED':''); ?> value="))">))</option>
+						<option <?php echo ($qCustomCloseParen7==')))'?'SELECTED':''); ?> value=")))">)))</option>
+					</select>
+				</div>
+				<div style="margin-bottom: 10px;">
+					<a href="#" onclick="toggleCustomDiv8();return false;" title="<?php echo $LANG['NEW_CUSTOM_FIELD'] ?>">
+						<img class="editimg" src="../../images/editplus.png" alt="pencil with a plus sign indicating the creation of another custom field" />
+					</a>
+				</div>
 			</div>
 			<div id="customdiv8" class="fieldGroupDiv" style="display:<?php echo ($qCustomValue8||$qCustomType8=='NULL'||$qCustomType8=='NOTNULL'?'block':'none');?>;">
-				Custom Field 8:
-				<select name="q_customandor8" onchange="customSelectChanged(8)">
-					<option>AND</option>
-					<option <?php echo ($qCustomAndOr8=='OR'?'SELECTED':''); ?> value="OR">OR</option>
-				</select>
-				<select name="q_customopenparen8" onchange="customSelectChanged(8)">
-					<option value="">---</option>
-					<option <?php echo ($qCustomOpenParen8=='('?'SELECTED':''); ?> value="(">(</option>
-				</select>
-				<select name="q_customfield8" onchange="customSelectChanged(8)">
-					<option value="">Select Field Name</option>
-					<option value="">---------------------------------</option>
-					<?php
-					foreach($advFieldArr as $k => $v){
-						echo '<option value="'.$k.'" '.($k==$qCustomField8?'SELECTED':'').'>'.$v.'</option>';
-					}
-					?>
-				</select>
-				<select name="q_customtype8">
-					<option>EQUALS</option>
-					<option <?php echo ($qCustomType8=='NOT EQUALS'?'SELECTED':''); ?> value="NOT EQUALS">NOT EQUALS</option>
-					<option <?php echo ($qCustomType8=='STARTS'?'SELECTED':''); ?> value="STARTS">STARTS WITH</option>
-					<option <?php echo ($qCustomType8=='LIKE'?'SELECTED':''); ?> value="LIKE">CONTAINS</option>
-					<option <?php echo ($qCustomType8=='NOT LIKE'?'SELECTED':''); ?> value="NOT LIKE">DOES NOT CONTAIN</option>
-					<option <?php echo ($qCustomType8=='GREATER'?'SELECTED':''); ?> value="GREATER">GREATER THAN</option>
-					<option <?php echo ($qCustomType8=='LESS'?'SELECTED':''); ?> value="LESS">LESS THAN</option>
-					<option <?php echo ($qCustomType8=='NULL'?'SELECTED':''); ?> value="NULL">IS NULL</option>
-					<option <?php echo ($qCustomType8=='NOTNULL'?'SELECTED':''); ?> value="NOTNULL">IS NOT NULL</option>
-				</select>
-				<input name="q_customvalue8" type="text" value="<?php echo $qCustomValue8; ?>" style="width:200px;" />
-				<select name="q_customcloseparen8" onchange="customSelectChanged(8)">
-					<option value="">---</option>
-					<option <?php echo ($qCustomCloseParen8==')'?'SELECTED':''); ?> value=")">)</option>
-					<option <?php echo ($qCustomCloseParen8=='))'?'SELECTED':''); ?> value="))">))</option>
-					<option <?php echo ($qCustomCloseParen8==')))'?'SELECTED':''); ?> value=")))">)))</option>
-				</select>
+				<hr>
+				<div style="margin-bottom: 10px;">
+					<?php echo $LANG['CUSTOM_FIELD_8']; ?>:
+				</div>
+				<div>
+					<label for="q_customandor8"><?php echo $LANG['OPERATOR'] ?>:</label>
+					<select name="q_customandor8" id="q_customandor8" onchange="customSelectChanged(8)">
+						<option>AND</option>
+						<option <?php echo ($qCustomAndOr8=='OR'?'SELECTED':''); ?> value="OR">OR</option>
+					</select>
+				</div>
+				<div>
+					<label for="q_customopenparen8"><?php echo $LANG['PARENTHESES']; ?>:</label>
+					<select name="q_customopenparen8" id="q_customopenparen8" onchange="customSelectChanged(8)">
+						<option value="">---</option>
+						<option <?php echo ($qCustomOpenParen8=='('?'SELECTED':''); ?> value="(">(</option>
+					</select>
+				</div>
+				<div>
+					<label for="q_customfield8"><?php echo $LANG['SELECT_FIELD'] ?>:</label>
+					<select name="q_customfield8" id="q_customfield8" onchange="customSelectChanged(8)">
+						<option value=""><?php echo $LANG['SELECT_FIELD_NAME'] ?></option>
+						<option value="">---------------------------------</option>
+						<?php
+						foreach($advFieldArr as $k => $v){
+							echo '<option value="'.$k.'" '.($k==$qCustomField8?'SELECTED':'').'>'.$v.'</option>';
+						}
+						?>
+					</select>
+				</div>
+				<div>
+					<label for="q_customtype8"><?php echo $LANG['OPERATOR'] ?>:</label>
+					<select name="q_customtype8" id="q_customtype8">
+						<option>EQUALS</option>
+						<option <?php echo ($qCustomType8=='NOT EQUALS'?'SELECTED':''); ?> value="NOT EQUALS">NOT EQUALS</option>
+						<option <?php echo ($qCustomType8=='STARTS'?'SELECTED':''); ?> value="STARTS">STARTS WITH</option>
+						<option <?php echo ($qCustomType8=='LIKE'?'SELECTED':''); ?> value="LIKE">CONTAINS</option>
+						<option <?php echo ($qCustomType8=='NOT LIKE'?'SELECTED':''); ?> value="NOT LIKE">DOES NOT CONTAIN</option>
+						<option <?php echo ($qCustomType8=='GREATER'?'SELECTED':''); ?> value="GREATER">GREATER THAN</option>
+						<option <?php echo ($qCustomType8=='LESS'?'SELECTED':''); ?> value="LESS">LESS THAN</option>
+						<option <?php echo ($qCustomType8=='NULL'?'SELECTED':''); ?> value="NULL">IS NULL</option>
+						<option <?php echo ($qCustomType8=='NOTNULL'?'SELECTED':''); ?> value="NOTNULL">IS NOT NULL</option>
+					</select>
+				</div>
+				<div>
+					<label for="q_customvalue8"><?php echo $LANG['EXPRESSION'] ?>:</label>
+					<input name="q_customvalue8" id="q_customvalue8" type="text" value="<?php echo $qCustomValue8; ?>" style="width:200px;" />
+				</div>
+				<div>
+					<label for="q_customcloseparen8"><?php echo $LANG['PARENTHESES'] ?>:</label>
+					<select name="q_customcloseparen8" id="q_customcloseparen8" onchange="customSelectChanged(8)">
+						<option value="">---</option>
+						<option <?php echo ($qCustomCloseParen8==')'?'SELECTED':''); ?> value=")">)</option>
+						<option <?php echo ($qCustomCloseParen8=='))'?'SELECTED':''); ?> value="))">))</option>
+						<option <?php echo ($qCustomCloseParen8==')))'?'SELECTED':''); ?> value=")))">)))</option>
+					</select>
+				</div>
 			</div>
 			<div class="fieldGroupDiv">
 				<?php
@@ -616,9 +754,9 @@ else{
 				?>
 			</div>
 			<div class="fieldGroupDiv">
-				<div style="float:right">
+				<div>
 					<button type="button" class="icon-button" onclick="copyQueryLink(event)" title="<?php echo (isset($LANG['COPY_SEARCH'])?$LANG['COPY_SEARCH']:'Copy Search As Link'); ?>">
-						<img src="../../images/dl2.png" srcset="../../images/link.svg" class="svg-icon" style="width:15px; height:15px" />
+						<img src="../../images/dl2.png" srcset="../../images/link.svg" class="svg-icon" style="width:15px; height:15px" alt="Link icon. Copies the search terms as a link." />
 					</button>
 					<?php
 					if(!$crowdSourceMode){
@@ -649,14 +787,18 @@ else{
 				<input type="hidden" name="occindex" value="<?php echo $occManager->getOccIndex(); ?>" />
 				<input type="hidden" name="occidlist" value="<?php echo $occManager->getOccidIndexStr(); ?>" />
 				<input type="hidden" name="direction" value="" />
-				<button name="submitaction" type="submit" onclick="submitQueryEditor(this.form)" ><?php echo $LANG['DISPLAY_EDITOR']; ?></button>
-				<button name="submitaction" type="submit" onclick="submitQueryTable(this.form)" ><?php echo $LANG['DISPLAY_TABLE']; ?></button>
-				<span style="margin-left:10px;">
+				<div>
+					<button name="submitaction" type="submit" onclick="submitQueryEditor(this.form)" ><?php echo $LANG['DISPLAY_EDITOR']; ?></button>
+				</div>
+				<div>
+					<button name="submitaction" type="submit" onclick="submitQueryTable(this.form)" ><?php echo $LANG['DISPLAY_TABLE']; ?></button>
+				</div>
+				<div>
 					<button type="button" name="reset" value="Reset Form" onclick="resetQueryForm(this.form)">Reset Form</button>
-				</span>
-				<span style="margin-left:10px;">
-					<?php echo $LANG['SORT_BY']; ?>:
-					<select name="orderby">
+				</div>
+				<div>
+					<label for="orderby"><?php echo $LANG['SORT_BY']; ?>:</label>
+					<select name="orderby" id="orderby">
 						<option value=""></option>
 						<option value="recordedby" <?php echo ($qOrderBy=='recordedby'?'SELECTED':''); ?>><?php echo $LANG['COLLECTOR']; ?></option>
 						<option value="recordnumber" <?php echo ($qOrderBy=='recordnumber'?'SELECTED':''); ?>><?php echo $LANG['NUMBER']; ?></option>
@@ -679,24 +821,30 @@ else{
 						<option value="minimumelevationinmeters" <?php echo ($qOrderBy=='minimumelevationinmeters'?'SELECTED':''); ?>><?php echo $LANG['ELEV_MIN']; ?></option>
 						<option value="maximumelevationinmeters" <?php echo ($qOrderBy=='maximumelevationinmeters'?'SELECTED':''); ?>><?php echo $LANG['ELEV_MAX']; ?></option>
 					</select>
-				</span>
-				<span>
-					<select name="orderbydir">
+				</div>
+				<div>
+					<label for="orderbydir"><?php echo $LANG['ORDER_BY'] ?>:</label>
+					<select name="orderbydir" id="orderbydir">
 						<option value="ASC"><?php echo $LANG['ASCENDING']; ?></option>
 						<option value="DESC" <?php echo ($qOrderByDir=='DESC'?'SELECTED':''); ?>><?php echo $LANG['DESCENDING']; ?></option>
 					</select>
-					<?php
-					if(!isset($recLimit) || !$recLimit) $recLimit = 1000;
-					echo $LANG['OUTPUT'].':';
-					?>
-					<select name="reclimit">
+				</div>
+					<label for="reclimit">
+						<?php
+						if(!isset($recLimit) || !$recLimit) $recLimit = 1000;
+						echo $LANG['OUTPUT'] . ':';
+						?>
+					</label>
+					<select name="reclimit" id="reclimit">
 						<option <?php echo ($recLimit==500?'selected':''); ?>>500</option>
 						<option <?php echo ($recLimit==1000?'selected':''); ?>>1000</option>
 						<option <?php echo ($recLimit==2000?'selected':''); ?>>2000</option>
 						<option <?php echo ($recLimit==3000?'selected':''); ?>>3000</option>
 					</select> <?php //echo $LANG['RECORDS']; ?>
-				</span>
-				<div style="margin-left:110px"><input name="dynamictable" type="checkbox" value="1" <?php if(isset($dynamicTable) && $dynamicTable) echo 'checked'; ?> /> <?php echo $LANG['DYNAMIC_TABLE']; ?></div>
+				<div>
+					<label for="dynamictable-1"><?php echo $LANG['DYNAMIC_TABLE']; ?></label>
+					<input name="dynamictable" id="dynamictable-1" type="checkbox" value="1" <?php if(isset($dynamicTable) && $dynamicTable) echo 'checked'; ?> /> 
+				</div>
  			</div>
 		</fieldset>
 	</form>
