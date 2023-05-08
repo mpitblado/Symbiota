@@ -124,5 +124,10 @@ $LANG['ELEV_MIN'] = 'Elevación Mínima';
 $LANG['ELEV_MAX'] = 'Elevación Máxima';
 $LANG['ASCENDING'] = 'ascendente';
 $LANG['DESCENDING'] = 'descendente';
-$LANG['OUTPUT'] = 'Record output';
+$LANG['OUTPUT'] = 'Grabar la salida';
+$LANG['SELECT_FIELD'] = 'Nombre del campo';
+$LANG['OPERATOR'] = 'Operador';
+$LANG['EXPRESSION'] = 'Expresión';
+$LANG['PARENTHESES'] = 'Paréntesis';
+$LANG['NEW_CUSTOM_FIELD'] = 'Agregar otro campo personalizado';
 ?>

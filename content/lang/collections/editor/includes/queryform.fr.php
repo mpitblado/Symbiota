@@ -124,5 +124,10 @@ $LANG['ELEV_MIN'] = 'Altitude Minimale';
 $LANG['ELEV_MAX'] = 'Altitude Maximale';
 $LANG['ASCENDING'] = 'ascendant';
 $LANG['DESCENDING'] = 'descendant';
-$LANG['OUTPUT'] = 'Record output';
+$LANG['OUTPUT'] = 'Enregistrer la sortie';
+$LANG['SELECT_FIELD'] = 'Nom de domaine';
+$LANG['OPERATOR'] = 'Opérateur';
+$LANG['EXPRESSION'] = 'Expression';
+$LANG['PARENTHESES'] = 'Parenthèses';
+$LANG['NEW_CUSTOM_FIELD'] = 'Ajouter un autre champ personnalisé';
 ?>
