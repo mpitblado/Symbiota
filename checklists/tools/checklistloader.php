@@ -129,12 +129,12 @@ if($IS_ADMIN || (array_key_exists("ClAdmin",$USER_RIGHTS) && in_array($clid,$USE
 							<legend><b>Checklist Upload Form</b></legend>
 							<input type="hidden" name="MAX_FILE_SIZE" value="5000000" />
 							<div style="font-weight:bold;">
-								Checklist File:
+								<label for="uploadfile">Checklist File:</label>
 								<input id="uploadfile" name="uploadfile" type="file" size="45" />
 							</div>
 							<div style="margin-top:10px;">
-								Taxonomic Resolution:
-								<select name="thes">
+								<label for="thes">Taxonomic Resolution:</label>
+								<select name="thes" id="thes">
 									<option value="">Leave Taxonomy As Is</option>
 									<?php
 									$thesArr = $clLoaderManager->getThesauri();
