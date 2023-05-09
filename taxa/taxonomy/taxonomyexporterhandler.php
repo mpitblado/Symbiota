@@ -41,8 +41,7 @@ $rootNodes = $taxonExp->setRootNode($node);
 /****************************************/
 
 /****************************************/
-/** Use below to get single query with all nodes */
-// $ranksRange = $taxonExp->getRanksRange();
+$ranksRange = $taxonExp->getRanksRange();
 // echo ("<h2>Ranks Range</h2>");
 // echo "<pre>" . print_r($ranksRange, true) . "</pre>";
 
@@ -107,10 +106,34 @@ if (!empty($higherTree)) {
 	// 	echo "There was an error downloading the file.";
 	// }
 }
-// echo $higherTreeFilename;
+
+// 2. Create one CSV per kingdom with all the children in that given kingdom
+// for each taxonID in $kingdomsData, get children
+$kingdomsFilenames = array();
+// echo "<h2>Kingdoms Data:</h2>";
+// echo "<pre>" . print_r($kingdomsData, true) . "</pre>";
+foreach ($kingdomsData as $kingdomData) {
+	if (!empty($kingdomData)) {
+		foreach ($kingdomData as $kingdom) {
+			// echo "<h2>Kingdom: " . $kingdom["sciname"] . "</h2>";
+			$children = $taxonExp->getNodeChildren($kingdom["taxonID"], $kingdomRankId, $ranksRange["maxRank"]);
+			// echo "<pre>" . print_r($children, true) . "</pre>";
+			if (!empty($children)) {
+				$children = $taxonExp->conformTree($children, "symbiota");
+				$childrenFilename = $filesDir . $fileDate . "_" . $portalName . "_" . $kingdom["sciname"] . "_symb.csv";
+				$taxonExp->writeCsv($children, $childrenFilename);
+				array_push($kingdomsFilenames, $childrenFilename);
+			}
+		}
+	}
+}
+
+// add existing files to zip file
 if ($zip->open($zipFilename, ZipArchive::CREATE) === TRUE) {
 	$zip->addFile($higherTreeFilename, basename($higherTreeFilename));
-	$zip->addFromString('new.txt', 'text to be added to the new.txt file');
+	foreach ($kingdomsFilenames as $filename) {
+		$zip->addFile($filename, basename($filename));
+	}
 	$zip->close();
 }
 
@@ -124,13 +147,33 @@ if (file_exists($zipFilename)) {
 	unlink($zipFilename);
 }
 
-// 2. Create one CSV per kingdom with all the children in that given kingdom
+// echo "<pre>" . print_r($kingdomsData, true) . "</pre>";
+
+
 
 // $tree = array_merge($rootNodeData, $children);
 // echo ("<h2>Full Tree for " . $rootNodeData["rankname"] . " " . $rootNodeData["sciname"] . ":</h2>");
 // echo "<pre>" . print_r($tree, true) . "</pre>";
 // echo ("<hr>");
 // echo ("<br><br>");
+
+
+// echo $higherTreeFilename;
+// if ($zip->open($zipFilename, ZipArchive::CREATE) === TRUE) {
+// 	$zip->addFile($higherTreeFilename, basename($higherTreeFilename));
+// 	$zip->addFromString('new.txt', 'text to be added to the new.txt file');
+// 	$zip->close();
+// }
+
+// if (file_exists($zipFilename)) {
+// 	header('Content-Type: application/zip');
+// 	header('Content-Disposition: attachment; filename="' . basename($zipFilename) . '"');
+// 	header('Content-Length: ' . filesize($zipFilename));
+
+// 	flush();
+// 	readfile($zipFilename);
+// 	unlink($zipFilename);
+// }
 
 /********/
 
