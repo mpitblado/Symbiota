@@ -87,9 +87,16 @@ $zip = new ZipArchive;
 
 // 1. Create CSV with higher taxa (Organisms -> Kingdoms)
 $higherTree = array_merge($rootNodesData, array_merge(...$kingdomsData));
+// remove duplicates in array
+$higherTree = array_map("unserialize", array_unique(array_map("serialize", $higherTree)));
+// sort higherTree by rankid
+usort($higherTree, function ($a, $b) {
+	return $a['rankid'] <=> $b['rankid'];
+});
 $higherTree = $taxonExp->conformTree($higherTree, "symbiota");
 // echo "<pre>" . print_r($higherTree, true) . "</pre>";
 if (!empty($higherTree)) {
+
 	$higherTreeFilename = $filesDir . $fileDate . "_" . $portalName . "_symb_higher.csv";
 	$taxonExp->writeCsv($higherTree, $higherTreeFilename);
 	// if (file_exists($higherTreeFilename)) {

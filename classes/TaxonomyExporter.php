@@ -136,8 +136,6 @@ class TaxonomyExporter extends Manager
 			$nodeChildrenArr[] = array("taxonID" => $tid, "kingdom" => $kingdom, "family" => $family, "sciname" => $sciname, "author" => $author, "genus" => $genus, "specificepithet" => $specificepithet, "taxonrank" => $taxonrank, "infraspecificepithet" => $infraspecificepithet, "rankid" => $rankid, "rankname" => $rankname, "source" => $source, "parentstr" => $parentstr);
 		}
 		$stmt->close();
-		// remove from array the first element (the root node)
-		array_shift($nodeChildrenArr);
 		return $nodeChildrenArr;
 	}
 
