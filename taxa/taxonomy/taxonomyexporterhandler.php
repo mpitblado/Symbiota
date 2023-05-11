@@ -122,6 +122,10 @@ $kingdomsFilenames = array();
 foreach ($kingdomsData as $kingdomData) {
 	if (!empty($kingdomData)) {
 		foreach ($kingdomData as $kingdom) {
+			// only continue if rankname is "Kingdom" or is NULL
+			if ($kingdom["rankname"] != "Kingdom" && !is_null($kingdom["rankname"])) {
+				continue;
+			}
 			// echo "<h2>Kingdom: " . $kingdom["sciname"] . "</h2>";
 			$children = $taxonExp->getNodeChildren($kingdom["taxonID"], $kingdomRankId, $ranksRange["maxRank"]);
 			// echo "<pre>" . print_r($children, true) . "</pre>";
