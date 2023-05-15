@@ -21,7 +21,7 @@ body{
 
 #navDiv{
 	width: 600px;
-	clear: both;	
+	clear: both;
 }
 
 #occdiv{
@@ -93,7 +93,7 @@ body{
 
 #dupesDiv{
 	float: right;
-	margin-top: 10px; 
+	margin-top: 10px;
 }
 
 #dupeMsgDiv{
@@ -103,7 +103,7 @@ body{
 	display:none;
 	width:220px;
 	background-color:#FFFFFF;
-	z-index: 10; 
+	z-index: 10;
 	padding:25px;
 	font-weight:bold;
 }
@@ -314,13 +314,13 @@ body{
 }
 
 #geoLocateDiv img{
-	width:	18px;	
+	width:	18px;
 }
 
 #geoToolsDiv{
 	float:left;
 	margin: 12px 2px 0px 2px;
-	z-index: 10; 
+	z-index: 10;
 }
 
 #coordAidDiv{
@@ -432,7 +432,7 @@ body{
 #habitatDiv{
 	float: left;
 	margin-top:2px;
-	z-index: 1; 
+	z-index: 1;
 }
 
 #habitatDiv input{
@@ -626,18 +626,18 @@ body{
 	display: none;
 }
 
-img.docimg { 
+img.docimg {
 	border:			0px;
 	width:			9px;
-	margin-bottom:	2px; 
+	margin-bottom:	2px;
 }
 
-img.editimg { 
+img.editimg {
 	border:			0px;
 	width:			15px;
 }
 
-table { 
-	font-family: 	Arial, Helvetica, sans-serif; 
+table {
+	font-family: 	Arial, Helvetica, sans-serif;
 	font-size: 		12px;
 }

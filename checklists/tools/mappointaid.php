@@ -32,6 +32,7 @@ else{
 	<head>
 		<title><?php echo $DEFAULT_TITLE; ?> - Coordinate Aid</title>
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<!-- <link  type="text/css" rel="stylesheet" href="<?php echo $CSS_BASE_PATH; ?>/accessibility-compliant.css" /> -->
 		<script src="//maps.googleapis.com/maps/api/js?<?php echo (isset($GOOGLE_MAP_KEY) && $GOOGLE_MAP_KEY?'key='.$GOOGLE_MAP_KEY:''); ?>"></script>
 		<script type="text/javascript">
 			var map;
@@ -104,12 +105,12 @@ else{
 				return false;
 			}
 		</script>
-
+		<link type="text/css" rel="stylesheet" href="<?php echo $CSS_BASE_PATH; ?>/checklists/tools/deleteMe.css" />
 	</head>
 	<body style="background-color:#ffffff;" onload="initialize()">
-		<div style="">
-			<div>
-				Click once to capture coordinates.
+		<div>
+			<div class="test">
+				Click once to capture coordinates. <?php echo $CSS_BASE_PATH ?>
 				Submit Coordinate button will transfer to form.
 			</div>
 			<div style="margin-right:30px;">

@@ -22,7 +22,7 @@ body{
 
 #navDiv{
 	width: 820px;
-	clear: both;	
+	clear: both;
 }
 
 #navDiv.navpath{
@@ -58,7 +58,7 @@ body{
 	left: 615px;
 	display:none;
 	background-color: lightgrey;
-	z-index: 10; 
+	z-index: 10;
 	padding:15px;
 	font-weight:bold;
 }
@@ -110,7 +110,7 @@ body{
 }
 
 .idValueInput{
-	width:	250px;	
+	width:	250px;
 }
 
 #recordedByDiv {
@@ -327,7 +327,7 @@ body{
 #localityDiv textarea{
 	height:	15px;
 	width: 95%;
-	height: 22px; 
+	height: 22px;
 }
 
 #localSecurityDiv{
@@ -402,7 +402,7 @@ body{
 }
 
 #geoLocateDiv img{
-	width:	18px;	
+	width:	18px;
 }
 
 #coordCloningDiv{
@@ -597,7 +597,7 @@ body{
 #associatedTaxaDiv textarea{
 	height:	15px;
 	width:	95%;
-	height: 22px; 
+	height: 22px;
 }
 
 #verbatimAttributesDiv{
@@ -768,7 +768,7 @@ body{
 
 #basisOfRecordDiv{
 	float:left;
-	margin:3px;	
+	margin:3px;
 }
 
 #basisOfRecordDiv input{
@@ -777,7 +777,7 @@ body{
 
 #languageDiv{
 	float:left;
-	margin:4px 3px;	
+	margin:4px 3px;
 }
 
 #languageDiv input{
@@ -860,19 +860,19 @@ body{
 }
 
 /*Misc styling*/
-img.docimg { 
+img.docimg {
 	border:			0px;
 	width:			9px;
-	margin-bottom:	2px; 
+	margin-bottom:	2px;
 }
 
-img.editimg { 
+img.editimg {
 	border:			0px;
 	width:			15px;
 }
 
-table { 
-	font-family: 	Arial, Helvetica, sans-serif; 
+table {
+	font-family: 	Arial, Helvetica, sans-serif;
 	font-size: 		12px;
 }
 
@@ -884,3 +884,6 @@ table {
 .divTableHead { padding: 1px 8px; }
 .divTableBody { display: table-row-group;}
 
+div {
+	background-color: green;
+}
