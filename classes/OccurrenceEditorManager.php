@@ -92,7 +92,8 @@ class OccurrenceEditorManager {
 		$retArr = array();
 		$propArr = array();
 		if(array_key_exists('dynamicproperties', $this->collMap)){
-			$propArr = json_decode($this->collMap['dynamicproperties'],true);
+			$safeColMap = $this->collMap['dynamicproperties'] ?? "";
+			$propArr = json_decode($safeColMap,true);
 			if(isset($propArr['editorProps'])){
 				$retArr = $propArr['editorProps'];
 				if(isset($retArr['modules-panel'])){
@@ -2167,8 +2168,10 @@ class OccurrenceEditorManager {
 			$retArr[$r->orid][$r->appliedstatus]['reviewstatus'] = $r->reviewstatus;
 			$retArr[$r->orid][$r->appliedstatus]['ts'] = $r->initialtimestamp;
 
-			$oldValues = json_decode($r->oldvalues,true);
-			$newValues = json_decode($r->newvalues,true);
+			$safeOldVal = $r->oldvalues ?? "";
+			$oldValues = json_decode($safeOldVal,true) ? json_decode($safeOldVal,true) : array();
+			$safeNewVals = $r->newvalues ?? "";
+			$newValues = json_decode($safeNewVals,true) ? json_decode($safeNewVals,true): array();
 			foreach($oldValues as $fieldName => $value){
 				$retArr[$r->orid][$r->appliedstatus]['edits'][$fieldName]['old'] = $value;
 				$retArr[$r->orid][$r->appliedstatus]['edits'][$fieldName]['new'] = (isset($newValues[$fieldName])?$newValues[$fieldName]:'ERROR');
