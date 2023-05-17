@@ -784,7 +784,7 @@ class OccurrenceEditorManager {
 						$unitArr = explode(':',trim($trimableIdentUnit,': '));
 						$safeUnitArr = $unitArr ?? array();
 						$tag = '';
-						$trimableShiftedUnitArr = array_shift($safeUnitArr) ?? [];
+						$trimableShiftedUnitArr = array_shift($safeUnitArr) ?? "";
 						if(count($safeUnitArr) > 1) $tag = trim($trimableShiftedUnitArr);
 						$value = trim(implode(', ',$safeUnitArr));
 						$otherCatNumArr[$value] = $tag;
