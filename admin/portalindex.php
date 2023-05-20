@@ -12,6 +12,7 @@ $remotePath = array_key_exists('remotePath', $_POST) ? filter_var($_POST['remote
 $formSubmit = array_key_exists('formsubmit', $_POST) ? $_POST['formsubmit'] : '';
 
 $portalManager = new PortalIndex();
+$indexArr = $portalManager->getPortalIndexArr($portalID);
 
 $isEditor = 0;
 if($IS_ADMIN) $isEditor = 1;
@@ -26,12 +27,42 @@ if($IS_ADMIN) $isEditor = 1;
 		<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery.js" type="text/javascript"></script>
 		<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-ui.js" type="text/javascript"></script>
 		<script type="text/javascript">
+			let portalArr = [];
+			<?php
+			if(!$portalID){
+				foreach($indexArr as $portalID => $portalArr){
+					echo 'portalArr['.$portalID.'] = "'.$portalArr['urlRoot'].'";';
+				}
+			}
+			?>
+
 			function validateHandshakeForm(f){
 				if(f.remotePath.value == ""){
 					alert("Enter URL to remote portal base index page");
 					return false;
 				}
 				return true;
+			}
+
+			function searchPortals(){
+				for(let x = ){
+
+				}
+			}
+
+			fuction portalQuery(indexID, portalUrl, scinameSearch){
+				$.ajax({
+					method: "GET",
+					data: { sciname: scinameSearch, limit: 1, offset: 0 },
+					dataType: "json",
+					url: portalUrl + "/api/v2/occurrence/search";
+				})
+				.done(function(jsonRes) {
+					$("#occurrence-div-" + indexID).text('Occurrence count: ');
+				})
+				.fail(function() {
+					$("#syncDiv-"+occid).text('FAILED: missing variables');
+				});
 			}
 		</script>
 		<style type="text/css">
@@ -58,62 +89,82 @@ if($IS_ADMIN) $isEditor = 1;
 				echo 'This feature has not yet been activated within this portal';
 			}
 			elseif($isEditor){
-				if($formSubmit && $formSubmit != 'listCollections'){
-					echo '<fieldset>';
-					echo '<legend>Action Panel</legend>';
-					if($formSubmit == 'importProfile'){
-						if($collid = $portalManager->importProfile($portalID, $remoteID)) echo '<div><a href="../collections/misc/collprofiles.php?collid='.$collid.'" target="_blank">New snapshot collection created</a></div>';
-						else echo '<div>failed to insert new collections: '.$portalManager->getErrorMessage().'</div>';
-					}
-					elseif($formSubmit == 'initiateHandshake'){
-						if($resArr = $portalManager->initiateHandshake($remotePath)){
-							if($resArr['status']) echo '<div>Success - handshake successful: '.$resArr['message'].'</div>';
-							else echo '<div>ERROR - handshake failed: '.$resArr['message'].'</div>';
-							//print_r($resArr);
-						}
-						else echo '<div>ERROR initiating handshake: '.$portalManager->getErrorMessage().'</div>';
-					}
-					echo '</fieldset>';
-				}
-				$selfArr = $portalManager->getSelfDetails();
 				if($formSubmit != 'listCollections'){
+					echo '<div style="float:right">';
+					echo '<div onclick="$(\'#search-container\').toggle();return false;"><img class="icon-img" src="../images/find.png" ></div>';
+					if($IS_ADMIN) echo '<div onclick="$(\'#admin-container\').toggle();return false;"><img class="icon-img" src="../images/editadmin.png" ></div>';
+					echo '</div>';
+					if($formSubmit){
+						echo '<fieldset>';
+						echo '<legend>Action Panel</legend>';
+						if($formSubmit == 'importProfile'){
+							if($collid = $portalManager->importProfile($portalID, $remoteID)) echo '<div><a href="../collections/misc/collprofiles.php?collid='.$collid.'" target="_blank">New snapshot collection created</a></div>';
+							else echo '<div>failed to insert new collections: '.$portalManager->getErrorMessage().'</div>';
+						}
+						elseif($formSubmit == 'initiateHandshake'){
+							if($resArr = $portalManager->initiateHandshake($remotePath)){
+								if($resArr['status']) echo '<div>Success - handshake successful: '.$resArr['message'].'</div>';
+								else echo '<div>ERROR - handshake failed: '.$resArr['message'].'</div>';
+								//print_r($resArr);
+							}
+							else echo '<div>ERROR initiating handshake: '.$portalManager->getErrorMessage().'</div>';
+						}
+						echo '</fieldset>';
+					}
 					?>
 					<fieldset>
-						<legend>Current Portal Details</legend>
-						<div class="field-row"><label>Portal title:</label> <?php echo $selfArr['portalName']; ?></div>
-						<div class="field-row"><label>Root URL:</label> <?php echo $selfArr['urlRoot']; ?></div>
-						<div class="field-row"><label>Global Unique Identifier:</label> <?php echo $selfArr['guid']; ?></div>
-						<div class="field-row"><label>Manager email:</label> <?php echo $selfArr['managerEmail']; ?></div>
-						<div class="field-row"><label>Software version:</label> <?php echo $selfArr['symbiotaVersion']; ?></div>
-						<hr />
-						<div class="handshake-div"><a href="#" onclick="$('.handshake-div').toggle(); return false;">Initiate Handshake with External Portal</a></div>
-						<div class="handshake-div" style="display:none">
-							<form action="portalindex.php" method="post" onsubmit="return validateHandshakeForm(this)">
-								<div class="field-row"><label>Path to Remote Portal:</label> <input name="remotePath" type="text" value="<?php echo $remotePath; ?>" style="width: 500px" /></div>
-								<div class="field-row"><button name="formsubmit" type="submit" value="initiateHandshake">Initiate Handshake</button></div>
-							</form>
-						</div>
+						<legend>Taxon Search</legend>
+						<input id="sciname" name="sciname" type="text" >
+						<button id="taxonSearchButton" name="taxonSearch" type="button" onclick="taxonSearch()" >Search Portals</button>
 					</fieldset>
 					<?php
+					if($IS_ADMIN){
+						$selfArr = $portalManager->getSelfDetails();
+						?>
+						<fieldset id="admin-container" style="display: none">
+							<legend>Current Portal Details</legend>
+							<div class="field-row"><label>Portal title:</label> <?php echo $selfArr['portalName']; ?></div>
+							<div class="field-row"><label>Endpoint:</label> <?php echo $selfArr['urlRoot']; ?></div>
+							<div class="field-row"><label>Global Unique Identifier:</label> <?php echo $selfArr['guid']; ?></div>
+							<div class="field-row"><label>Manager email:</label> <?php echo $selfArr['managerEmail']; ?></div>
+							<div class="field-row"><label>Software version:</label> <?php echo $selfArr['symbiotaVersion']; ?></div>
+							<hr />
+							<div class="handshake-div"><a href="#" onclick="$('.handshake-div').toggle(); return false;">Initiate Handshake with External Portal</a></div>
+							<div class="handshake-div" style="display:none">
+								<form action="portalindex.php" method="post" onsubmit="return validateHandshakeForm(this)">
+									<div class="field-row"><label>Path to Remote Portal:</label> <input name="remotePath" type="text" value="<?php echo $remotePath; ?>" style="width: 500px" /></div>
+									<div class="field-row"><button name="formsubmit" type="submit" value="initiateHandshake">Initiate Handshake</button></div>
+								</form>
+							</div>
+						</fieldset>
+						<?php
+					}
 				}
 				?>
 				<fieldset>
 					<legend>Portal Index</legend>
 					<?php
-					$indexArr = $portalManager->getPortalIndexArr($portalID);
 					foreach($indexArr as $portalID => $portalArr){
-						foreach($portalArr as $fieldName => $fieldValue){
-							if($fieldValue){
-								echo '<div><label>'.$fieldName.'</label>: ';
-								$href = '';
-								if($fieldName=='urlRoot') $href = $fieldValue;
-								elseif($fieldName=='guid') $href = $portalArr['urlRoot'].'/api/v2/installation/ping';
-								if($href) echo '<a href="'.$href.'" target="_blank">';
-								echo $fieldValue;
-								if($href) echo '</a>';
-								echo '</div>';
-							}
+						echo '<div class="portalName-div"><a href="#" onclick="$(\'#portal-container-'.$portalArr['portalID'].'\').toggle();return false;">'.$portalArr['portalName'].'</a></div>';
+						echo '<fieldset id="portal-container-'.$portalArr['portalID'].'" style="display: none">';
+						echo '<legend>Portal Details</legend>';
+						echo '<div class="field-div"><label>GUID</label>: '.$portalArr['guid'].'</div>';
+						echo '<div class="field-div"><label>URL</label>: <a href="'.$portalArr['urlRoot'].'" target="_blank">'.$portalArr['urlRoot'].'</a></div>';
+						echo '<div class="field-div"><label>Manager</label>: '.$portalArr['managerEmail'].'</div>';
+						echo '<div class="field-div"><label>Code version</label>: '.$portalArr['symbiotaVersion'].'</div>';
+						if(!$portalID){
+							?>
+							<div style="margin:15px;">
+								<form name="portalActionForm" method="post" action="portalindex.php">
+									<input name="portalid" type="hidden" value="<?php echo $portalID; ?>" />
+									<button name="formsubmit" type="submit" value="listCollections">List Collections</button>
+								</form>
+							</div>
+							<?php
 						}
+						echo '</fieldset>';
+						echo '<div id="occurrence-div-'.$portalArr['portalID'].'"></div>';
+						echo '<div id="checklist-div-'.$portalArr['portalID'].'"></div>';
 						if($remoteID){
 							$collectArr = $portalManager->getCollectionList($portalArr['urlRoot'], $remoteID);
 							echo '<fieldset>';
@@ -191,17 +242,6 @@ if($IS_ADMIN) $isEditor = 1;
 								echo '</table>';
 							}
 						}
-						else{
-							?>
-							<div style="margin:15px;">
-								<form name="portalActionForm" method="post" action="portalindex.php">
-									<input name="portalid" type="hidden" value="<?php echo $portalID; ?>" />
-									<button name="formsubmit" type="submit" value="listCollections">List Collections</button>
-								</form>
-							</div>
-							<?php
-						}
-						echo '<hr/>';
 					}
 					if(!$indexArr) echo '<div>Portal Index empty. No portals have yet been registered.</div>';
 					?>
