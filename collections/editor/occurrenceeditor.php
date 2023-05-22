@@ -460,6 +460,8 @@ else{
     else{
 		?>
 		<link href="<?php echo $CSS_BASE_PATH; ?>/symbiota/collections/editor/occurrenceeditor.css?ver=6.css" type="text/css" rel="stylesheet" id="editorCssLink" >
+		<link href="<?php echo $CSS_BASE_PATH; ?>/symbiota/accessibility-compliant.css?ver=6.css" type="text/css" rel="stylesheet" name="accessibility-css-link" >
+		<link href="<?php echo $CSS_BASE_PATH; ?>/symbiota/condensed.css?ver=6.css" type="text/css" rel="stylesheet" name="accessibility-css-link" disabled >
 		<?php
 		if(isset($CSSARR)){
 			foreach($CSSARR as $cssVal){
@@ -520,6 +522,31 @@ else{
 	<script src="../../js/symb/collections.editor.imgtools.js?ver=3" type="text/javascript"></script>
 	<script src="../../js/jquery.imagetool-1.7.js?ver=140310" type="text/javascript"></script>
 	<script src="../../js/symb/collections.editor.query.js?ver=6" type="text/javascript"></script>
+	<script type="text/javascript">
+		function toggleAccessibilityStyles(){
+			console.log('deleteMe toggleAccessibilityStyles entered');
+			const xmlRequest = new XMLHttpRequest();
+			xmlRequest.onreadystatechange = () => {
+				if(xmlRequest.readyState === 4 && xmlRequest.status === 200){
+					const activeStylesheet = xmlRequest.responseText;
+					console.log('deleteMe activeStylesheet is: ');
+					console.log(activeStylesheet);
+					const links = document.getElementsByName('accessibility-css-link'); //.getElementsByName('link');
+					console.log('deleteMe links are: ');
+					console.log(links);
+					for(let i = 0; i< links.length; i++){ // @TODO improve this
+						if(links[i].getAttribute('href') === activeStylesheet){
+							links[i].disabled = false;
+						}else{
+							links[i].disabled = true;
+						}
+					}
+				}
+			};
+			xmlRequest.open('POST', 'toggle-styles.php');
+			xmlRequest.send();
+		}
+	</script>
 	<style type="text/css">
 		fieldset{ padding:15px }
 		fieldset > legend{ font-weight:bold; }
@@ -530,6 +557,8 @@ else{
 	</style>
 </head>
 <body>
+	<button onclick="toggleAccessibilityStyles()"><?php echo (isset($LANG['TOGGLE_508_ON'])?$LANG['TOGGLE_508_ON']:'View accessible form'); ?></button>
+	<button onclick="toggleAccessibilityStyles()"><?php echo (isset($LANG['TOGGLE_508_OFF'])?$LANG['TOGGLE_508_OFF']:'View condensed form'); ?></button>
 	<div id="innertext">
 		<div id="titleDiv">
 			<?php
