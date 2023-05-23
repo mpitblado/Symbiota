@@ -527,19 +527,34 @@ else{
 			const xmlRequest = new XMLHttpRequest();
 			xmlRequest.onreadystatechange = () => {
 				if(xmlRequest.readyState === 4 && xmlRequest.status === 200){
-					const activeStylesheet = xmlRequest.responseText;
-					const links = document.getElementsByName('accessibility-css-link');
-					for(let i = 0; i< links.length; i++){ // @TODO improve this
-						if(links[i].getAttribute('href') === activeStylesheet){
-							links[i].disabled = false;
-						}else{
-							links[i].disabled = true;
-						}
-					}
+					handleResponse(xmlRequest.responseText);
 				}
 			};
-			xmlRequest.open('POST', 'toggle-styles.php');
+			xmlRequest.open('POST', 'toggle-styles.php',);
 			xmlRequest.send();
+		};
+
+		function handleResponse(activeStylesheet){
+			const links = document.getElementsByName('accessibility-css-link');
+			const buttons = document.getElementsByName('accessibility-button');
+			console.log('deleteMe buttons are: ');
+			console.log(buttons);
+			for(let i =0; i< buttons.length; i++){
+				if(buttons[i].getAttribute('data-target-css') === activeStylesheet){
+					console.log('deleteMe got here a1');
+					buttons[i].style.visibility = 'visible' ;
+				}else{
+					console.log('deleteMe got here b1');
+					buttons[i].style.visibility = 'hidden';
+				}
+			}
+			for(let i = 0; i< links.length; i++){ // @TODO improve this
+				if(links[i].getAttribute('href') === activeStylesheet){
+					links[i].disabled = false;
+				}else{
+					links[i].disabled = true;
+				}
+			}
 		}
 	</script>
 	<style type="text/css">
@@ -552,8 +567,8 @@ else{
 	</style>
 </head>
 <body>
-	<button onclick="toggleAccessibilityStyles()"><?php echo (isset($LANG['TOGGLE_508_ON'])?$LANG['TOGGLE_508_ON']:'View accessible form'); ?></button>
-	<button onclick="toggleAccessibilityStyles()"><?php echo (isset($LANG['TOGGLE_508_OFF'])?$LANG['TOGGLE_508_OFF']:'View condensed form'); ?></button>
+	<button style="visibility: hidden;" onclick="toggleAccessibilityStyles()" name="accessibility-button" data-target-css="<?php echo $CSS_BASE_PATH . "/symbiota/condensed.css?ver=6.css" ?>" ><?php echo (isset($LANG['TOGGLE_508_ON'])?$LANG['TOGGLE_508_ON']:'View accessible form'); ?></button>
+	<button onclick="toggleAccessibilityStyles()" name="accessibility-button" data-target-css="<?php echo $CSS_BASE_PATH . "/symbiota/accessibility-compliant.css?ver=6.css"?>"><?php echo (isset($LANG['TOGGLE_508_OFF'])?$LANG['TOGGLE_508_OFF']:'View condensed form'); ?></button>
 	<div id="innertext">
 		<div id="titleDiv">
 			<?php
