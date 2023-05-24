@@ -582,7 +582,6 @@ else{
 </head>
 <body>
 	<button onclick="toggleAccessibilityStyles()" id="accessibility-button" name="accessibility-button" data-target-css="<?php echo $CSS_BASE_PATH . "/symbiota/condensed.css?ver=6.css" ?>" ><?php echo (isset($LANG['TOGGLE_508_ON'])?$LANG['TOGGLE_508_ON']:'View accessible form'); ?></button>
-	<!-- <button onclick="toggleAccessibilityStyles()" name="accessibility-button" id="accessibility-button" data-target-css="<?php echo $CSS_BASE_PATH . "/symbiota/accessibility-compliant.css?ver=6.css"?>"><?php echo (isset($LANG['TOGGLE_508_OFF'])?$LANG['TOGGLE_508_OFF']:'View condensed form'); ?></button> -->
 	<div id="innertext">
 		<div id="titleDiv">
 			<?php
