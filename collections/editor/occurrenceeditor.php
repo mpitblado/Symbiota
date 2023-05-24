@@ -550,6 +550,7 @@ else{
 		};
 
 		function handleResponse(activeStylesheet){
+			console.log('deleteMe activeStylesheet is: ' + activeStylesheet);
 			const links = document.getElementsByName('accessibility-css-link');
 			const button = document.getElementById('accessibility-button');
 			
@@ -559,7 +560,8 @@ else{
 			button.setAttribute('data-target-css', newCss);
 
 			const currentText = button.textContent;
-			const newText = currentText === "View accessible form" ? "View condensed form" : "View accessible form";
+			const newText = secondpart === "/symbiota/condensed.css?ver=6.css" ? "View condensed form" : "View accessible form";
+			console.log('deleteMe newText is now: ' + newText);
 			button.textContent = newText;
 			for(let i = 0; i< links.length; i++){
 				// links[i].disabled = !links[i].getAttribute('disabled');
@@ -1722,6 +1724,7 @@ else{
 	</div>
 	<script type="text/javascript">
 		document.addEventListener('DOMContentLoaded', ()=>{
+			console.log('deleteMe got here d1');
 			document.getElementById('accessibility-button').disabled=false;
 			document.getElementById('accessibility-button').textContent = "View accessible form";
 		});
