@@ -460,8 +460,8 @@ else{
     else{
 		?>
 		<link href="<?php echo $CSS_BASE_PATH; ?>/symbiota/collections/editor/occurrenceeditor.css?ver=6.css" type="text/css" rel="stylesheet" id="editorCssLink" >
-		<link href="<?php echo $CSS_BASE_PATH; ?>/symbiota/accessibility-compliant.css?ver=6.css" type="text/css" rel="stylesheet" name="accessibility-css-link" >
-		<link href="<?php echo $CSS_BASE_PATH; ?>/symbiota/condensed.css?ver=6.css" type="text/css" rel="stylesheet" name="accessibility-css-link" disabled >
+		<link href="<?php echo $CSS_BASE_PATH; ?>/symbiota/accessibility-compliant.css?ver=6.css" type="text/css" rel="stylesheet" name="accessibility-css-link" disabled >
+		<link href="<?php echo $CSS_BASE_PATH; ?>/symbiota/condensed.css?ver=6.css" type="text/css" rel="stylesheet" name="accessibility-css-link" >
 		<?php
 		if(isset($CSSARR)){
 			foreach($CSSARR as $cssVal){
@@ -535,24 +535,26 @@ else{
 		};
 
 		function handleResponse(activeStylesheet){
+			console.log('deleteMe activeStylesheet is: ' + activeStylesheet);
+
 			const links = document.getElementsByName('accessibility-css-link');
-			const buttons = document.getElementsByName('accessibility-button');
-			console.log('deleteMe buttons are: ');
-			console.log(buttons);
-			for(let i =0; i< buttons.length; i++){
-				if(buttons[i].getAttribute('data-target-css') === activeStylesheet){
-					console.log('deleteMe got here a1');
-					buttons[i].style.visibility = 'visible' ;
-				}else{
-					console.log('deleteMe got here b1');
-					buttons[i].style.visibility = 'hidden';
-				}
-			}
-			for(let i = 0; i< links.length; i++){ // @TODO improve this
+			const button = document.getElementById('accessibility-button');
+
+			const fullPath = button.getAttribute('data-target-css');
+			const regexQuery = RegExp('.*(/symbiota)'); // @TODO figure out how to generalize this more
+			const secondpart = fullPath.replace(regexQuery, '$1');
+			const newCss = secondpart === "/symbiota/condensed.css?ver=6.css" ? "/symbiota/accessibility-compliant.css?ver=6.css" : "/symbiota/condensed.css?ver=6.css";
+			button.setAttribute('data-target-css', newCss);
+			const currentText = button.textContent;
+			console.log('deleteMe user just clicked: ' + currentText);
+			const newText = currentText === "View accessible form" ? "View condensed form" : "View accessible form";
+			button.textContent = newText;
+			for(let i = 0; i< links.length; i++){
+				// links[i].disabled = !links[i].getAttribute('disabled');
 				if(links[i].getAttribute('href') === activeStylesheet){
-					links[i].disabled = false;
-				}else{
 					links[i].disabled = true;
+				}else{
+					links[i].disabled = false;
 				}
 			}
 		}
@@ -567,8 +569,8 @@ else{
 	</style>
 </head>
 <body>
-	<button style="visibility: hidden;" onclick="toggleAccessibilityStyles()" name="accessibility-button" data-target-css="<?php echo $CSS_BASE_PATH . "/symbiota/condensed.css?ver=6.css" ?>" ><?php echo (isset($LANG['TOGGLE_508_ON'])?$LANG['TOGGLE_508_ON']:'View accessible form'); ?></button>
-	<button onclick="toggleAccessibilityStyles()" name="accessibility-button" data-target-css="<?php echo $CSS_BASE_PATH . "/symbiota/accessibility-compliant.css?ver=6.css"?>"><?php echo (isset($LANG['TOGGLE_508_OFF'])?$LANG['TOGGLE_508_OFF']:'View condensed form'); ?></button>
+	<button onclick="toggleAccessibilityStyles()" id="accessibility-button" name="accessibility-button" data-target-css="<?php echo $CSS_BASE_PATH . "/symbiota/condensed.css?ver=6.css" ?>" ><?php echo (isset($LANG['TOGGLE_508_ON'])?$LANG['TOGGLE_508_ON']:'View accessible form'); ?></button>
+	<!-- <button onclick="toggleAccessibilityStyles()" name="accessibility-button" id="accessibility-button" data-target-css="<?php echo $CSS_BASE_PATH . "/symbiota/accessibility-compliant.css?ver=6.css"?>"><?php echo (isset($LANG['TOGGLE_508_OFF'])?$LANG['TOGGLE_508_OFF']:'View condensed form'); ?></button> -->
 	<div id="innertext">
 		<div id="titleDiv">
 			<?php
