@@ -523,30 +523,42 @@ else{
 	<script src="../../js/jquery.imagetool-1.7.js?ver=140310" type="text/javascript"></script>
 	<script src="../../js/symb/collections.editor.query.js?ver=6" type="text/javascript"></script>
 	<script type="text/javascript">
-		function toggleAccessibilityStyles(){
-			const xmlRequest = new XMLHttpRequest();
-			xmlRequest.onreadystatechange = () => {
-				if(xmlRequest.readyState === 4 && xmlRequest.status === 200){
-					handleResponse(xmlRequest.responseText);
-				}
-			};
-			xmlRequest.open('POST', 'toggle-styles.php',);
-			xmlRequest.send();
+		function sendRequest(url, method) {
+			return new Promise((resolve, reject) =>{
+				const xmlRequest = new XMLHttpRequest();
+				xmlRequest.open(method, url);
+				xmlRequest.onreadystatechange = () => {
+					if(xmlRequest.readyState === 4){
+						if(xmlRequest.status === 200){
+							resolve(xmlRequest.responseText);
+						}else {
+							reject(xmlRequest.statusText);
+						}
+					}
+				};
+				xmlRequest.send();
+			});
+		}
+
+		async function toggleAccessibilityStyles(){
+			try{
+				const response = await sendRequest('toggle-styles.php', 'POST');
+				handleResponse(response);
+			}catch (error) {
+				console.log(error);
+			}
 		};
 
 		function handleResponse(activeStylesheet){
-			console.log('deleteMe activeStylesheet is: ' + activeStylesheet);
-
 			const links = document.getElementsByName('accessibility-css-link');
 			const button = document.getElementById('accessibility-button');
-
-			const fullPath = button.getAttribute('data-target-css');
+			
 			const regexQuery = RegExp('.*(/symbiota)'); // @TODO figure out how to generalize this more
-			const secondpart = fullPath.replace(regexQuery, '$1');
-			const newCss = secondpart === "/symbiota/condensed.css?ver=6.css" ? "/symbiota/accessibility-compliant.css?ver=6.css" : "/symbiota/condensed.css?ver=6.css";
+			const secondpart = activeStylesheet.replace(regexQuery, '$1');
+			const newCss = secondpart === "/symbiota/condensed.css?ver=6.css" ? "/symbiota/accessibility-compliant.css?ver=6.css" : "/symbiota/condensed.css?ver=6.css"; // @TODO generalize this
 			button.setAttribute('data-target-css', newCss);
+
 			const currentText = button.textContent;
-			console.log('deleteMe user just clicked: ' + currentText);
 			const newText = currentText === "View accessible form" ? "View condensed form" : "View accessible form";
 			button.textContent = newText;
 			for(let i = 0; i< links.length; i++){
