@@ -550,7 +550,6 @@ else{
 		};
 
 		function handleResponse(activeStylesheet){
-			console.log('deleteMe activeStylesheet is: ' + activeStylesheet);
 			const links = document.getElementsByName('accessibility-css-link');
 			const button = document.getElementById('accessibility-button');
 			
@@ -561,10 +560,9 @@ else{
 
 			const currentText = button.textContent;
 			const newText = secondpart === "/symbiota/condensed.css?ver=6.css" ? "View condensed form" : "View accessible form";
-			console.log('deleteMe newText is now: ' + newText);
 			button.textContent = newText;
+			
 			for(let i = 0; i< links.length; i++){
-				// links[i].disabled = !links[i].getAttribute('disabled');
 				if(links[i].getAttribute('href') === activeStylesheet){
 					links[i].disabled = true;
 				}else{

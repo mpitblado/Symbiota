@@ -108,7 +108,7 @@ else{
 	<body style="background-color:#ffffff;" onload="initialize()">
 		<div>
 			<div>
-				Click once to capture coordinates. <?php echo $CSS_BASE_PATH ?>
+				Click once to capture coordinates.
 				Submit Coordinate button will transfer to form.
 			</div>
 			<div style="margin-right:30px;">
