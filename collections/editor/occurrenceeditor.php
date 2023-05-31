@@ -460,8 +460,6 @@ else{
     else{
 		?>
 		<link href="<?php echo $CSS_BASE_PATH; ?>/symbiota/collections/editor/occurrenceeditor.css?ver=6.css" type="text/css" rel="stylesheet" id="editorCssLink" >
-		<link href="<?php echo $CSS_BASE_PATH; ?>/symbiota/accessibility-compliant.css?ver=6.css" type="text/css" rel="stylesheet" name="accessibility-css-link" disabled >
-		<link href="<?php echo $CSS_BASE_PATH; ?>/symbiota/condensed.css?ver=6.css" type="text/css" rel="stylesheet" name="accessibility-css-link" >
 		<?php
 		if(isset($CSSARR)){
 			foreach($CSSARR as $cssVal){
@@ -522,55 +520,6 @@ else{
 	<script src="../../js/symb/collections.editor.imgtools.js?ver=3" type="text/javascript"></script>
 	<script src="../../js/jquery.imagetool-1.7.js?ver=140310" type="text/javascript"></script>
 	<script src="../../js/symb/collections.editor.query.js?ver=6" type="text/javascript"></script>
-	<script type="text/javascript">
-		function sendRequest(url, method) {
-			return new Promise((resolve, reject) =>{
-				const xmlRequest = new XMLHttpRequest();
-				xmlRequest.open(method, url);
-				xmlRequest.onreadystatechange = () => {
-					if(xmlRequest.readyState === 4){
-						if(xmlRequest.status === 200){
-							resolve(xmlRequest.responseText);
-						}else {
-							reject(xmlRequest.statusText);
-						}
-					}
-				};
-				xmlRequest.send();
-			});
-		}
-
-		async function toggleAccessibilityStyles(){
-			try{
-				const response = await sendRequest('toggle-styles.php', 'POST');
-				handleResponse(response);
-			}catch (error) {
-				console.log(error);
-			}
-		};
-
-		function handleResponse(activeStylesheet){
-			const links = document.getElementsByName('accessibility-css-link');
-			const button = document.getElementById('accessibility-button');
-			
-			const regexQuery = RegExp('.*(/symbiota)'); // @TODO figure out how to generalize this more
-			const secondpart = activeStylesheet.replace(regexQuery, '$1');
-			const newCss = secondpart === "/symbiota/condensed.css?ver=6.css" ? "/symbiota/accessibility-compliant.css?ver=6.css" : "/symbiota/condensed.css?ver=6.css"; // @TODO generalize this
-			button.setAttribute('data-target-css', newCss);
-
-			const currentText = button.textContent;
-			const newText = secondpart === "/symbiota/condensed.css?ver=6.css" ? "View condensed form" : "View accessible form";
-			button.textContent = newText;
-			
-			for(let i = 0; i< links.length; i++){
-				if(links[i].getAttribute('href') === activeStylesheet){
-					links[i].disabled = true;
-				}else{
-					links[i].disabled = false;
-				}
-			}
-		}
-	</script>
 	<style type="text/css">
 		fieldset{ padding:15px }
 		fieldset > legend{ font-weight:bold; }
@@ -581,8 +530,6 @@ else{
 	</style>
 </head>
 <body>
-	<button disabled onclick="toggleAccessibilityStyles()" id="accessibility-button" name="accessibility-button" data-target-css="<?php echo $CSS_BASE_PATH . "/symbiota/condensed.css?ver=6.css" ?>" ><?php echo (isset($LANG['TOGGLE_508_ON'])?$LANG['TOGGLE_508_ON']:'View accessible form'); ?></button>
-
 	<div id="innertext">
 		<div id="titleDiv">
 			<?php
@@ -1720,12 +1667,5 @@ else{
 		}
 		?>
 	</div>
-	<script type="text/javascript">
-		document.addEventListener('DOMContentLoaded', ()=>{
-			console.log('deleteMe got here d1');
-			document.getElementById('accessibility-button').disabled=false;
-			document.getElementById('accessibility-button').textContent = "View accessible form";
-		});
-	</script>
 </body>
 </html>
