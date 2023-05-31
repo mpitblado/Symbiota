@@ -124,7 +124,7 @@ reset($treePath);
 			}
 			?>
 		</div>
-		<div style="clear:both;">
+		<div style="clear:both;" class="flex-form">
 			<form id="tdform" name="tdform" action="taxonomydynamicdisplay.php" method='POST'>
 				<fieldset style="padding:10px;width:500px;">
 					<legend><b><?php echo (isset($LANG['TAX_SEARCH'])?$LANG['TAX_SEARCH']:'Taxon Search'); ?></b></legend>
