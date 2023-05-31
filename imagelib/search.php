@@ -94,7 +94,7 @@ if(isset($_REQUEST['db'])) $imgLibManager->setCollectionVariables($_REQUEST);
 				?>
 			</ul>
 			<form name="imagesearchform" id="imagesearchform" action="search.php" method="post">
-				<div id="criteriadiv">
+				<div id="criteriadiv" class="flex-form">
 					<div style="clear:both;height:50px">
 						<div style="float:left;margin-top:3px">
 							<select id="taxontype" name="taxontype">
