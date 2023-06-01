@@ -195,8 +195,6 @@ $LANG['GEN_RES_ADD_SUCCESS'] = 'Genetic resource added successfully!';
 $LANG['ERROR_UNABLE_INSERT'] = 'ERROR: unable to INSERT text fragment';
 $LANG['ERROR_UNABLE_UPDATE'] = 'ERROR: unable to UPDATE text fragment';
 $LANG['ERROR_UNABLE_DELETE'] = 'ERROR: unable DELETE text fragment';
-$LANG['TOGGLE_508_OFF'] = "View condensed form";
-$LANG['TOGGLE_508_ON'] = "View accessible form";
 $LANG['REFERENCES_REMARKS'] = "Add more references and remarks";
 $LANG['LOCATION_REMARKS'] = "Add location remarks";
 
