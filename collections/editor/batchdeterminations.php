@@ -3,24 +3,22 @@ include_once('../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceEditorDeterminations.php');
 if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/editor/batchdeterminations.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/collections/editor/batchdeterminations.'.$LANG_TAG.'.php');
 else include_once($SERVER_ROOT.'/content/lang/collections/editor/batchdeterminations.en.php');
-header("Content-Type: text/html; charset=".$CHARSET);
+header('Content-Type: text/html; charset=' . $CHARSET);
 
 if(!$SYMB_UID) header('Location: ../../profile/index.php?refurl=../collections/editor/batchdeterminations.php?'.htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
 
-$collid = $_REQUEST["collid"];
+$collid = filter_var($_REQUEST['collid'], FILTER_SANITIZE_NUMBER_INT);
 $formSubmit = array_key_exists('formsubmit',$_POST)?$_POST['formsubmit']:'';
-
-if(!is_numeric($collid)) $collid = 0;
 
 $occManager = new OccurrenceEditorDeterminations();
 $occManager->setCollId($collid);
 $occManager->getCollMap();
 
 $isEditor = 0;
-if($IS_ADMIN || (array_key_exists("CollAdmin",$USER_RIGHTS) && in_array($collid,$USER_RIGHTS["CollAdmin"]))){
+if($IS_ADMIN || (array_key_exists('CollAdmin', $USER_RIGHTS) && in_array($collid, $USER_RIGHTS['CollAdmin']))){
 	$isEditor = 1;
 }
-elseif(array_key_exists("CollEditor",$USER_RIGHTS) && in_array($collid,$USER_RIGHTS["CollEditor"])){
+elseif(array_key_exists('CollEditor', $USER_RIGHTS) && in_array($collid, $USER_RIGHTS['CollEditor'])){
 	$isEditor = 1;
 }
 $statusStr = '';
@@ -28,15 +26,15 @@ if($isEditor){
 	if($formSubmit == 'Add New Determinations'){
 		$occidArr = $_REQUEST['occid'];
 		foreach($occidArr as $k){
-			$occManager->setOccId($k);
+			$occManager->setOccId(filter_var($k, FILTER_SANITIZE_NUMBER_INT));
 			$occManager->addDetermination($_REQUEST,$isEditor);
 		}
-		$statusStr = 'SUCCESS: '.count($occidArr).' annotations submitted';
+		$statusStr = 'SUCCESS: ' . count($occidArr) . ' annotations submitted';
 	}
 	elseif($formSubmit == 'Adjust Nomenclature'){
 		$occidArr = $_REQUEST['occid'];
 		foreach($occidArr as $k){
-			$occManager->setOccId($k);
+			$occManager->setOccId(filter_var($k, FILTER_SANITIZE_NUMBER_INT));
 			$occManager->addNomAdjustment($_REQUEST,$isEditor);
 		}
 	}
@@ -46,18 +44,11 @@ if($isEditor){
 <html>
 	<head>
 	    <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET;?>">
-		<title><?php echo $DEFAULT_TITLE.$LANG['BATCH_DETERS']; ?></title>
-    <?php
-      $activateJQuery = true;
-      if(file_exists($SERVER_ROOT.'/includes/head.php')){
-        include_once($SERVER_ROOT.'/includes/head.php');
-      }
-      else{
-        echo '<link href="'.$CLIENT_ROOT.'/css/jquery-ui.css" type="text/css" rel="stylesheet" />';
-        echo '<link href="'.$CLIENT_ROOT.'/css/base.css?ver=1" type="text/css" rel="stylesheet" />';
-        echo '<link href="'.$CLIENT_ROOT.'/css/main.css?ver=1" type="text/css" rel="stylesheet" />';
-      }
-    ?>
+		<title><?php echo $DEFAULT_TITLE.' '.$LANG['BATCH_DETERS']; ?></title>
+		<link href="<?php echo $CSS_BASE_PATH; ?>/jquery-ui.css" type="text/css" rel="stylesheet">
+		<?php
+		include_once($SERVER_ROOT.'/includes/head.php');
+		?>
 		<script src="../../js/jquery.js" type="text/javascript"></script>
 		<script src="../../js/jquery-ui.js" type="text/javascript"></script>
 		<script type="text/javascript">
@@ -293,8 +284,8 @@ if($isEditor){
 	</head>
 	<body>
 	<?php
-	$displayLeftMenu = (isset($collections_batchdeterminationsMenu)?$collections_batchdeterminationsMenu:false);
-	include($SERVER_ROOT.'/includes/header.php');
+	$displayLeftMenu = (isset($collections_batchdeterminationsMenu) ? $collections_batchdeterminationsMenu : false);
+	include($SERVER_ROOT . '/includes/header.php');
 	?>
 	<div class='navpath'>
 		<a href='../../index.php'><?php echo $LANG['HOME']; ?></a> &gt;&gt;
@@ -315,20 +306,24 @@ if($isEditor){
 					</div>
 					<div style="margin:15px;width:700px;">
 						<form name="accqueryform" action="batchdeterminations.php" method="post" onsubmit="return submitAccForm(this);">
-							<div>
-								<b><?php echo $LANG['CATNUM']; ?>:</b>
-								<input name="catalognumber" type="text" style="border-color:green;width:200px;" />
-								<span style="margin-left:20px"><input name="allcatnum" type="checkbox" checked /> <?php echo $LANG['TARGET_ALL']; ?></span>
+							<div style="margin-bottom: 10px;">
+								<label for="catalognumber"><?php echo $LANG['CATNUM']; ?>:</label>
+								<input name="catalognumber" id="catalognumber" type="text" style="border-color:green;width:200px;" />
+							</div>
+							<div style="margin-bottom:10px;">
+								<input name="allcatnum" id="allcatnum" type="checkbox" checked /> <label for="allcatnum"><?php echo $LANG['TARGET_ALL']; ?></label>
 							</div>
 							<div>
-								<b><?php echo $LANG['TAXON']; ?>:</b>
+								<label for="nomsciname"><?php echo $LANG['TAXON']; ?>:</label>
 								<input type="text" id="nomsciname" name="sciname" style="width:260px;" onfocus="initScinameAutocomplete(this.form)" />
 							</div>
 							<div style="margin-top:5px;">
-								<button name="clearaccform" type="button" style="float:right" onclick='clearAccForm(this.form)'><?php echo $LANG['CLEAR_LIST']; ?></button>
+								<button name="clearaccform" type="button" onclick='clearAccForm(this.form)'><?php echo $LANG['CLEAR_LIST']; ?></button>
 								<input name="collid" type="hidden" value="<?php echo $collid; ?>" />
+							</div>
+							<div style="margin-top:5px;">
 								<button name="addrecord" type="submit"><?php echo $LANG['ADD_RECORDS']; ?></button>
-								<img id="workingcircle" src="../../images/workingcircle.gif" style="display:none;" />
+								<img id="workingcircle" src="../../images/workingcircle.gif" style="display:none;" alt="progress is being made" />
 							</div>
 						</form>
 					</div>

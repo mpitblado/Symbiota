@@ -48,7 +48,8 @@ function searchform($name="") {
    global $CLIENT_ROOT;
    $result  = "<div id='formDiv'>";
    $result .= "<form method='GET' id='queryForm' style='display:inline;' >\n";
-   $result .= "<input type='text' name='name' value='$name'>";
+   $result .= "<label for='name'>Name</label>";
+   $result .= "<input type='text' id='name' name='name' value='$name'>";
    $result .= "<input type='submit'>";
    $result .= "</form>\n";
    $result .= "<span id='plinkSpan'></span></div>\n";
@@ -95,8 +96,8 @@ echo '<!DOCTYPE HTML>
 	<title>'.$DEFAULT_TITLE.' - '.$spDisplay. '</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET; ?>"/>
 	<meta name="keywords" content='. $spDisplay .' />
-	<link href="../css/base.css?ver=<?php echo $CSS_VERSION; ?>" type="text/css" rel="stylesheet" />
-	<link href="../css/main.css'.(isset($CSS_VERSION_LOCAL)?'?ver='.$CSS_VERSION_LOCAL:'').'" type="text/css" rel="stylesheet" />
+	<link href="../css/base.css" type="text/css" rel="stylesheet" />
+	<link href="../css/main.css" type="text/css" rel="stylesheet" />
 	<script type="text/javascript" src="../js/jquery.js"></script>
 	<script type="text/javascript" src="../js/jquery-ui.js"></script>';
     // include_once($SERVER_ROOT.'/includes/googleanalytics.php');

@@ -13,7 +13,7 @@ $zoomInt = array_key_exists('zoom',$_REQUEST)?$_REQUEST['zoom']:'';
 
 //Sanitation
 if(!is_numeric($tid)) $tid = 0;
-$taxa = filter_var($taxa,FILTER_SANITIZE_STRING);
+$taxa = htmlspecialchars($taxa, HTML_SPECIAL_CHARS_FLAGS);
 if($interface && $interface != 'key') $interface = 'checklist';
 
 //$dynClManager = new DynamicChecklistManager();
@@ -38,20 +38,12 @@ if(!$zoomInt){
 <html>
 <head>
 	<title><?php echo $DEFAULT_TITLE.' - '.(isset($LANG['CHECKLIST_GENERATOR'])?$LANG['CHECKLIST_GENERATOR']:'Dynamic Checklist Generator'); ?></title>
+	<link href="<?php echo $CSS_BASE_PATH; ?>/jquery-ui.css" type="text/css" rel="stylesheet">
 	<?php
-	$activateJQuery = true;
-	if(file_exists($SERVER_ROOT.'/includes/head.php')){
-		include_once($SERVER_ROOT.'/includes/head.php');
-	}
-	else{
-		echo '<link href="'.$CLIENT_ROOT.'/css/jquery-ui.css" type="text/css" rel="stylesheet" />';
-		echo '<link href="'.$CLIENT_ROOT.'/css/base.css?ver=1" type="text/css" rel="stylesheet" />';
-		echo '<link href="'.$CLIENT_ROOT.'/css/main.css?ver=1" type="text/css" rel="stylesheet" />';
-	}
+	include_once($SERVER_ROOT.'/includes/head.php');
 	?>
 	<script src="../js/jquery.js" type="text/javascript"></script>
 	<script src="../js/jquery-ui.js" type="text/javascript"></script>
-	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 	<script src="//maps.googleapis.com/maps/api/js?<?php echo (isset($GOOGLE_MAP_KEY) && $GOOGLE_MAP_KEY?'key='.$GOOGLE_MAP_KEY:''); ?>"></script>
 
 	<script type="text/javascript">
@@ -63,7 +55,7 @@ if(!$zoomInt){
 		$(document).ready(function() {
 			$( "#taxa" ).autocomplete({
 				source: function( request, response ) {
-					$.getJSON( "rpc/uppertaxasuggest.php", { term: request.term }, response );
+					$.getJSON( "../rpc/taxasuggest.php", { term: request.term, rankhigh: 180 }, response );
 				},
 				minLength: 2,
 				autoFocus: true,
@@ -71,7 +63,7 @@ if(!$zoomInt){
 					if(ui.item){
 						$( "#tid" ).val(ui.item.id);
 					}
-						}
+				}
 			});
 		});
 
@@ -175,13 +167,13 @@ if(!$zoomInt){
 					</div>
 					<div style="float:left;">
 						<div style="margin-right:35px;">
-							<b><?php echo (isset($LANG['TAXON_FILTER'])?$LANG['TAXON_FILTER']:'Taxon Filter'); ?>:</b>
+							<label for="taxa"><?php echo (isset($LANG['TAXON_FILTER'])?$LANG['TAXON_FILTER']:'Taxon Filter'); ?>:</label>
 							<input id="taxa" name="taxa" type="text" value="<?php echo $taxa; ?>" />
 							<input id="tid" name="tid" type="hidden" value="<?php echo $tid; ?>" />
 						</div>
 						<div>
-							<b><?php echo (isset($LANG['RADIUS'])?$LANG['RADIUS']:'Radius'); ?>:</b>
-							<input name="radius" value="(optional)" type="text" style="width:140px;" onfocus="this.value = ''" />
+							<label for="radius"><?php echo (isset($LANG['RADIUS'])?$LANG['RADIUS']:'Radius'); ?>:</label>
+							<input name="radius" id="radius" value="(optional)" type="text" style="width:140px;" onfocus="this.value = ''" />
 							<select name="radiusunits">
 								<option value="km"><?php echo (isset($LANG['KM'])?$LANG['KM']:'Kilometers'); ?></option>
 								<option value="mi"><?php echo (isset($LANG['MILES'])?$LANG['MILES']:'Miles'); ?></option>

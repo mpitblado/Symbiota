@@ -37,20 +37,9 @@ if($collMap['colltype'] == 'General Observations' && $obsUid !== 0){
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET; ?>">
 	<title><?php echo $DEFAULT_TITLE; ?> Field Standardization</title>
-  <?php
-    $activateJQuery = false;
-    if(file_exists($SERVER_ROOT.'/includes/head.php')){
-      include_once($SERVER_ROOT.'/includes/head.php');
-    }
-    else{
-      echo '<link href="'.$CLIENT_ROOT.'/css/jquery-ui.css" type="text/css" rel="stylesheet" />';
-      echo '<link href="'.$CLIENT_ROOT.'/css/base.css?ver=1" type="text/css" rel="stylesheet" />';
-      echo '<link href="'.$CLIENT_ROOT.'/css/main.css?ver=1" type="text/css" rel="stylesheet" />';
-    }
-  ?>
-  <script type="text/javascript">
-
-  </script>
+	<?php
+	include_once($SERVER_ROOT.'/includes/head.php');
+	?>
 </head>
 <body>
 	<?php
@@ -89,7 +78,8 @@ if($collMap['colltype'] == 'General Observations' && $obsUid !== 0){
 			<fieldset style="padding:20px;">
 				<legend><b>Country</b></legend>
 				<div style="margin:5px">
-					<select name="country_old">
+					<label for="country-old-field">Old field:</label>
+					<select name="country-old-field" id="country-old-field">
 						<option value="">Select Target Field</option>
 						<option value="">--------------------------------</option>
 						<?php
@@ -99,7 +89,10 @@ if($collMap['colltype'] == 'General Observations' && $obsUid !== 0){
 
 						?>
 					</select>
-					<select name="country_old">
+				</div>
+				<div style="margin:5px">
+					<label for="country-old-value">Old value:</label>
+					<select name="country-old-value" id="country-old-value">
 						<option value="">Select Target Value</option>
 						<option value="">--------------------------------</option>
 						<?php
@@ -111,8 +104,8 @@ if($collMap['colltype'] == 'General Observations' && $obsUid !== 0){
 					</select>
 				</div>
 				<div style="margin:5px">
-					<b>Replacement Value:</b>
-					<input name="country_new" type="text" value="" />
+					<label for="country-new">Replacement Value:</label>
+					<input name="country-new" id="country-new" type="text" value="" />
 				</div>
 			</fieldset>
 			<?php

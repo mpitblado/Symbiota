@@ -2,6 +2,7 @@
 include_once($SERVER_ROOT.'/config/dbconnection.php');
 include_once($SERVER_ROOT.'/classes/TaxonomyUtilities.php');
 include_once($SERVER_ROOT.'/classes/TaxonomyHarvester.php');
+include_once($SERVER_ROOT.'/classes/OccurrenceMaintenance.php');
 
 class TaxonomyUpload{
 
@@ -79,6 +80,7 @@ class TaxonomyUpload{
 			foreach($taxonUnitArr as $tuKey => $tuVal){
 				if($tuKey > 219) unset($taxonUnitArr[$tuKey]);
 			}
+			$scinameInputKey = false;
 			$uploadTaxaIndexArr = array();		//Array of index values associated with uploadtaxa table; array(index => targetName)
 			$taxonUnitIndexArr = array();		//Array of index values associated with taxonunits table;
 			foreach($headerArr as $k => $sourceName){
@@ -89,6 +91,7 @@ class TaxonomyUpload{
 						//Is a taxa table target field
 						$uploadTaxaIndexArr[$k] = $targetName;
 					}
+					if($targetName == 'scinameinput') $scinameInputKey = $k;
 					if($targetName == 'unitname1') $targetName = 'genus';
 					if(in_array($targetName,$taxonUnitArr)){
 						$taxonUnitIndexArr[$k] = array_search($targetName,$taxonUnitArr);  //array(recIndex => rankid)
@@ -130,13 +133,14 @@ class TaxonomyUpload{
 									}
 								}
 							}
+							if($recordArr[$scinameInputKey] == $taxonStr) break;
 							$parentStr = $taxonStr;
 						}
 					}
 					if($parentIndex){
 						$recordArr[$parentIndex] = 'PENDING:'.$parentStr;
 					}
-					if(in_array("scinameinput",$fieldMap)){
+					if(in_array('scinameinput',$fieldMap)){
 						//Load relavent fields into uploadtaxa table
 						$inputArr = array();
 						foreach($uploadTaxaIndexArr as $recIndex => $targetField){
@@ -198,16 +202,20 @@ class TaxonomyUpload{
 							foreach($sciArr as $sciKey => $sciValue){
 								if(!array_key_exists($sciKey, $inputArr) && $sciValue) $inputArr[$sciKey] = $sciValue;
 							}
+							if(isset($inputArr['unitind3']) && $inputArr['unitind3'] && isset($inputArr['unitname3']) && $inputArr['unitname3']){
+								if(stripos($inputArr['unitname3'], $inputArr['unitind3'].' ') === 0) $inputArr['unitname3'] = trim(substr($inputArr['unitname3'], strlen($inputArr['unitind3']) + 1));
+							}
 							unset($inputArr['identificationqualifier']);
 							if(isset($childParentArr[$inputArr['sciname']]['r']) && isset($inputArr['rankid']) && $childParentArr[$inputArr['sciname']]['r'] == $inputArr['rankid']) $childParentArr[$inputArr['sciname']]['s'] = 'skip';
 							$sql1 = ''; $sql2 = '';
 							foreach($inputArr as $k => $v){
 								$sql1 .= ','.$k;
 								$inValue = $this->cleanInStr($v);
-								$sql2 .= ','.($inValue?'"'.$inValue.'"':'NULL');
+								if($k == 'author') $sql2 .= ',"'.($inValue?$inValue:'').'"';
+								else $sql2 .= ','.($inValue?'"'.$inValue.'"':'NULL');
 							}
 							$sql = 'INSERT INTO uploadtaxa('.substr($sql1,1).') VALUES('.substr($sql2,1).')';
-							//echo "<div>".$sql."</div>";
+							//echo '<div>'.$sql.'</div>';
 							if($this->conn->query($sql)){
 								if($recordCnt%1000 == 0){
 									$this->outputMsg('Upload count: '.$recordCnt,1);
@@ -362,17 +370,17 @@ class TaxonomyUpload{
 				}
 				unset($extraArr[$sourceId]);
 			}
-			$sql = "INSERT INTO uploadtaxa(SourceId,scinameinput,sciname,unitind1,unitname1,unitind2,unitname2,unitind3,".
-				"unitname3,SourceParentId,author,rankid,SourceAcceptedId,acceptance,vernacular,vernlang) ".
-				"VALUES (".$sourceId.',"'.$sciName.'","'.$sciName.'",'.
-				($tuArr[2]?'"'.$tuArr[2].'"':"NULL").",".
-				($tuArr[3]?'"'.$tuArr[3].'"':"NULL").",".
-				($tuArr[4]?'"'.$tuArr[4].'"':"NULL").",".
-				($tuArr[5]?'"'.$tuArr[5].'"':"NULL").",".
-				($unitInd3?'"'.$unitInd3.'"':"NULL").",".($unitName3?'"'.$unitName3.'"':"NULL").",".
-				($tuArr[18]?$tuArr[18]:"NULL").",".
-				($author?'"'.$author.'"':"NULL").",".
-				($tuArr[24]?$tuArr[24]:"NULL").",".
+			$sql = 'INSERT INTO uploadtaxa(SourceId,scinameinput,sciname,unitind1,unitname1,unitind2,unitname2,unitind3,'.
+				'unitname3,SourceParentId,author,rankid,SourceAcceptedId,acceptance,vernacular,vernlang) '.
+				'VALUES ('.$sourceId.',"'.$sciName.'","'.$sciName.'",'.
+				($tuArr[2]?'"'.$tuArr[2].'"':'NULL').','.
+				($tuArr[3]?'"'.$tuArr[3].'"':'NULL').','.
+				($tuArr[4]?'"'.$tuArr[4].'"':'NULL').','.
+				($tuArr[5]?'"'.$tuArr[5].'"':'NULL').','.
+				($unitInd3?'"'.$unitInd3.'"':'NULL').','.($unitName3?'"'.$unitName3.'"':'NULL').','.
+				($tuArr[18]?$tuArr[18]:'NULL').',"'.
+				($author?$author:'NULL').'",'.
+				($tuArr[24]?$tuArr[24]:'NULL').','.
 				($sourceAcceptedId?$sourceAcceptedId:'NULL').','.$acceptance.','.
 				($vernacular?'"'.$vernacular.'"':'NULL').','.
 				($vernlang?'"'.$vernlang.'"':'NULL').')';
@@ -400,7 +408,7 @@ class TaxonomyUpload{
 		$rs->free();
 		//Remove unaccepted, illegal homonyms
 		if($homonymArr){
-			$sql2 = 'DELETE FROM uploadtaxa WHERE (sciname IN("'.implode('","',$homonymArr).'")) AND (acceptance = 0) ';
+			$sql2 = 'DELETE FROM uploadtaxa WHERE (sciname IN("'.implode('','',$homonymArr).'")) AND (acceptance = 0) ';
 			$this->conn->query($sql2);
 		}
 	}
@@ -710,7 +718,7 @@ class TaxonomyUpload{
 		}
 		//Prime table with kingdoms that are not yet in table
 		$sql = 'INSERT INTO taxa(kingdomName, SciName, RankId, UnitInd1, UnitName1, UnitInd2, UnitName2, UnitInd3, UnitName3, Author, Source, Notes, modifiedUid, modifiedTimeStamp) '.
-			'SELECT DISTINCT "'.$this->kingdomName.'", SciName, RankId, UnitInd1, UnitName1, UnitInd2, UnitName2, UnitInd3, UnitName3, Author, Source, Notes, '.$GLOBALS['SYMB_UID'].' as uid, now() '.
+			'SELECT DISTINCT "'.$this->kingdomName.'", SciName, RankId, UnitInd1, UnitName1, UnitInd2, UnitName2, UnitInd3, UnitName3, IFNULL(Author,"") AS author, Source, Notes, '.$GLOBALS['SYMB_UID'].' as uid, now() '.
 			'FROM uploadtaxa '.
 			'WHERE (TID IS NULL) AND (rankid = 10)';
 		if($this->conn->query($sql)){
@@ -803,21 +811,10 @@ class TaxonomyUpload{
 		TaxonomyUtilities::buildHierarchyEnumTree($this->conn, $this->taxAuthId);
 
 		//Update occurrences with new tids
-		TaxonomyUtilities::linkOccurrenceTaxa($this->conn);
-
-		//Update occurrence images with new tids
-		$sql2 = 'UPDATE images i INNER JOIN omoccurrences o ON i.occid = o.occid '.
-			'SET i.tid = o.TidInterpreted '.
-			'WHERE (i.tid IS NULL) AND (o.TidInterpreted IS NOT NULL)';
-		$this->conn->query($sql2);
-
-		//Update geo lookup table
-		$sql3 = 'INSERT IGNORE INTO omoccurgeoindex(tid,decimallatitude,decimallongitude) '.
-			'SELECT DISTINCT o.tidinterpreted, round(o.decimallatitude,2), round(o.decimallongitude,2) '.
-			'FROM omoccurrences o '.
-			'WHERE (o.tidinterpreted IS NOT NULL) AND (o.decimallatitude between -90 and 90) AND (o.decimallongitude between -180 and 180) '.
-			'AND (o.cultivationStatus IS NULL OR o.cultivationStatus = 0) AND (o.coordinateUncertaintyInMeters IS NULL OR o.coordinateUncertaintyInMeters < 10000) ';
-		$this->conn->query($sql3);
+		$occurMaintenance = new OccurrenceMaintenance($this->conn);
+		$occurMaintenance->setCollidStr($this->collid);
+		$occurMaintenance->generalOccurrenceCleaning();
+		$occurMaintenance->batchUpdateGeoreferenceIndex();
 	}
 
 	private function transferVernaculars($secondRound = 0){
@@ -930,12 +927,11 @@ class TaxonomyUpload{
 		$rs = $this->conn->query('SHOW COLUMNS FROM uploadtaxa');
 		while($row = $rs->fetch_object()){
 			$field = strtolower($row->Field);
-			if(strtolower($field) != 'tid' && strtolower($field) != 'tidaccepted' && strtolower($field) != 'parenttid'){
+			if($field != 'tid' && $field != 'tidaccepted' && $field != 'parenttid'){
 				$targetArr[$field] = $field;
 			}
 		}
 		$rs->free();
-
 		return $targetArr;
 	}
 
@@ -1021,7 +1017,7 @@ class TaxonomyUpload{
 
 	public function getTaxonomicResourceList(){
 		$taArr = array('worms'=>'World Register of Marine Species','col'=>'Catalog of Life');
-		//$taArr = array('col'=>'Catalog of Life','worms'=>'World Register of Marine Species','tropicos'=>'TROPICOS','eol'=>'Encyclopedia of Life','IndexFungorum'=>'Index Fungorum');
+		$taArr = array('col'=>'Catalog of Life', 'worms'=>'World Register of Marine Species', 'bryonames' => 'The Bryophyte Nomenclator', 'fdex'=>'Index Fungorum via F-Dex', 'tropicos'=>'TROPICOS', 'eol'=>'Encyclopedia of Life');
 		if(!isset($GLOBALS['TAXONOMIC_AUTHORITIES'])) return $taArr;
 		return array_intersect_key($taArr,array_change_key_case($GLOBALS['TAXONOMIC_AUTHORITIES']));
 	}
@@ -1108,8 +1104,8 @@ class TaxonomyUpload{
 	private function outputMsg($str, $indent = 0){
 		if($this->verboseMode > 0 || substr($str,0,5) == 'ERROR'){
 			echo '<li style="margin-left:'.(10*$indent).'px;'.(substr($str,0,5)=='ERROR'?'color:red':'').'">'.$str.'</li>';
-			ob_flush();
-			flush();
+			@ob_flush();
+			@flush();
 		}
 		if($this->verboseMode == 2){
 			if($this->logFH) fwrite($this->logFH,($indent?str_repeat("\t",$indent):'').strip_tags($str)."\n");

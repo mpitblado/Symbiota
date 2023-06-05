@@ -3,18 +3,11 @@ include_once('../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/DwcArchiverCore.php');
 header("Content-Type: text/html; charset=".$CHARSET);
 
-$sourcePage = array_key_exists('sourcepage',$_REQUEST)?$_REQUEST['sourcepage']:'specimen';
-$downloadType = array_key_exists('dltype',$_REQUEST)?$_REQUEST['dltype']:'specimen';
-$taxonFilterCode = array_key_exists('taxonFilterCode',$_REQUEST)?$_REQUEST['taxonFilterCode']:0;
-$displayHeader = array_key_exists('displayheader',$_REQUEST)?$_REQUEST['displayheader']:0;
-$searchVar = array_key_exists('searchvar',$_REQUEST)?$_REQUEST['searchvar']:'';
-
-//Sanitation
-$sourcePage = filter_var($sourcePage, FILTER_SANITIZE_STRING);
-$downloadType = filter_var($downloadType, FILTER_SANITIZE_STRING);
-if(!is_numeric($taxonFilterCode)) $taxonFilterCode = 0;
-if(!is_numeric($displayHeader)) $displayHeader = 0;
-$searchVar = filter_var($searchVar, FILTER_SANITIZE_STRING);
+$sourcePage = array_key_exists('sourcepage', $_REQUEST) ? filter_var($_REQUEST['sourcepage'], FILTER_SANITIZE_STRING) : 'specimen';
+$downloadType = array_key_exists('dltype', $_REQUEST) ? filter_var($_REQUEST['dltype'], FILTER_SANITIZE_STRING) : 'specimen';
+$taxonFilterCode = array_key_exists('taxonFilterCode', $_REQUEST) ? filter_var($_REQUEST['taxonFilterCode'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$displayHeader = array_key_exists('displayheader', $_REQUEST) ? filter_var($_REQUEST['displayheader'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$searchVar = array_key_exists('searchvar', $_REQUEST) ? filter_var($_REQUEST['searchvar'], FILTER_SANITIZE_STRING) : '';
 
 $dwcManager = new DwcArchiverCore();
 ?>
@@ -22,8 +15,8 @@ $dwcManager = new DwcArchiverCore();
 <head>
 	<title>Collections Search Download</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET; ?>"/>
+	<link href="<?php echo $CSS_BASE_PATH; ?>/jquery-ui.css" type="text/css" rel="stylesheet">
 	<?php
-	$activateJQuery = true;
 	include_once($SERVER_ROOT.'/includes/head.php');
 	include_once($SERVER_ROOT.'/includes/googleanalytics.php');
 	?>
@@ -67,7 +60,8 @@ $dwcManager = new DwcArchiverCore();
 			if(obj.checked == false){
 				obj.form.images.checked = false;
 				obj.form.identifications.checked = false;
-				obj.form.attributes.checked = false;
+				if(obj.form.attributes) obj.form.attributes.checked = false;
+				if(obj.form.materialsample) obj.form.materialsample.checked = false;
 			}
 		}
 
@@ -91,7 +85,7 @@ $dwcManager = new DwcArchiverCore();
 		.formElemDiv{ float:left }
 	</style>
 </head>
-<body style="width:700px;min-width:700px;background-color:#ffffff">
+<body style="width:700px;min-width:700px;margin-left:auto;margin-right:auto;background-color:#ffffff">
 	<?php
 	if($displayHeader){
 		$displayLeftMenu = (isset($collections_download_downloadMenu)?$collections_download_downloadMenu:false);
@@ -105,7 +99,7 @@ $dwcManager = new DwcArchiverCore();
 		<?php
 	}
 	?>
-	<div style="width:100%; background-color:white">
+	<div style="width:100%; background-color:white;">
 		<h2>Data Usage Guidelines</h2>
 		<div style="margin:15px 0px;">
 			By downloading data, the user confirms that he/she has read and agrees with the general <a href="../../includes/usagepolicy.php#images">data usage terms</a>.
@@ -126,21 +120,21 @@ $dwcManager = new DwcArchiverCore();
 					if($downloadType == 'specimen'){
 						?>
 						<div class="sectionDiv">
-							<div class="labelDiv">Structure:</div>
+							<div class="labelDiv"><label for="schema">Structure:</label></div>
 							<div class="formElemDiv">
-								<input type="radio" name="schema" value="symbiota" onclick="georefRadioClicked(this)" CHECKED />
+								<input type="radio" name="schema" id="symbiota-native" value="symbiota" onclick="georefRadioClicked(this)" CHECKED />
 								Symbiota Native
 								<a id="schemanativeinfo" href="#" onclick="return false" title="More Information">
-									<img src="../../images/info.png" style="width:13px;" />
+									<img src="../../images/info.png" alt="info icon that clarifies that Symbiota native is similar to Darwin Core with the addition of some fields" style="width:13px;" />
 								</a><br/>
 								<div id="schemanativeinfodialog">
 									Symbiota native is very similar to Darwin Core except with the addtion of a few fields
 									such as substrate, associated collectors, verbatim description.
 								</div>
-								<input type="radio" name="schema" value="dwc" onclick="georefRadioClicked(this)" />
+								<input type="radio" name="schema" id="darwin-core" value="dwc" onclick="georefRadioClicked(this)" />
 								Darwin Core
 								<a id="schemadwcinfo" href="#" target="" title="More Information">
-									<img src="../../images/info.png" style="width:13px;" />
+									<img src="../../images/info.png" alt="info icon that clarifies that Darwin Core (DwC) is a TDWG endorsed exchange standard specifically for biodiversity datasets. A link to the DwC quick reference guide appears in the dialog." style="width:13px;" />
 								</a><br/>
 								<div id="schemadwcinfodialog">
 									Darwin Core (DwC) is a TDWG endorsed exchange standard specifically for biodiversity datasets.
@@ -153,11 +147,15 @@ $dwcManager = new DwcArchiverCore();
 						<div class="sectionDiv">
 							<div class="labelDiv">Data Extensions:</div>
 							<div class="formElemDiv">
-								<input type="checkbox" name="identifications" value="1" onchange="extensionSelected(this)" checked /> include Determination History<br/>
-								<input type="checkbox" name="images" value="1" onchange="extensionSelected(this)" checked /> include Image Records<br/>
+								<input type="checkbox" name="identifications" id="identifications" value="1" onchange="extensionSelected(this)" checked />
+								<label for="identifications">include Determination History</label>
+								<br/>
+								<input type="checkbox" name="images" id="images" value="1" onchange="extensionSelected(this)" checked />
+								<label for="images">include Image Records</label>
+								<br/>
 								<?php
-								if($dwcManager->hasAttributes()) echo '<input type="checkbox" name="attributes" value="1" onchange="extensionSelected(this)" checked /> include Occurrence Trait Attributes<br/>';
-								if($dwcManager->hasMaterialSamples()) echo '<input type="checkbox" name="materialsample" value="1" onchange="extensionSelected(this)" checked /> include Material Samples<br/>';
+								if($dwcManager->hasAttributes()) echo '<input type="checkbox" name="attributes" id="attributes" value="1" onchange="extensionSelected(this)" checked /> <label for="attributes">include Occurrence Trait Attributes</label><br/>';
+								if($dwcManager->hasMaterialSamples()) echo '<input type="checkbox" name="materialsample" id="materialsample" value="1" onchange="extensionSelected(this)" checked /><label for="materialsample">include Material Samples</label><br/>';
 								?>
 								*Output must be a compressed archive
 							</div>
@@ -166,27 +164,37 @@ $dwcManager = new DwcArchiverCore();
 					}
 					?>
 					<div class="sectionDiv">
-						<div class="labelDiv">File Format:</div>
+						<div class="labelDiv">
+							<label for="format">File Format:</label>
+						</div>
 						<div class="formElemDiv">
-							<input type="radio" name="format" value="csv" CHECKED /> Comma Delimited (CSV)<br/>
-							<input type="radio" name="format" value="tab" /> Tab Delimited<br/>
+							<input type="radio" name="format" id="csv-format" value="csv" CHECKED /><label for="csv-format">Comma Delimited (CSV)</label><br/>
+							<input type="radio" name="format" id="tab-delimited-format" value="tab" /><label for="tab-delimited-format">Tab Delimited</label><br/>
 						</div>
 					</div>
 					<div class="sectionDiv">
-						<div class="labelDiv">Character Set:</div>
+						<div class="labelDiv">
+							<label for="cset">Character Set:</label>
+						</div>
 						<div class="formElemDiv">
 							<?php
 							//$cSet = strtolower($CHARSET);
 							$cSet = 'iso-8859-1';
 							?>
-							<input type="radio" name="cset" value="iso-8859-1" <?php echo ($cSet=='iso-8859-1'?'checked':''); ?> /> ISO-8859-1 (western)<br/>
-							<input type="radio" name="cset" value="utf-8" <?php echo ($cSet=='utf-8'?'checked':''); ?> /> UTF-8 (unicode)
+							<input type="radio" name="cset" id="iso-8859" value="iso-8859-1" <?php echo ($cSet=='iso-8859-1'?'checked':''); ?> />
+							<label for="iso-8859">ISO-8859-1 (western)</label>
+							<br/>
+							<input type="radio" name="cset" id="utf-8" value="utf-8" <?php echo ($cSet=='utf-8'?'checked':''); ?> />
+							<label for="utf-8">UTF-8 (unicode)</label>
 						</div>
 					</div>
 					<div class="sectionDiv">
-						<div class="labelDiv">Compression:</div>
+						<div class="labelDiv">
+							<label for="zip">Compression:</label>
+						</div>
 						<div class="formElemDiv">
-							<input type="checkbox" name="zip" value="1" onchange="zipSelected(this)" checked />Compressed ZIP file<br/>
+							<input type="checkbox" name="zip" id="zip" value="1" onchange="zipSelected(this)" checked />
+							<label for="zip">Compressed ZIP file</label><br/>
 						</div>
 					</div>
 					<div class="sectionDiv">
@@ -200,6 +208,9 @@ $dwcManager = new DwcArchiverCore();
 						<input name="searchvar" type="hidden" value="<?php echo str_replace('"','&quot;',$searchVar); ?>" />
 						<button type="submit" name="submitaction">Download Data</button>
 						<img id="workingcircle" src="../../images/ajax-loader_sm.gif" style="margin-bottom:-4px;width:20px;display:none;" />
+					</div>
+					<div class="sectionDiv">
+						* There is a 1,000,000 record limit to occurrence downloads
 					</div>
 				</fieldset>
 			</form>

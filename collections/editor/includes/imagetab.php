@@ -1,17 +1,15 @@
 <?php
 include_once('../../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceEditorImages.php');
-include_once($SERVER_ROOT.'/classes/OccurrenceActionManager.php');
 if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/editor/includes/imagetab.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imagetab.'.$LANG_TAG.'.php');
 else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imagetab.en.php');
-header("Content-Type: text/html; charset=".$CHARSET);
+header('Content-Type: text/html; charset=' . $CHARSET);
 
-$occId = $_GET['occid'];
-$occIndex = $_GET['occindex'];
-$crowdSourceMode = $_GET['csmode'];
+$occId = filter_var($_GET['occid'], FILTER_SANITIZE_NUMBER_INT);
+$occIndex = filter_var($_GET['occindex'], FILTER_SANITIZE_NUMBER_INT);
+$crowdSourceMode = filter_var($_GET['csmode'], FILTER_SANITIZE_NUMBER_INT);
 
 $occManager = new OccurrenceEditorImages();
-$occActionManager = new OccurrenceActionManager();
 
 $occManager->setOccId($occId);
 $specImgArr = $occManager->getImageMap();
@@ -105,16 +103,16 @@ $photographerArr = $occManager->getPhotographerArr();
 						</div>
 					</div>
 					<div>
-						<input type="checkbox" name="nolgimage" value="1" /> <?php echo $LANG['DO_NOT_MAP_LARGE']; ?>
+						<input type="checkbox" name="nolgimage" id="nolgimage" value="1" /> <label for="nolgimage"><?php echo $LANG['DO_NOT_MAP_LARGE']; ?></label>
 					</div>
 				</div>
 				<div style="clear:both;margin:20px 0px 5px 10px;">
-					<b><?php echo $LANG['CAPTION']; ?>:</b>
-					<input name="caption" type="text" size="40" value="" />
+					<label for="caption"><b><?php echo $LANG['CAPTION']; ?>:</b></label>
+					<input name="caption" id="caption" type="text" size="40" value="" />
 				</div>
 				<div style='margin:0px 0px 5px 10px;'>
-					<b><?php echo $LANG['PHOTOGRAPHER']; ?>:</b>
-					<select name='photographeruid' name='photographeruid'>
+					<label for="photographeruid"><b><?php echo $LANG['PHOTOGRAPHER']; ?>:</b></label>
+					<select name='photographeruid' name='photographeruid' id="photographeruid">
 						<option value=""><?php echo $LANG['SEL_PHOTOG']; ?></option>
 						<option value="">---------------------------------------</option>
 						<?php
@@ -130,25 +128,25 @@ $photographerArr = $occManager->getPhotographerArr();
 					</a>
 				</div>
 				<div id="imgaddoverride" style="margin:0px 0px 5px 10px;display:none;">
-					<b><?php echo $LANG['PHOTOG_OVER']; ?>:</b>
-					<input name='photographer' type='text' style="width:300px;" maxlength='100' />
+					<label for="photographer"><b><?php echo $LANG['PHOTOG_OVER']; ?>:</b></label>
+					<input name='photographer' id="photographer" type='text' style="width:300px;" maxlength='100' />
 					* <?php echo $LANG['WILL_OVERRIDE']; ?>
 				</div>
 				<div style="margin:0px 0px 5px 10px;">
-					<b><?php echo $LANG['NOTES']; ?>:</b>
-					<input name="notes" type="text" size="40" value="" />
+					<label for="notes"><b><?php echo $LANG['NOTES']; ?>:</b></label>
+					<input name="notes" id="notes" type="text" size="40" value="" />
 				</div>
 				<div style="margin:0px 0px 5px 10px;">
-					<b><?php echo $LANG['COPYRIGHT']; ?>:</b>
-					<input name="copyright" type="text" size="40" value="" />
+					<label for="copyright"><b><?php echo $LANG['COPYRIGHT']; ?>:</b></label>
+					<input name="copyright" id="copyright" type="text" size="40" value="" />
 				</div>
 				<div style="margin:0px 0px 5px 10px;">
-					<b><?php echo $LANG['SOURCE_WEBPAGE']; ?>:</b>
-					<input name="sourceurl" type="text" size="40" value="" />
+					<label for="sourceurl"><b><?php echo $LANG['SOURCE_WEBPAGE']; ?>:</b></label>
+					<input name="sourceurl" id="sourceurl" type="text" size="40" value="" />
 				</div>
 				<div style="margin:0px 0px 5px 10px;">
-					<b><?php echo $LANG['SORT']; ?>:</b>
-					<input name="sortoccurrence" type="text" size="10" value="" />
+					<label for="sortoccurrence"><b><?php echo $LANG['SORT']; ?>:</b></label>
+					<input name="sortoccurrence" id="sortoccurrence" type="text" size="10" value="" />
 				</div>
 				<div style="margin:0px 0px 5px 10px;">
 					<b><?php echo $LANG['DESCRIBE_IMAGE']; ?></b>
@@ -157,7 +155,7 @@ $photographerArr = $occManager->getPhotographerArr();
 					$imageTagArr = $occManager->getImageTagArr();
 					foreach($imageTagArr as $key => $description) {
 						echo '<div style="margin-left:10px;">';
-						echo '<input name="ch_'.$key.'" type="checkbox" value="1" /> '.$description.'</br>';
+						echo '<input name="ch_' . $key . '" id="ch_' . $key . '" type="checkbox" value="1" /> <label for="ch_' . $key . '">' . $description . '</label></br>';
 						echo '</div>';
 					}
 					?>
@@ -469,16 +467,6 @@ $photographerArr = $occManager->getPhotographerArr();
 				?>
 			</table>
 			<?php
-		}
-		else{
-			if(isset($REQUEST_TRACKING_IS_ACTIVE) && $REQUEST_TRACKING_IS_ACTIVE==1) {
-				echo '<div style="margin-left:15px;"><button onClick="requestImage()">'.$LANG['MAKE_REQUEST'].'</button></div><div id="imagerequestresult"></div>';
-				echo '<div>';
-				foreach ($occActionManager->listOccurrenceActionRequests($occId) as $request) {
-					echo $request.'<br/>';
-				}
-				echo '</div>';
-			}
 		}
 		?>
 	</div>
