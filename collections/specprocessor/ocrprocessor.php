@@ -4,8 +4,8 @@ include_once($SERVER_ROOT.'/classes/SpecProcessorOcrNlp.php');
 header('Content-Type: text/html; charset='.$CHARSET);
 
 $collid = array_key_exists('collid', $_REQUEST) ? filter_var($_REQUEST['collid'], FILTER_SANITIZE_NUMBER_INT) : 0;
-$spprid = array_key_exists('spprid', $_REQUEST) ? $_REQUEST['spprid'] : 0;
-$procStatus = array_key_exists('procstatus', $_REQUEST) ? $_REQUEST['procstatus'] : 'unprocessed';
+$spprid = array_key_exists('spprid', $_REQUEST) ? filter_var($_REQUEST['spprid'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$procStatus = array_key_exists('procstatus', $_REQUEST) ? htmlspecialchars($_REQUEST['procstatus'], HTML_SPECIAL_CHARS_FLAGS) : 'unprocessed';
 
 $procManager = new SpecProcessorOcrNlp();
 $procManager->setCollid($collid);
