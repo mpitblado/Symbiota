@@ -46,7 +46,7 @@ class ImageLocalProcessor {
 	protected $dbMetadata = 1;
 	private $processUsingImageMagick = 0;
 
-	private $logMode = 0;			//0 = silent, 1 = html, 2 = log file
+	private $logMode = 0;			//0 = silent, 1 = html, 2 = log file, 3 = html and log file
 	private $logFH;
 	private $mdOutputFH;
 	private $logPath;
