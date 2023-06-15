@@ -148,8 +148,8 @@ class SpecProcessorOcrNlp extends Manager {
 		$cnt = 0;
 		if($this->collid){
 			$sql = 'SELECT count(o.occid) AS cnt '.
-					'FROM omoccurrences o LEFT JOIN images i ON o.occid = i.occid '.
-					'WHERE (o.collid = '.$this->collid.') AND (i.imgid IS NULL) AND (o.processingstatus = "unprocessed") ';
+				'FROM omoccurrences o LEFT JOIN images i ON o.occid = i.occid '.
+				'WHERE (o.collid = '.$this->collid.') AND (i.imgid IS NULL) AND (o.processingstatus = "unprocessed") ';
 			$rs = $this->conn->query($sql);
 			while($r = $rs->fetch_object()){
 				$cnt = $r->cnt;

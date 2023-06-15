@@ -1,4 +1,6 @@
 <?php
+include_once($SERVER_ROOT.'/classes/SpecProcessorBase.php');
+
 class SpecProcessorManager extends SpecProcessorBase{
 
 	function __construct() {
@@ -178,65 +180,6 @@ class SpecProcessorManager extends SpecProcessorBase{
 			}
 		}
 		return $projArr;
-	}
-
-	//OCR related counts
-	public function getSpecWithImage($procStatus = ''){
-		//Count of specimens with images but no OCR
-		$cnt = 0;
-		if($this->collid){
-			$sql = 'SELECT COUNT(DISTINCT o.occid) AS cnt FROM omoccurrences o INNER JOIN images i ON o.occid = i.occid WHERE (o.collid = '.$this->collid.') ';
-			if($procStatus){
-				if($procStatus == 'null') $sql .= 'AND processingstatus IS NULL';
-				else $sql .= 'AND processingstatus = "'.$this->cleanInStr($procStatus).'"';
-			}
-			$rs = $this->conn->query($sql);
-			while($r = $rs->fetch_object()){
-				$cnt = $r->cnt;
-			}
-			$rs->free();
-		}
-		return $cnt;
-	}
-
-	public function getSpecNoOcr($procStatus = ''){
-		//Count of specimens with images but no OCR
-		$cnt = 0;
-		if($this->collid){
-			$sql = 'SELECT COUNT(DISTINCT o.occid) AS cnt '.
-				'FROM omoccurrences o INNER JOIN images i ON o.occid = i.occid '.
-				'LEFT JOIN specprocessorrawlabels r ON i.imgid = r.imgid '.
-				'WHERE o.collid = '.$this->collid.' AND r.imgid IS NULL ';
-			if($procStatus){
-				if($procStatus == 'null'){
-					$sql .= 'AND processingstatus IS NULL';
-				}
-				else{
-					$sql .= 'AND processingstatus = "'.$this->cleanInStr($procStatus).'"';
-				}
-			}
-			$rs = $this->conn->query($sql);
-			while($r = $rs->fetch_object()){
-				$cnt = $r->cnt;
-			}
-			$rs->free();
-		}
-		return $cnt;
-	}
-
-	public function getProcessingStatusList(){
-		$retArr = array();
-		if($this->collid){
-			$sql = 'SELECT DISTINCT processingstatus FROM omoccurrences WHERE collid = '.$this->collid;
-			//echo $sql;
-			$rs = $this->conn->query($sql);
-			while($r = $rs->fetch_object()){
-				if($r->processingstatus) $retArr[] = $r->processingstatus;
-			}
-			$rs->free();
-			sort($retArr);
-		}
-		return $retArr;
 	}
 
 	//Report functions

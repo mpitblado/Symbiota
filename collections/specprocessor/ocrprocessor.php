@@ -1,14 +1,14 @@
 <?php
 include_once('../../config/symbini.php');
-include_once($SERVER_ROOT.'/classes/SpecProcessorManager.php');
-header("Content-Type: text/html; charset=".$CHARSET);
+include_once($SERVER_ROOT.'/classes/SpecProcessorOcrNlp.php');
+header('Content-Type: text/html; charset='.$CHARSET);
 
-$collid = array_key_exists('collid',$_REQUEST)?$_REQUEST['collid']:0;
-$spprid = array_key_exists('spprid',$_REQUEST)?$_REQUEST['spprid']:0;
-$procStatus = array_key_exists('procstatus',$_REQUEST)?$_REQUEST['procstatus']:'unprocessed';
+$collid = array_key_exists('collid', $_REQUEST) ? filter_var($_REQUEST['collid'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$spprid = array_key_exists('spprid', $_REQUEST) ? $_REQUEST['spprid'] : 0;
+$procStatus = array_key_exists('procstatus', $_REQUEST) ? $_REQUEST['procstatus'] : 'unprocessed';
 
-$procManager = new SpecProcessorManager();
-$procManager->setCollId($collid);
+$procManager = new SpecProcessorOcrNlp();
+$procManager->setCollid($collid);
 $procManager->setProjVariables('OCR Harvest');
 ?>
 <script>
