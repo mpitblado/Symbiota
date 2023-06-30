@@ -27,11 +27,11 @@ if($IS_ADMIN) $isEditor = 1;
 		<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery.js" type="text/javascript"></script>
 		<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-ui.js" type="text/javascript"></script>
 		<script type="text/javascript">
-			let portalArr = [];
+			let portalObj = {};
 			<?php
 			if(!$portalID){
-				foreach($indexArr as $portalID => $portalArr){
-					echo 'portalArr['.$portalID.'] = "'.$portalArr['urlRoot'].'";';
+				foreach($indexArr as $pid => $portalObj){
+					echo 'portalObj['.$pid.'] = {"name": "'.$portalObj['portalName'].'","url": "'.$portalObj['urlRoot'].'"};'."\n";
 				}
 			}
 			?>
@@ -44,25 +44,50 @@ if($IS_ADMIN) $isEditor = 1;
 				return true;
 			}
 
-			function searchPortals(){
-				for(let x = ){
-
+			function searchPortals(f){
+				$("[id^=occur-div-]").text("");
+				let scinameSearch = f.sciname.value;
+				if(!scinameSearch){
+					alert("Enter a scientific name");
+					return false;
 				}
+				Object.keys(portalObj).forEach(function(key, index) {
+					portalQuery(key, this[key].name, this[key].url, scinameSearch);
+				}, portalObj);
+				/*
+				for (var key in portalObj) {
+					if (portalObj.hasOwnProperty(key)){
+						portalQuery(key, portalObj[key].name, portalObj[key].url, scinameSearch);
+					}
+				}
+				*/
 			}
 
-			fuction portalQuery(indexID, portalUrl, scinameSearch){
+			function portalQuery(portalID, portalName, portalUrl, scinameSearch){
+				$("#occur-div-"+portalID).append('Searching <b>'+portalName+'...</b> ');
 				$.ajax({
 					method: "GET",
 					data: { sciname: scinameSearch, limit: 1, offset: 0 },
 					dataType: "json",
-					url: portalUrl + "/api/v2/occurrence/search";
+					url: portalUrl + "/api/v2/occurrence/search"
 				})
 				.done(function(jsonRes) {
-					$("#occurrence-div-" + indexID).text('Occurrence count: ');
+					$("#occur-div-"+portalID).append(jsonRes.count+" occurrences");
+					if(jsonRes.count > 0){
+						addSubDiv(portalID, portalUrl, "Visit Portal");
+						addSubDiv(portalID, portalUrl+"/collections/list.php?usethes=1&taxontype=2&taxa="+scinameSearch, "Query Results");
+						addSubDiv(portalID, portalUrl+"/collections/map/googlemap.php?usethes=1&taxontype=2&taxa="+scinameSearch, "Map Results");
+						addSubDiv(portalID, portalUrl+"/collections/download/index.php?searchvar=taxa%3D"+scinameSearch, "Download Results");
+					}
 				})
-				.fail(function() {
-					$("#syncDiv-"+occid).text('FAILED: missing variables');
+				.fail(function( jqXHR, textStatus ) {
+					$("#occur-div-"+portalID).append(" ERROR ("+textStatus+")");
 				});
+			}
+
+			function addSubDiv(portalID, url, text){
+				$("#occur-div-"+portalID).append('<div class="occur-sub-div"><a href="'+url+'" target="_blank">'+text+'</a></div>');
+
 			}
 		</script>
 		<style type="text/css">
@@ -72,6 +97,7 @@ if($IS_ADMIN) $isEditor = 1;
 			button{ margin: 20px; }
 			hr{ margin-top: 15px; margin-bottom: 15px; }
 			.field-row{  }
+			.occur-sub-div{ margin-left: 15px; }
 		</style>
 	</head>
 	<body>
@@ -113,9 +139,24 @@ if($IS_ADMIN) $isEditor = 1;
 					}
 					?>
 					<fieldset>
-						<legend>Taxon Search</legend>
-						<input id="sciname" name="sciname" type="text" >
-						<button id="taxonSearchButton" name="taxonSearch" type="button" onclick="taxonSearch()" >Search Portals</button>
+						<legend>Search Panel</legend>
+						<form id="searchPanelForm" name="searchPanelForm" >
+							<label>Scientific Name:</label>
+							<input id="sciname" name="sciname" type="text" >
+							<button id="taxonSearchButton" name="taxonSearch" type="button" onclick="searchPortals(this.form)">Search Portals</button>
+						</form>
+						<div>
+							<?php
+							if(!$portalID){
+								foreach($indexArr as $pid => $portalObj){
+									echo '<div id="occur-div-'.$pid.'"></div>';
+								}
+							}
+							?>
+							<div id="occurrence-div"></div>
+							<div id="checklist-div"></div>
+							<div id="status-div"></div>
+						</div>
 					</fieldset>
 					<?php
 					if($IS_ADMIN){
@@ -144,7 +185,7 @@ if($IS_ADMIN) $isEditor = 1;
 				<fieldset>
 					<legend>Portal Index</legend>
 					<?php
-					foreach($indexArr as $portalID => $portalArr){
+					foreach($indexArr as $pid => $portalArr){
 						echo '<div class="portalName-div"><a href="#" onclick="$(\'#portal-container-'.$portalArr['portalID'].'\').toggle();return false;">'.$portalArr['portalName'].'</a></div>';
 						echo '<fieldset id="portal-container-'.$portalArr['portalID'].'" style="display: none">';
 						echo '<legend>Portal Details</legend>';
@@ -152,19 +193,17 @@ if($IS_ADMIN) $isEditor = 1;
 						echo '<div class="field-div"><label>URL</label>: <a href="'.$portalArr['urlRoot'].'" target="_blank">'.$portalArr['urlRoot'].'</a></div>';
 						echo '<div class="field-div"><label>Manager</label>: '.$portalArr['managerEmail'].'</div>';
 						echo '<div class="field-div"><label>Code version</label>: '.$portalArr['symbiotaVersion'].'</div>';
-						if(!$portalID){
+						if(!$pid){
 							?>
 							<div style="margin:15px;">
 								<form name="portalActionForm" method="post" action="portalindex.php">
-									<input name="portalid" type="hidden" value="<?php echo $portalID; ?>" />
+									<input name="portalid" type="hidden" value="<?php echo $pid; ?>" />
 									<button name="formsubmit" type="submit" value="listCollections">List Collections</button>
 								</form>
 							</div>
 							<?php
 						}
 						echo '</fieldset>';
-						echo '<div id="occurrence-div-'.$portalArr['portalID'].'"></div>';
-						echo '<div id="checklist-div-'.$portalArr['portalID'].'"></div>';
 						if($remoteID){
 							$collectArr = $portalManager->getCollectionList($portalArr['urlRoot'], $remoteID);
 							echo '<fieldset>';
@@ -211,7 +250,7 @@ if($IS_ADMIN) $isEditor = 1;
 								?>
 								<div style="margin: 0px 30px">
 									<form name="collPubForm" method="post" action="portalindex.php">
-										<input name="portalid" type="hidden" value="<?php echo $portalID; ?>" />
+										<input name="portalid" type="hidden" value="<?php echo $pid; ?>" />
 										<input name="remoteid" type="hidden" value="<?php echo $remoteID; ?>" />
 										<button name="formsubmit" type="submit" value="importProfile">Create Internal Snapshot Profile</button>
 									</form>
@@ -227,7 +266,7 @@ if($IS_ADMIN) $isEditor = 1;
 								echo '<tr><th>ID</th><th>Institution Code</th><th>Collection Code</th><th>Collection Name</th><th>Dataset Type</th><th>Management</th><th>Mapped Internally</th></tr>';
 								foreach($collList as $collArr){
 									echo '<tr>';
-									echo '<td><a href="portalindex.php?portalid='.$portalID.'&remoteid='.$collArr['collID'].'">'.$collArr['collID'].'</a></td>';
+									echo '<td><a href="portalindex.php?portalid='.$pid.'&remoteid='.$collArr['collID'].'">'.$collArr['collID'].'</a></td>';
 									echo '<td>'.$collArr['institutionCode'].'</td>';
 									echo '<td>'.$collArr['collectionCode'].'</td>';
 									echo '<td>'.$collArr['collectionName'].'</td>';
