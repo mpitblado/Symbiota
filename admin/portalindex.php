@@ -64,7 +64,7 @@ if($IS_ADMIN) $isEditor = 1;
 			}
 
 			function portalQuery(portalID, portalName, portalUrl, scinameSearch){
-				$("#occur-div-"+portalID).append('Searching <b>'+portalName+'...</b> ');
+				$("#occur-div-"+portalID).append('Searching... ');
 				$.ajax({
 					method: "GET",
 					data: { sciname: scinameSearch, limit: 1, offset: 0 },
@@ -74,7 +74,6 @@ if($IS_ADMIN) $isEditor = 1;
 				.done(function(jsonRes) {
 					$("#occur-div-"+portalID).append(jsonRes.count+" occurrences");
 					if(jsonRes.count > 0){
-						addSubDiv(portalID, portalUrl, "Visit Portal");
 						addSubDiv(portalID, portalUrl+"/collections/list.php?usethes=1&taxontype=2&taxa="+scinameSearch, "Query Results");
 						addSubDiv(portalID, portalUrl+"/collections/map/googlemap.php?usethes=1&taxontype=2&taxa="+scinameSearch, "Map Results");
 						addSubDiv(portalID, portalUrl+"/collections/download/index.php?searchvar=taxa%3D"+scinameSearch, "Download Results");
@@ -87,7 +86,30 @@ if($IS_ADMIN) $isEditor = 1;
 
 			function addSubDiv(portalID, url, text){
 				$("#occur-div-"+portalID).append('<div class="occur-sub-div"><a href="'+url+'" target="_blank">'+text+'</a></div>');
+			}
 
+			function displayPortalDetails(pid){
+				$('#portal-div-'+pid).toggle();
+				setPortalDetails(pid);
+			}
+
+			function setPortalDetails(pid){
+				$.ajax({
+					method: "GET",
+					dataType: "json",
+					url: portalObj[pid].url + "/api/v2/installation/ping"
+				})
+				.done(function(jsonRes) {
+					$("#status-div-"+pid+" span").text("Success, online!");
+					$("#status-div-"+pid+" span").css("color", "green");
+					$("#guid-div-"+pid+" span").text(jsonRes.guid);
+					$("#manager-div-"+pid+" span").text(jsonRes.managerEmail);
+					$("#version-div-"+pid+" span").append(jsonRes.symbiotaVersion);
+				})
+				.fail(function( jqXHR, textStatus ) {
+					$("#status-div-"+pid+" span").text("Failed!");
+					$("#status-div-"+pid+" span").css("color", "red");
+				});
 			}
 		</script>
 		<style type="text/css">
@@ -117,7 +139,6 @@ if($IS_ADMIN) $isEditor = 1;
 			elseif($isEditor){
 				if($formSubmit != 'listCollections'){
 					echo '<div style="float:right">';
-					echo '<div onclick="$(\'#search-container\').toggle();return false;"><img class="icon-img" src="../images/find.png" ></div>';
 					if($IS_ADMIN) echo '<div onclick="$(\'#admin-container\').toggle();return false;"><img class="icon-img" src="../images/editadmin.png" ></div>';
 					echo '</div>';
 					if($formSubmit){
@@ -137,28 +158,6 @@ if($IS_ADMIN) $isEditor = 1;
 						}
 						echo '</fieldset>';
 					}
-					?>
-					<fieldset>
-						<legend>Search Panel</legend>
-						<form id="searchPanelForm" name="searchPanelForm" >
-							<label>Scientific Name:</label>
-							<input id="sciname" name="sciname" type="text" >
-							<button id="taxonSearchButton" name="taxonSearch" type="button" onclick="searchPortals(this.form)">Search Portals</button>
-						</form>
-						<div>
-							<?php
-							if(!$portalID){
-								foreach($indexArr as $pid => $portalObj){
-									echo '<div id="occur-div-'.$pid.'"></div>';
-								}
-							}
-							?>
-							<div id="occurrence-div"></div>
-							<div id="checklist-div"></div>
-							<div id="status-div"></div>
-						</div>
-					</fieldset>
-					<?php
 					if($IS_ADMIN){
 						$selfArr = $portalManager->getSelfDetails();
 						?>
@@ -184,15 +183,20 @@ if($IS_ADMIN) $isEditor = 1;
 				?>
 				<fieldset>
 					<legend>Portal Index</legend>
+					<form id="searchPanelForm" name="searchPanelForm" >
+						<label>Scientific Name:</label>
+						<input id="sciname" name="sciname" type="text" >
+						<button id="taxonSearchButton" name="taxonSearch" type="button" onclick="searchPortals(this.form)">Search Portals</button>
+					</form>
 					<?php
 					foreach($indexArr as $pid => $portalArr){
-						echo '<div class="portalName-div"><a href="#" onclick="$(\'#portal-container-'.$portalArr['portalID'].'\').toggle();return false;">'.$portalArr['portalName'].'</a></div>';
-						echo '<fieldset id="portal-container-'.$portalArr['portalID'].'" style="display: none">';
-						echo '<legend>Portal Details</legend>';
-						echo '<div class="field-div"><label>GUID</label>: '.$portalArr['guid'].'</div>';
-						echo '<div class="field-div"><label>URL</label>: <a href="'.$portalArr['urlRoot'].'" target="_blank">'.$portalArr['urlRoot'].'</a></div>';
-						echo '<div class="field-div"><label>Manager</label>: '.$portalArr['managerEmail'].'</div>';
-						echo '<div class="field-div"><label>Code version</label>: '.$portalArr['symbiotaVersion'].'</div>';
+						echo '<div class="portalName-div"><a href="#" onclick="displayPortalDetails('.$pid.');return false;">'.$portalArr['portalName'].'</a></div>';
+						echo '<div id="portal-div-'.$pid.'" style="display:none;margin-left:15px">';
+						echo '<div><label>URL</label>: <a href="'.$portalArr['urlRoot'].'" target="_blank">'.$portalArr['urlRoot'].'</a></div>';
+						echo '<div id="status-div-'.$pid.'"><label>Status</label>: <span>grabbing details <img class="icon-img" src="../images/workingcircle.gif" ></span></div>';
+						echo '<div id="guid-div-'.$pid.'"><label>GUID</label>: <span></span></div>';
+						echo '<div id="manager-div-'.$pid.'"><label>Manager</label>: <span></span></div>';
+						echo '<div id="version-div-'.$pid.'"><label>Code version</label>: <span></span></div>';
 						if(!$pid){
 							?>
 							<div style="margin:15px;">
@@ -203,7 +207,8 @@ if($IS_ADMIN) $isEditor = 1;
 							</div>
 							<?php
 						}
-						echo '</fieldset>';
+						echo '</div>';
+						echo '<div id="occur-div-'.$pid.'" style="margin-left:15px"></div>';
 						if($remoteID){
 							$collectArr = $portalManager->getCollectionList($portalArr['urlRoot'], $remoteID);
 							echo '<fieldset>';
