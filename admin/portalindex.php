@@ -74,9 +74,11 @@ if($IS_ADMIN) $isEditor = 1;
 				.done(function(jsonRes) {
 					$("#occur-div-"+portalID).append(jsonRes.count+" occurrences");
 					if(jsonRes.count > 0){
-						addSubDiv(portalID, portalUrl+"/collections/list.php?usethes=1&taxontype=2&taxa="+scinameSearch, "Query Results");
-						addSubDiv(portalID, portalUrl+"/collections/map/googlemap.php?usethes=1&taxontype=2&taxa="+scinameSearch, "Map Results");
-						addSubDiv(portalID, portalUrl+"/collections/download/index.php?searchvar=taxa%3D"+scinameSearch, "Download Results");
+						addLink(portalID, portalUrl+"/collections/list.php?usethes=1&taxontype=2&taxa="+scinameSearch, "Query Results");
+						addLink(portalID, portalUrl+"/collections/map/googlemap.php?usethes=1&taxontype=2&taxa="+scinameSearch, "Simple Map");
+						addLink(portalID, portalUrl+"/collections/map/index.php?gridSizeSetting=60&taxa="+scinameSearch, "Dynamic Map");
+						let downloadUrl = portalUrl+"/collections/download/index.php?searchvar=taxa%3D"+scinameSearch;
+						$("#occur-div-"+portalID).append('<div class="occur-sub-div"><a href="#" onclick="openPopup(\''+downloadUrl+'\');return false;">Download Results</a></div>');
 					}
 				})
 				.fail(function( jqXHR, textStatus ) {
@@ -84,8 +86,15 @@ if($IS_ADMIN) $isEditor = 1;
 				});
 			}
 
-			function addSubDiv(portalID, url, text){
+			function addLink(portalID, url, text){
 				$("#occur-div-"+portalID).append('<div class="occur-sub-div"><a href="'+url+'" target="_blank">'+text+'</a></div>');
+			}
+
+			function openPopup(url){
+				let popupWidth = 1100;
+				if(document.body.offsetWidth < popupWidth) popupWidth = document.body.offsetWidth*0.9;
+				let newWindow = window.open(url,'downloadPane','scrollbars=1,toolbar=0,resizable=1,width='+(popupWidth)+',height=700,left=20,top=20');
+				if (newWindow.opener == null) newWindow.opener = self;
 			}
 
 			function displayPortalDetails(pid){
