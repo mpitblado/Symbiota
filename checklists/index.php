@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+
 <?php
 include_once('../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/ChecklistManager.php');
@@ -39,16 +41,16 @@ $clManager->setProj($pid);
 			if($researchArr){
 				foreach($researchArr as $pid => $projArr){
 					?>
-					<h3>
+					<h2>
 						<?php
 						$projName = $projArr['name'];
 						if($projName == 'Miscellaneous Inventories') $projName = (isset($LANG['MISC_INVENTORIES'])?$LANG['MISC_INVENTORIES']:'Miscellaneous Inventories');
 						echo $projName;
 						?>
 						<a href="<?php echo "clgmap.php?pid=" . $pid; ?>" title='<?php echo (isset($LANG['SHOW_MAP'])?$LANG['SHOW_MAP']:'Show inventories on map'); ?>'>
-							<img src='../images/world.png' style='width:10px;border:0' />
+							<img src='../images/world.png' style='width:10px;border:0' alt='Image of the globe' />
 						</a>
-					</h3>
+					</h2>
 					<ul>
 						<?php
 						foreach($projArr['clid'] as $clid => $clName){
