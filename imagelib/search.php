@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 
-<html lang="<?php echo $LANG_TAG ?>">
-
 <?php
 include_once('../config/symbini.php');
 include_once($SERVER_ROOT.'/content/lang/imagelib/search.'.$LANG_TAG.'.php');
@@ -42,7 +40,7 @@ $imgLibManager->setImageCount($imageCount);
 $imgLibManager->setImageType($imageType);
 if(isset($_REQUEST['db'])) $imgLibManager->setCollectionVariables($_REQUEST);
 ?>
-<html>
+<html lang="<?php echo $LANG_TAG ?>">
 <head>
 	<title><?php echo $DEFAULT_TITLE; ?> Image Library</title>
 	<meta name='keywords' content='' />
@@ -111,16 +109,17 @@ if(isset($_REQUEST['db'])) $imgLibManager->setCollectionVariables($_REQUEST);
 							</select>
 						</div>
 						<div style="float:left;">
+							<label style=" text-indent: 100%; white-space: nowrap; overflow: hidden; display: inline-block;" for="taxa"  > <?php echo htmlspecialchars($LANG['TAXON'], HTML_SPECIAL_CHARS_FLAGS) ?>: </label>
 							<input id="taxa" name="taxa" type="text" style="width:450px;" value="<?php echo $imgLibManager->getTaxaStr(); ?>" title="Separate multiple names w/ commas" autocomplete="off" />
 						</div>
 						<div style="float:left;margin-left:10px;" >
-							<input name="usethes" type="checkbox" value="1" <?php if(!$action || $imgLibManager->getUseThes()) echo 'CHECKED'; ?> >Include Synonyms
+							<input id ="usethes" name="usethes" type="checkbox" value="1" <?php if(!$action || $imgLibManager->getUseThes()) echo 'CHECKED'; ?> >
+							<label for="usethes"><?php echo htmlspecialchars($LANG['USE_THES'], HTML_SPECIAL_CHARS_FLAGS) ?> </label>
 						</div>
 					</div>
 					<div style="clear:both;margin-bottom:5px;">
-						Photographer:
 						<label for="phuid"><?php echo htmlspecialchars($LANG['PHU_ID'], HTML_SPECIAL_CHARS_FLAGS) ?>: </label>
-						<select name="phuid">
+						<select id="phuid" name="phuid">
 							<option value="">All Image Contributors</option>
 							<option value="">-----------------------------</option>
 							<?php
@@ -135,9 +134,8 @@ if(isset($_REQUEST['db'])) $imgLibManager->setCollectionVariables($_REQUEST);
 					if($tagArr = $imgLibManager->getTagArr()){
 						?>
 						<div style="margin-bottom:5px;">
-							Image Tag:
 							<label for="tags"><?php echo htmlspecialchars($LANG['IMG_TAGS'], HTML_SPECIAL_CHARS_FLAGS) ?>: </label>
-							<select name="tags" >
+							<select id="tags" name="tags" >
 								<option value="">Select Tag</option>
 								<option value="">--------------</option>
 								<?php
@@ -162,7 +160,6 @@ if(isset($_REQUEST['db'])) $imgLibManager->setCollectionVariables($_REQUEST);
 					$obsArr = (isset($collList['obs'])?$collList['obs']:null);
 					?>
 					<div style="margin-bottom:5px;">
-						Image Counts:
 						<label for="imagecount"><?php echo htmlspecialchars($LANG['IMG_COUNT'], HTML_SPECIAL_CHARS_FLAGS) ?>: </label>
 						<select id="imagecount" name="imagecount">
 							<option value="all" <?php echo ($imgLibManager->getImageCount()=='all'?'SELECTED ':''); ?>>All images</option>
@@ -178,9 +175,8 @@ if(isset($_REQUEST['db'])) $imgLibManager->setCollectionVariables($_REQUEST);
 					</div>
 					<div style="height: 40px">
 						<div style="margin-bottom:5px;float:left;">
-							Image Type:
 							<label for="imagetype"><?php echo htmlspecialchars($LANG['IMG_TYPE'], HTML_SPECIAL_CHARS_FLAGS) ?>: </label>
-							<select name="imagetype" onchange="imageTypeChanged(this)">
+							<select id="imagetype" name="imagetypes" onchange="imageTypeChanged(this)" onkeypress="imageTypeChanged(this)">
 								<option value="0">All Images</option>
 								<option value="1" <?php echo ($imgLibManager->getImageType() == 1?'SELECTED':''); ?>>Specimen Images</option>
 								<option value="2" <?php echo ($imgLibManager->getImageType() == 2?'SELECTED':''); ?>>Image Vouchered Observations</option>

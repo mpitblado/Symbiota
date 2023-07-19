@@ -8,10 +8,11 @@ include_once($SERVER_ROOT.'/content/lang/collections/harvestparams.en.php');
 
 //$LANG['SEARCH_CRITERIA'] = 'Search Criteria and Options';
 
-$LANG['TAXON_TYPE'] = 'Taxon Type';
-$LANG['PHU_ID'] = 'Photographer User ID';
-$LANG['IMG_TAGS'] = 'Image Tags';
+$LANG['TAXON_TYPE'] = 'Search by';
+$LANG['PHU_ID'] = 'Photographer';
+$LANG['IMG_TAGS'] = 'Image Tag';
 $LANG['IMG_COUNT'] = 'Image Counts';
 $LANG['IMG_TYPE'] = 'Image Type';
-
+$LANG['TAXON'] = 'Search Bar';
+$LANG['USE_THES'] = 'Include Synonyms';
 ?>
