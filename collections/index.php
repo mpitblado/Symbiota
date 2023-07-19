@@ -1,3 +1,7 @@
+<!DOCTYPE html>
+
+<html lang="<?php echo $LANG_TAG ?>">
+
 <?php
 include_once('../config/symbini.php');
 include_once($SERVER_ROOT.'/content/lang/collections/index.'.$LANG_TAG.'.php');
@@ -146,7 +150,7 @@ $otherCatArr = $collManager->getOccurVoucherProjects();
 								foreach($projTitleArr as $pid => $projTitle){
 									?>
 									<div>
-										<a href="#" onclick="togglePid('<?php echo $pid; ?>');return false;"><img id="plus-pid-<?php echo $pid; ?>" src="../images/plus_sm.png" /><img id="minus-pid-<?php echo $pid; ?>" src="../images/minus_sm.png" style="display:none;" /></a>
+										<a href="#" onclick="togglePid('<?php echo $pid; ?>');return false;"><img id="plus-pid-<?php echo $pid; ?>" src="../images/plus_sm.png" alt='Plus Sign' /><img id="minus-pid-<?php echo $pid; ?>" src="../images/minus_sm.png" style="display:none;" alt='Minus Sign' /></a>
 										<input name="pid[]" type="checkbox" value="<?php echo $pid; ?>" onchange="selectAllPid(this);" />
 										<b><?php echo $projTitle; ?></b>
 									</div>
