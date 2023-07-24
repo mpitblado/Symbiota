@@ -26,13 +26,13 @@ class PortalIndex extends OmCollections{
 		return $retArr;
 	}
 
-	public function getPortalIndexArr($portalIdentifier){
+	public function getPortalIndexArr($portalID){
 		if(!isset($GLOBALS['ACTIVATE_PORTAL_INDEX'])) return false;
 		$retArr = array();
 		$sql = 'SELECT portalID, portalName, acronym, portalDescription, urlRoot, securityKey, symbiotaVersion, guid, manager, managerEmail, primaryLead, primaryLeadEmail, notes, initialTimestamp FROM portalindex ';
-		if($portalIdentifier){
-			if(is_numeric($portalIdentifier)) $sql .= 'WHERE portalID = '.$portalIdentifier;
-			else $sql .= 'WHERE guid = "'.$portalIdentifier.'" ';
+		if($portalID){
+			if(is_numeric($portalID)) $sql .= 'WHERE portalID = '.$portalID;
+			else $sql .= 'WHERE guid = "'.$portalID.'" ';
 		}
 		else $sql .= 'ORDER BY portalName';
 		$rs = $this->conn->query($sql);
