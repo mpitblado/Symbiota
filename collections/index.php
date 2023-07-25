@@ -85,8 +85,11 @@ $otherCatArr = $collManager->getOccurVoucherProjects();
 				<div id="specobsdiv">
 					<form name="collform1" action="harvestparams.php" method="post" onsubmit="return verifyCollForm(this)">
 						<div style="margin:0px 0px 10px 5px;">
+							
 							<input id="dballcb" name="db[]" class="specobs" value='all' type="checkbox" onclick="selectAll(this);" checked />
-					 		<?php echo $LANG['SELECT_DESELECT'].' <a href="misc/collprofiles.php">' . htmlspecialchars($LANG['ALL_COLLECTIONS'], HTML_SPECIAL_CHARS_FLAGS) . '</a>'; ?>
+					 		<label for="dballcb">
+							<?php echo $LANG['SELECT_DESELECT'].' <a href="misc/collprofiles.php">' . htmlspecialchars($LANG['ALL_COLLECTIONS'], HTML_SPECIAL_CHARS_FLAGS) . '</a>'; ?>
+							</label>
 						</div>
 						<?php
 						$collManager->outputFullCollArr($specArr, $catId);
