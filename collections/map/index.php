@@ -17,13 +17,13 @@ if (!is_numeric($distFromMe)) $distFromMe = '';
 if (!is_numeric($catId)) $catId = 0;
 if (!is_numeric($tabIndex)) $tabIndex = 0;
 
-//Handle AJAX request for more records from a previous partial load 
+//Handle AJAX request for more records from a previous partial load
 if(array_key_exists('loadMoreMapData',$_REQUEST) && $_SESSION['map_current_query']){
-	
+
 	$mapManager = OccurrenceMapManager::initAJAX();
 	$retreivedRecords = json_encode($mapManager->getCoordinateMap2($_SESSION['map_retrieved_record_count']+1,$recLimit));
-	$rerievedRecordCount = $mapManager->getRetrievedRecordCnt(); 
-	$_SESSION['map_retrieved_record_count'] = $_SESSION['map_retrieved_record_count'] + $rerievedRecordCount; 
+	$rerievedRecordCount = $mapManager->getRetrievedRecordCnt();
+	$_SESSION['map_retrieved_record_count'] = $_SESSION['map_retrieved_record_count'] + $rerievedRecordCount;
 
 	//generate JSON encoded records.
 	$requestResponse = '{"recordCount": "' . $rerievedRecordCount . '", "records": ' . $retreivedRecords .'}';
@@ -63,7 +63,7 @@ if (isset($MAPPING_BOUNDARIES) && $MAPPING_BOUNDARIES) {
 		$bound_NorthEast = [$coorArr[0],$coorArr[1]];
 		$bound_SouthWest = [$coorArr[2],$coorArr[3]];
 	}
-} 
+}
 else {
 	$bound_SouthWest = $bound_NorthEast;
 }
@@ -169,7 +169,7 @@ else {
 		}
 
 		#mapSearchRecordsTable {
-			
+
 			font-family:Arial;
 			font-size:12px;
 		}
@@ -208,7 +208,7 @@ else {
 		<div id="defaultpanel" class="sidepanel">
 			<button type="button" onclick="closeNav()" style="float:right;top:5px;right:5px;margin:1px;padding:3px;z-index:10;font-weight:bold">&lt;&lt;</button>
 			<div id="maptopoptions" style="clear:right;">
-				
+
 				<fieldset>
 					<legend>Display Mode:</legend>
 					<label for="modePoints">Markers</label><input type="radio" id="modePoints" name="markerDsiplayMode" onclick="handleModeRadios(this);" value="points">
@@ -216,7 +216,7 @@ else {
 					<label for="modeHeat">Heat Map</label><input type="radio" id="modeHeat" name="markerDsiplayMode" onclick="handleModeRadios(this);" value="heat">
 					<br><a href="#" onclick="activateMapOtions();">View map options</a>
 				</div>
-			
+
 			<div id="accordion">
 				<?php
 				/*
@@ -269,7 +269,7 @@ else {
 						</div>
 						<div id="searchcriteria" >
 							<div style="height:25px;">
-								
+
 								<div style="float:right;">
 									<input type="hidden" id="selectedpoints" value="" />
 									<input type="hidden" id="deselectedpoints" value="" />
@@ -613,7 +613,7 @@ else {
 		</div>
 	</div>
 	<div id='map' style='width:100%;height:100%;'></div>
-	
+
 	<script defer type="text/javascript">
 
 		var clientRoot = "<?php echo $CLIENT_ROOT; ?>";
@@ -658,7 +658,7 @@ else {
 		var taxaCnt = 0;
 		var collKeyArr = []; // stores HTML elements of the Group by Collection key
 		var collNameArr = [];
-		var familyNameArr = []; //populated with list of Families represented in the results and used to group taxa on the map legend/key 
+		var familyNameArr = []; //populated with list of Families represented in the results and used to group taxa on the map legend/key
 		var htmlTidArr = []; //maps html id to taxa group
 		var taxaKeyArr = []; //stores HTML elements of the Group by Taxanomy key
 		var clusterCollArr = [];
@@ -713,7 +713,7 @@ else {
 			handleModeRadios({
 				value: 'points',
 			});
-			
+
 
 			if (totalRecordCount > retrievedRecordCount) {
 					alert("Your search exceeds the current maximum of <?php echo $recLimit; ?> records. Not all records will be shown on the map. Press the 'Load more records' to add additional matching records.");
@@ -724,7 +724,7 @@ else {
 			document.getElementById('loadingOverlay').style.display = 'none';
 		}
 
-		
+
 
 		function loadSidePanel() {
 			if (pointObj) {
@@ -739,12 +739,12 @@ else {
 					requestMoreRecords();
 				});
 				recordsArr = [];
-				if (pointBounds) {
+				if (!pointBounds.isEmpty) {
 					map.fitBounds(pointBounds);
 					map.panToBounds(pointBounds);
 				}
 			}
-			
+
 			switch(displayMode){
 				case 'points':
 					document.getElementById('modePoints').checked = true;
@@ -773,7 +773,7 @@ else {
 			}
 			var iconColor = document.getElementById('defaultmarkercolor').value;
 			for (let i = 0; i < pointObj.length; i++) {
-				
+
 				var markerIcon = null;
 
 				//create collection based marker legend
@@ -784,7 +784,7 @@ else {
 				var tempFamArr = [];
 				var scinameStr = '';
 				//The scinameStr value is used for DIV element id
-	
+
 				if (pointObj[i]['tidinterpreted'] && pointObj[i]['tidinterpreted'] != 'NULL'){
 					scinameStr = pointObj[i]['sciname']+pointObj[i]['tidinterpreted'];
 				}
@@ -794,7 +794,7 @@ else {
 
 				if (!taxaKeySet.has(scinameStr)){
 					taxaKeySet.add(scinameStr)
-				
+
 					var family = '';
 					if(!pointObj[i]['family']){
 						family = 'NULL'
@@ -809,14 +809,14 @@ else {
 					type = 'obs';
 					markerIcon = {
 						url: '<?= $CLIENT_ROOT?>/collections/map/coloricon.php?shape=triangle&color=' + iconColor,
-						scaledSize: new google.maps.Size(18, 18), 
+						scaledSize: new google.maps.Size(18, 18),
 					}
 				}
 				else {
 					type = 'spec';
 					markerIcon = {
 						url: '<?= $CLIENT_ROOT?>/collections/map/coloricon.php?shape=circle&color=' + iconColor,
-						scaledSize: new google.maps.Size(18, 18), 
+						scaledSize: new google.maps.Size(18, 18),
 					}
 
 				}
@@ -851,7 +851,7 @@ else {
 				MarkerGroupings['Taxa'][scinameStr].push(m);
 				if (!MarkerGroupings['Collections'][pointObj[i]['collid']]) MarkerGroupings['Collections'][pointObj[i]['collid']] = [];
 				MarkerGroupings['Collections'][pointObj[i]['collid']].push(m);
-				heatMapData.push(m.getPosition());								
+				heatMapData.push(m.getPosition());
 
 				// Add marker listener
 				m.addListener('spider_click', function() {
@@ -866,10 +866,10 @@ else {
 						content: '<div>' + this.text + '<br /><a href="#" onclick="openIndPopup(' + this.occid + ',' + this.clid +
 							 ');return false;"><span style="color:blue;">See Details</span></a></div><div><a onclick="map.panTo(panPoint); map.setZoom(13); return false">Focus</a></div>',
 					};
-					
+
 					InformationWindow = new google.maps.InfoWindow(myOptions);
 					InformationWindow.open(map, this);
-					
+
 
 				});
 
@@ -880,12 +880,12 @@ else {
 				buildRecordTableRow(pointObj[i], allMarkers.length-1);
 
 			}
-			
+
 		}
 
 
 		function handleModeRadios(myMode){
-			
+
 			switch(myMode.value) {
 				case 'cluster':
 					displayMode = 'cluster';
@@ -895,7 +895,7 @@ else {
 					}
 					markerCluster = new markerClusterer.MarkerClusterer({
 						map: map,
-						markers: allMarkers, 
+						markers: allMarkers,
 					});
 					break;
 				case 'points':
@@ -941,7 +941,7 @@ else {
 				else if (displayMode == 'heat'){
 					buildHeatMapData();
 				}
-					
+
 			}
 		}
 
@@ -1062,7 +1062,7 @@ else {
 			newRecordsTable.innerHTML = mapSearchRecordsTableTemplate;
 			let oldTable = document.getElementById("mapSearchRecordsTable");
 			oldTable.parentNode.replaceChild(newRecordsTable, oldTable);
-			
+
 		}
 
 
@@ -1076,7 +1076,7 @@ else {
 			xhr.send(data);
 
     		xhr.onload = function() {
-        	
+
 				if (xhr.readyState === xhr.DONE) {
 					if (xhr.status == 200) {
 						let response = JSON.parse(xhr.responseText);
@@ -1092,7 +1092,7 @@ else {
 							rebuildRecordsTable();
 							retrievedRecordCount += response.recordCount
 						}
-					} else { 
+					} else {
 						alert('Error loading more records');
 						console.log('Response Code: ' + xhr.status + ' Server Response: ' +  xhr.responseText);
 					}
@@ -1210,7 +1210,7 @@ else {
 		// 	}
 		// }
 
-		
+
 
 		<?php echo ($activateGeolocation ? "google.maps.event.addListener(window, 'load', getCoords);" : ""); ?>
 	</script>
