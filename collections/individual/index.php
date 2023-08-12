@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <?php
 include_once('../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceIndividual.php');
@@ -145,7 +146,7 @@ $dupClusterArr = $indManager->getDuplicateArr();
 $commentArr = $indManager->getCommentArr($isEditor);
 $traitArr = $indManager->getTraitArr();
 ?>
-<html>
+<html lang="<?php echo $LANG_TAG ?>">
 <head>
 	<title><?php echo $DEFAULT_TITLE.' '.(isset($LANG['DETAILEDCOLREC'])?$LANG['DETAILEDCOLREC']:'Detailed Collection Record Information'); ?></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET; ?>"/>
@@ -310,7 +311,11 @@ $traitArr = $indManager->getTraitArr();
 					if($dupClusterArr) echo '<li><a href="#dupestab-div"><span>' . htmlspecialchars((isset($LANG['DUPLICATES'])?$LANG['DUPLICATES']:'Duplicates'), HTML_SPECIAL_CHARS_FLAGS) . '</span></a></li>';
 					?>
 					<li><a href="#commenttab"><span><?php echo ($commentArr?count($commentArr).' ':''); echo (isset($LANG['COMMENTS'])?$LANG['COMMENTS']:'Comments'); ?></span></a></li>
-					<li><a href="linkedresources.php?occid=<?php echo htmlspecialchars($occid, HTML_SPECIAL_CHARS_FLAGS) . '&tid=' . htmlspecialchars($occArr['tidinterpreted’], HTML_SPECIAL_CHARS_FLAGS)']) . '&clid=' . htmlspecialchars($clid, HTML_SPECIAL_CHARS_FLAGS) . '&collid=' . htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>"><span><?php echo htmlspecialchars($LANG['LINKED_RESOURCES'], HTML_SPECIAL_CHARS_FLAGS); ?></span></a></li>
+					<li>
+						<a href="linkedresources.php?occid=<?php echo htmlspecialchars($occid, HTML_SPECIAL_CHARS_FLAGS) . '&tid=' . htmlspecialchars($occArr['tidinterpreted'], HTML_SPECIAL_CHARS_FLAGS) . '&clid=' . htmlspecialchars($clid, HTML_SPECIAL_CHARS_FLAGS) . '&collid=' . htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS) ?>">
+							<span><?php echo htmlspecialchars($LANG['LINKED_RESOURCES'], HTML_SPECIAL_CHARS_FLAGS); ?></span>
+						</a>
+					</li>
 					<?php
 					if($traitArr) echo '<li><a href="#traittab"><span>' . htmlspecialchars((isset($LANG['TRAITS'])?$LANG['TRAITS']:'Traits'), HTML_SPECIAL_CHARS_FLAGS) . '</span></a></li>';
 					if($isEditor) echo '<li><a href="#edittab"><span>' . htmlspecialchars($LANG['EDIT_HISTORY'], HTML_SPECIAL_CHARS_FLAGS) . '</span></a></li>';
@@ -1218,16 +1223,15 @@ $traitArr = $indManager->getTraitArr();
 							<?php
 						}
 					}
-					else echo '<div class="title2-div" style="margin:20px;">'.$LANG['NO_COMMENTS'].'</div>';
+					else echo '<div class="title2-div left-breathing-room-rel top-breathing-room-rel bottom-breathing-room" >'.$LANG['NO_COMMENTS'].'</div>';
 					?>
-					<fieldset>
-						<legend><?php echo $LANG['NEW_COMMENT']; ?></legend>
 						<?php
 						if($SYMB_UID){
 							?>
-							<form name="commentform" action="index.php" method="post" onsubmit="return verifyCommentForm(this);">
-								<textarea name="commentstr" rows="8" style="width:98%;"></textarea>
-								<div style="margin:15px;">
+							<form class="left-breathing-room-rel" name="commentform" action="index.php" method="post" onsubmit="return verifyCommentForm(this);">
+								<label for="commentstr"><?php echo $LANG['NEW_COMMENT']; ?></label>
+								<textarea name="commentstr" id="commentstr" rows="8" style="width:98%;"></textarea>
+								<div class="bottom-breathing-room">
 									<input name="occid" type="hidden" value="<?php echo $occid; ?>" />
 									<input name="tabindex" type="hidden" value="<?php echo $commentTabIndex; ?>" />
 									<button type="submit" name="formsubmit" value="submitComment"><?php echo $LANG['SUBMIT_COMMENT']; ?></button>
@@ -1247,7 +1251,6 @@ $traitArr = $indManager->getTraitArr();
 							echo '</div>';
 						}
 						?>
-					</fieldset>
 				</div>
 				<?php
 				if($traitArr){
@@ -1363,16 +1366,24 @@ $traitArr = $indManager->getTraitArr();
 							else{
 								echo '<div style="margin:25px 0px;font-weight:bold">'.$LANG['NOT_EDITED'].'</div>';
 							}
-							echo '<div style="margin:15px">'.$LANG['EDIT_NOTE'].'</div>';
+							echo '<div>'.$LANG['EDIT_NOTE'].'</div>';
 							//Display Access Stats
 							$accessStats = $indManager->getAccessStats();
 							if($accessStats){
 								echo '<div style="margin-top:30px"><b>Access Stats</b></div>';
 								echo '<table class="styledtable" style="font-size:100%;width:300px;">';
-								echo '<tr><th>'.$LANG['YEAR'].'</th><th>'.$LANG['ACCESS_TYPE'].'</th><th>'.$LANG['COUNT'].'</th></tr>';
+								echo '<tr>
+										<th>'.$LANG['YEAR'].'</th>
+										<th>'.$LANG['ACCESS_TYPE'].'</th>
+										<th>'.$LANG['COUNT'].'</th>
+									</tr>';
 								foreach($accessStats as $accessDate => $arr1){
 									foreach($arr1 as $accessType => $accessCnt){
-										echo '<tr><td>'.$accessDate.'</td><td>'.$accessType.'</td><td>'.$accessCnt.'</td></tr>';
+										echo '<tr>
+											<td>'.$accessDate.'</td>
+											<td>'.$accessType.'</td>
+											<td>'.$accessCnt.'</td>
+										</tr>';
 									}
 								}
 								echo '</table>';
@@ -1411,13 +1422,20 @@ $traitArr = $indManager->getTraitArr();
 						}
 						if(isset($archArr['dateDeleted'])) echo '<div style="margin-bottom:10px"><label>'.$LANG['RECORD_DELETED'].':</label> '.$archArr['dateDeleted'].'</div>';
 						if($rawArchArr['notes']) echo '<div style="margin-left:15px"><label>'.$LANG['NOTES'].': </label>'.$rawArchArr['notes'].'</div>';
-						echo '<table class="styledtable"><tr><th>'.$LANG['FIELD'].'</th><th>'.$LANG['VALUE'].'</th></tr>';
+						echo '<table class="styledtable">
+							<tr>
+								<th>'.$LANG['FIELD'].'</th>
+								<th>'.$LANG['VALUE'].'</th>
+							</tr>';
 						foreach($archArr as $f => $v){
 							if(!is_array($v)){
-								echo '<tr><td style="width:175px;">'.$f.'</td><td>';
+								echo '<tr>
+										<td style="width:175px;">'.$f.'</td>
+									<td>';
 								if(is_array($v)) echo implode(', ',$v);
 								else echo $v;
-								echo '</td></tr>';
+								echo '</td>
+								</tr>';
 							}
 						}
 						$extArr = array('dets'=>'identifications','imgs'=>'Images','assoc'=>'Occurrence<br/>Associations','exsiccati'=>'Exsiccati','paleo'=>'Paleontological<br/>Terms','matSample'=>'Material<br/>Sample');
