@@ -459,3 +459,7 @@ table.styledtable tr.alt td {
   display: flex;
   justify-content: center;
 }
+
+.bottom-breathing-room-sm-rel {
+  margin-bottom: 0.5rem;
+}
