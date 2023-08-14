@@ -1,6 +1,9 @@
 <?php
 if($LANG_TAG == 'en' || !file_exists($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/header.en.php');
 else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
+include_once($SERVER_ROOT.'/classes/ProfileManager.php');
+$pHandler = new ProfileManager();
+$isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
 ?>
 <style>
 	.custom-header{
@@ -116,22 +119,28 @@ else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 					<span>
 						<?php echo (isset($LANG['H_WELCOME'])?$LANG['H_WELCOME']:'Welcome').' '.$USER_DISPLAY_NAME; ?>!
 					</span>
-					<span>
-						<a href="<?php echo $CLIENT_ROOT; ?>/profile/viewprofile.php"><?php echo (isset($LANG['H_MY_PROFILE'])?$LANG['H_MY_PROFILE']:'My Profile')?></a>
+					<span class="button button-tertiary">
+						<a class="accessibility-button" onclick="toggleAccessibilityStyles('<?php echo $CLIENT_ROOT . '/includes' . '/' ?>', '<?php echo $CSS_BASE_PATH ?>', '<?php echo $LANG['TOGGLE_508_OFF'] ?>', '<?php echo $LANG['TOGGLE_508_ON'] ?>')" id="accessibility-button" data-accessibility="accessibility-button" ><?php echo (isset($LANG['TOGGLE_508_ON'])?$LANG['TOGGLE_508_ON']:'Accessibility Mode'); ?></a>
 					</span>
-					<span>
-						<a href="<?php echo $CLIENT_ROOT; ?>/profile/index.php?submit=logout"><?php echo (isset($LANG['H_LOGOUT'])?$LANG['H_LOGOUT']:'Sign Out')?></a>
+					<span class="button button-tertiary">
+						<a href="<?php echo htmlspecialchars($CLIENT_ROOT, HTML_SPECIAL_CHARS_FLAGS); ?>/profile/viewprofile.php"><?php echo htmlspecialchars((isset($LANG['H_MY_PROFILE'])?$LANG['H_MY_PROFILE']:'My Profile'), HTML_SPECIAL_CHARS_FLAGS)?></a>
+					</span>
+					<span class="button button-secondary">
+						<a href="<?php echo htmlspecialchars($CLIENT_ROOT, HTML_SPECIAL_CHARS_FLAGS); ?>/profile/index.php?submit=logout"><?php echo htmlspecialchars((isset($LANG['H_LOGOUT'])?$LANG['H_LOGOUT']:'Sign Out'), HTML_SPECIAL_CHARS_FLAGS)?></a>
 					</span>
 					<?php
 				} else {
 					?>
-					<span>
-						<a href="#">
+					<span class="button button-tertiary">
+						<a class="accessibility-button" onclick="toggleAccessibilityStyles('<?php echo $CLIENT_ROOT . '/includes' . '/' ?>', '<?php echo $CSS_BASE_PATH ?>', '<?php echo $LANG['TOGGLE_508_OFF'] ?>', '<?php echo $LANG['TOGGLE_508_ON'] ?>')" id="accessibility-button" data-accessibility="accessibility-button" ><?php echo (isset($LANG['TOGGLE_508_ON'])?$LANG['TOGGLE_508_ON']:'Accessibility Mode'); ?></a>
+					</span>
+					<span class="button button-tertiary">
+						<a onclick="window.location.href='#'">
 							Contact Us
 						</a>
 					</span>
-					<span>
-						<a href="<?php echo $CLIENT_ROOT . "/profile/index.php?refurl=" . $_SERVER['SCRIPT_NAME'] . "?" . htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES); ?>">
+					<span class="button button-secondary">
+						<a href="<?php echo htmlspecialchars($CLIENT_ROOT, HTML_SPECIAL_CHARS_FLAGS) . "/profile/index.php?refurl=" . htmlspecialchars($_SERVER['SCRIPT_NAME'], HTML_SPECIAL_CHARS_FLAGS) . "?" . htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES); ?>">
 							<?php echo (isset($LANG['H_LOGIN'])?$LANG['H_LOGIN']:'Login')?>
 						</a>
 					</span>
@@ -141,9 +150,11 @@ else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 			</nav>
 			<div class="top-brand">
 				<a href="https://symbiota.org">
-					<img src="<?php echo $CLIENT_ROOT; ?>/images/layout/logo_symbiota.png" alt="Symbiota logo" width="100%">
+					<div class="image-container">
+						<img src="<?php echo $CLIENT_ROOT; ?>/images/layout/logo_symbiota.png" alt="Symbiota logo">
+					</div>
 				</a>
-				<div>
+				<div class="brand-name">
 					<h1>Symbiota Brand New Portal</h1>
 					<h2>Redesigned by the Symbiota Support Hub</h2>
 				</div>
@@ -206,5 +217,6 @@ else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 				</ul>
 			</nav>
 		</div>
+		<div id="end-nav"></div>
 	</header>
 </div>
