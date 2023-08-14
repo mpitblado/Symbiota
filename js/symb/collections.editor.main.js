@@ -974,7 +974,7 @@ function eventDateChanged(eventDateInput){
 				var testDate = new Date(dateArr['y'],dateArr['m']-1,dateArr['d']);
 				var today = new Date();
 				if(testDate > today){
-					alert("Was this plant really collected in the future? The date you entered has not happened yet. Please revise.");
+					alert("Was this specimen really collected in the future? The date you entered has not happened yet. Please revise.");
 					return false;
 				}
 			}
@@ -1010,38 +1010,32 @@ function eventDateChanged(eventDateInput){
 			if(dateArr['y'] > 0) distributeEventDate(dateArr['y'],dateArr['m'],dateArr['d']);
 		}
 	}
+	else{
+		distributeEventDate("","","");
+	}
 	fieldChanged('eventdate');
-	var f = eventDateInput.form;
-	if(!eventDateInput.form.recordnumber.value && f.recordedby.value) autoDupeSearch();
+	if(!eventDateInput.form.recordnumber.value && eventDateInput.form.recordedby.value) autoDupeSearch();
 	return true;
 }
 
-function distributeEventDate(y,m,d){
+function distributeEventDate(y, m, d){
 	var f = document.fullform;
-	if(y != "0000"){
-		f.year.value = y;
-		fieldChanged("year");
-	}
-	if(m == "00"){
-		f.month.value = "";
-	}
-	else{
-		f.month.value = m;
-		fieldChanged("year");
-	}
-	if(d == "00"){
-		f.day.value = "";
-	}
-	else{
-		f.day.value = d;
-		fieldChanged("day");
-	}
+	if(y == "0000") y = "";
+	f.year.value = y;
+	fieldChanged("year");
+
+	if(m == "00") m = "";
+	f.month.value = m;
+	fieldChanged("month");
+
+	if(d == "00") d = "";
+	f.day.value = d;
+	fieldChanged("day");
+
 	f.startdayofyear.value = "";
+	f.enddayofyear.value = "";
 	try{
-		if(m == 0 || d == 0){
-			f.startdayofyear.value = "";
-		}
-		else{
+		if(m > 0 && d > 0){
 			eDate = new Date(y,m-1,d);
 			if(eDate instanceof Date && eDate != "Invalid Date"){
 				var onejan = new Date(y,0,1);

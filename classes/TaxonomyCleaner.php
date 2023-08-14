@@ -85,36 +85,36 @@ class TaxonomyCleaner extends Manager{
 			$taxaCnt = 1;
 			$itemCnt = 0;
 			while($r = $rs->fetch_object()){
-				$editLink = '[<a href="#" onclick="openPopup(\''.$GLOBALS['CLIENT_ROOT'].
-					'/collections/editor/occurrenceeditor.php?q_catalognumber=&occindex=0&q_customfield1=sciname&q_customtype1=EQUALS&q_customvalue1='.urlencode($r->sciname).'&collid='.
-					$this->collid.'\'); return false;">'.$r->cnt.' specimens <img src="../../images/edit.png" style="width:12px;" /></a>]';
+				$editLink = '[<a href="#" onclick="openPopup(\'' . htmlspecialchars($GLOBALS['CLIENT_ROOT'], HTML_SPECIAL_CHARS_FLAGS) .
+					'/collections/editor/occurrenceeditor.php?q_catalognumber=&occindex=0&q_customfield1=sciname&q_customtype1=EQUALS&q_customvalue1=' . urlencode($r->sciname) . '&collid=' . 
+					htmlspecialchars($this->collid, HTML_SPECIAL_CHARS_FLAGS) . '\'); return false;">' . htmlspecialchars($r->cnt, HTML_SPECIAL_CHARS_FLAGS) . ' specimens <img src="../../images/edit.png" style="width:12px;" /></a>]';
 				$this->logOrEcho('<div style="margin-top:5px">Resolving #'.$taxaCnt.': <b><i>'.$r->sciname.'</i></b>'.($r->family?' ('.$r->family.')':'').'</b> '.$editLink.'</div>');
 				if($r->family) $taxonHarvester->setDefaultFamily($r->family);
 				if($r->scientificnameauthorship) $taxonHarvester->setDefaultAuthor($r->scientificnameauthorship);
 				$sciname = $r->sciname;
 				$tid = 0;
 				$manualCheck = true;
-				$taxonArr = TaxonomyUtilities::parseScientificName($r->sciname,$this->conn,0,$this->targetKingdomName);
-				if(isset($taxonArr['sciname']) && $taxonArr['sciname']){
-					$sciname = $taxonArr['sciname'];
-					if($sciname != $r->sciname){
-						$this->logOrEcho('Interpreted base name: <b>'.$sciname.'</b>',1);
-					}
-					$tid = $taxonHarvester->getTid($taxonArr);
-					if($tid && $this->autoClean){
-						$this->remapOccurrenceTaxon($this->collid, $r->sciname, $tid, (isset($taxonArr['identificationqualifier'])?$taxonArr['identificationqualifier']:''));
-						$this->logOrEcho('Taxon remapped to <b>'.$sciname.'</b>',1);
+				if($tid = $taxonHarvester->processSciname($sciname)){
+					$taxaAdded= true;
+					if($taxonHarvester->isFullyResolved()){
 						$manualCheck = false;
 					}
+					else{
+						$this->logOrEcho('Taxon not fully resolved...',1);
+					}
 				}
-				if(!$tid){
-					if($taxonHarvester->processSciname($sciname)){
-						$taxaAdded= true;
-						if($taxonHarvester->isFullyResolved()){
-							$manualCheck = false;
+				$taxonArr = TaxonomyUtilities::parseScientificName($r->sciname,$this->conn,0,$this->targetKingdomName);
+				if(!$tid && $this->autoClean){
+					if(isset($taxonArr['sciname']) && $taxonArr['sciname']){
+						$sciname = $taxonArr['sciname'];
+						if($sciname != $r->sciname){
+							$this->logOrEcho('Interpreted base name: <b>'.$sciname.'</b>',1);
 						}
-						else{
-							$this->logOrEcho('Taxon not fully resolved...',1);
+						$tid = $taxonHarvester->getTid($taxonArr);
+						if($tid){
+							$this->remapOccurrenceTaxon($this->collid, $r->sciname, $tid, (isset($taxonArr['identificationqualifier'])?$taxonArr['identificationqualifier']:''));
+							$this->logOrEcho('Taxon remapped to <b>'.$sciname.'</b>',1);
+							$manualCheck = false;
 						}
 					}
 				}
@@ -129,14 +129,14 @@ class TaxonomyCleaner extends Manager{
 						for($x=1; $x <= 3; $x++){
 							if(isset($taxonArr['unitname'.$x]) && $taxonArr['unitname'.$x]) $strTestArr[] = $taxonArr['unitname'.$x];
 						}
-						foreach($matchArr as $tid => $scinameMatch){
+						foreach($matchArr as $tidMatch => $scinameMatch){
 							$snTokens = explode(' ',$scinameMatch);
 							foreach($snTokens as $k => $v){
 								if(in_array($v, $strTestArr)) $snTokens[$k] = '<b>'.$v.'</b>';
 							}
 							$idQual = (isset($taxonArr['identificationqualifier'])?str_replace("'", '', $taxonArr['identificationqualifier']):'');
 							$echoStr = '<i>'.implode(' ',$snTokens).'</i> =&gt; <span class="hideOnLoad">wait for page to finish loading...</span><span class="displayOnLoad" style="display:none">'.
-								'<a href="#" onclick="return remappTaxon(\''.urlencode($r->sciname).'\','.$tid.',\''.$idQual.'\','.$itemCnt.')" style="color:blue"> remap to this taxon</a>'.
+								'<a href="#" onclick="return remappTaxon(\''.urlencode($r->sciname) . '\',' . htmlspecialchars($tidMatch, HTML_SPECIAL_CHARS_FLAGS)  . ',\'' . htmlspecialchars($idQual, HTML_SPECIAL_CHARS_FLAGS) . '\',' . htmlspecialchars($itemCnt, HTML_SPECIAL_CHARS_FLAGS) . ')" style="color:blue"> remap to this taxon</a>'.
 								'<span id="remapSpan-'.$itemCnt.'"></span></span>';
 							$this->logOrEcho($echoStr,2);
 							$itemCnt++;
