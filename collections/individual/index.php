@@ -497,7 +497,7 @@ $traitArr = $indManager->getTraitArr();
 								</div>
 								<div class="det-toogle-div" style="display:none;">
 									<div>
-										<a href="#" onclick="toggle('det-toogle-div');return false"><img src="../../images/minus_sm.png" alt="image of a minu sign, indication desire to hide determination history"></a>
+										<a href="#" onclick="toggle('det-toogle-div');return false"><img src="../../images/minus_sm.png" alt="image of a minu sign, indicating desire to hide determination history"></a>
 										<?php echo $LANG['HIDE_DET_HISTORY']; ?>
 									</div>
 									<fieldset>
