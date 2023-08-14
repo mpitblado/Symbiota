@@ -335,7 +335,7 @@ $traitArr = $indManager->getTraitArr();
 					if($iconUrl){
 						?>
 						<div id="collicon-div">
-							<img src="<?php echo $iconUrl; ?>" />
+							<img src="<?php echo $iconUrl; ?>" alt="icon for collection" />
 						</div>
 						<?php
 					}
@@ -448,7 +448,7 @@ $traitArr = $indManager->getTraitArr();
 								echo '<div id="idqualifier-div"><label>'.$LANG['ID_QUALIFIER'].':</label> '.$occArr['identificationqualifier'].'</div>';
 							}
 						}
-						if($occArr['family']) echo '<label>'.$LANG['FAMILY'].':</label> '.$occArr['family'];
+						if($occArr['family']) echo '<div id="family-div"><label>'.$LANG['FAMILY'].':</label> ' . $occArr['family'] . '</div>';
 						if($occArr['identifiedby']){
 							?>
 							<div class="identby-div">
@@ -492,12 +492,12 @@ $traitArr = $indManager->getTraitArr();
 							?>
 							<div id="determination-div">
 								<div class="det-toogle-div">
-									<a href="#" onclick="toggle('det-toogle-div');return false"><img src="../../images/plus_sm.png"></a>
+									<a href="#" onclick="toggle('det-toogle-div');return false"><img src="../../images/plus_sm.png" alt="image of a plus sign, indicating desire to show determination history"></a>
 									<?php echo $LANG['SHOW_DET_HISTORY']; ?>
 								</div>
 								<div class="det-toogle-div" style="display:none;">
 									<div>
-										<a href="#" onclick="toggle('det-toogle-div');return false"><img src="../../images/minus_sm.png"></a>
+										<a href="#" onclick="toggle('det-toogle-div');return false"><img src="../../images/minus_sm.png" alt="image of a minu sign, indication desire to hide determination history"></a>
 										<?php echo $LANG['HIDE_DET_HISTORY']; ?>
 									</div>
 									<fieldset>
@@ -648,6 +648,7 @@ $traitArr = $indManager->getTraitArr();
 						if($occArr['decimallatitude']){
 							?>
 							<div id="latlng-div">
+								<?php echo $LANG['LAT_LNG'] ?>: 
 								<?php
 								echo $occArr['decimallatitude'].'&nbsp;&nbsp;'.$occArr['decimallongitude'];
 								if($occArr['coordinateuncertaintyinmeters']) echo ' +-'.$occArr['coordinateuncertaintyinmeters'].'m.';
@@ -952,7 +953,7 @@ $traitArr = $indManager->getTraitArr();
 									?>
 									<div class="thumbnail-div">
 										<a href='<?php echo htmlspecialchars($imgArr['url'], HTML_SPECIAL_CHARS_FLAGS); ?>' target="_blank">
-											<img border="1" src="<?php echo $thumbUrl; ?>" title="<?php echo $imgArr['caption']; ?>" style="max-width:170;" />
+											<img border="1" src="<?php echo $thumbUrl; ?>" title="<?php echo $imgArr['caption']; ?>" style="max-width:170;" alt="thumbnail image of current specimen" />
 										</a>
 										<?php
 										if($imgArr['caption']) echo '<div><i>'.$imgArr['caption'].'</i></div>';
@@ -974,9 +975,9 @@ $traitArr = $indManager->getTraitArr();
 							$rightsHeading = '';
 							if(isset($RIGHTS_TERMS)) $rightsHeading = array_search($rightsStr,$RIGHTS_TERMS);
 							if(substr($collMetadata['rights'],0,4) == 'http'){
-								$rightsStr = '<a href="' . htmlspecialchars($rightsStr, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank">' . htmlspecialchars(($rightsHeading?$rightsHeading:$rightsStr), HTML_SPECIAL_CHARS_FLAGS) . '</a>';
+								$rightsStr = '<a href="' . htmlspecialchars($rightsStr, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank">' . htmlspecialchars(($LANG['USAGE_RIGHTS']), HTML_SPECIAL_CHARS_FLAGS) . '</a>';
 							}
-							$rightsStr = '<div style="margin-top:2px;"><label>'.$LANG['USAGE_RIGHTS'].':</label> '.$rightsStr.'</div>';
+							$rightsStr = '<div style="margin-top:2px;">'.$rightsStr.'</div>';
 						}
 						if($collMetadata['rightsholder']){
 							$rightsStr .= '<div style="margin-top:2px;"><label>'.$LANG['RIGHTS_HOLDER'].':</label> '.$collMetadata['rightsholder'].'</div>';
@@ -1044,8 +1045,8 @@ $traitArr = $indManager->getTraitArr();
 									$emailSubject = $DEFAULT_TITLE.' occurrence: '.$occArr['catalognumber'].' ('.$occArr['othercatalognumbers'].')';
 									$refPath = $indManager->getDomain().$CLIENT_ROOT.'/collections/individual/index.php?occid='.$occArr['occid'];
 									$emailBody = $LANG['SPECIMEN_REFERENCED'].': '.$refPath;
-									$emailRef = 'subject='.$emailSubject.'&cc='.$ADMIN_EMAIL.'&body='.$emailBody;
-									echo ' (<a href="mailto:' . htmlspecialchars($collMetadata['email'], HTML_SPECIAL_CHARS_FLAGS) . '?' . htmlspecialchars($emailRef, HTML_SPECIAL_CHARS_FLAGS) . '">' . htmlspecialchars($collMetadata['email'], HTML_SPECIAL_CHARS_FLAGS) . '</a>)';
+									$emailRef = 'subject=' . urlencode($emailSubject) . '&cc=' . urlencode($ADMIN_EMAIL) . '&body=' . urlencode($emailBody);
+									echo ' (<a href="mailto:' . $collMetadata['email'] . '?' . $emailRef . '">' . $collMetadata['email'] . '</a>)';
 								}
 							}
 							?>
