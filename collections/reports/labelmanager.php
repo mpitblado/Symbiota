@@ -3,6 +3,8 @@ include_once('../../config/symbini.php');
 @include_once('Image/Barcode.php');
 @include_once('Image/Barcode2.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceLabel.php');
+if($LANG_TAG != 'en' && file_exists($SERVER_ROOT . '/content/lang/collections/reports/labelmanager.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT . '/content/lang/collections/reports/labelmanager.' . $LANG_TAG . '.php');
+else include_once($SERVER_ROOT . '/content/lang/collections/reports/labelmanager.en.php');
 header("Content-Type: text/html; charset=".$CHARSET);
 
 if(!$SYMB_UID) header('Location: ../../profile/index.php?refurl=../collections/reports/labelmanager.php?'.htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
@@ -34,7 +36,7 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET;?>">
-		<title><?php echo $DEFAULT_TITLE; ?> Specimen Label Manager</title>
+		<title><?php echo $DEFAULT_TITLE . ' ' . $LANG['SPEC_LABEL_MNG']; ?></title>
 		<?php
 		include_once($SERVER_ROOT.'/includes/head.php');
 		?>
@@ -67,7 +69,7 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 				var validformat1 = /^\s*\d{4}-\d{2}-\d{2}\s*$/ //Format: yyyy-mm-dd
 				if(f.date1.value !== "" && !validformat1.test(f.date1.value)) status = false;
 				if(f.date2.value !== "" && !validformat1.test(f.date2.value)) status = false;
-				if(!status) alert("Date entered must follow the format YYYY-MM-DD");
+				if(!status) alert("<?php echo $LANG['DATE_ERROR']; ?>");
 				return status;
 			}
 
@@ -80,7 +82,7 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 						if(quantityObj && quantityObj[0].value > 0) return true;
 					}
 				}
-			   	alert("At least one specimen checkbox needs to be selected with a label quantity greater than 0");
+			   	alert("<?php echo $LANG['CHECKBOX_ERROR']; ?>");
 			  	return false;
 			}
 
@@ -103,14 +105,14 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 
 			function changeFormExport(buttonElem, action, target){
 				var f = buttonElem.form;
-				if(action == "labeldynamic.php" && buttonElem.value == "Print in Browser"){
+				if(action == "labeldynamic.php" && buttonElem.value == "<?php echo $LANG['PRINT_BROWSER']; ?>"){
 					if(!f["labelformatindex"] || f["labelformatindex"].value == ""){
-						alert("Please select a Label Format Profile");
+						alert("<?php echo $LANG['SEL_LABEL_PROFILE']; ?>");
 						return false;
 					}
 				}
 				else if(action == "labelsword.php" && f.labeltype.valye == "packet"){
-					alert("Packet labels are not yet available as a Word document");
+					alert("<?php echo $LANG['PACKETS_NOT_AVAILABLE']; ?>");
 					return false;
 				}
 				if(f.bconly && f.bconly.checked && action == "labeldynamic.php") action = "barcodes.php";
@@ -171,16 +173,16 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 	include($SERVER_ROOT.'/includes/header.php');
 	?>
 	<div class='navpath'>
-		<a href='../../index.php'>Home</a> &gt;&gt;
+		<a href='../../index.php'><?php echo $LANG['HOME']; ?></a> &gt;&gt;
 		<?php
 		if(stripos(strtolower($labelManager->getMetaDataTerm('colltype')), "observation") !== false){
-			echo '<a href="../../profile/viewprofile.php?tabindex=1">Personal Management Menu</a> &gt;&gt; ';
+			echo '<a href="../../profile/viewprofile.php?tabindex=1">' . $LANG['PERS_MNG_MENU'] . '</a> &gt;&gt; ';
 		}
 		else{
-			echo '<a href="../misc/collprofiles.php?collid=' . htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS) . '&emode=1">Collection Management Panel</a> &gt;&gt; ';
+			echo '<a href="../misc/collprofiles.php?collid=' . htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS) . '&emode=1">' . $LANG['COL_MNG_PANEL'] . '</a> &gt;&gt; ';
 		}
 		?>
-		<b>Label Printing</b>
+		<b><?php echo $LANG['LABEL_PRINTING']; ?></b>
 	</div>
 	<!-- This is inner text! -->
 	<div id="innertext">
@@ -191,7 +193,7 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 			if(!$reportsWritable){
 				?>
 				<div style="padding:5px;">
-					<span style="color:red;">Please contact the site administrator to make temp/report folder writable in order to export to docx files.</span>
+					<span style="color:red;"><?php echo $LANG['MAKE_WRITABLE']; ?></span>
 				</div>
 				<?php
 			}
@@ -201,47 +203,47 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 			<div>
 				<form name="datasetqueryform" action="labelmanager.php" method="post" onsubmit="return validateQueryForm(this)">
 					<fieldset>
-						<legend><b>Define Specimen Recordset</b></legend>
+						<legend><b><?php echo $LANG['DEFINE_RECORDSET']; ?></b></legend>
 						<div style="margin:3px;">
-							<div title="Scientific name as entered in database.">
-								Scientific Name:
+							<div title="<?php echo $LANG['SCINAME_AS_ENTERED']; ?>">
+								<?php echo $LANG['SCINAME']; ?>:
 								<input type="text" name="taxa" id="taxa" size="60" value="<?php echo (array_key_exists('taxa',$_REQUEST)?$_REQUEST['taxa']:''); ?>" />
 							</div>
 						</div>
 						<div style="margin:3px;clear:both;">
-							<div style="float:left;" title="Full or last name of collector as entered in database.">
-								Collector:
+							<div style="float:left;" title="<?php echo $LANG['COLLECTOR_AS_ENTERED']; ?>">
+								<?php echo $LANG['COLLECTOR']; ?>:
 								<input type="text" name="recordedby" style="width:150px;" value="<?php echo (array_key_exists('recordedby',$_REQUEST)?$_REQUEST['recordedby']:''); ?>" />
 							</div>
-							<div style="float:left;margin-left:20px;" title="Separate multiple terms by comma and ranges by ' - ' (space before and after dash required), e.g.: 3542,3602,3700 - 3750">
-								Record Number(s):
+							<div style="float:left;margin-left:20px;" title="<?php echo $LANG['SEPARATE_RANGES']; ?>">
+								<?php echo $LANG['RECORD_NUMBERS']; ?>:
 								<input type="text" name="recordnumber" style="width:150px;" value="<?php echo (array_key_exists('recordnumber',$_REQUEST)?$_REQUEST['recordnumber']:''); ?>" />
 							</div>
-							<div style="float:left;margin-left:20px;" title="Separate multiple terms by comma and ranges by ' - ' (space before and after dash required), e.g.: 3542,3602,3700 - 3750">
-								Catalog Number(s):
+							<div style="float:left;margin-left:20px;" title="<?php echo $LANG['SEPARATE_MULTIPLE_TERMS']; ?>">
+								<?php echo $LANG['CATNOS']; ?>:
 								<input type="text" name="identifier" style="width:150px;" value="<?php echo (array_key_exists('identifier',$_REQUEST)?$_REQUEST['identifier']:''); ?>" />
 							</div>
 						</div>
 						<div style="margin:3px;clear:both;">
 							<div style="float:left;">
-								Entered by:
-								<input type="text" name="recordenteredby" value="<?php echo (array_key_exists('recordenteredby',$_REQUEST)?$_REQUEST['recordenteredby']:''); ?>" style="width:100px;" title="login name of data entry person" />
+								<?php echo $LANG['ENTERED_BY']; ?>:
+								<input type="text" name="recordenteredby" value="<?php echo (array_key_exists('recordenteredby',$_REQUEST)?$_REQUEST['recordenteredby']:''); ?>" style="width:100px;" title="<?php echo $LANG['ENTERED_BY_EXPLAIN']; ?>" />
 							</div>
 							<div style="margin-left:20px;float:left;" title="">
-								Date range:
+								<?php echo $LANG['DATE_RANGE']; ?>:
 								<input type="text" name="date1" style="width:100px;" value="<?php echo (array_key_exists('date1',$_REQUEST)?$_REQUEST['date1']:''); ?>" onchange="validateDateFields(this.form)" /> to
 								<input type="text" name="date2" style="width:100px;" value="<?php echo (array_key_exists('date2',$_REQUEST)?$_REQUEST['date2']:''); ?>" onchange="validateDateFields(this.form)" />
 								<select name="datetarget">
-									<option value="dateentered">Date Entered</option>
-									<option value="datelastmodified" <?php echo (isset($_POST['datetarget']) && $_POST['datetarget'] == 'datelastmodified'?'SELECTED':''); ?>>Date Modified</option>
-									<option value="eventdate"<?php echo (isset($_POST['datetarget']) && $_POST['datetarget'] == 'eventdate'?'SELECTED':''); ?>>Date Collected</option>
+									<option value="dateentered"><?php echo $LANG['DATE_ENTERED']; ?></option>
+									<option value="datelastmodified" <?php echo (isset($_POST['datetarget']) && $_POST['datetarget'] == 'datelastmodified'?'SELECTED':''); ?>><?php echo $LANG['DATE_MODIFIED']; ?></option>
+									<option value="eventdate"<?php echo (isset($_POST['datetarget']) && $_POST['datetarget'] == 'eventdate'?'SELECTED':''); ?>><?php echo $LANG['DATE_COLLECTED']; ?></option>
 								</select>
 							</div>
 						</div>
 						<div style="margin:3px;clear:both;">
-							Label Projects:
+							<?php echo $LANG['LABEL_PROJECTS']; ?>:
 							<select name="labelproject" >
-								<option value="">All Projects</option>
+								<option value=""><?php echo $LANG['ALL_PROJECTS']; ?></option>
 								<option value="">-------------------------</option>
 								<?php
 								$lProj = '';
@@ -271,17 +273,17 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 							-->
 							<?php
 							echo '<span style="margin-left:15px;"><input name="extendedsearch" type="checkbox" value="1" '.(array_key_exists('extendedsearch', $_POST)?'checked':'').' /></span> ';
-							if($isGeneralObservation) echo 'Search outside user profile';
-							else echo 'Search within all collections';
+							if($isGeneralObservation) echo $LANG['SEARCH_OUTSIDE_USER'];
+							else echo $LANG['SEARCH_WITHIN_COLS'];
 							?>
 						</div>
 						<div style="clear:both;">
 							<div style="margin-left:20px;float:left;">
 								<input type="hidden" name="collid" value="<?php echo $collid; ?>" />
-								<input type="submit" name="submitaction" value="Filter Specimen Records" />
+								<button type="submit" name="submitaction" value="Filter Specimen Records" ><?php echo $LANG['FILTER_SPEC_RECORDS']; ?></button>
 							</div>
 							<div style="margin-left:20px;float:left;">
-								* Specimen return is limited to 400 records
+								* <?php echo $LANG['SPEC_RETRUN_LIMIT']; ?>
 							</div>
 						</div>
 					</fieldset>
@@ -295,10 +297,10 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 								<table class="styledtable" style="font-family:Arial;font-size:12px;">
 									<tr>
 										<th title="Select/Deselect all Specimens"><input type="checkbox" onclick="selectAll(this);" /></th>
-										<th title="Label quantity">Qty</th>
-										<th>Collector</th>
-										<th>Scientific Name</th>
-										<th>Locality</th>
+										<th title="Label quantity"><?php echo $LANG['QUANTITY']; ?></th>
+										<th><?php echo $LANG['COLLECTOR']; ?></th>
+										<th><?php echo $LANG['SCINAME']; ?></th>
+										<th><?php echo $LANG['LOCALITY']; ?></th>
 									</tr>
 									<?php
 									$trCnt = 0;
@@ -310,7 +312,7 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 												<input type="checkbox" name="occid[]" value="<?php echo $occId; ?>" />
 											</td>
 											<td>
-												<input type="text" name="q-<?php echo $occId; ?>" value="<?php echo $recArr["q"]; ?>" style="width:20px;border:inset;" title="Label quantity" />
+												<input type="text" name="q-<?php echo $occId; ?>" value="<?php echo $recArr["q"]; ?>" style="width:20px;border:inset;" title="<?php echo $LANG['LABEL_QTY']; ?>" />
 											</td>
 											<td>
 												<a href="#" onclick="openIndPopup(<?php echo $occId; ?>); return false;">
@@ -340,9 +342,9 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 									?>
 								</table>
 								<fieldset style="margin-top:15px;">
-									<legend>Label Printing</legend>
+									<legend><?php echo $LANG['LABEL_PRINTING']; ?></legend>
 										<div class="fieldDiv">
-											<div class="fieldLabel">Label Profiles:
+											<div class="fieldLabel"><?php echo $LANG['LABEL_PROFILES']; ?>:
 												<?php
 												echo '<span title="Open label profile manager"><a href="labelprofile.php?collid=' . htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS) . '"><img src="../../images/edit.png" style="width:13px" /></a></span>';
 												?>
@@ -350,7 +352,7 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 											<div class="fieldElement">
 												<div>
 													<select name="labelformatindex" onchange="labelFormatChanged(this)">
-														<option value="">Select a Label Format</option>
+														<option value=""><?php echo $LANG['SEL_LABEL_FORMAT']; ?></option>
 														<?php
 														foreach($labelFormatArr as $cat => $catArr){
 															echo '<option value="">---------------------------</option>';
@@ -362,52 +364,52 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 													</select>
 												</div>
 												<?php
-												if(!$labelFormatArr) echo '<b>label profiles have not yet been set within portal</b>';
+												if(!$labelFormatArr) echo '<b>' . $LANG['NO_LABEL_PROFILES'] . '</b>';
 												?>
 											</div>
 										</div>
 									<div class="fieldDiv">
-										<div class="fieldLabel">Heading Prefix:</div>
+										<div class="fieldLabel"><?php echo $LANG['HEADING_PREFIX']; ?>:</div>
 										<div class="fieldElement">
-											<input type="text" name="hprefix" value="" style="width:450px" /> (e.g. Plants of, Insects of, Vertebrates of)
+											<input type="text" name="hprefix" value="" style="width:450px" /> <?php echo $LANG['HEADING_EXAMPLES']; ?>
 										</div>
 									</div>
 									<div class="fieldDiv">
-										<div class="checkboxLabel">Heading Mid-Section:</div>
+										<div class="checkboxLabel"><?php echo $LANG['HEADING_MIDSECTION']; ?>:</div>
 										<div class="fieldElement">
-											<input type="radio" id="hmid1" name="hmid" value="1" />Country
-											<input type="radio" id="hmid2" name="hmid" value="2" />State
-											<input type="radio" id="hmid3" name="hmid" value="3" />County
-											<input type="radio" id="hmid4" name="hmid" value="4" />Family
-											<input type="radio" id="hmid0" name="hmid" value="0" checked/>Blank
+											<input type="radio" id="hmid1" name="hmid" value="1" /><?php echo $LANG['COUNTRY']; ?>
+											<input type="radio" id="hmid2" name="hmid" value="2" /><?php echo $LANG['STATE']; ?>
+											<input type="radio" id="hmid3" name="hmid" value="3" /><?php echo $LANG['COUNTY']; ?>
+											<input type="radio" id="hmid4" name="hmid" value="4" /><?php echo $LANG['FAMILY']; ?>
+											<input type="radio" id="hmid0" name="hmid" value="0" checked/><?php echo $LANG['BLANK']; ?>
 										</div>
 									</div>
 									<div class="fieldDiv">
-										<span class="fieldLabel">Heading Suffix:</span>
+										<span class="fieldLabel"><?php echo $LANG['HEADING_SUFFIX']; ?>:</span>
 										<span class="fieldElement">
 											<input type="text" name="hsuffix" value="" style="width:450px" />
 										</span>
 									</div>
 									<div class="fieldDiv">
-										<span class="fieldLabel">Label Footer:</span>
+										<span class="fieldLabel"><?php echo $LANG['LABEL_FOOTER']; ?>:</span>
 										<span class="fieldElement">
 											<input type="text" name="lfooter" value="" style="width:450px" />
 										</span>
 									</div>
 									<div class="fieldDiv">
 										<input type="checkbox" name="speciesauthors" value="1" onclick="checkBarcodeCheck(this.form);" />
-										<span class="checkboxLabel">Print species authors for infraspecific taxa</span>
+										<span class="checkboxLabel"><?php echo $LANG['PRINT_AUTHORS']; ?></span>
 									</div>
 									<div class="fieldDiv">
 										<input type="checkbox" name="catalognumbers" value="1" onclick="checkBarcodeCheck(this.form);" />
-										<span class="checkboxLabel">Print Catalog Numbers</span>
+										<span class="checkboxLabel"><?php echo $LANG['PRINT_CATNO']; ?></span>
 									</div>
 									<?php
 									if(class_exists('Image_Barcode2') || class_exists('Image_Barcode')){
 										?>
 										<div class="fieldDiv">
 											<input type="checkbox" name="bc" value="1" onclick="checkBarcodeCheck(this.form);" />
-											<span class="checkboxLabel">Include barcode of Catalog Number</span>
+											<span class="checkboxLabel"><?php echo $LANG['INCLUDE_CATNO_BARCODE']; ?></span>
 										</div>
 										<!--
 										<div class="fieldDiv">
@@ -417,39 +419,39 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 										 -->
 										<div class="fieldDiv">
 											<input type="checkbox" name="bconly" value="1" onclick="checkPrintOnlyCheck(this.form);" />
-											<span class="checkboxLabel">Print only Barcode</span>
+											<span class="checkboxLabel"><?php echo $LANG['PRINT_ONLY_BARCODE']; ?></span>
 										</div>
 										<?php
 									}
 									?>
 									<div class="fieldDiv">
-										<span class="fieldLabel">Label Type:</span>
+										<span class="fieldLabel"><?php echo $LANG['LABEL_TYPE']; ?>:</span>
 										<span class="fieldElement">
 											<select name="labeltype">
-												<option value="1">1 columns per page</option>
-												<option value="2" selected>2 columns per page</option>
-												<option value="3">3 columns per page</option>
-												<option value="4">4 columns per page</option>
-												<option value="5">5 columns per page</option>
-												<option value="6">6 columns per page</option>
-												<option value="7">7 columns per page</option>
-												<option value="packet">Packet labels</option>
+												<option value="1"><?php echo "1 " . $LANG['COLUMNS_PER_PAGE']; ?></option>
+												<option value="2" selected><?php echo "2 " . $LANG['COLUMNS_PER_PAGE']; ?></option>
+												<option value="3"><?php echo "3 " . $LANG['COLUMNS_PER_PAGE']; ?></option>
+												<option value="4"><?php echo "4 " . $LANG['COLUMNS_PER_PAGE']; ?></option>
+												<option value="5"><?php echo "5 " . $LANG['COLUMNS_PER_PAGE']; ?></option>
+												<option value="6"><?php echo "6 " . $LANG['COLUMNS_PER_PAGE']; ?></option>
+												<option value="7"><?php echo "7 " . $LANG['COLUMNS_PER_PAGE']; ?></option>
+												<option value="packet"><?php echo $LANG['PACKET_LABELS']; ?></option>
 											</select>
 										</span>
 									</div>
 									<div style="float:left;margin: 15px 50px;">
 										<input type="hidden" name="collid" value="<?php echo $collid; ?>" />
 										<div style="margin:10px">
-											<input type="submit" name="submitaction" onclick="return changeFormExport(this,'labeldynamic.php','_blank');" value="Print in Browser" <?php echo ($labelFormatArr?'':'DISABLED title="Browser based label printing has not been activated within the portal. Contact Portal Manager to activate this feature."'); ?> />
+											<button type="submit" name="submitaction" onclick="return changeFormExport(this,'labeldynamic.php','_blank');" value="Print in Browser" <?php echo ($labelFormatArr?'':'DISABLED title="' . $LANG['BROWSER_NOT_ACTIVATED'] . '"'); ?> ><?php echo $LANG['PRINT_BROWSER']; ?></button>
 										</div>
 										<div style="margin:10px">
-											<input type="submit" name="submitaction" onclick="return changeFormExport(this,'labeldynamic.php','_self');" value="Export to CSV" />
+											<button type="submit" name="submitaction" onclick="return changeFormExport(this,'labeldynamic.php','_self');" value="Export to CSV" ><?php echo $LANG['EXPORT_CSV']; ?></button>
 										</div>
 										<?php
 										if($reportsWritable){
 											?>
 											<div style="margin:10px">
-												<input type="submit" name="submitaction" onclick="return changeFormExport(this,'labelsword.php','_self');" value="Export to DOCX" />
+												<button type="submit" name="submitaction" onclick="return changeFormExport(this,'labelsword.php','_self');" value="Export to DOCX" ><?php echo $LANG['EXPORT_DOCX']; ?></button>
 											</div>
 											<?php
 										}
@@ -459,9 +461,7 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 										if($reportsWritable){
 											?>
 											<div style="clear:both;padding:10px 0px">
-												<b>Note:</b> Currently, Word (DOCX) output only generates the old static label format.<br/>Output of variable Label Formats (pulldown options) as a Word document is not yet supported.<br/>
-												A possible work around is to print labels as PDF and then convert to a Word doc using Adobe tools.<br/>
-												Another alternatively, is to output the data as CSV and then setup a Mail Merge Word document.
+												<?php echo $LANG['DOCX_EXPLAIN']; ?>
 											</div>
 											<?php
 										}
@@ -473,7 +473,7 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 						else{
 							?>
 							<div style="font-weight:bold;margin:20px;font-weight:150%;">
-								Query returned no data!
+								<?php echo $LANG['QUERY_RETURNED_NONE']; ?>
 							</div>
 							<?php
 						}
@@ -486,8 +486,7 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 		else{
 			?>
 			<div style="font-weight:bold;margin:20px;font-weight:150%;">
-				You do not have permissions to print labels for this collection.
-				Please contact the site administrator to obtain the necessary permissions.
+				<?php echo $LANG['NO_LABEL_PERMISSIONS']; ?>
 			</div>
 			<?php
 		}
