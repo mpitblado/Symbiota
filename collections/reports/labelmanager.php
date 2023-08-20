@@ -2,12 +2,12 @@
 include_once('../../config/symbini.php');
 @include_once('Image/Barcode.php');
 @include_once('Image/Barcode2.php');
-include_once($SERVER_ROOT.'/classes/OccurrenceLabel.php');
+include_once($SERVER_ROOT . '/classes/OccurrenceLabel.php');
 if($LANG_TAG != 'en' && file_exists($SERVER_ROOT . '/content/lang/collections/reports/labelmanager.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT . '/content/lang/collections/reports/labelmanager.' . $LANG_TAG . '.php');
 else include_once($SERVER_ROOT . '/content/lang/collections/reports/labelmanager.en.php');
 header("Content-Type: text/html; charset=".$CHARSET);
 
-if(!$SYMB_UID) header('Location: ../../profile/index.php?refurl=../collections/reports/labelmanager.php?'.htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
+if(!$SYMB_UID) header('Location: ../../profile/index.php?refurl=../collections/reports/labelmanager.php?' . htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
 
 $collid = $_REQUEST['collid'];
 $action = array_key_exists('submitaction',$_REQUEST)?$_REQUEST['submitaction']:'';
@@ -38,7 +38,7 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 		<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET;?>">
 		<title><?php echo $DEFAULT_TITLE . ' ' . $LANG['SPEC_LABEL_MNG']; ?></title>
 		<?php
-		include_once($SERVER_ROOT.'/includes/head.php');
+		include_once($SERVER_ROOT . '/includes/head.php');
 		?>
 		<script type="text/javascript">
 			<?php
@@ -170,7 +170,7 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 	<body>
 	<?php
 	$displayLeftMenu = false;
-	include($SERVER_ROOT.'/includes/header.php');
+	include($SERVER_ROOT . '/includes/header.php');
 	?>
 	<div class='navpath'>
 		<a href='../../index.php'><?php echo $LANG['HOME']; ?></a> &gt;&gt;
@@ -189,7 +189,7 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 		<?php
 		if($isEditor){
 			$reportsWritable = false;
-			if(is_writable($SERVER_ROOT.'/temp/report')) $reportsWritable = true;
+			if(is_writable($SERVER_ROOT . '/temp/report')) $reportsWritable = true;
 			if(!$reportsWritable){
 				?>
 				<div style="padding:5px;">
@@ -198,7 +198,7 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 				<?php
 			}
 			$isGeneralObservation = (($labelManager->getMetaDataTerm('colltype') == 'General Observations')?true:false);
-			echo '<h2>'.$labelManager->getCollName().'</h2>';
+			echo '<h2>' . $labelManager->getCollName() . '</h2>';
 			?>
 			<div>
 				<form name="datasetqueryform" action="labelmanager.php" method="post" onsubmit="return validateQueryForm(this)">
@@ -250,7 +250,7 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 								if(array_key_exists('labelproject',$_REQUEST)) $lProj = $_REQUEST['labelproject'];
 								$lProjArr = $labelManager->getLabelProjects();
 								foreach($lProjArr as $projStr){
-									echo '<option '.($lProj==$projStr?'SELECTED':'').'>'.$projStr.'</option>'."\n";
+									echo '<option ' . ($lProj==$projStr?'SELECTED':'') . '>' . $projStr . '</option>' . "\n";
 								}
 								?>
 							</select>
@@ -272,7 +272,7 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 							</select>
 							-->
 							<?php
-							echo '<span style="margin-left:15px;"><input name="extendedsearch" type="checkbox" value="1" '.(array_key_exists('extendedsearch', $_POST)?'checked':'').' /></span> ';
+							echo '<span style="margin-left:15px;"><input name="extendedsearch" type="checkbox" value="1" ' . (array_key_exists('extendedsearch', $_POST)?'checked':'') . ' /></span> ';
 							if($isGeneralObservation) echo $LANG['SEARCH_OUTSIDE_USER'];
 							else echo $LANG['SEARCH_WITHIN_COLS'];
 							?>
@@ -357,7 +357,7 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 														foreach($labelFormatArr as $cat => $catArr){
 															echo '<option value="">---------------------------</option>';
 															foreach($catArr as $k => $labelArr){
-																echo '<option value="'.$cat.'-'.$k.'">'.$labelArr['title'].'</option>';
+																echo '<option value="' . $cat . '-' . $k . '">' . $labelArr['title'] . '</option>';
 															}
 														}
 														?>
@@ -493,7 +493,7 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 		?>
 	</div>
 	<?php
-	include($SERVER_ROOT.'/includes/footer.php');
+	include($SERVER_ROOT . '/includes/footer.php');
 	?>
 	</body>
 </html>
