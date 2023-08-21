@@ -1,9 +1,11 @@
 <?php
 include_once('../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceLabel.php');
+if($LANG_TAG != 'en' && file_exists($SERVER_ROOT . '/content/lang/collections/reports/labelprofile.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT . '/content/lang/collections/reports/labelprofile.' . $LANG_TAG . '.php');
+else include_once($SERVER_ROOT . '/content/lang/collections/reports/labelprofile.en.php');
 header('Content-Type: text/html; charset='.$CHARSET);
 
-if(!$SYMB_UID) header('Location: ../../profile/index.php?refurl=../collections/reports/labelprofile.php?'.htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
+if(!$SYMB_UID) header('Location: ../../profile/index.php?refurl=../collections/reports/labelprofile.php?' . htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
 
 $collid = array_key_exists('collid',$_REQUEST)?$_REQUEST['collid']:0;
 $action = array_key_exists('submitaction',$_REQUEST)?$_REQUEST['submitaction']:'';
@@ -26,7 +28,7 @@ if($isEditor && $action){
 				$statusStr = implode('; ', $labelManager->getErrorArr());
 			}
 		}
-		else $statusStr = 'ERROR: you must select a clone target!';
+		else $statusStr = $LANG['ERROR_SELECT_TARGET'];
 	}
 	$applyEdits = true;
 	$group = (isset($_POST['group'])?$_POST['group']:'');
@@ -51,10 +53,10 @@ $isGeneralObservation = (($labelManager->getMetaDataTerm('colltype') == 'General
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET;?>">
-		<title><?php echo $DEFAULT_TITLE; ?> Specimen Label Manager</title>
+		<title><?php echo $DEFAULT_TITLE . ' ' . $LANG['SPEC_LABEL_MNG']; ?></title>
 		<link href="<?php echo htmlspecialchars($CSS_BASE_PATH, HTML_SPECIAL_CHARS_FLAGS); ?>/jquery-ui.css" type="text/css" rel="stylesheet">
 		<?php
-		include_once($SERVER_ROOT.'/includes/head.php');
+		include_once($SERVER_ROOT . '/includes/head.php');
 		?>
 		<script src="../../js/jquery.js" type="text/javascript"></script>
 		<script src="../../js/jquery-ui.js" type="text/javascript"></script>
@@ -67,7 +69,7 @@ $isGeneralObservation = (($labelManager->getMetaDataTerm('colltype') == 'General
 			}
 
 			function makeJsonEditable(classTag){
-				alert("You should now be able to edit the JSON label definition. Feel free to modify, but note that editing the raw JSON requires knowledge of the JSON format. A simple error may cause label generation to completely fail. Within the next couple weeks, there should be a editor interface made available that will assist. Until then, you may need to ask your portal manager for assistance if you run into problems. Thank you for your patience.");
+				alert("<?php echo $LANG['NOW_EDIT_JSON']; ?>");
 				$('#json-'+classTag).prop('readonly', false);
 				activeProfileCode = classTag;
 			}
@@ -78,7 +80,7 @@ $isGeneralObservation = (($labelManager->getMetaDataTerm('colltype') == 'General
 
 			function verifyClone(f){
 				if(f.cloneTarget.value == ""){
-					alert("Select a clone target!");
+					alert("<?php echo $LANG['SEL_TARGET']; ?>");
 					return false;
 				}
 				return true;
@@ -123,22 +125,22 @@ $isGeneralObservation = (($labelManager->getMetaDataTerm('colltype') == 'General
 	<body>
 	<?php
 	$displayLeftMenu = false;
-	include($SERVER_ROOT.'/includes/header.php');
+	include($SERVER_ROOT . '/includes/header.php');
 	?>
 	<div class='navpath'>
 		<a href='../../index.php'>Home</a> &gt;&gt;
 		<?php
-		if($isGeneralObservation) echo '<a href="../../profile/viewprofile.php?tabindex=1">Personal Management Menu</a> &gt;&gt; ';
+		if($isGeneralObservation) echo '<a href="../../profile/viewprofile.php?tabindex=1">' . $LANG['PERS_MNG_MENU'] . '</a> &gt;&gt; ';
 		elseif($collid){
-			echo '<a href="../misc/collprofiles.php?collid=' . htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS) . '&emode=1">Collection Management Panel</a> &gt;&gt; ';
+			echo '<a href="../misc/collprofiles.php?collid=' . htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS) . '&emode=1">' . $LANG['COL_MNG_PANEL'] . '</a> &gt;&gt; ';
 		}
 		?>
-		<a href="labelmanager.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>&emode=1">Label Manager</a> &gt;&gt;
-		<b>Label Profile Editor</b>
+		<a href="labelmanager.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>&emode=1"><?php echo $LANG['LABEL_MANAGER']; ?></a> &gt;&gt;
+		<b><?php echo $LANG['LABEL_PROFILE_EDIT']; ?></b>
 	</div>
 	<!-- This is inner text! -->
 	<div id="innertext">
-		<div style="width:700px"><span style="color:orange;font-weight:bold;">In development!</span> We are currently working on developing a new system that will allow collection managers and general users to create their own custom label formats that can be saved within the collection and user profiles. We are trying our best to develop these tools with minimum disruptions to normal label printing. More details to provided in the near future.</div>
+		<div style="width:700px"><span style="color:orange;font-weight:bold;"><?php echo $LANG['IN_DEV']; ?></span></div>
 		<?php
 		if($statusStr){
 			?>
@@ -152,16 +154,16 @@ $isGeneralObservation = (($labelManager->getMetaDataTerm('colltype') == 'General
 		$labelFormatArr = $labelManager->getLabelFormatArr();
 		foreach($labelFormatArr as $group => $groupArr){
 			$fieldsetTitle = '';
-			if($group == 'g') $fieldsetTitle = 'Portal Profiles ';
-			elseif($group == 'c') $fieldsetTitle = $labelManager->getCollName().' Label Profiles ';
-			elseif($group == 'u') $fieldsetTitle = 'User Profiles ';
-			$fieldsetTitle .= '('.count($groupArr).' formats)';
+			if($group == 'g') $fieldsetTitle = $LANG['PORTAL_PROFILES'] . ' ';
+			elseif($group == 'c') $fieldsetTitle = $labelManager->getCollName() . ' ' . $LANG['LABEL_PROFILES'] . ' ';
+			elseif($group == 'u') $fieldsetTitle = $LANG['USER_PROFILES'] . ' ';
+			$fieldsetTitle .= '(' . count($groupArr) . ' ' . $LANG['FORMATS'] . ')';
 			?>
 			<fieldset>
 				<legend><?php echo $fieldsetTitle; ?></legend>
 				<?php
 				if($isEditor == 3 || $group == 'u' || ($group == 'c' && $isEditor > 1))
-					echo '<div style="float:right;" title="Create a new label profile"><img class="edit-icon" src="../../images/add.png" onclick="$(\'#edit-'.$group.'\').toggle()" /></div>';
+					echo '<div style="float:right;" title="' . $LANG['CREATE_NEW_PROFILE'] . '"><img class="edit-icon" src="../../images/add.png" onclick="$(\'#edit-' . $group . '\').toggle()" /></div>';
 				$index = '';
 				$formatArr = array();
 				do{
@@ -171,27 +173,27 @@ $isGeneralObservation = (($labelManager->getMetaDataTerm('colltype') == 'General
 					if($formatArr){
 						if($index) echo '<hr/>';
 						?>
-						<div id="display-<?php echo $group.'-'.$index; ?>">
+						<div id="display-<?php echo $group . '-' . $index; ?>">
 							<div class="field-block">
 								<span class="label">Title:</span>
 								<span class="field-value"><?php echo htmlspecialchars($formatArr['title']); ?></span>
 								<?php
 								if($isEditor == 3 || $group == 'u' || ($group == 'c' && $isEditor > 1))
-									echo '<span title="Edit label profile"> <a href="#" onclick="toggleEditDiv(\''.$group.'-'.$index.'\');return false;"><img class="edit-icon" src="../../images/edit.png" /></a></span>';
+									echo '<span title="' . $LANG['EDIT_LABEL_PROFILE'] . '"> <a href="#" onclick="toggleEditDiv(\'' . $group . '-' . $index . '\');return false;"><img class="edit-icon" src="../../images/edit.png" /></a></span>';
 								?>
 							</div>
 							<?php
 							if(isset($formatArr['labelHeader']['midText'])) $midText = $formatArr['labelHeader']['midText'];
-							$headerStr = $formatArr['labelHeader']['prefix'].' ';
+							$headerStr = $formatArr['labelHeader']['prefix'] . ' ';
 							if($midText==1) $headerStr .= '[COUNTRY];';
 							elseif($midText==2) $headerStr .= '[STATE]';
 							elseif($midText==3) $headerStr .= '[COUNTY]';
 							elseif($midText==4) $headerStr .= '[FAMILY]';
-							$headerStr .= ' '.$formatArr['labelHeader']['suffix'];
+							$headerStr .= ' ' . $formatArr['labelHeader']['suffix'];
 							if(trim($headerStr)){
 								?>
 								<div class="field-block">
-									<span class="label">Header: </span>
+									<span class="label"><?php echo $LANG['HEADER']; ?>: </span>
 									<span class="field-value"><?php echo htmlspecialchars(trim($headerStr)); ?></span>
 								</div>
 								<?php
@@ -199,7 +201,7 @@ $isGeneralObservation = (($labelManager->getMetaDataTerm('colltype') == 'General
 							if($formatArr['labelFooter']['textValue']){
 								?>
 								<div class="field-block">
-									<span class="label">Footer: </span>
+									<span class="label"><?php echo $LANG['FOOTER']; ?>: </span>
 									<span class="field-value"><?php echo htmlspecialchars($formatArr['labelFooter']['textValue']); ?></span>
 								</div>
 								<?php
@@ -208,7 +210,7 @@ $isGeneralObservation = (($labelManager->getMetaDataTerm('colltype') == 'General
 								$labelType = $formatArr['labelType'];
 								?>
 								<div class="field-block">
-									<span class="label">Type: </span>
+									<span class="label"><?php echo $LANG['TYPE']; ?>: </span>
 									<span class="field-value"><?php echo $labelType.(is_numeric($labelType)?' column per page':''); ?></span>
 								</div>
 								<?php
@@ -217,7 +219,7 @@ $isGeneralObservation = (($labelManager->getMetaDataTerm('colltype') == 'General
 								$pageSize = $formatArr['pageSize'];
 								?>
 								<div class="field-block">
-									<span class="label">Page size: </span>
+									<span class="label"><?php echo $LANG['PAGE_SIZE']; ?>: </span>
 									<span class="field-value"><?php echo $pageSize; ?></span>
 								</div>
 								<?php
@@ -227,19 +229,19 @@ $isGeneralObservation = (($labelManager->getMetaDataTerm('colltype') == 'General
 						<?php
 					}
 					?>
-					<form name="labelprofileeditor-<?php echo $group.(is_numeric($index)?'-'.$index:''); ?>" action="labelprofile.php" method="post" onsubmit="return validateJsonForm(this)">
-						<div id="edit-<?php echo $group.(is_numeric($index)?'-'.$index:''); ?>" style="display:none">
+					<form name="labelprofileeditor-<?php echo $group . (is_numeric($index)?'-' . $index:''); ?>" action="labelprofile.php" method="post" onsubmit="return validateJsonForm(this)">
+						<div id="edit-<?php echo $group . (is_numeric($index)?'-' . $index:''); ?>" style="display:none">
 							<div class="field-block">
-								<span class="label">Title:</span>
+								<span class="label"><?php echo $LANG['TITLE']; ?>:</span>
 								<span class="field-elem"><input name="title" type="text" value="<?php echo ($formatArr?htmlspecialchars($formatArr['title']):''); ?>" required /> </span>
 								<?php
-								if($formatArr) echo '<span title="Edit label profile"> <img class="edit-icon" src="../../images/edit.png" onclick="toggleEditDiv(\''.$group.'-'.$index.'\')" /></span>';
+								if($formatArr) echo '<span title="' . $LANG['EDIT_LABEL_PROFILE'] . '"> <img class="edit-icon" src="../../images/edit.png" onclick="toggleEditDiv(\'' . $group . '-' . $index . '\')" /></span>';
 								?>
 							</div>
 							<fieldset class="fieldset-block">
-								<legend>Label Header</legend>
+								<legend><?php echo $LANG['LABEL_HEADER']; ?></legend>
 								<div class="field-block">
-									<span class="label">Prefix:</span>
+									<span class="label"><?php echo $LANG['PREFIX']; ?>:</span>
 									<span class="field-elem">
 										<input name="hPrefix" type="text" value="<?php echo (isset($formatArr['labelHeader']['prefix'])?htmlspecialchars($formatArr['labelHeader']['prefix']):''); ?>" />
 									</span>
@@ -248,116 +250,116 @@ $isGeneralObservation = (($labelManager->getMetaDataTerm('colltype') == 'General
 									<div class="field-elem">
 										<span class="field-inline">
 											<input name="hMidText" type="radio" value="1" <?php echo ($midText==1?'checked':''); ?> />
-											<span class="label-inline">Country</span>
+											<span class="label-inline"><?php echo $LANG['COUNTRY']; ?></span>
 										</span>
 										<span class="field-inline">
 											<input name="hMidText" type="radio" value="2" <?php echo ($midText==2?'checked':''); ?> />
-											<span class="label-inline">State</span>
+											<span class="label-inline"><?php echo $LANG['STATE']; ?></span>
 										</span>
 										<span class="field-inline">
 											<input name="hMidText" type="radio" value="3" <?php echo ($midText==3?'checked':''); ?> />
-											<span class="label-inline">County</span>
+											<span class="label-inline"><?php echo $LANG['COUNTY']; ?></span>
 										</span>
 										<span class="field-inline">
 											<input name="hMidText" type="radio" value="4" <?php echo ($midText==4?'checked':''); ?> />
-											<span class="label-inline">Family</span>
+											<span class="label-inline"><?php echo $LANG['FAMILY']; ?></span>
 										</span>
 										<span class="field-inline">
 											<input name="hMidText" type="radio" value="0" <?php echo (!$midText?'checked':''); ?> />
-											<span class="label-inline">Blank</span>
+											<span class="label-inline"><?php echo $LANG['BLANK']; ?></span>
 										</span>
 									</div>
 								</div>
 								<div class="field-block">
-									<span class="label">Suffix:</span>
+									<span class="label"><?php echo $LANG['SUFFIX']; ?>:</span>
 									<span class="field-elem"><input name="hSuffix" type="text" value="<?php echo ($formatArr?htmlspecialchars($formatArr['labelHeader']['suffix']):''); ?>" /></span>
 								</div>
 								<div class="field-block">
-									<span class="label">Class names:</span>
+									<span class="label"><?php echo $LANG['CLASS_NAMES']; ?>:</span>
 									<span class="field-elem"><input name="hClassName" type="text" value="<?php echo ($formatArr?htmlspecialchars($formatArr['labelHeader']['className']):''); ?>" /></span>
 								</div>
 								<div class="field-block">
-									<span class="label">Style:</span>
+									<span class="label"><?php echo $LANG['STYLE']; ?>:</span>
 									<span class="field-elem"><input name="hStyle" type="text" value="<?php echo ($formatArr?htmlspecialchars($formatArr['labelHeader']['style']):''); ?>" /></span>
 								</div>
 							</fieldset>
 							<fieldset  class="fieldset-block">
-								<legend>Label Footer</legend>
+								<legend><?php echo $LANG['LABEL_FOOTER']; ?></legend>
 								<div class="field-block">
-									<span class="label-inline">Footer text:</span>
+									<span class="label-inline"><?php echo $LANG['FOOTER_TEXT']; ?>:</span>
 									<input name="fTextValue" type="text" value="<?php echo (isset($formatArr['labelFooter']['textValue'])?htmlspecialchars($formatArr['labelFooter']['textValue']):''); ?>" />
 								</div>
 								<div class="field-block">
-									<span class="label-inline">Class names:</span>
+									<span class="label-inline"><?php echo $LANG['CLASS_NAMES']; ?>:</span>
 									<input name="fClassName" type="text" value="<?php echo (isset($formatArr['labelFooter']['className'])?$formatArr['labelFooter']['className']:''); ?>" />
 								</div>
 								<div class="field-block">
-									<span class="label-inline">Style:</span>
+									<span class="label-inline"><?php echo $LANG['STYLE']; ?>:</span>
 									<input name="fStyle" type="text" value="<?php echo (isset($formatArr['labelFooter']['style'])?$formatArr['labelFooter']['style']:''); ?>" />
 								</div>
 							</fieldset>
 							<div class="field-block">
-								<div class="label">Custom Styles:</div>
+								<div class="label"><?php echo $LANG['CUSTOM_STYLES']; ?>:</div>
 								<div class="field-block">
 									<input name="customStyles" type="text" value="<?php echo (isset($formatArr['customStyles'])?$formatArr['customStyles']:''); ?>" />
 								</div>
 							</div>
 							<div class="field-block">
-								<div class="label">Default CSS:</div>
+								<div class="label"><?php echo $LANG['DEFAULT_CSS']; ?>:</div>
 								<div class="field-block">
 									<input name="defaultCss" type="text" value="<?php echo (isset($formatArr['defaultCss']) ? $formatArr['defaultCss'] : $CSS_BASE_PATH . '/symbiota/collections/reports/labelhelpers.css'); ?>" />
 								</div>
 							</div>
 							<div class="field-block">
-								<div class="label">Custom CSS:</div>
+								<div class="label"><?php echo $LANG['CUSTOM_CSS']; ?>:</div>
 								<div class="field-block">
 									<input name="customCss" type="text" value="<?php echo (isset($formatArr['customCss'])?$formatArr['customCss']:''); ?>" />
 								</div>
 							</div>
 							<div class="field-block">
-								<div class="label">Custom JS:</div>
+								<div class="label"><?php echo $LANG['CUSTOM_JS']; ?>:</div>
 								<div class="field-block">
 									<input name="customJS" type="text" value="<?php echo (isset($formatArr['customJS'])?$formatArr['customJS']:''); ?>" />
 								</div>
 							</div>
 							<fieldset class="fieldset-block">
-								<legend>Options</legend>
+								<legend><?php echo $LANG['OPTIONS']; ?></legend>
 								<div class="field-block">
-									<span class="label-inline">Label type:</span>
+									<span class="label-inline"><?php echo $LANG['LABEL_TYPE']; ?>:</span>
 									<select name="labelType">
-										<option value="1" <?php echo ($labelType==1?'selected':''); ?>>1 columns per page</option>
-										<option value="2" <?php echo ($labelType==2?'selected':''); ?>>2 columns per page</option>
-										<option value="3" <?php echo ($labelType==3?'selected':''); ?>>3 columns per page</option>
-										<option value="4" <?php echo ($labelType==4?'selected':''); ?>>4 columns per page</option>
-										<option value="5" <?php echo ($labelType==5?'selected':''); ?>>5 columns per page</option>
-										<option value="6" <?php echo ($labelType==6?'selected':''); ?>>6 columns per page</option>
-										<option value="7" <?php echo ($labelType==7?'selected':''); ?>>7 columns per page</option>
-										<option value="packet" <?php echo ($labelType=='packet'?'selected':''); ?>>Packet labels</option>
+										<option value="1" <?php echo ($labelType==1?'selected':''); ?>><?php echo '1 ' . $LANG['COLUMNS_PER_PAGE']; ?></option>
+										<option value="2" <?php echo ($labelType==2?'selected':''); ?>><?php echo '2 ' . $LANG['COLUMNS_PER_PAGE']; ?></option>
+										<option value="3" <?php echo ($labelType==3?'selected':''); ?>><?php echo '3 ' . $LANG['COLUMNS_PER_PAGE']; ?></option>
+										<option value="4" <?php echo ($labelType==4?'selected':''); ?>><?php echo '4 ' . $LANG['COLUMNS_PER_PAGE']; ?></option>
+										<option value="5" <?php echo ($labelType==5?'selected':''); ?>><?php echo '5 ' . $LANG['COLUMNS_PER_PAGE']; ?></option>
+										<option value="6" <?php echo ($labelType==6?'selected':''); ?>><?php echo '6 ' . $LANG['COLUMNS_PER_PAGE']; ?></option>
+										<option value="7" <?php echo ($labelType==7?'selected':''); ?>><?php echo '7 ' . $LANG['COLUMNS_PER_PAGE']; ?></option>
+										<option value="packet" <?php echo ($labelType=='packet'?'selected':''); ?>><?php echo '1 ' . $LANG['PACKET_LABELS']; ?></option>
 									</select>
 								</div>
 								<div class="field-block">
-									<span class="label-inline">Page size:</span>
+									<span class="label-inline"><?php echo $LANG['PAGE_SIZE']; ?>:</span>
 									<select name="pageSize">
 										<option value="letter">Letter</option>
-										<option value="a4" <?php echo ($pageSize=='a4'?'SELECTED':''); ?>>A4</option>
-										<option value="legal" <?php echo ($pageSize=='legal'?'SELECTED':''); ?>>Legal</option>
-										<option value="tabloid" <?php echo ($pageSize=='tabloid'?'SELECTED':''); ?>>Ledger/Tabloid</option>
+										<option value="a4" <?php echo ($pageSize=='a4'?'SELECTED':''); ?>><?php echo $LANG['A4']; ?></option>
+										<option value="legal" <?php echo ($pageSize=='legal'?'SELECTED':''); ?>><?php echo $LANG['LEGAL']; ?></option>
+										<option value="tabloid" <?php echo ($pageSize=='tabloid'?'SELECTED':''); ?>><?php echo $LANG['LEDGER']; ?></option>
 									</select>
 								</div>
 								<div class="field-block">
 									<input name="displaySpeciesAuthor" type="checkbox" value="1" <?php echo (isset($formatArr['displaySpeciesAuthor'])&&$formatArr['displaySpeciesAuthor']?'checked':''); ?> />
-									<span class="label-inline">Display species for infraspecific taxa</span>
+									<span class="label-inline"><?php echo $LANG['DISPLAY_SP_AUTH_FOR_INFRA']; ?></span>
 								</div>
 								<div class="field-block">
 									<input name="displayBarcode" type="checkbox" value=1" <?php echo (isset($formatArr['displayBarcode'])&&$formatArr['displayBarcode']?'checked':''); ?> />
-									<span class="label-inline">Display barcode</span>
+									<span class="label-inline"><?php echo $LANG['DISPLAY_BARCODE']; ?></span>
 								</div>
 							</fieldset>
 							<div class="field-block">
-								<div class="label">JSON: <span title="Edit JSON label definition"><a href="#" onclick="makeJsonEditable('<?php echo $group.(is_numeric($index)?'-'.$index:''); ?>');return false"><img  class="edit-icon" src="../../images/edit.png" /></a></span><span title="Edit JSON label definition (Visual Interface)"><a href="#" onclick="openJsonEditorPopup('<?php echo $group.(is_numeric($index)?'-'.$index:''); ?>');return false"><img  class="edit-icon" src="../../images/edit.png" />(visual interface)</a></span>
+								<div class="label"><?php echo $LANG['JSON']; ?>: <span title="<?php echo $LANG['EDIT_JSON']; ?>"><a href="#" onclick="makeJsonEditable('<?php echo $group.(is_numeric($index)?'-' . $index:''); ?>');return false"><img  class="edit-icon" src="../../images/edit.png" /></a></span><span title="<?php echo $LANG['EDIT_JSON_DEFINITION']; ?>"><a href="#" onclick="openJsonEditorPopup('<?php echo $group.(is_numeric($index)?'-' . $index:''); ?>');return false"><img  class="edit-icon" src="../../images/edit.png" />(visual interface)</a></span>
 								</div>
 								<div class="field-block">
-									<textarea id="json-<?php echo $group.(is_numeric($index)?'-'.$index:''); ?>" name="json" readonly><?php echo (isset($formatArr['labelBlocks'])?json_encode($formatArr['labelBlocks'],JSON_PRETTY_PRINT):''); ?></textarea>
+									<textarea id="json-<?php echo $group.(is_numeric($index)?'-' . $index:''); ?>" name="json" readonly><?php echo (isset($formatArr['labelBlocks'])?json_encode($formatArr['labelBlocks'],JSON_PRETTY_PRINT):''); ?></textarea>
 								</div>
 							</div>
 							<div style="margin-left:20px;">
@@ -366,10 +368,10 @@ $isGeneralObservation = (($labelManager->getMetaDataTerm('colltype') == 'General
 								<input type="hidden" name="index" value="<?php echo $index; ?>" />
 								<?php
 								if($isEditor == 3 || $group == 'u' || ($group == 'c' && $isEditor > 1))
-									echo '<span><button name="submitaction" type="submit" value="saveProfile">'.(is_numeric($index)?'Save Label Profile':'Create New Label Profile').'</button></span>';
+									echo '<span><button name="submitaction" type="submit" value="saveProfile">' . (is_numeric($index)?$LANG['SAVE_LABEL_PROFILE']:$LANG['CREATE_LABEL_PROFILE']) . '</button></span>';
 								if(is_numeric($index)){
 									if($isEditor == 3 || $group == 'u' || ($group == 'c' && $isEditor > 1))
-										echo '<span style="margin-left:15px"><button name="submitaction" type="submit" value="deleteProfile" onclick="return confirm(\'Are you sure you want to delete this profile?\')">Delete Profile</button></span>';
+										echo '<span style="margin-left:15px"><button name="submitaction" type="submit" value="deleteProfile" onclick="return confirm(\'' . $LANG['SURE_DELETE_PROFILE'] . '\')">' . $LANG['DEL_PROFILE'] . '</button></span>';
 									?>
 									<?php
 								}
@@ -383,13 +385,13 @@ $isGeneralObservation = (($labelManager->getMetaDataTerm('colltype') == 'General
 							<div style="margin:5px;">
 								<span style="margin-left:15px"><button name="submitaction" type="submit" value="cloneProfile" onclick="return verifyClone(this.form)">Clone Profile</button></span> to
 								<select name="cloneTarget">
-									<option value="">Select Target</option>
+									<option value=""><?php echo $LANG['SELECT_TARGET']; ?></option>
 									<option value="">----------------</option>
 									<?php
-									if($isEditor == 3) echo '<option value="g">Portal Global Profile</option>';
-									if($isEditor > 1) echo '<option value="c">Collection Profile</option>';
+									if($isEditor == 3) echo '<option value="g">' . $LANG['PORTAL_GLOBAL_PROFILE'] . '</option>';
+									if($isEditor > 1) echo '<option value="c">' . $LANG['COLL_PROFILE'] . '</option>';
 									?>
-									<option value="u">User Profile</option>
+									<option value="u"><?php echo $LANG['USER_PROFILE']; ?></option>
 								</select>
 							</div>
 							<?php
@@ -406,19 +408,19 @@ $isGeneralObservation = (($labelManager->getMetaDataTerm('colltype') == 'General
 					}
 				} while(is_numeric($index));
 				if(!$formatArr){
-					echo '<div>No label profile yet defined. ';
-					if($isEditor == 3 || $group == 'u' || ($group == 'c' && $isEditor > 1)) echo 'Click green plus sign to right to create a new profile';
+					echo '<div>' . $LANG['NO_PROFILE_DEFINED'] . ' ';
+					if($isEditor == 3 || $group == 'u' || ($group == 'c' && $isEditor > 1)) echo $LANG['CLICK_GREEN_PLUS'];
 					echo '</div>';
 				}
 				?>
 			</fieldset>
 			<?php
 		}
-		if(!$labelFormatArr) echo '<div>You are not authorized to manage any label profiles. Contact portal administrator for more details.</div>';
+		if(!$labelFormatArr) echo '<div>' . $LANG['NOT_AUTH_LABEL_PROF'] . '</div>';
 		?>
 	</div>
 	<?php
-	include($SERVER_ROOT.'/includes/footer.php');
+	include($SERVER_ROOT . '/includes/footer.php');
 	?>
 	</body>
 </html>
