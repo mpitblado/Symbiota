@@ -280,7 +280,7 @@ table.styledtable tr.alt td {
 }
 
 .button-secondary > a {
-  color: var(--darkest-color);
+  color: var(--light-color);
 }
 
 .button-tertiary {
