@@ -157,7 +157,7 @@
           "
         >
           <div class="mobile-lg:grid-col-auto">
-            <img class="usa-footer__logo-img" src="/assets/img/logo-img.png" alt="" />
+            <img class="usa-footer__logo-img" src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/logo-img.png" alt="" />
           </div>
           <div class="mobile-lg:grid-col-auto">
             <p class="usa-footer__logo-heading">Symbiota</p>
@@ -169,7 +169,7 @@
               <a class="usa-social-link" href="javascript:void(0);"
                 ><img
                   class="usa-social-link__icon"
-                  src="/assets/img/usa-icons/facebook.svg"
+                  src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/usa-icons/facebook.svg"
                   alt="Facebook"
               /></a>
             </div>
@@ -177,7 +177,7 @@
               <a class="usa-social-link" href="javascript:void(0);"
                 ><img
                   class="usa-social-link__icon"
-                  src="/assets/img/usa-icons/twitter.svg"
+                  src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/usa-icons/twitter.svg"
                   alt="Twitter"
               /></a>
             </div>
@@ -185,7 +185,7 @@
               <a class="usa-social-link" href="javascript:void(0);"
                 ><img
                   class="usa-social-link__icon"
-                  src="/assets/img/usa-icons/youtube.svg"
+                  src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/usa-icons/youtube.svg"
                   alt="YouTube"
               /></a>
             </div>
@@ -193,7 +193,7 @@
               <a class="usa-social-link" href="javascript:void(0);"
                 ><img
                   class="usa-social-link__icon"
-                  src="/assets/img/usa-icons/instagram.svg"
+                  src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/usa-icons/instagram.svg"
                   alt="Instagram"
               /></a>
             </div>
@@ -201,7 +201,7 @@
               <a class="usa-social-link" href="javascript:void(0);"
                 ><img
                   class="usa-social-link__icon"
-                  src="/assets/img/usa-icons/rss_feed.svg"
+                  src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/usa-icons/rss_feed.svg"
                   alt="RSS"
               /></a>
             </div>
