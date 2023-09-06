@@ -16,9 +16,10 @@ uswds.settings.version = 3;
  * Path settings
  * Set as many as you need
  */
-uswds.paths.dist.css = "./css/uswds";
+uswds.paths.dist.css = "./assets/css";
 uswds.paths.dist.theme = "./sass/uswds";
-uswds.paths.dist.js = "./assets/uswds/js";
+uswds.paths.src.js = "./node_modules/@uswds/uswds/dist/js"
+
 /**
  * Exports
  * Add as many as you need

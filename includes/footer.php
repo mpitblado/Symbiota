@@ -230,3 +230,4 @@
 		});
 	</script>
 </footer>
+<script src="/assets/uswds/js/uswds.min.js"></script>
