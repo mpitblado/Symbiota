@@ -225,9 +225,14 @@
   </div>
   <script type="text/javascript">
 		document.addEventListener('DOMContentLoaded', ()=>{
-			document.getElementById('accessibility-button').disabled=false;
-			updateButtonTextBasedOnEnabledStylesheet('<?php echo $LANG['TOGGLE_508_OFF'] ?>', '<?php echo $LANG['TOGGLE_508_ON'] ?>');
+      try{
+        document.getElementById('accessibility-button').disabled=false;
+        updateButtonTextBasedOnEnabledStylesheet('<?php echo $LANG['TOGGLE_508_OFF'] ?>', '<?php echo $LANG['TOGGLE_508_ON'] ?>');
+      }
+      catch(err){
+        console.log(err);
+      }
 		});
 	</script>
 </footer>
-<script src="/assets/uswds/js/uswds.min.js"></script>
+<script src="<?php echo htmlspecialchars($CLIENT_ROOT, HTML_SPECIAL_CHARS_FLAGS); ?>/assets/uswds/js/uswds.min.js" type="text/javascript"></script>
