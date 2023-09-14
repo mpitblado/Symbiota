@@ -117,6 +117,12 @@ if ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERV
 	$COOKIE_SECURE = true;
 }
 
+//USDA-specific config
+$NA_COLLID=70;
+$BARC_COLLID=99;
+$BPI_SNAPSHOT_COLLID=85;
+/* end USDA-specific config */
+
 //Base code shared by all pages; leave as is
 include_once("symbbase.php");
 /* --DO NOT ADD ANY EXTRA SPACES BELOW THIS LINE-- */

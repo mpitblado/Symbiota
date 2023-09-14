@@ -48,16 +48,16 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
               <div class="usa-col">
                 <ul class="usa-nav__submenu-list">
                   <li class="usa-nav__submenu-item">
-                    <a href="javascript:void(0);">Search All Collections</a>
+                    <a href="<?php echo $CLIENT_ROOT?>/collections/harvestparams.php">Search All Collections</a>
                   </li>
                   <li class="usa-nav__submenu-item">
-                    <a href="javascript:void(0);">Search National Arboretum Herbarium</a>
+                    <a href="<?php echo $CLIENT_ROOT?>/collections/harvestparams.php?db=<?php echo  $NA_COLLID?>">Search National Arboretum Herbarium</a>
                   </li>
                   <li class="usa-nav__submenu-item">
-                    <a href="javascript:void(0);">Search National Seed Herbarium</a>
+                    <a href="<?php echo $CLIENT_ROOT?>/collections/harvestparams.php?db=<?php echo  $BARC_COLLID?>">Search National Seed Herbarium</a>
                   </li>
                   <li class="usa-nav__submenu-item">
-                    <a href="javascript:void(0);">Search National Fungus Collections</a>
+                    <a href="<?php echo $CLIENT_ROOT?>/collections/harvestparams.php?db=<?php echo  $BPI_SNAPSHOT_COLLID?>">Search National Fungus Collections</a>
                   </li>
                 </ul>
               </div>
@@ -81,16 +81,16 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
               <div class="usa-col">
                 <ul class="usa-nav__submenu-list">
                   <li class="usa-nav__submenu-item">
-                    <a href="javascript:void(0);">Search All Collections</a>
+                    <a href="javascript:void(0);">Map Search All Collections</a>
                   </li>
                   <li class="usa-nav__submenu-item">
-                    <a href="javascript:void(0);">Search National Arboretum Herbarium</a>
+                    <a href="javascript:void(0);">Map Search National Arboretum Herbarium</a>
                   </li>
                   <li class="usa-nav__submenu-item">
-                    <a href="javascript:void(0);">Search National Seed Herbarium</a>
+                    <a href="javascript:void(0);">Map Search National Seed Herbarium</a>
                   </li>
                   <li class="usa-nav__submenu-item">
-                    <a href="javascript:void(0);">Search National Fungus Collections</a>
+                    <a href="javascript:void(0);">Map Search National Fungus Collections</a>
                   </li>
                 </ul>
               </div>
