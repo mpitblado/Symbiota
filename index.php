@@ -43,71 +43,80 @@ header('Content-Type: text/html; charset=' . $CHARSET);
 				<ul class="usa-card-group">
 					<li class="usa-card tablet:grid-col-4">
 						<div class="usa-card__container">
-						<div class="usa-card__header">
-							<h2 class="usa-card__heading">U.S. National Arboretum Herbarium (NA)</h2>
-						</div>
-						<div class="usa-card__media">
-							<div class="usa-card__img">
-							<img class="card-image"
-								src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/NA_tile.png"
-								alt="An image of a flower"
-							/>
-							</div>
-						</div>
-						<div class="usa-card__body">
-							<p>
-							700,000 pressed, preserved plant specimens representing USDA research and botanical exploration.
-							</p>
-						</div>
-						<div class="usa-card__footer">
-							<a href="#" class="usa-button card-button">Access the Specimens</a>
-						</div>
-						</div>
-					</li>
-					<li class="usa-card tablet:grid-col-4">
-						<div class="usa-card__container">
-						<div class="usa-card__header">
-							<h2 class="usa-card__heading">U.S. National Seed Herbarium (BARC)</h2>
-						</div>
-						<div class="usa-card__media">
-							<div class="usa-card__img">
-							<img class="card-image"
-								src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/BARC_tile.png"
-								alt="An image of a seed"
-							/>
-							</div>
-						</div>
-						<div class="usa-card__body">
-							<p>
-							Over 150,000 preserved seed and fruit samples, primarily of non-native plant species.
-							</p>
-						</div>
-						<div class="usa-card__footer">
-							<a href="#" class="usa-button card-button">Access the Specimens</a>
-						</div>
+							<a href="<?php echo $CLIENT_ROOT?>/collections/misc/collprofiles.php?collid=<?php echo  $NA_COLLID?>" style="text-decoration: none; color: initial;">
+								<div class="usa-card__header">
+									<h2 class="usa-card__heading">U.S. National Arboretum Herbarium (NA)</h2>
+								</div>
+								<div class="usa-card__media">
+									<div class="usa-card__img">
+									<img class="card-image"
+										src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/NA_tile.png"
+										alt="An image of a flower"
+									/>
+									</div>
+								</div>
+								<div class="usa-card__body" style="min-height: 8rem;">
+									<p>
+									700,000 pressed, preserved plant specimens representing USDA research and botanical exploration.
+									</p>
+								</div>
+								<div class="usa-card__footer">
+									<a href="<?php echo $CLIENT_ROOT?>/collections/misc/collprofiles.php?collid=<?php echo  $NA_COLLID?>" class="usa-button card-button" style="margin-bottom: 1rem;">About Collection</a>
+									<a href="<?php echo $CLIENT_ROOT?>/collections/harvestparams.php?db=<?php echo  $NA_COLLID?>" class="usa-button card-button">Search Collection</a>
+								</div>
+							</a>
 						</div>
 					</li>
 					<li class="usa-card tablet:grid-col-4">
 						<div class="usa-card__container">
-						<div class="usa-card__header">
-							<h2 class="usa-card__heading">U.S. National Fungus Collections (BPI)</h2>
+							<a href="<?php echo $CLIENT_ROOT?>/collections/misc/collprofiles.php?collid=<?php echo  $BARC_COLLID?>" style="text-decoration: none; color: initial;">
+								<div class="usa-card__header">
+									<h2 class="usa-card__heading">U.S. National Seed Herbarium (BARC)</h2>
+								</div>
+								<div class="usa-card__media">
+									<div class="usa-card__img">
+									<img class="card-image"
+										src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/BARC_tile.png"
+										alt="An image of a seed"
+									/>
+									</div>
+								</div>
+								<div class="usa-card__body" style="min-height: 8rem;">
+									<p>
+									Over 150,000 preserved seed and fruit samples, primarily of non-native plant species.
+									</p>
+								</div>
+								<div class="usa-card__footer">
+									<a href="<?php echo $CLIENT_ROOT?>/collections/misc/collprofiles.php?collid=<?php echo  $BARC_COLLID?>" class="usa-button card-button" style="margin-bottom: 1rem;">About Collection</a>
+									<a href="<?php echo $CLIENT_ROOT?>/collections/harvestparams.php?db=<?php echo  $BARC_COLLID?>" class="usa-button card-button">Search Collection</a>
+								</div>
+							</a>
 						</div>
-						<div class="usa-card__media">
-							<div class="usa-card__img">
-							<img class="card-image"
-								src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJkAYHVampT3wmtnFbdohmwyCsiIpfFVDuJQ&usqp=CAU"
-								alt="An image of a mushroom"
-							/>
-							</div>
-						</div>
-						<div class="usa-card__body">
-							<p>
-							The Western Hemisphere’s largest fungal herbarium, including the John A. Stevenson Mycological Library.
-							</p>
-						</div>
-						<div class="usa-card__footer">
-							<a href="https://www.mycoportal.org/portal/" class="usa-button card-button">Access the Specimens</a>
-						</div>
+					</li>
+					<li class="usa-card tablet:grid-col-4">
+						<div class="usa-card__container">
+							<a href="<?php echo $CLIENT_ROOT?>/collections/misc/collprofiles.php?collid=<?php echo  $BPI_SNAPSHOT_COLLID?>" style="text-decoration: none; color: initial;">
+								<div class="usa-card__header">
+									<h2 class="usa-card__heading">U.S. National Fungus Collections (BPI)</h2>
+								</div>
+								<div class="usa-card__media">
+									<div class="usa-card__img">
+									<img class="card-image"
+										src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJkAYHVampT3wmtnFbdohmwyCsiIpfFVDuJQ&usqp=CAU"
+										alt="An image of a mushroom"
+									/>
+									</div>
+								</div>
+								<div class="usa-card__body" style="min-height: 8rem;">
+									<p>
+									The Western Hemisphere’s largest fungal herbarium, including the John A. Stevenson Mycological Library.
+									</p>
+								</div>
+								<div class="usa-card__footer">
+									<a href="<?php echo $CLIENT_ROOT?>/collections/misc/collprofiles.php?collid=<?php echo  $BPI_SNAPSHOT_COLLID?>" class="usa-button card-button" style="margin-bottom: 1rem;">About Collection</a>
+									<a href="<?php echo $CLIENT_ROOT?>/collections/harvestparams.php?db=<?php echo  $BPI_SNAPSHOT_COLLID?>" class="usa-button card-button">Search Collection</a>
+								</div>
+							</a>
 						</div>
 					</li>
 				</ul>
