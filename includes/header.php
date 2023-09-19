@@ -9,6 +9,7 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
 <section
   class="usa-banner"
   aria-label="Official website of the United States government"
+  id="us-website-banner"
 >
   <div class="usa-accordion">
     <header class="usa-banner__header">
@@ -99,12 +100,61 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
     </div>
   </div>
 </section>
+<section
+  class="usa-banner"
+  aria-label="Official website of the United States government"
+  id="ars-logo-banner"
+>
+  <div class="usa-accordion">
+    <header class="usa-banner__header">
+      <div class="usa-banner__inner">
+        <div style="display: flex;">
+          <div class="usa-logo">
+            <em class="usa-logo__text">
+            <a href="/" title="USDA Biocollections Portal">
+                USDA Biocollections Portal
+              </a>
+            </em>
+          </div>
+          <img
+          aria-hidden="true"
+          src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/ars-color-lockup.png"
+          alt=""
+          />
+          
+        </div>
+      </div>
+    </header>
+      <div class="grid-row grid-gap-lg">
+        <div class="usa-banner__guidance tablet:grid-col-6">
+          <img
+            class="usa-banner__icon usa-media-block__img"
+            src="/assets/img/icon-dot-gov.svg"
+            role="img"
+            alt=""
+            aria-hidden="true"
+          />
+        </div>
+        <div class="usa-banner__guidance tablet:grid-col-6">
+          <img
+            class="usa-banner__icon usa-media-block__img"
+            src="/assets/img/icon-https.svg"
+            role="img"
+            alt=""
+            aria-hidden="true"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <header role="banner" class="usa-header usa-header--basic usa-header--megamenu">
   <div class="usa-nav-container">
     <div class="usa-navbar">
       <div class="usa-logo">
         <!-- <div style="display: flex"> -->
-        <img src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/ars-color-lockup.png"/>
+        <!-- <img src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/ars-color-lockup.png"/> -->
         <em class="usa-logo__text">
           <a href="/" title="USDA Biocollections Portal">
               USDA Biocollections Portal
