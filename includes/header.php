@@ -108,26 +108,67 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
 >
   <div class="usa-accordion">
     <header class="usa-banner__header">
-      <div class="usa-banner__inner">
-        <div style="display: flex;">
-          <div class="usa-logo">
-            <div style="display: flex;">
-              <img
-              aria-hidden="true"
-              src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/usda-symbol.svg"
-              alt="usda logo"
-              style="max-width: 5rem;"
-              />
-              <div style="min-width: 24rem;">
-                <em class="usa-logo__text">
-                  <a href="/" title="USDA Biocollections Portal">
-                      Agricultural Research Service<br>
-                      U.S. DEPARTMENT OF AGRICULTURE
-                  </a>
+      <div style="display: flex;">
+        <div class="usa-banner__inner" style="margin: 0;">
+          <div style="display: flex;">
+            <div class="usa-logo">
+              <div style="display: flex; min-width: 100rem;">
+                <img
+                aria-hidden="true"
+                src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/usda-symbol.svg"
+                alt="usda logo"
+                style="max-width: 5rem;"
+                />
+                <div style="min-width: 24rem;">
+                  <em class="usa-logo__text">
+                    <a href="/" title="USDA Biocollections Portal">
+                        Agricultural Research Service<br>
+                        U.S. DEPARTMENT OF AGRICULTURE
+                    </a>
+                  </em>
+                </div>
               </div>
             </div>
           </div>
         </div>
+        <nav class="top-login" aria-label="horizontal-nav">
+            <?php
+            if ($USER_DISPLAY_NAME) {
+              ?>
+              <div style="display: flex; justify-content: space-between; height: 2.5rem;">
+                <span style="margin-right: 0.5rem;">
+                  <?php echo (isset($LANG['H_WELCOME'])?$LANG['H_WELCOME']:'Welcome').' '.$USER_DISPLAY_NAME; ?>!
+                </span>
+                <span style="margin-right: 0.5rem;" class="button button-tertiary">
+                  <a class="accessibility-button" onclick="toggleAccessibilityStyles('<?php echo $CLIENT_ROOT . '/includes' . '/' ?>', '<?php echo $CSS_BASE_PATH ?>', '<?php echo $LANG['TOGGLE_508_OFF'] ?>', '<?php echo $LANG['TOGGLE_508_ON'] ?>')" id="accessibility-button" data-accessibility="accessibility-button" ><?php echo (isset($LANG['TOGGLE_508_ON'])?$LANG['TOGGLE_508_ON']:'Accessibility Mode'); ?></a>
+                </span>
+                <span style="margin-right: 0.5rem;" class="button button-tertiary">
+                  <a href="<?php echo htmlspecialchars($CLIENT_ROOT, HTML_SPECIAL_CHARS_FLAGS); ?>/profile/viewprofile.php"><?php echo htmlspecialchars((isset($LANG['H_MY_PROFILE'])?$LANG['H_MY_PROFILE']:'My Profile'), HTML_SPECIAL_CHARS_FLAGS)?></a>
+                </span>
+                <span style="margin-right: 0.5rem;" class="button button-tertiary">
+                  <a href="<?php echo htmlspecialchars($CLIENT_ROOT, HTML_SPECIAL_CHARS_FLAGS); ?>/profile/index.php?submit=logout"><?php echo htmlspecialchars((isset($LANG['H_LOGOUT'])?$LANG['H_LOGOUT']:'Sign Out'), HTML_SPECIAL_CHARS_FLAGS)?></a>
+                </span>
+              </div>
+              <?php
+            } else {
+              ?>
+              <span class="button button-tertiary">
+                <a class="accessibility-button" onclick="toggleAccessibilityStyles('<?php echo $CLIENT_ROOT . '/includes' . '/' ?>', '<?php echo $CSS_BASE_PATH ?>', '<?php echo $LANG['TOGGLE_508_OFF'] ?>', '<?php echo $LANG['TOGGLE_508_ON'] ?>')" id="accessibility-button" data-accessibility="accessibility-button" ><?php echo (isset($LANG['TOGGLE_508_ON'])?$LANG['TOGGLE_508_ON']:'Accessibility Mode'); ?></a>
+              </span>
+              <span class="button button-tertiary">
+                <a onclick="window.location.href='#'">
+                  <?php echo htmlspecialchars($LANG['CONTACT_US'], HTML_SPECIAL_CHARS_FLAGS) ?>
+                </a>
+              </span>
+              <span class="button button-secondary">
+                <a href="<?php echo htmlspecialchars($CLIENT_ROOT, HTML_SPECIAL_CHARS_FLAGS) . "/profile/index.php?refurl=" . htmlspecialchars($_SERVER['SCRIPT_NAME'], HTML_SPECIAL_CHARS_FLAGS) . "?" . htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES); ?>">
+                  <?php echo (isset($LANG['H_LOGIN'])?$LANG['H_LOGIN']:'Login')?>
+                </a>
+              </span>
+              <?php
+            }
+            ?>
+          </nav>
       </div>
     </header>
   </div>
