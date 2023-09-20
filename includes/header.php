@@ -110,7 +110,7 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
     <header class="usa-banner__header">
       <div style="display: flex;">
         <div class="usa-banner__inner" style="margin: 0;">
-          <div style="display: flex;">
+          <div style="display: flex; justify-content: center;">
             <div class="usa-logo">
               <div style="display: flex; min-width: 100rem;">
                 <img
@@ -131,7 +131,7 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
             </div>
           </div>
         </div>
-        <nav class="top-login" aria-label="horizontal-nav">
+        <nav class="top-login" aria-label="horizontal-nav" style="margin-top: 2rem; margin-bottom: 1rem; ">
             <?php
             if ($USER_DISPLAY_NAME) {
               ?>
