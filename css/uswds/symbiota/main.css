@@ -467,3 +467,7 @@ table.styledtable tr.alt td {
 .card-button {
   width: 100%;
 }
+
+.harvest-param-breadcrumbs-margin {
+  margin-top: 7rem;
+}

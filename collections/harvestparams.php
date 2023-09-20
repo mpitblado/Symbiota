@@ -51,7 +51,7 @@ $searchVar = $collManager->getQueryTermStr();
 	include($SERVER_ROOT.'/includes/header.php');
 	if(isset($collections_harvestparamsCrumbs)){
 		if($collections_harvestparamsCrumbs){
-			echo '<div class="navpath">';
+			echo '<div class="navpath harvest-param-breadcrumbs-margin">';
 			echo $collections_harvestparamsCrumbs.' &gt;&gt; ';
 			echo '<b>'.$LANG['NAV_SEARCH'].'</b>';
 			echo '</div>';
@@ -59,7 +59,7 @@ $searchVar = $collManager->getQueryTermStr();
 	}
 	else{
 		?>
-		<div class='navpath'>
+		<div class='navpath harvest-param-breadcrumbs-margin'>
 			<a href="../index.php"><?php echo htmlspecialchars($LANG['NAV_HOME'], HTML_SPECIAL_CHARS_FLAGS); ?></a> &gt;&gt;
 			<a href="index.php"><?php echo htmlspecialchars($LANG['NAV_COLLECTIONS'], HTML_SPECIAL_CHARS_FLAGS); ?></a> &gt;&gt;
 			<b><?php echo $LANG['NAV_SEARCH']; ?></b>
