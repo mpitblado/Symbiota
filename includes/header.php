@@ -177,23 +177,6 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
 <header role="banner" class="usa-header usa-header--basic usa-header--megamenu">
   <div class="usa-nav-container">
     <!-- <div class="usa-navbar"> -->
-      <div class="usa-logo" style="min-width: 27rem;">
-            <div style="display: flex;">
-              <img
-              aria-hidden="true"
-              src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/usda-symbol.svg"
-              alt="usda logo"
-              style="max-width: 5rem; margin-right: 1rem;"
-              />
-              <div style="min-width: 24rem;">
-                <em class="usa-logo__text">
-                  <a href="/" title="USDA Biocollections Portal">
-                      Agricultural Research Service<br>
-                      U.S. DEPARTMENT OF AGRICULTURE
-                  </a>
-              </div>
-            </div>
-          </div>
       <button type="button" class="usa-menu-btn" style="margin-top: 1rem;">Menu</button>
     <!-- </div> -->
     <nav aria-label="Primary navigation" class="usa-nav" style="justify-content: center;">
