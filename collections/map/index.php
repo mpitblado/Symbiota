@@ -192,11 +192,11 @@ else {
 	<script src="../../js/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
 	<link href="../../js/jquery-ui/jquery-ui.min.css" type="text/css" rel="Stylesheet" />
 	<script src="//maps.googleapis.com/maps/api/js?v=quarterly&libraries=drawing,visualization<?php echo (isset($GOOGLE_MAP_KEY) && $GOOGLE_MAP_KEY ? '&key=' . $GOOGLE_MAP_KEY : ''); ?>" defer></script>
+	<script src="../../js/googlemaps/index.dev.js"></script>
+	<script src="../../js/symb/oms.min.js" type="text/javascript"></script>
 	<script src="../../js/symb/collections.map.index_gm.js?ver=2" type="text/javascript"></script>
 	<script src="../../js/symb/collections.map.index_ui.js?ver=2" type="text/javascript"></script>
 	<script src="../../js/symb/collections.list.js?ver=1" type="text/javascript"></script>
-	<script src="../../js/googlemaps/index.dev.js"></script>
-	<script src="../../js/symb/oms.min.js" type="text/javascript"></script>
 	<script src="../../js/symb/api.taxonomy.taxasuggest.js?ver=4" type="text/javascript"></script>
 </head>
 
