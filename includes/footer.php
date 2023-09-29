@@ -1,238 +1,156 @@
+<footer class="usa-footer usa-footer-big" role="contentinfo">
+    <!-- last modified date in documentation page -->
 
-<footer class="usa-footer usa-footer--big">
-  <div class="grid-container usa-footer__return-to-top">
-    <a href="#">Return to top</a>
-  </div>
-  <div class="usa-footer__primary-section">
-    <div class="grid-container">
-      <div class="grid-row grid-gap">
-        <div class="tablet:grid-col-8">
-          <nav class="usa-footer__nav" aria-label="Footer navigation,,">
-            <div class="grid-row grid-gap-4">
-              <div class="mobile-lg:grid-col-6 desktop:grid-col-3">
-                <section
-                  class="
-                    usa-footer__primary-content
-                    usa-footer__primary-content--collapsible
-                  "
-                >
-                  <h4 class="usa-footer__primary-link">USDA Home</h4>
-                  <ul class="usa-list usa-list--unstyled">
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://ask.usda.gov/s/?utm_source=USDA&utm_medium=homepage&utm_campaign=homepage%20referrals">AskUSDA</a>
+    <!--  Headquarter pages only -->
+        <div class="usa-grid-full usa-color-gray-light">
+            <nav class="usa-footer-nav usa-width-two-thirds" id="footer-top">
+                <ul class="usa-unstyled-list">
+                            <li class="usa-footer-navigation-link usa-footer-primary-content"><a  class="usa-footer-primary-link" href="/research/">Research</a></li>
+                            <li class="usa-footer-navigation-link usa-footer-primary-content"><a  class="usa-footer-primary-link" href="/news-events/news-events/">Media</a></li>
+                            <li class="usa-footer-navigation-link usa-footer-primary-content"><a  class="usa-footer-primary-link" href="/about-ars/">About ARS</a></li>
+                            <li class="usa-footer-navigation-link usa-footer-primary-content"><a  class="usa-footer-primary-link" href="/work-with-us/">Work With Us</a></li>
+                </ul>
+            </nav>
+        </div>
+
+    <!-- middle footer -->
+    <div class="usa-grid-full usa-color-gray-dark">
+        <!-- Connect with ARS and Floating social Icons-->
+        <nav class="usa-footer-nav usa-width-one-half">
+             <nav class="usa-width-one-third" id="Connect-ARS">
+                <h3 class="usa-sign_up-header">Connect with ARS</h3>
+                
+
+<!-- Connect with ARS Social icons in footer -->
+    <div class="usa-footer-nav" id="socialLink">
+                        <a href="http://twitter.com/usda_ars">
+                            <img src="/ARSUserFiles/00000000/images/social_media///twitter.png" title="Twitter" alt="Twitter" />
+                        </a>
+                        <a href="https://www.linkedin.com/company/usda-ars">
+                            <img src="/ARSUserFiles/00000000/images/social_media///linkedin.png" title="LinkedIn" alt="LinkedIn" />
+                        </a>
+                        <a href="https://www.youtube.com/channel/UCbY4NfKJTwEO1rxTdNGjYbA">
+                            <img src="/ARSUserFiles/00000000/images/social_media///youtube.png" title="Youtube" alt="Youtube" />
+                        </a>
+                        <a href="https://www.facebook.com/AgriculturalResearchService">
+                            <img src="/ARSUserFiles/00000000/images/social_media///square-facebook-icon.jpg" title="Facebook Icon" alt="Facebook Icon" />
+                        </a>
+    </div>
+
+<!-- Floating Social shared icons-->
+    <div class="float-ConnectwithARS">
+        <div class="addthis_toolbox addthis_default_style addthis_32x32_style">
+            <ul class="connectwithARS">
+                <!--Start : Social shared icons-->
+                <li><a class="addthis_button_twitter"></a></li>
+                <li><a class="addthis_button_linkedin"></a> </li>
+                <li><a class="addthis_button_facebook"></a> </li>
+                <li><a class="addthis_button_email"></a></li>
+                <li><a class="addthis_button_print"></a></li>
+                <li><a class="addthis_button_compact"></a> </li>
+                <!--End : Social shared icons-->
+            </ul>
+        </div>
+    </div>
+
+            </nav>
+             <nav class="usa-footer-navigation-link" id="TellUs">
+                 <a href="https://tellus.ars.usda.gov/" title="Tellus"
+                    aria-label="The Tellus Home Page"   rel="home">                  
+                     <img src="/ARSUserFiles/00000000/images/social_media/tellus-logo.png" title="Tellus" alt="Tellus">
+                 </a>
+                
+             </nav>
+        </nav>
+
+         <!-- Sign up for ARS News updates-->
+        <nav class="usa-footer-nav usa-width-one-half">
+            <form id="GD-snippet-form" action="https://public.govdelivery.com/accounts/USDAARS/subscriber/qualify?qsp=CODE_RED"
+                  accept-charset="UTF-8" method="post" target="_blank">
+
+                <input name="utf8" type="hidden" value="&#x2713;" />
+                <input type="hidden" name="authenticity_token" value="tV2OquJR5xnmtrmmZS3UWsIp7QddNiZcKotw2AMMUx2u9nfu4b3aL1Fb4L6RnJCoF5VYhXZ85qUPjpOyJiUlhg==" />
+
+                <fieldset>
+                    <h3 class="usa-sign_up-header">Sign up</h3>
+                    <div class="EmailSignup-Footer">
+                        <!-- <input type="text" name="email" id="email" placeholder="Sign up for ARS News updates" style="display:inline-block;" value> <input type="submit" name="commit" class="form_button" id="go" value="Go" style="display:inline-block;" />-->
+                        <input type="text" name="email" id="email" style="display:inline-block;" title="email" value> <input type="submit" name="commit" class="form_button" id="go" value="Go" style="display:inline-block;" />
+                    </div>
+
+                </fieldset>
+            </form>
+
+                    <!-- GovDelivery Subscription Overlay -->
+                    <script src='https://content.govdelivery.com/overlay/js/6017.js'></script>
+                    <!-- End GovDelivery Overlay -->
+                    <!--CFI survey pop-up display section-->
+                    <script src="/ARSUserFiles/Utility/WebMoniter/WebMoniter.js" type="text/javascript"></script>
+                    <!--End CFI survey pop-up -->
+            </nav>
+           <!-- End Sign up for ARS News updates-->
+</div>
+
+    <!-- bottom footer-->
+    <div class="usa-grid-full usa-color-gray-dark">
+        <nav class="usa-footer-nav" id="footer-bottom">
+          <div class="grid-container">
+            <div class="grid-row grid-gap">
+              <div class="grid-col-4">
+                <ul class="usa-unstyled-list">
+                    <li class="usa-footer-navigation-link usa-footer-primary-content">
+                      <a class="usa-footer-primary-content" href="/">ARS Home</a>
                     </li>
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://www.farmers.gov/pandemic-assistance">Pandemic Assistance</a>
+                    <li class="usa-footer-navigation-link usa-footer-primary-content">
+                        <a class="usa-footer-primary-content" href="http://www.usda.gov/">USDA.gov</a>
                     </li>
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://ask.usda.gov/s/contactsupport"
-                        >Contact Us</a
-                      >
+                    <li class="usa-footer-navigation-link usa-footer-primary-content">
+                        <a href="https://www.usda.gov/plain-writing">Plain Writing</a>
                     </li>
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://www.usda.gov/sitemap">USDA Site Map</a>
+                    <li class="usa-footer-navigation-link usa-footer-primary-content">
+                        <a href="https://www.usda.gov/policies-and-links">Policies &amp; Links</a>
                     </li>
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://www.usda.gov/policies-and-links">Policies and Links</a>
-                    </li>
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://www.usda.gov/our-agency/about-usda/performance">Our Performance</a>
-                    </li>
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://www.usda.gov/our-agency/careers">Careers</a>
-                    </li>
-                  </ul>
-                </section>
+                </ul>
               </div>
-              <div class="mobile-lg:grid-col-6 desktop:grid-col-3">
-                <section
-                  class="
-                    usa-footer__primary-content
-                    usa-footer__primary-content--collapsible
-                  "
-                >
-                  <h4 class="usa-footer__primary-link">Topics</h4>
-                  <ul class="usa-list usa-list--unstyled">
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://usdaoig.oversight.gov/resources/contractor-fraud">Report Fraud on USDA Contracts</a>
+              <div class="grid-col-4">
+                <ul class="usa-unstyled-list">
+                    <li class="usa-footer-navigation-link usa-footer-primary-content">
+                      <a href="https://www.usda.gov/oascr/civil-rights-statements">Civil Rights Statements</a>
                     </li>
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://usdaoig.oversight.gov/"
-                        >Inspector General</a
-                      >
+                    <li class="usa-footer-navigation-link usa-footer-primary-content">
+                        <a href="/research/freedom-of-information-act-and-privacy-act-reference-guide/">FOIA</a>
                     </li>
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://www.usda.gov/plain-writing">Plain Writing</a>
+                    <li class="usa-footer-navigation-link usa-footer-primary-content">
+                        <a href="https://www.usda.gov/accessibility-statement">Accessibility Statement</a>
                     </li>
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://www.usda.gov/open">Open</a>
+                    <li class="usa-footer-navigation-link usa-footer-primary-content">
+                        <a href="https://www.usda.gov/privacy-policy">Privacy Policy</a>
                     </li>
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://www.usda.gov/ogc/office-information-affairs/foia-division">FOIA</a>
-                    </li>
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://www.usda.gov/accessibility-statement">Accessibility Statement</a>
-                    </li>
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://www.usda.gov/privacy-policy">Privacy Policy</a>
-                    </li>
-                  </ul>
-                </section>
+                </ul>
               </div>
-              <div class="mobile-lg:grid-col-6 desktop:grid-col-3">
-                <section
-                  class="
-                    usa-footer__primary-content
-                    usa-footer__primary-content--collapsible
-                  "
-                >
-                  <h4 class="usa-footer__primary-link">Our Agency</h4>
-                  <ul class="usa-list usa-list--unstyled">
-                    <li class="usa-footer__secondary-link">
+              <div class="grid-col-4">
+                <ul class="usa-unstyled-list">
+                    <li class="usa-footer-navigation-link usa-footer-primary-content">
                       <a href="https://www.usda.gov/non-discrimination-statement">Non-Discrimination Statement</a>
                     </li>
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://www.usda.gov/oascr/civil-rights-statements">Anti-Harassment Policy</a>
+                    <li class="usa-footer-navigation-link usa-footer-primary-content">
+                        <a href="/docs/quality-of-information/">Quality of Information</a>
                     </li>
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://www.usda.gov/#:~:text=Anti%2DHarassment%20Policy-,Information%20Quality,-USA.gov">Information Quality</a>
+                    <li class="usa-footer-navigation-link usa-footer-primary-content">
+                        <a href="https://www.usa.gov">USA.gov</a>
                     </li>
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://www.usa.gov/">USA.gov</a>
+                    <li class="usa-footer-navigation-link usa-footer-primary-content">
+                        <a href="https://www.whitehouse.gov">WhiteHouse.gov</a>
                     </li>
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://www.whitehouse.gov/">WhiteHouse.gov</a>
-                    </li>
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://www.usda.gov/federal-web-site-inventory">eGov</a>
-                    </li>
-                    <li class="usa-footer__secondary-link">
-                      <a href="mailto:feedback@oc.usda.gov">Feedback</a>
-                    </li>
-                  </ul>
-                </section>
+                </ul>
               </div>
-              <div class="mobile-lg:grid-col-6 desktop:grid-col-3">
-                <section
-                  class="
-                    usa-footer__primary-content
-                    usa-footer__primary-content--collapsible
-                  "
-                >
-                  <h4 class="usa-footer__primary-link">Priorities</h4>
-                  <ul class="usa-list usa-list--unstyled">
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://www.usda.gov/nofear">No FEAR Act Data</a>
-                    </li>
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://osc.gov/">Office of Special Counsel</a>
-                    </li>
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://usdaoig.oversight.gov/resources/whistleblower-protection-coordinator">Whistleblower Protection Coordinator</a>
-                    </li>
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://www.usda.gov/vulnerability-disclosure-policy">Vulnerability Disclosure Poilcy</a>
-                    </li>
-                    <li class="usa-footer__secondary-link">
-                      <a href="https://www.usda.gov/ocfo/plans-reports/agency-financial-reports">Agency Financial Reports</a>
-                    </li>
-                  </ul>
-                </section>
-              </div>
+          </div>
+            
               
-            </div>
-          </nav>
-        </div>
-      </div>
+              
+              
+            
+          </div>
+        </nav>
     </div>
-  </div>
-  <div class="usa-footer__secondary-section">
-    <div class="grid-container">
-      <div class="grid-row grid-gap">
-        <div
-          class="
-            usa-footer__logo
-            grid-row
-            mobile-lg:grid-col-6 mobile-lg:grid-gap-2
-          "
-        >
-          <div class="mobile-lg:grid-col-auto">
-            <img class="usa-footer__logo-img" src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/logo-img.png" alt="" />
-          </div>
-          <div class="mobile-lg:grid-col-auto">
-            <p class="usa-footer__logo-heading">Symbiota</p>
-          </div>
-        </div>
-        <div class="usa-footer__contact-links mobile-lg:grid-col-6">
-          <div class="usa-footer__social-links grid-row grid-gap-1">
-            <div class="grid-col-auto">
-              <a class="usa-social-link" href="javascript:void(0);"
-                ><img
-                  class="usa-social-link__icon"
-                  src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/usa-icons/facebook.svg"
-                  alt="Facebook"
-              /></a>
-            </div>
-            <div class="grid-col-auto">
-              <a class="usa-social-link" href="javascript:void(0);"
-                ><img
-                  class="usa-social-link__icon"
-                  src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/usa-icons/twitter.svg"
-                  alt="Twitter"
-              /></a>
-            </div>
-            <div class="grid-col-auto">
-              <a class="usa-social-link" href="javascript:void(0);"
-                ><img
-                  class="usa-social-link__icon"
-                  src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/usa-icons/youtube.svg"
-                  alt="YouTube"
-              /></a>
-            </div>
-            <div class="grid-col-auto">
-              <a class="usa-social-link" href="javascript:void(0);"
-                ><img
-                  class="usa-social-link__icon"
-                  src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/usa-icons/instagram.svg"
-                  alt="Instagram"
-              /></a>
-            </div>
-            <div class="grid-col-auto">
-              <a class="usa-social-link" href="javascript:void(0);"
-                ><img
-                  class="usa-social-link__icon"
-                  src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/usa-icons/rss_feed.svg"
-                  alt="RSS"
-              /></a>
-            </div>
-          </div>
-          <p class="usa-footer__contact-heading">
-            &lt;Agency Contact Center&gt;
-          </p>
-          <address class="usa-footer__address">
-            <div class="usa-footer__contact-info grid-row grid-gap">
-              <div class="grid-col-auto">
-                <a href="tel:1-800-555-5555">&lt;(800) 555-GOVT&gt;</a>
-              </div>
-              <div class="grid-col-auto">
-                <a href="mailto:info@agency.gov">&lt;info@agency.gov&gt;</a>
-              </div>
-            </div>
-          </address>
-        </div>
-      </div>
-    </div>
-  </div>
-  <script type="text/javascript">
-		document.addEventListener('DOMContentLoaded', ()=>{
-      try{
-        document.getElementById('accessibility-button').disabled=false;
-        updateButtonTextBasedOnEnabledStylesheet('<?php echo $LANG['TOGGLE_508_OFF'] ?>', '<?php echo $LANG['TOGGLE_508_ON'] ?>');
-      }
-      catch(err){
-        console.log(err);
-      }
-		});
-	</script>
 </footer>
-<script src="<?php echo htmlspecialchars($CLIENT_ROOT, HTML_SPECIAL_CHARS_FLAGS); ?>/assets/uswds/js/uswds.min.js" type="text/javascript"></script>
