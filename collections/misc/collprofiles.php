@@ -117,10 +117,10 @@ if ($SYMB_UID) {
 					<br>
 					<input name="collid" type="hidden" value="<?php echo $collid; ?>" />
 					<input name="occindex" type="hidden" value="0" />
-					<label for="taxon-search"><?php echo (isset($LANG['TAXON']) ? $LANG['TAXON'] : 'Taxon'); ?></label>
-					<input name="taxon-search" id="taxon-search" type="text" />
+					<label for="taxon-search" class="top-breathing-room-rel"><?php echo (isset($LANG['TAXON']) ? $LANG['TAXON'] : 'Taxon'); ?></label>
+					<input name="taxon-search" class="top-breathing-room-rel" id="taxon-search" type="text" />
 					<br>
-					<button type="submit" id="search-by-catalog-number-btn" title="<?php echo (isset($LANG['IIDENTIFIER_PLACEHOLDER_LIST']) ? $LANG['IDENTIFIER_PLACEHOLDER_LIST'] : 'Occurrence ID and Record ID also accepted.'); ?>">
+					<button class="top-breathing-room-rel" type="submit" id="search-by-catalog-number-btn" title="<?php echo (isset($LANG['IIDENTIFIER_PLACEHOLDER_LIST']) ? $LANG['IDENTIFIER_PLACEHOLDER_LIST'] : 'Occurrence ID and Record ID also accepted.'); ?>">
 						<?php echo (isset($LANG['SEARCH']) ? $LANG['SEARCH'] : 'Search'); ?>
 					</button>
 				</div>
