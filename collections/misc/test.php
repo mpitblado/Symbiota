@@ -79,7 +79,7 @@
             </header>
             <div class="usa-banner-content usa-grid usa-accordion-content" id="gov-banner">
                 <div class="usa-banner-guidance-gov usa-width-one-half">
-                    <!-- <img class="usa-banner-icon usa-media_block-img" src="/USWDS/img/icon-dot-gov.svg" alt="Dot gov"> -->
+                    <!-- <img class="usa-banner-icon usa-media_block-img" src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/icon-dot-gov.svg" alt="Dot gov"> -->
                     <img
                         class="usa-banner-icon usa-media_block-img"
                         src="<?php  echo $CLIENT_ROOT ?>/assets/uswds/img/icon-dot-gov.svg"
@@ -96,7 +96,7 @@
                     </div>
                 </div>
                 <div class="usa-banner-guidance-ssl usa-width-one-half">
-                    <img class="usa-banner-icon usa-media_block-img" src="/USWDS/img/icon-https.svg" alt="SSL">
+                    <img class="usa-banner-icon usa-media_block-img" src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/icon-https.svg" alt="SSL">
                     <div class="usa-media_block-body">
                         <p>
                             <strong>Secure .gov websites use HTTPS</strong>
@@ -122,7 +122,7 @@
             <div class="usa-logo" id="logo">
 
                 <span href="https://www.usda.gov" title="Home" rel="home" class="usda-logo">
-                    <img src="/images/redesign/USDA-Logo.png" alt="USDA Logo" class="usda-logo-img">
+                    <img src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/USDA-Logo.png" alt="USDA Logo" class="usda-logo-img">
                 </span>
 
                 <em class="usa-logo-text">
@@ -146,7 +146,7 @@
         <nav role="navigation" class="usa-nav usa-color-primary-darkest">
             
             <button class="usa-nav-close">
-                <img src="/USWDS/img/close.svg" alt="close">
+                <img src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/close.svg" alt="close">
             </button>
 
 
