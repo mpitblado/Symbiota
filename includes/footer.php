@@ -1,4 +1,4 @@
-<footer class="usa-footer usa-footer-big" role="contentinfo">
+<footer class="usa-footer usa-footer-big" style="font-size: 1.7rem;" role="contentinfo">
     <!-- last modified date in documentation page -->
 
     <!--  Headquarter pages only -->
