@@ -23,3 +23,27 @@ UPDATE omoccurrences o INNER JOIN omcollections c ON o.collid = c.collid
   AND o.occid NOT IN(SELECT occid FROM omoccuredits WHERE fieldname = "basisofrecord");
 
 
+CREATE TABLE `dynamicproperties` (
+  `dynPropID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `tableName` VARCHAR(45) NOT NULL,
+  `tablePK` INT NOT NULL,
+  `propName` VARCHAR(45) NOT NULL,
+  `type` VARCHAR(45) NOT NULL,
+  `category` VARCHAR(45) NULL,
+  `url` VARCHAR(250) NULL,
+  `attributes` VARCHAR(250) NULL,
+  `dynamicProperties` TEXT NULL,
+  `modifiedUid` INT UNSIGNED NULL,
+  `createdUid` INT UNSIGNED NULL,
+  `modifiedTimestamp` DATETIME NULL,
+  `initialTimestamp` TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  PRIMARY KEY (`dynPropID`),
+  INDEX `IX_dynProp_tableName` (`tableName` ASC),
+  INDEX `IX_dynProp_tablePK` (`tablePK` ASC),
+  INDEX `IX_dynPrpo_type` (`type` ASC),
+  INDEX `FK_dynProp_modifiedUid_idx` (`modifiedUid` ASC),
+  INDEX `FK_dynProp_createdUid_idx` (`createdUid` ASC),
+  CONSTRAINT `FK_dynProp_modifiedUid`   FOREIGN KEY (`modifiedUid`)   REFERENCES `users` (`uid`)  ON DELETE RESTRICT  ON UPDATE CASCADE,
+  CONSTRAINT `FK_dynProp_createdUid`   FOREIGN KEY (`createdUid`)   REFERENCES `usertaxonomy` (`uid`)  ON DELETE RESTRICT  ON UPDATE CASCADE);
+
+
