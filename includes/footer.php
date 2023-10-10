@@ -5,10 +5,10 @@
         <div class="usa-grid-full usa-color-gray-light">
             <nav class="usa-footer-nav usa-width-two-thirds" id="footer-top">
                 <ul class="usa-unstyled-list">
-                            <li class="usa-footer-navigation-link usa-footer-primary-content"><a  class="usa-footer-primary-link" href="/research/">Research</a></li>
-                            <li class="usa-footer-navigation-link usa-footer-primary-content"><a  class="usa-footer-primary-link" href="/news-events/news-events/">Media</a></li>
-                            <li class="usa-footer-navigation-link usa-footer-primary-content"><a  class="usa-footer-primary-link" href="/about-ars/">About ARS</a></li>
-                            <li class="usa-footer-navigation-link usa-footer-primary-content"><a  class="usa-footer-primary-link" href="/work-with-us/">Work With Us</a></li>
+                            <li class="usa-width-one-fourth usa-footer-primary-content"><a  class="usa-footer-primary-link" href="/research/">Research</a></li>
+                            <li class="usa-width-one-fourth usa-footer-primary-content"><a  class="usa-footer-primary-link" href="/news-events/news-events/">Media</a></li>
+                            <li class="usa-width-one-fourth usa-footer-primary-content"><a  class="usa-footer-primary-link" href="/about-ars/">About ARS</a></li>
+                            <li class="usa-width-one-fourth usa-footer-primary-content"><a  class="usa-footer-primary-link" href="/work-with-us/">Work With Us</a></li>
                 </ul>
             </nav>
         </div>
@@ -24,16 +24,16 @@
 <!-- Connect with ARS Social icons in footer -->
     <div class="usa-footer-nav" id="socialLink">
                         <a href="http://twitter.com/usda_ars">
-                            <img src="/ARSUserFiles/00000000/images/social_media///twitter.png" title="Twitter" alt="Twitter" />
+                            <img src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/twitter.svg" title="Twitter" alt="Twitter" />
                         </a>
                         <a href="https://www.linkedin.com/company/usda-ars">
-                            <img src="/ARSUserFiles/00000000/images/social_media///linkedin.png" title="LinkedIn" alt="LinkedIn" />
+                            <img src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/linkedin.svg" title="LinkedIn" alt="LinkedIn" />
                         </a>
                         <a href="https://www.youtube.com/channel/UCbY4NfKJTwEO1rxTdNGjYbA">
-                            <img src="/ARSUserFiles/00000000/images/social_media///youtube.png" title="Youtube" alt="Youtube" />
+                            <img src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/youtube.svg" title="Youtube" alt="Youtube" />
                         </a>
                         <a href="https://www.facebook.com/AgriculturalResearchService">
-                            <img src="/ARSUserFiles/00000000/images/social_media///square-facebook-icon.jpg" title="Facebook Icon" alt="Facebook Icon" />
+                            <img src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/facebook.svg" title="Facebook Icon" alt="Facebook Icon" />
                         </a>
     </div>
 
@@ -54,10 +54,10 @@
     </div>
 
             </nav>
-             <nav class="usa-footer-navigation-link" id="TellUs">
+             <nav class="usa-width-one-fourth" id="TellUs">
                  <a href="https://tellus.ars.usda.gov/" title="Tellus"
                     aria-label="The Tellus Home Page"   rel="home">                  
-                     <img src="/ARSUserFiles/00000000/images/social_media/tellus-logo.png" title="Tellus" alt="Tellus">
+                     <img src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/tellus-logo.png" title="Tellus" alt="Tellus">
                  </a>
                 
              </nav>
@@ -85,7 +85,7 @@
                     <script src='https://content.govdelivery.com/overlay/js/6017.js'></script>
                     <!-- End GovDelivery Overlay -->
                     <!--CFI survey pop-up display section-->
-                    <script src="/ARSUserFiles/Utility/WebMoniter/WebMoniter.js" type="text/javascript"></script>
+                    <script src="<?php echo $CLIENT_ROOT ?>/assets/uswds/js/WebMonitor.js" type="text/javascript"></script>
                     <!--End CFI survey pop-up -->
             </nav>
            <!-- End Sign up for ARS News updates-->
@@ -94,63 +94,52 @@
     <!-- bottom footer-->
     <div class="usa-grid-full usa-color-gray-dark">
         <nav class="usa-footer-nav" id="footer-bottom">
-          <div class="grid-container">
-            <div class="grid-row grid-gap">
-              <div class="grid-col-4">
-                <ul class="usa-unstyled-list">
-                    <li class="usa-footer-navigation-link usa-footer-primary-content">
-                      <a class="usa-footer-primary-content" href="/">ARS Home</a>
-                    </li>
-                    <li class="usa-footer-navigation-link usa-footer-primary-content">
-                        <a class="usa-footer-primary-content" href="http://www.usda.gov/">USDA.gov</a>
-                    </li>
-                    <li class="usa-footer-navigation-link usa-footer-primary-content">
-                        <a href="https://www.usda.gov/plain-writing">Plain Writing</a>
-                    </li>
-                    <li class="usa-footer-navigation-link usa-footer-primary-content">
-                        <a href="https://www.usda.gov/policies-and-links">Policies &amp; Links</a>
-                    </li>
-                </ul>
-              </div>
-              <div class="grid-col-4">
-                <ul class="usa-unstyled-list">
-                    <li class="usa-footer-navigation-link usa-footer-primary-content">
-                      <a href="https://www.usda.gov/oascr/civil-rights-statements">Civil Rights Statements</a>
-                    </li>
-                    <li class="usa-footer-navigation-link usa-footer-primary-content">
-                        <a href="/research/freedom-of-information-act-and-privacy-act-reference-guide/">FOIA</a>
-                    </li>
-                    <li class="usa-footer-navigation-link usa-footer-primary-content">
-                        <a href="https://www.usda.gov/accessibility-statement">Accessibility Statement</a>
-                    </li>
-                    <li class="usa-footer-navigation-link usa-footer-primary-content">
-                        <a href="https://www.usda.gov/privacy-policy">Privacy Policy</a>
-                    </li>
-                </ul>
-              </div>
-              <div class="grid-col-4">
-                <ul class="usa-unstyled-list">
-                    <li class="usa-footer-navigation-link usa-footer-primary-content">
-                      <a href="https://www.usda.gov/non-discrimination-statement">Non-Discrimination Statement</a>
-                    </li>
-                    <li class="usa-footer-navigation-link usa-footer-primary-content">
-                        <a href="/docs/quality-of-information/">Quality of Information</a>
-                    </li>
-                    <li class="usa-footer-navigation-link usa-footer-primary-content">
-                        <a href="https://www.usa.gov">USA.gov</a>
-                    </li>
-                    <li class="usa-footer-navigation-link usa-footer-primary-content">
-                        <a href="https://www.whitehouse.gov">WhiteHouse.gov</a>
-                    </li>
-                </ul>
-              </div>
-          </div>
-            
-              
-              
-              
-            
-          </div>
+            <ul class="usa-unstyled-list">
+                            <li class="usa-width-one-fourth usa-footer-primary-content">
+                                <a href="/">ARS Home</a>
+                            </li>
+                            <li class="usa-width-one-fourth usa-footer-primary-content">
+                                <a href="http://www.usda.gov/">USDA.gov</a>
+                            </li>
+                            <li class="usa-width-one-fourth usa-footer-primary-content">
+                                <a href="https://www.usda.gov/plain-writing">Plain Writing</a>
+                            </li>
+                            <li class="usa-width-one-fourth usa-footer-primary-content">
+                                <a href="https://www.usda.gov/policies-and-links">Policies &amp; Links</a>
+                            </li>
+                            <li class="usa-width-one-fourth usa-footer-primary-content">
+                                <a href="https://www.usda.gov/oascr/civil-rights-statements">Civil Rights Statements</a>
+                            </li>
+                            <li class="usa-width-one-fourth usa-footer-primary-content">
+                                <a href="/research/freedom-of-information-act-and-privacy-act-reference-guide/">FOIA</a>
+
+                            </li>
+                            <li class="usa-width-one-fourth usa-footer-primary-content">
+                                <a href="https://www.usda.gov/accessibility-statement">Accessibility Statement</a>
+
+                            </li>
+                            <li class="usa-width-one-fourth usa-footer-primary-content">
+                                <a href="https://www.usda.gov/privacy-policy">Privacy Policy</a>
+
+                            </li>
+                            <li class="usa-width-one-fourth usa-footer-primary-content">
+                                <a href="https://www.usda.gov/non-discrimination-statement">Non-Discrimination Statement</a>
+
+                            </li>
+                            <li class="usa-width-one-fourth usa-footer-primary-content">
+                                <a href="/docs/quality-of-information/">Quality of Information</a>
+
+                            </li>
+                            <li class="usa-width-one-fourth usa-footer-primary-content">
+                                <a href="https://www.usa.gov">USA.gov</a>
+
+                            </li>
+                            <li class="usa-width-one-fourth usa-footer-primary-content">
+                                <a href="https://www.whitehouse.gov">WhiteHouse.gov</a>
+
+                            </li>
+
+            </ul>
         </nav>
     </div>
 </footer>

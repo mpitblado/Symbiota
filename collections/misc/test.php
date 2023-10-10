@@ -146,7 +146,7 @@
         <nav role="navigation" class="usa-nav usa-color-primary-darkest">
             
             <button class="usa-nav-close">
-                <img src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/close.svg" alt="close">
+                <img src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/usa-icons/close.svg" alt="close">
             </button>
 
 
@@ -788,7 +788,7 @@
 <!-- Custom Page Footers Scripts -->
 
     
-
+    <script src="<?php echo htmlspecialchars($CLIENT_ROOT, HTML_SPECIAL_CHARS_FLAGS); ?>/assets/uswds/js/uswds-init.min.js" type="text/javascript"></script>
     <script src="/USWDS/js/uswds.min.js"></script>
 
 </body>
