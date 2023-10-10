@@ -25,9 +25,8 @@
 @import "base.css";
 @import "variables.css";
 @import "header.css";
-@import "footer.css";
+/* @import "footer.css"; */
 @import "styles.css";
-@import "styleguide.css";
 
 /* Global styles
    ========================================================================== */
@@ -40,7 +39,7 @@ body {
   color: var(--body-text-color);
   margin: 0;
   -webkit-text-size-adjust: 100%;
-  font-size: 1.2rem;
+  font-size: 1.7rem;
   font-weight: 400;
   font-family: var(--body-font-family);
 }

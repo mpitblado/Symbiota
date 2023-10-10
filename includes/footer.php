@@ -143,3 +143,4 @@
         </nav>
     </div>
 </footer>
+<script src="<?php echo htmlspecialchars($CLIENT_ROOT, HTML_SPECIAL_CHARS_FLAGS); ?>/assets/uswds/js/uswds.min.js" type="text/javascript"></script>
