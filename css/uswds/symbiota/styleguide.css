@@ -2160,7 +2160,7 @@ dfn {
   margin-bottom: 0;
 }
 .usa-accordion-content:not([aria-hidden]) {
-  position: absolute;
+  /* position: absolute; */
   left: -999em;
 }
 .usa-accordion-content[aria-hidden="true"] {
@@ -3873,9 +3873,9 @@ input.usa-input-medium {
     margin-bottom: 0;
   }
 }
-.usa-nav-submenu[aria-hidden="true"] {
+/* .usa-nav-submenu[aria-hidden="true"] {
   display: none;
-}
+} */
 @media screen and (min-width: 951px) {
   .usa-nav-submenu a {
     color: #ffffff;

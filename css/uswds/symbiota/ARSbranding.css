@@ -771,3 +771,8 @@ img[src$="downloadbutton.gif"] {
   height: 1.5ex;
   width: 1.21875ex;
 }
+
+.usa-accordion__button[aria-expanded="false"],
+.usa-accordion__button[aria-expanded="false"]:hover {
+  background-image: url("../img/usa-icons/angle-arrow-down-primary-hover.svg");
+}

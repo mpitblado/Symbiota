@@ -18,9 +18,10 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
           />
           <p>An official website of the United States government</p>
           <button
-            class="usa-accordion-button usa-banner-button"
+            class="usa-accordion__button usa-banner-button"
             aria-expanded="false"
             aria-controls="gov-banner"
+            style="background-image: url('../css/uswds/img/usa-icons/angle-arrow-down-hover.svg');"
           >
             <span class="usa-banner-button-text">Here's how you know</span>
           </button>
@@ -139,7 +140,7 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
       <ul class="usa-nav-primary usa-accordion">
         <li>
           <button
-            class="usa-accordion-button usa-nav-link"
+            class="usa-accordion__button usa-nav-link"
             aria-expanded="false"
             aria-controls="side-nav-1"
             id="btnMenu-1"
@@ -178,7 +179,7 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
         </li>
         <li>
           <button
-            class="usa-accordion-button usa-nav-link"
+            class="usa-accordion__button usa-nav-link"
             aria-expanded="false"
             aria-controls="side-nav-2"
             id="btnMenu-2"
@@ -211,7 +212,7 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
         </li>
         <li>
           <button
-            class="usa-accordion-button usa-nav-link"
+            class="usa-accordion__button usa-nav-link"
             aria-expanded="false"
             aria-controls="side-nav-3"
             id="btnMenu-3"
@@ -254,7 +255,7 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
         </li>
         <li>
           <button
-            class="usa-accordion-button usa-nav-link"
+            class="usa-accordion__button usa-nav-link"
             aria-expanded="false"
             aria-controls="side-nav-4"
             id="btnMenu-4"
