@@ -136,8 +136,18 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
       <button class="usa-nav-close">
         <img src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/close.svg" alt="close" />
       </button>
-
+      
       <ul class="usa-nav-primary usa-accordion">
+        <li>
+          <button
+            id="btnMenu-0"
+            onclick="navigateHome();"
+          >
+            <span>
+              Home
+            </span>
+          </button>
+        </li>
         <li>
           <button
             class="usa-accordion__button usa-nav-link"
@@ -145,35 +155,24 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
             aria-controls="side-nav-1"
             id="btnMenu-1"
           >
-            <span id="menuName">Research</span>
+            <span id="menuName">Search Collections</span>
           </button>
           <ul
             id="side-nav-1"
             class="usa-nav-submenu usa-color-white"
             aria-hidden="true"
           >
-            <li><a href="/research/">Research Home</a></li>
-            <li><a href="/research/programs/">National Programs</a></li>
-            <li><a href="/research/projects/">Research Projects</a></li>
             <li>
-              <a href="/research/publications/find-a-publication/"
-                >Scientific Manuscripts</a
-              >
+              <a href="<?php echo $CLIENT_ROOT?>/collections/harvestparams.php">Search All Collections</a>
             </li>
             <li>
-              <a
-                href="/office-of-international-research-engagement-and-cooperation/office-of-international-research-engagement-and-cooperation/"
-                >International Engagement</a
-              >
+              <a href="<?php echo $CLIENT_ROOT?>/collections/harvestparams.php?db=<?php echo  $NA_COLLID?>">Search National Arboretum Herbarium</a>
             </li>
             <li>
-              <a href="/research/software/">Scientific Software/Models</a>
+              <a href="<?php echo $CLIENT_ROOT?>/collections/harvestparams.php?db=<?php echo  $BARC_COLLID?>">Search National Seed Herbarium</a>
             </li>
-            <li><a href="/research/datasets/">Databases and Datasets</a></li>
             <li>
-              <a href="/office-of-scientific-quality-review-osqr/"
-                >Office of Scientific Quality Review</a
-              >
+              <a href="<?php echo $CLIENT_ROOT?>/collections/harvestparams.php?db=<?php echo  $BPI_SNAPSHOT_COLLID?>">Search National Fungus Collections</a>
             </li>
           </ul>
         </li>
@@ -184,30 +183,25 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
             aria-controls="side-nav-2"
             id="btnMenu-2"
           >
-            <span id="menuName">Media</span>
+            <span id="menuName">Map Search</span>
           </button>
           <ul
             id="side-nav-2"
             class="usa-nav-submenu usa-color-white"
             aria-hidden="true"
           >
-            <li><a href="/news-events/news-events/">News &amp; Features</a></li>
-            <li><a href="/oc/ars-wired/">Multimedia</a></li>
-            <li><a href="/oc/br/briefing-room/">Briefing Room</a></li>
-            <li><a href="/oc/dof/archive/">Down on the Farm</a></li>
-            <li><a href="/oc/press-room/">Press Room</a></li>
             <li>
-              <a href="/oc/scienceinyourshoppingcart/siysc-factsheets"
-                >Science in Your Shopping Cart</a
-              >
+              <a href="<?php echo $CLIENT_ROOT ?>/collections/map/index.php">Map Search All Collections</a>
             </li>
             <li>
-              <a href="https://scientificdiscoveries.ars.usda.gov"
-                >Scientific Discoveries</a
-              >
+              <a href="<?php echo $CLIENT_ROOT?>/collections/map/index.php?db=<?php echo  $NA_COLLID?>">Map Search National Arboretum Herbarium</a>
             </li>
-            <li><a href="https://tellus.ars.usda.gov/">Tellus</a></li>
-            <li><a href="/oc/utm/archive">Under the Microscope</a></li>
+            <li>
+              <a href="<?php echo $CLIENT_ROOT?>/collections/map/index.php?db=<?php echo  $BARC_COLLID?>">Map Search National Seed Herbarium</a>
+            </li>
+            <li>
+              <a href="<?php echo $CLIENT_ROOT?>/collections/map/index.php?db=<?php echo  $BPI_SNAPSHOT_COLLID?>">Map Search National Fungus Collections</a>
+            </li>
           </ul>
         </li>
         <li>
@@ -217,79 +211,53 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
             aria-controls="side-nav-3"
             id="btnMenu-3"
           >
-            <span id="menuName">About ARS</span>
+            <span id="menuName">About Collections</span>
           </button>
           <ul
             id="side-nav-3"
             class="usa-nav-submenu usa-color-white"
             aria-hidden="true"
           >
-            <li><a href="/about-ars/">About ARS Home</a></li>
             <li>
-              <a href="/people-locations/find-a-person/">Staff Directory</a>
+              <a href="<?php echo $CLIENT_ROOT?>/collections/misc/collprofiles.php?collid=<?php echo  $NA_COLLID?>">About National Arboretum Herbarium</a>
             </li>
             <li>
-              <a href="/people-locations/find-a-location/"
-                >Labs and Research Centers (Map)</a
-              >
+              <a href="<?php echo $CLIENT_ROOT?>/collections/misc/collprofiles.php?collid=<?php echo  $BARC_COLLID?>">About National Seed Herbarium</a>
             </li>
             <li>
-              <a href="/docs/headquarters-information/">Headquarter Offices</a>
-            </li>
-            <li>
-              <a href="/people-locations/organizational-chart/"
-                >Organizational Chart</a
-              >
-            </li>
-            <li>
-              <a href="https://axon.ars.usda.gov/AFM/"
-                >Employee Services (REE Employees Only)</a
-              >
-            </li>
-            <li>
-              <a href="/office-of-outreach-diversity-and-equal-opportunity/"
-                >Office of Outreach, Diversity, and Equal Opportunity</a
-              >
+              <a href="<?php echo $CLIENT_ROOT?>/collections/misc/collprofiles.php?collid=<?php echo  $BPI_SNAPSHOT_COLLID?>">About National Fungus Collections</a>
             </li>
           </ul>
         </li>
         <li>
           <button
-            class="usa-accordion__button usa-nav-link"
-            aria-expanded="false"
-            aria-controls="side-nav-4"
-            id="btnMenu-4"
+            id="btnMenu-0"
+            onclick="navigateToDataUse();"
           >
-            <span id="menuName">Work With Us</span>
+            <span>
+              Data Use
+            </span>
           </button>
-          <ul
-            id="side-nav-4"
-            class="usa-nav-submenu usa-color-white"
-            aria-hidden="true"
+        </li>
+        <li>
+          <button
+            id="btnMenu-0"
+            onclick="navigateToHelp();"
           >
-            <li><a href="/work-with-us/">Work With Us Home</a></li>
-            <li>
-              <a href="https://arscareers.usajobs.gov/"
-                >ARS Vacancies at USAJOBS</a
-              >
-            </li>
-            <li>
-              <a href="/careers/careers-at-ars-info/"
-                >Careers at ARS Information</a
-              >
-            </li>
-            <li><a href="/ott/">Scientific Collaborations</a></li>
-            <li>
-              <a href="/afm/fmad/agreements/agreements-home/"
-                >Extramural Agreements</a
-              >
-            </li>
-            <li>
-              <a href="/research/1890-faculty-research-sabbatical-program/"
-                >1890 Faculty Research Sabbatical Program</a
-              >
-            </li>
-          </ul>
+            <span>
+              Help
+            </span>
+          </button>
+        </li>
+        <li>
+          <button
+            id="btnMenu-0"
+            onclick="navigateToSiteMap();"
+          >
+            <span>
+              Site Map
+            </span>
+          </button>
         </li>
       </ul>
       <form
@@ -334,3 +302,17 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
     </nav>
   </div>
 </header>
+<script type="text/javascript">
+  const navigateHome = () => {
+    window.location.href = '<?php echo $CLIENT_ROOT; ?>';
+  };
+  const navigateToDataUse = () => {
+    window.location.href = '<?php echo $CLIENT_ROOT; ?>/includes/usagepolicy.php';
+  };
+  const navigateToHelp = () => {
+    window.location.href = 'https://symbiota.org/docs';
+  };
+  const navigateToSiteMap = () => {
+    window.location.href = '<?php echo $CLIENT_ROOT; ?>/sitemap.php';
+  };
+</script>
