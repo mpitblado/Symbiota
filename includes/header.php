@@ -260,28 +260,6 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
           </button>
         </li>
       </ul>
-      <form
-        class="usa-search usa-search-small"
-        method="get"
-        action="https://search.usa.gov/search?sort=rel"
-      >
-        <div role="search">
-          <label class="usa-sr-only" for="search-field-small"
-            >Search small</label
-          >
-          <input id="query" type="search" name="query" title="search" />
-          <!--title="search" added-->
-          <input
-            name="affiliate"
-            id="affiliate"
-            type="hidden"
-            value="agriculturalresearchservicears"
-          />
-          <button type="submit">
-            <span class="usa-sr-only">Search</span>
-          </button>
-        </div>
-      </form>
       <!-- Secondary Naivagation Start -->
       <div class="usa-nav-secondary">
         <ul class="usa-unstyled-list usa-nav-secondary-links">
