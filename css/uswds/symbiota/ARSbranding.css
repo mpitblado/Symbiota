@@ -148,7 +148,7 @@ hr {
 }
 
 .usa-nav-primary button[aria-expanded="false"] {
-  background-image: url(/USWDS/img/angle-arrow-down-hover.svg);
+  background-image: url("../img/usa-icons/angle-arrow-down-hover.svg");
 }
 /*Start :ConnectwithARS*/
 .float-ConnectwithARS {

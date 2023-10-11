@@ -1,10 +1,3 @@
-<?php
-if($LANG_TAG == 'en' || !file_exists($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/header.en.php');
-else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
-include_once($SERVER_ROOT.'/classes/ProfileManager.php');
-$pHandler = new ProfileManager();
-$isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
-?>
 <a class="usa-skipnav" href="#main-content">Skip to main content</a>
 <header class="usa-header usa-header-basic" role="banner">
   <!-- Gov banner BEGIN -->
@@ -56,8 +49,8 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
               <strong>Secure .gov websites use HTTPS</strong>
               <br />
               A <strong>lock</strong> (
-              <span class="icon-lock">
-                <svg
+              <span class="icon-lock"
+                ><svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="52"
                   height="64"
@@ -72,10 +65,8 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
                     fill="#000000"
                     fill-rule="evenodd"
                     d="M26 0c10.493 0 19 8.507 19 19v9h3a4 4 0 0 1 4 4v28a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4V32a4 4 0 0 1 4-4h3v-9C7 8.507 15.507 0 26 0zm0 8c-5.979 0-10.843 4.77-10.996 10.712L15 19v9h22v-9c0-6.075-4.925-11-11-11z"
-                  >
-                  </path>
-                </svg>
-              </span>
+                  ></path></svg
+              ></span>
 
               ) or <strong>https://</strong> means you’ve safely connected to
               the .gov website. Share sensitive information only on official,
@@ -133,7 +124,7 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
     <!-- Logo  and Log-Text End -->
     <nav role="navigation" class="usa-nav usa-color-primary-darkest">
       <button class="usa-nav-close">
-        <img src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/close.svg" alt="close" />
+        <img src="/USWDS/img/close.svg" alt="close" />
       </button>
 
       <ul class="usa-nav-primary usa-accordion">
