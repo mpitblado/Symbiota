@@ -34,7 +34,7 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
         <div class="usa-banner-guidance-gov usa-width-one-half">
           <img
             class="usa-banner-icon usa-media_block-img"
-            src="/USWDS/img/icon-dot-gov.svg"
+            src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/icon-dot-gov.svg"
             alt="Dot gov"
           />
           <div class="usa-media_block-body">
@@ -49,7 +49,7 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
         <div class="usa-banner-guidance-ssl usa-width-one-half">
           <img
             class="usa-banner-icon usa-media_block-img"
-            src="/USWDS/img/icon-https.svg"
+            src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/icon-https.svg"
             alt="SSL"
           />
           <div class="usa-media_block-body">
