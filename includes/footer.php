@@ -5,10 +5,10 @@
         <div class="usa-grid-full usa-color-gray-light">
             <nav class="usa-footer-nav usa-width-two-thirds" id="footer-top">
                 <ul class="usa-unstyled-list">
-                            <li class="usa-width-one-fourth usa-footer-primary-content"><a  class="usa-footer-primary-link" href="/research/">Research</a></li>
-                            <li class="usa-width-one-fourth usa-footer-primary-content"><a  class="usa-footer-primary-link" href="/news-events/news-events/">Media</a></li>
-                            <li class="usa-width-one-fourth usa-footer-primary-content"><a  class="usa-footer-primary-link" href="/about-ars/">About ARS</a></li>
-                            <li class="usa-width-one-fourth usa-footer-primary-content"><a  class="usa-footer-primary-link" href="/work-with-us/">Work With Us</a></li>
+                            <li class="usa-width-one-fourth usa-footer-primary-content"><a  class="usa-footer-primary-link" href="https://www.ars.usda.gov/research/">Research</a></li>
+                            <li class="usa-width-one-fourth usa-footer-primary-content"><a  class="usa-footer-primary-link" href="https://www.ars.usda.gov/news-events/news-events/">Media</a></li>
+                            <li class="usa-width-one-fourth usa-footer-primary-content"><a  class="usa-footer-primary-link" href="https://www.ars.usda.gov/about-ars/">About ARS</a></li>
+                            <li class="usa-width-one-fourth usa-footer-primary-content"><a  class="usa-footer-primary-link" href="https://www.ars.usda.gov/work-with-us/">Work With Us</a></li>
                 </ul>
             </nav>
         </div>
@@ -96,7 +96,7 @@
         <nav class="usa-footer-nav" id="footer-bottom">
             <ul class="usa-unstyled-list">
                             <li class="usa-width-one-fourth usa-footer-primary-content">
-                                <a href="/">ARS Home</a>
+                                <a href="https://www.ars.usda.gov">ARS Home</a>
                             </li>
                             <li class="usa-width-one-fourth usa-footer-primary-content">
                                 <a href="http://www.usda.gov/">USDA.gov</a>
