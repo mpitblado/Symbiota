@@ -18,7 +18,7 @@ header('Content-Type: text/html; charset=' . $CHARSET);
 	include($SERVER_ROOT . '/includes/header.php');
 	?>
 	<div class="navpath"></div>
-	<div id="innertext">
+	<div id="innertext" class="footer-header-wrapper">
 		<?php
 		if($LANG_TAG == 'es'){
 			?>
@@ -40,7 +40,7 @@ header('Content-Type: text/html; charset=' . $CHARSET);
 			//Default Language
 			?>
 			<div>
-				<ul class="usa-card-group">
+				<ul class="usa-card-group" style="margin-left: 0rem; padding-left: 0rem;">
 					<li class="usa-card tablet:grid-col-4">
 						<div class="usa-card__container">
 							<div class="usa-card__header">
