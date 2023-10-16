@@ -1,17 +1,17 @@
 /* ARS Branding Style */
-.section508 {
+.footer-header-wrapper .section508 {
   display: none;
 }
 /* Header Style */
-#go {
+.footer-header-wrapper #go {
   width: 20%;
 }
 
-.email {
+.footer-header-wrapper .email {
   width: 50%;
 }
 
-.usda-logo {
+.footer-header-wrapper .usda-logo {
   float: none;
   width: 55px;
   height: auto;
@@ -25,150 +25,154 @@ table td {
   /* background-color:transparent; */
 }
 
-.usa-footer-big ul.hidden li {
+.footer-header-wrapper .usa-footer-big ul.hidden li {
   display: block;
 }
 
-.usa-section {
+.footer-header-wrapper .usa-section {
   padding-top: 2rem;
   padding-bottom: 1rem;
 }
 hr {
   margin: 1em 0;
 }
-.usa-nav-submenu a {
+.footer-header-wrapper .usa-nav-submenu a {
   color: #212121;
 }
-.page-last-modified {
+.footer-header-wrapper .page-last-modified {
   float: right;
 }
 
-.usa-nav-primary button[aria-expanded="true"] span {
+.footer-header-wrapper .usa-nav-primary button[aria-expanded="true"] span {
   color: #ffffff;
 }
-.usa-nav-primary button {
+.footer-header-wrapper .usa-nav-primary button {
   color: #ffffff;
 }
-.usa-nav-primary button:hover {
+.footer-header-wrapper .usa-nav-primary button:hover {
   background-color: transparent;
 }
 
-.usa-nav-primary > li > a {
+.footer-header-wrapper .usa-nav-primary > li > a {
   color: #ffffff;
 }
-.usa-nav-primary > li > a:hover {
+.footer-header-wrapper .usa-nav-primary > li > a:hover {
   color: #ffffff;
 }
-.usa-nav-primary > li > a:hover {
+.footer-header-wrapper .usa-nav-primary > li > a:hover {
   border-bottom: 0.7rem solid #0071bc;
   padding-bottom: 1rem;
 }
-.usa-nav-link:hover span {
+.footer-header-wrapper .usa-nav-link:hover span {
   color: #ffffff;
   text-decoration: none;
 }
-.usa-footer-primary-section {
+.footer-header-wrapper .usa-footer-primary-section {
   color: #ffffff;
 }
-.usa-footer-nav a {
+.footer-header-wrapper .usa-footer-nav a {
   color: #ffffff;
 }
-#footer-bottom a:visited {
+.footer-header-wrapper #footer-bottom a:visited {
   color: #ffffff;
 }
 
-#footer-top a {
+.footer-header-wrapper #footer-top a {
   color: #112e51;
 }
-.usa-footer-nav {
+.footer-header-wrapper .usa-footer-nav {
   color: #ffffff;
 }
-.usa-sign_up-block {
+.footer-header-wrapper .usa-sign_up-block {
   color: #ffffff;
 }
 
-.usa-grid-full {
+.footer-header-wrapper .usa-grid-full {
   padding-right: 3rem;
   padding-left: 3rem;
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
 
-.EmailSignup-Footer {
+.footer-header-wrapper .EmailSignup-Footer {
   display: flex;
   flex-direction: row;
   width: 100%;
 }
-.usa-sign_up-block input {
+.footer-header-wrapper .usa-sign_up-block input {
   width: 70%;
 }
-.EmailSignup-Footer go {
+.footer-header-wrapper .EmailSignup-Footer go {
   width: 20%;
 }
-#go {
+.footer-header-wrapper #go {
   margin-top: 0.4rem;
 }
-#search {
+.footer-header-wrapper #search {
   margin-top: 0.3rem;
 }
 
-.ars-dropdownlist-container {
+.footer-header-wrapper .ars-dropdownlist-container {
   display: flex;
   flex-direction: row;
   width: 100%;
 }
 
-.ars-dropdownlist-button {
+.footer-header-wrapper .ars-dropdownlist-button {
   margin-top: 0.3rem;
   width: 20%;
 }
 
-.usa-sign_up-block {
+.footer-header-wrapper .usa-sign_up-block {
   padding-bottom: 0rem;
   padding-left: 0rem;
   padding-right: 0rem;
 }
 
-.usa-grid-full-image {
+.footer-header-wrapper .usa-grid-full-image {
   padding-right: 0rem;
   padding-left: 0rem;
   padding-top: 0rem;
   padding-bottom: 1rem;
 }
-.ars-grid-image {
+.footer-header-wrapper .ars-grid-image {
   padding-right: 0rem;
   padding-left: 0rem;
   padding-bottom: 0rem;
 }
 
-.usa-content p:not(.usa-font-lead),
-.usa-content ul:not(.usa-accordion):not(.usa-accordion-bordered),
-.usa-content ol:not(.usa-accordion):not(.usa-accordion-bordered) {
+.footer-header-wrapper .usa-content p:not(.usa-font-lead),
+.footer-header-wrapper
+  .usa-content
+  ul:not(.usa-accordion):not(.usa-accordion-bordered),
+.footer-header-wrapper
+  .usa-content
+  ol:not(.usa-accordion):not(.usa-accordion-bordered) {
   max-width: none;
 }
 
-.usa-nav-primary button[aria-expanded="false"] {
+.footer-header-wrapper .usa-nav-primary button[aria-expanded="false"] {
   background-image: url("../img/usa-icons/angle-arrow-down-hover.svg");
 }
 /*Start :ConnectwithARS*/
-.float-ConnectwithARS {
+.footer-header-wrapper .float-ConnectwithARS {
   display: none;
 }
-.ars-li-style-none {
+.footer-header-wrapper .ars-li-style-none {
   list-style-type: none;
 }
-.ars-margin-left-indent {
+.footer-header-wrapper .ars-margin-left-indent {
   margin-left: 2rem;
 }
-#ars-carousel-image {
+.footer-header-wrapper #ars-carousel-image {
   float: right;
 }
 
-.ars-carousel-container {
+.footer-header-wrapper .ars-carousel-container {
   padding-right: 0px;
   padding-left: 0px;
 }
-#socialLink a {
+.footer-header-wrapper #socialLink a {
   text-decoration: none;
 }
 
@@ -199,7 +203,7 @@ ars-news-story-container ars-news-story imagecaption {
   padding: 10px;
 }
 
-#leftCustomContent {
+.footer-header-wrapper #leftCustomContent {
   position: relative;
   float: left;
   width: 50%;
@@ -215,7 +219,7 @@ ars-news-story-container ars-news-story imagecaption {
   overflow: auto;
 }
 
-#rightCustomContent {
+.footer-header-wrapper #rightCustomContent {
   position: relative;
   float: left;
   width: 50%;
@@ -228,89 +232,89 @@ ars-news-story-container ars-news-story imagecaption {
   height: 250px;
   overflow: auto;
 }
-.whiteLinkColor a {
+.footer-header-wrapper .whiteLinkColor a {
   color: #ffffff;
 }
-.whiteLinkColor a:visited {
+.footer-header-wrapper .whiteLinkColor a:visited {
   color: #ffffff;
 }
-.blacklinkcolor a {
+.footer-header-wrapper .blacklinkcolor a {
   color: #112e51;
   text-decoration: underline;
   text-decoration-color: #112e51;
 }
-.blacklinkcolor a:visited {
+.footer-header-wrapper .blacklinkcolor a:visited {
   color: #112e51;
   text-decoration: underline;
   text-decoration-color: #112e51;
 }
-.blueLinkColor a {
+.footer-header-wrapper .blueLinkColor a {
   color: #205493;
 }
 
-.blueLinkColor a:visited {
+.footer-header-wrapper .blueLinkColor a:visited {
   color: #205493;
 }
-#upperfooter {
+.footer-header-wrapper #upperfooter {
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
-.ars-project-count {
+.footer-header-wrapper .ars-project-count {
   color: #ff6600;
   font-weight: bold;
 }
-.ars-filter-project-list {
+.footer-header-wrapper .ars-filter-project-list {
   border: 1px solid #5b616b;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
 }
-.ars-project-filter-button {
+.footer-header-wrapper .ars-project-filter-button {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
-.ars-person-projectlist-filter {
+.footer-header-wrapper .ars-person-projectlist-filter {
   padding: 0px;
 }
-.ars-person-projectlist-filter {
+.footer-header-wrapper .ars-person-projectlist-filter {
   padding: 0rem 0.7em;
 }
-.ars-label {
+.footer-header-wrapper .ars-label {
   margin-top: 1.5rem;
 }
-.usa-banner-inner {
+.footer-header-wrapper .usa-banner-inner {
   padding-left: 0rem;
 }
-.ars-tablecell-space {
+.footer-header-wrapper .ars-tablecell-space {
   padding: 0.5rem;
 }
-.ars-more {
+.footer-header-wrapper .ars-more {
   float: right;
   font-size: 1.2rem;
   padding-right: 1rem;
   padding-top: 0.8rem;
 }
 
-.ars-np-header {
+.footer-header-wrapper .ars-np-header {
   font-size: 20px;
   font-weight: 700;
 }
-.ars-columnedpage-section {
+.footer-header-wrapper .ars-columnedpage-section {
   overflow-x: hidden;
   overflow-wrap: break-word;
 }
-#Connect-ARS {
+.footer-header-wrapper #Connect-ARS {
   width: 52.76157%;
 }
 
-#TellUs {
+.footer-header-wrapper #TellUs {
   padding-top: 3rem;
   width: 40.23176%;
 }
 
 /*Carousel and Story image styles*/
 @media screen and (min-width: 1160px) {
-  .float-ConnectwithARS {
+  .footer-header-wrapper .float-ConnectwithARS {
     display: inline;
     margin-bottom: 0;
     padding-left: 0;
@@ -319,7 +323,7 @@ ars-news-story-container ars-news-story imagecaption {
     position: fixed;
     transform: translateX(-30%);
   }
-  .connectwithARS li {
+  .footer-header-wrapper .connectwithARS li {
     display: flex;
     list-style-type: none;
     background-color: #fff;
@@ -339,50 +343,50 @@ ars-news-story-container ars-news-story imagecaption {
 /*
 /* media section */
 @media screen and (max-width: 950px) {
-  .usa-nav .usa-nav-secondary {
+  .footer-header-wrapper .usa-nav .usa-nav-secondary {
     -webkit-box-ordinal-group: 4;
     -ms-flex-order: 3;
     order: 3;
     color: #ffffff;
     padding-top: 2rem;
   }
-  .usa-nav-secondary-links a {
+  .footer-header-wrapper .usa-nav-secondary-links a {
     color: #ffffff;
   }
-  .usda-logo-img {
+  .footer-header-wrapper .usda-logo-img {
     height: 31px;
     position: absolute;
   }
-  .usa-logo-text {
+  .footer-header-wrapper .usa-logo-text {
     padding-left: 6rem;
     font-size: 1.2rem;
   }
-  .usa-logo-second-text {
+  .footer-header-wrapper .usa-logo-second-text {
     padding-left: 6rem;
     font-size: 1rem;
   }
-  .usa-logo {
+  .footer-header-wrapper .usa-logo {
     line-height: 2rem;
     height: 2rem;
     margin-left: 0.5rem;
   }
-  .usa-logo-text h6 {
+  .footer-header-wrapper .usa-logo-text h6 {
     font-size: 1.2rem;
     text-transform: none;
     font-weight: 700;
     margin: 0rem;
   }
-  .usa-sign_up-block input {
+  .footer-header-wrapper .usa-sign_up-block input {
     width: 85%;
   }
 
-  #ars-carousel-image {
+  .footer-header-wrapper #ars-carousel-image {
     float: right;
     margin-right: 0rem;
     margin-left: 0rem;
   }
   /* Iphone clickable fixes */
-  .ars-carousel-container a {
+  .footer-header-wrapper .ars-carousel-container a {
     display: inline-block;
   }
 
@@ -390,133 +394,133 @@ ars-news-story-container ars-news-story imagecaption {
     font-size: 15px;
   }
 
-  #Connect-ARS {
+  .footer-header-wrapper #Connect-ARS {
     width: 74%;
   }
 
-  #TellUs {
+  .footer-header-wrapper #TellUs {
     padding-top: 3rem;
     width: 63.76157%;
   }
 }
 
 @media screen and (min-width: 951px) {
-  .usa-width-three-fourths {
+  .footer-header-wrapper .usa-width-three-fourths {
     margin-right: 0;
   }
-  .usa-nav-container {
+  .footer-header-wrapper .usa-nav-container {
     padding-right: 0rem;
     padding-left: 0rem;
   }
 
-  .usa-navbar {
+  .footer-header-wrapper .usa-navbar {
     height: 6.3rem;
   }
-  .usa-header-basic .usa-navbar {
+  .footer-header-wrapper .usa-header-basic .usa-navbar {
     position: relative;
     width: 100%;
   }
-  .usa-nav {
+  .footer-header-wrapper .usa-nav {
     padding-top: 1rem;
     float: left;
     width: 100%;
     min-height: 5.5rem;
   }
-  .usda-logo-img {
+  .footer-header-wrapper .usda-logo-img {
     height: 38px;
     position: absolute;
   }
-  .usa-logo-text {
+  .footer-header-wrapper .usa-logo-text {
     padding-left: 6rem;
     font-size: 1.8rem;
     font-weight: 700rem;
   }
-  .usa-logo-text h6 {
+  .footer-header-wrapper .usa-logo-text h6 {
     font-size: 1.4rem;
     text-transform: none;
     font-weight: 700;
     margin: 0rem;
   }
-  .usa-nav-secondary {
+  .footer-header-wrapper .usa-nav-secondary {
     right: 3rem;
   }
-  .usa-nav .usa-search {
+  .footer-header-wrapper .usa-nav .usa-search {
     right: 3rem;
   }
-  .usa-header {
+  .footer-header-wrapper .usa-header {
     border-bottom: none;
   }
 
-  .usa-layout-docs {
+  .footer-header-wrapper .usa-layout-docs {
     display: inherit;
   }
-  .usa-width-one-fourth {
+  .footer-header-wrapper .usa-width-one-fourth {
     float: left;
     display: block;
     margin-right: 2.35765%;
     width: 23.23176%;
   }
-  .usa-layout-docs-sidenav {
+  .footer-header-wrapper .usa-layout-docs-sidenav {
     order: 1;
   }
-  .usa-layout-docs-main_content {
+  .footer-header-wrapper .usa-layout-docs-main_content {
     order: 2;
   }
-  .usa-width-three-fourths {
+  .footer-header-wrapper .usa-width-three-fourths {
     float: left;
     display: block;
     width: 74.41059%;
   }
-  .usa-nav-secondary {
+  .footer-header-wrapper .usa-nav-secondary {
     top: -3.5rem;
   }
 
-  #socialLink a {
+  .footer-header-wrapper #socialLink a {
     text-decoration: none;
   }
 
-  #socialLink [href^="http"]:not([href*=".gov"])::after {
+  .footer-header-wrapper #socialLink [href^="http"]:not([href*=".gov"])::after {
     display: none;
   }
-  .usa-grid-full-image {
+  .footer-header-wrapper .usa-grid-full-image {
     padding-right: 0rem;
     padding-left: 0rem;
     padding-top: 0rem;
     width: 100%;
   }
-  .usa-header-basic .usa-logo {
+  .footer-header-wrapper .usa-header-basic .usa-logo {
     bottom: 0.5rem;
     position: absolute;
   }
-  #ars-carousel-image {
+  .footer-header-wrapper #ars-carousel-image {
     max-width: 650px;
     max-height: 350px;
   }
-  #ars-main-content {
+  .footer-header-wrapper #ars-main-content {
     width: 100%;
   }
-  .usa-banner-button {
+  .footer-header-wrapper .usa-banner-button {
     height: auto;
     width: auto;
   }
   /* Start :Bootstrap css changes for columed webpage*/
-  .col-md-12 {
+  .footer-header-wrapper .col-md-12 {
     width: 63.6666667%;
     padding-left: 0px;
   }
-  .col-md-6 {
+  .footer-header-wrapper .col-md-6 {
     width: 31.83333335%;
     padding-left: 0px;
   }
-  .col-md-4 {
+  .footer-header-wrapper .col-md-4 {
     width: 21.2222223%;
     padding-left: 0px;
   }
-  .col-md-3 {
+  .footer-header-wrapper .col-md-3 {
     width: 15.9166675%;
     padding-left: 0px;
   }
-  .col-md-8 {
+  .footer-header-wrapper .col-md-8 {
     width: 42.666667%;
     padding-left: 0px;
   }
@@ -524,50 +528,50 @@ ars-news-story-container ars-news-story imagecaption {
   /* End :Bootstrap css changes for columed webpage*/
 }
 @media screen and (max-width: 481px) {
-  .usda-logo-img {
+  .footer-header-wrapper .usda-logo-img {
     height: 31px;
     position: absolute;
   }
-  .usa-logo-text {
+  .footer-header-wrapper .usa-logo-text {
     padding-left: 6rem;
     font-size: 1.2rem;
   }
-  .usa-logo-second-text {
+  .footer-header-wrapper .usa-logo-second-text {
     padding-left: 6rem;
     font-size: 1rem;
   }
-  .usa-logo {
+  .footer-header-wrapper .usa-logo {
     line-height: 2rem;
     height: 2rem;
     margin-left: 0.5rem;
   }
-  .usa-logo-text h6 {
+  .footer-header-wrapper .usa-logo-text h6 {
     font-size: 1.2rem;
     text-transform: none;
     font-weight: 700;
     margin: 0rem;
   }
-  .usa-sign_up-block input {
+  .footer-header-wrapper .usa-sign_up-block input {
     width: 85%;
   }
-  .usa-nav-secondary-links a {
+  .footer-header-wrapper .usa-nav-secondary-links a {
     color: #ffffff;
   }
-  #options {
+  .footer-header-wrapper #options {
     display: block;
   }
-  .controllers {
+  .footer-header-wrapper .controllers {
     position: absolute;
     top: 84px !important;
     left: 26px !important;
   }
 
-  .carousel-control.right {
+  .footer-header-wrapper .carousel-control.right {
     top: 0px;
     left: 321px;
   }
 
-  #leftCustomContent {
+  .footer-header-wrapper #leftCustomContent {
     position: relative;
     float: left;
     width: 100%;
@@ -584,7 +588,7 @@ ars-news-story-container ars-news-story imagecaption {
     overflow: auto;
   }
 
-  #rightCustomContent {
+  .footer-header-wrapper #rightCustomContent {
     position: relative;
     float: left;
     width: 100%;
@@ -597,99 +601,102 @@ ars-news-story-container ars-news-story imagecaption {
     overflow: auto;
   }
 
-  #footer-top .usa-footer-primary-link {
+  .footer-header-wrapper #footer-top .usa-footer-primary-link {
     background-image: none;
   }
 
-  #footer-top ul:last-child {
+  .footer-header-wrapper #footer-top ul:last-child {
     border-bottom: 0px;
   }
 
-  .usa-footer-big ul {
+  .footer-header-wrapper .usa-footer-big ul {
     padding-bottom: 0.5rem;
   }
 
-  #footer-bottom ul li.usa-footer-primary-content:last-child {
+  .footer-header-wrapper
+    #footer-bottom
+    ul
+    li.usa-footer-primary-content:last-child {
     border-bottom: 0px solid #212121;
   }
 
-  .ars-pulication-date {
+  .footer-header-wrapper .ars-pulication-date {
     font-size: 11px;
   }
-  .usa-banner-inner {
+  .footer-header-wrapper .usa-banner-inner {
     padding-left: 0.5rem;
   }
 
-  .usa-banner-button {
+  .footer-header-wrapper .usa-banner-button {
     padding-left: 3.8rem;
   }
 }
 
 @media screen and (min-width: 768px) and (max-width: 950px) {
-  .usda-logo-img {
+  .footer-header-wrapper .usda-logo-img {
     height: 31px;
     position: absolute;
   }
-  .usa-logo-text {
+  .footer-header-wrapper .usa-logo-text {
     padding-left: 6rem;
     font-size: 1.2rem;
   }
-  .usa-logo-second-text {
+  .footer-header-wrapper .usa-logo-second-text {
     padding-left: 6rem;
     font-size: 1rem;
   }
-  .usa-logo {
+  .footer-header-wrapper .usa-logo {
     line-height: 2rem;
     height: 2rem;
     margin-left: 0.5rem;
   }
-  .usa-logo-text h6 {
+  .footer-header-wrapper .usa-logo-text h6 {
     font-size: 1.2rem;
     text-transform: none;
     font-weight: 700;
     margin: 0rem;
   }
-  .usa-sign_up-block input {
+  .footer-header-wrapper .usa-sign_up-block input {
     width: 85%;
   }
-  .usa-nav-secondary-links a {
+  .footer-header-wrapper .usa-nav-secondary-links a {
     color: #ffffff;
   }
-  ars-news-story-container ars-news-story {
+  .footer-header-wrapper .ars-news-story-container .ars-news-story {
     font-size: 15px;
   }
 }
 
 @media screen and (max-width: 320px) {
-  .usa-banner-header {
+  .footer-header-wrapper .usa-banner-header {
     font-size: 1rem;
   }
-  .usa-logo-text {
+  .footer-header-wrapper .usa-logo-text {
     font-size: 1rem;
   }
-  .usa-sign_up-block input {
+  .footer-header-wrapper .usa-sign_up-block input {
     width: 85%;
   }
-  .usa-nav-secondary-links a {
+  .footer-header-wrapper .usa-nav-secondary-links a {
     color: #ffffff;
   }
-  #options {
+  .footer-header-wrapper #options {
     display: block;
   }
-  .carousel-control .glyphicon-chevron-right,
-  .carousel-control .icon-next {
+  .footer-header-wrapper .carousel-control .glyphicon-chevron-right,
+  .footer-header-wrapper .carousel-control .icon-next {
     margin-right: 37px;
   }
-  .carousel-control.right {
+  .footer-header-wrapper .carousel-control.right {
     left: 302px;
   }
 }
-#LocationHeader {
+.footer-header-wrapper #LocationHeader {
   color: #ffffff;
 }
 
 @media screen and (mid-width: 1000px) {
-  .usa-section {
+  .footer-header-wrapper .usa-section {
     padding-right: 0rem;
     padding-left: 0rem;
     padding-top: 0rem;
@@ -699,13 +706,13 @@ ars-news-story-container ars-news-story imagecaption {
 
 /*
 @media screen and (min-width: 600px) {
-    .usa-width-one-half-left{
+.footer-header-wrapper .usa-width-one-half-left{
     float: left;
     display: block;
     padding-bottom: 1rem;
     }
 
-.usa-width-one-half-right {
+.footer-header-wrapper .usa-width-one-half-right {
     float: right;
     display: block;
     }
@@ -715,51 +722,53 @@ ars-news-story-container ars-news-story imagecaption {
 /* Start :OC Image Gallery : Remove the download button
   ie:  https://www.ars.usda.gov/oc/images/photos/jan01/k9179-1
 */
-img[src$="downloadbutton.gif"] {
+.footer-header-wrapper img[src$="downloadbutton.gif"] {
   display: none;
 }
 /* End :OC Image Gallery : Remove the download button  */
 
 /* External Icon disable for Homepage floating ConnectwithARS section */
-.float-ConnectwithARS [href^="http"]:not([href*=".gov"])::after {
+.footer-header-wrapper
+  .float-ConnectwithARS
+  [href^="http"]:not([href*=".gov"])::after {
   display: none;
 }
 
-#Social-Share-Icons {
+.footer-header-wrapper #Social-Share-Icons {
   float: right;
   /* margin-top: -14px;  */
 }
-#socialLink [href^="http"]:not([href*=".gov"])::after {
+.footer-header-wrapper #socialLink [href^="http"]:not([href*=".gov"])::after {
   display: none;
 }
 
 /*start :CFI survey pop-up section of overwriting the styles for button position and button background-color */
-#cfi_box .cfi_btn_img {
+.footer-header-wrapper #cfi_box .cfi_btn_img {
   background: none;
   box-sizing: inherit;
 }
-.cfi_btn_img {
+.footer-header-wrapper .cfi_btn_img {
   margin-top: -20px;
 }
 /*End CFI pop-up */
 
-.ChildPadLi {
+.footer-header-wrapper .ChildPadLi {
   padding-left: 2rem;
   /*list-style-type: none; */
   /*  border-top: 1px solid #dcdee0; */
 }
 
 /* archive styles*/
-.archive-font {
+.footer-header-wrapper .archive-font {
   color: #1b1b1b;
   margin-bottom: 15px;
 }
 
-.usa-color-yellow-light {
+.footer-header-wrapper .usa-color-yellow-light {
   background-color: #ffbe2e;
 }
 
-.archivetext {
+.footer-header-wrapper .archivetext {
   text-align: center;
   margin-bottom: -20px;
   margin-bottom: -15px;
@@ -767,12 +776,12 @@ img[src$="downloadbutton.gif"] {
 
 /* End archive styles*/
 /*Banner image*/
-.usa-banner__lock-image {
+.footer-header-wrapper .usa-banner__lock-image {
   height: 1.5ex;
   width: 1.21875ex;
 }
 
-.usa-accordion__button[aria-expanded="false"],
-.usa-accordion__button[aria-expanded="false"]:hover {
+.footer-header-wrapper .usa-accordion__button[aria-expanded="false"],
+.footer-header-wrapper .usa-accordion__button[aria-expanded="false"]:hover {
   background-image: url("../img/usa-icons/angle-arrow-down-primary-hover.svg");
 }
