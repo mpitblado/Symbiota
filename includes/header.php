@@ -6,7 +6,7 @@ $pHandler = new ProfileManager();
 $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
 ?>
 <a class="usa-skipnav" href="#main-content">Skip to main content</a>
-<header class="usa-header usa-header-basic" role="banner">
+<header class="usa-header usa-header-basic footer-header-wrapper" role="banner">
   <!-- Gov banner BEGIN -->
   <div class="usa-banner">
     <div class="usa-accordion">
