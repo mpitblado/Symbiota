@@ -263,17 +263,53 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
       <!-- Secondary Naivagation Start -->
       <div class="usa-nav-secondary">
         <ul class="usa-unstyled-list usa-nav-secondary-links">
+          <?php
+            if($USER_DISPLAY_NAME){
+          ?>
+          <li style="font-size: 1.5rem; color: rgb(91, 97, 107)">
+            <b>
+              <?php echo (isset($LANG['H_WELCOME'])?$LANG['H_WELCOME']:'Welcome').' '.$USER_DISPLAY_NAME; ?>
+            </b>
+          </li>
+          <?php
+            }
+          ?>
           <li>
-            <a title="ARS Home" href="/"><b>ARS Home</b></a>
+            <a title="ARS Home" href="https://www.ars.usda.gov/"><b>ARS Home</b></a>
           </li>
           <li>
-            <a title="About ARS" href="/about-ars/"><b>About ARS</b></a>
+            <a class="accessibility-button" onclick="toggleAccessibilityStyles('<?php echo $CLIENT_ROOT . '/includes' . '/' ?>', '<?php echo $CSS_BASE_PATH ?>', '<?php echo $LANG['TOGGLE_508_OFF'] ?>', '<?php echo $LANG['TOGGLE_508_ON'] ?>')" id="accessibility-button" data-accessibility="accessibility-button" >
+              <b>
+                <?php echo (isset($LANG['TOGGLE_508_ON'])?$LANG['TOGGLE_508_ON']:'Accessibility Mode'); ?>
+              </b>
+            </a>
           </li>
           <li>
-            <a title="Contact Us" href="/contact-us/?modeCode=00-00-00-00"
-              ><b>Contact Us</b></a
-            >
+            <a title="About ARS" href="https://www.ars.usda.gov/about-ars/"><b>About ARS</b></a>
           </li>
+          <?php
+            if($USER_DISPLAY_NAME){
+          ?>
+          <li>
+            <a href="<?php echo htmlspecialchars($CLIENT_ROOT, HTML_SPECIAL_CHARS_FLAGS); ?>/profile/index.php?submit=logout">
+              <b>
+                <?php echo htmlspecialchars((isset($LANG['H_LOGOUT'])?$LANG['H_LOGOUT']:'Sign Out'), HTML_SPECIAL_CHARS_FLAGS)?>
+              </b>
+            </a>
+          </li>
+          <?php
+            } else{
+          ?>
+          <li>
+            <a href="<?php echo htmlspecialchars($CLIENT_ROOT, HTML_SPECIAL_CHARS_FLAGS) . "/profile/index.php?refurl=" . htmlspecialchars($_SERVER['SCRIPT_NAME'], HTML_SPECIAL_CHARS_FLAGS) . "?" . htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES); ?>">
+              <b>
+                <?php echo (isset($LANG['H_LOGIN'])?$LANG['H_LOGIN']:'Login')?>
+              </b>
+            </a>
+          </li>
+          <?php
+            }
+          ?>
         </ul>
       </div>
       <!-- Secondary Naivagation End -->
