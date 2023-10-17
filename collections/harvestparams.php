@@ -35,7 +35,7 @@ if (curl_errno($curlSession)) {
     }
 }
 curl_close($curlSession);
-// var_dump($collectionNameError); // for easy troubleshooting... right now, I think silent failure is ok; it will just default to not displaying.
+// var_dump($collectionNameError); // Leaving this in for easy future troubleshooting... right now, I think silent failure is ok; it will just default to not displaying the collection name if the api call fails.
 //------- End fetch the collection name from the api --------- //
 
 ?>
@@ -101,7 +101,7 @@ curl_close($curlSession);
 	<div id="innertext">
 		<?php if(isset($collectionName)){ ?>
 			<h1 class="emphatic-header">
-				<?php echo htmlspecialchars((isset($LANG['SEARCH_COLLECTION']) ? $LANG['SEARCH_COLLECTION'] : 'Search Collection'), HTML_SPECIAL_CHARS_FLAGS) . ": " . $collectionName; ?>	
+				<?php echo htmlspecialchars((isset($LANG['SEARCH_COLLECTION']) ? $LANG['SEARCH_COLLECTION'] : 'Searching Collection'), HTML_SPECIAL_CHARS_FLAGS) . ": " . $collectionName; ?>	
 			</h1>
 		<?php } ?>
 		<form name="harvestparams" id="harvestparams" action="list.php" method="post" onsubmit="return checkHarvestParamsForm(this)">
