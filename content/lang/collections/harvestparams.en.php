@@ -65,4 +65,5 @@ $LANG['TYPE_TAXON'] = 'Type taxon';
 $LANG['SELECT_TAXON_TYPE'] = 'Select taxon type';
 $LANG['DIRECTION'] = 'Direction';
 $LANG['DISTANCE_UNIT'] = 'Unit of distance';
+$LANG['SEARCH_COLLECTION'] = 'Searching Collection';
 ?>

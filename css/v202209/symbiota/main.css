@@ -882,3 +882,7 @@ hr {
   font-size: 125%;
   font-weight: bold;
 }
+
+.emphatic-header {
+  background-color: var(--bright-color);
+}

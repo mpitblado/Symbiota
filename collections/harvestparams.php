@@ -11,9 +11,9 @@ $searchVar = $collManager->getQueryTermStr();
 
 //------- Fetch the collection name from the api --------- //
 $collId = array_key_exists('db', $_REQUEST) ? htmlspecialchars($_REQUEST['db'], HTML_SPECIAL_CHARS_FLAGS) : null;
-$reffererUrl = $_SERVER['HTTP_REFERER'];
-$baseUrl = strstr($reffererUrl, $CLIENT_ROOT, true); // @TODO this feels janky, but I couldn't find a better way to get the beginning of the URL... does this work in /portal/ projects?
-$apiUrl = $baseUrl . $CLIENT_ROOT . "/api/v2/collection/" . $collId;
+$protocol = array_key_exists('REQUEST_SCHEME', $_SERVER) ? $_SERVER['REQUEST_SCHEME'] : "https";
+$baseUrl = $protocol . "://" . $SERVER_HOST . $CLIENT_ROOT; // @TODO this feels janky; is it reliable?
+$apiUrl = $baseUrl . "/api/v2/collection/" . $collId;
 $curlSession = curl_init($apiUrl);
 curl_setopt($curlSession, CURLOPT_RETURNTRANSFER, true);
 $response = curl_exec($curlSession);
@@ -35,6 +35,7 @@ if (curl_errno($curlSession)) {
     }
 }
 curl_close($curlSession);
+// var_dump($collectionNameError); // for easy troubleshooting... right now, I think silent failure is ok; it will just default to not displaying.
 //------- End fetch the collection name from the api --------- //
 
 ?>
@@ -98,13 +99,17 @@ curl_close($curlSession);
 	}
 	?>
 	<div id="innertext">
+		<?php if(isset($collectionName)){ ?>
+			<h1 class="emphatic-header">
+				<?php echo htmlspecialchars((isset($LANG['SEARCH_COLLECTION']) ? $LANG['SEARCH_COLLECTION'] : 'Search Collection'), HTML_SPECIAL_CHARS_FLAGS) . ": " . $collectionName; ?>	
+			</h1>
+		<?php } ?>
 		<form name="harvestparams" id="harvestparams" action="list.php" method="post" onsubmit="return checkHarvestParamsForm(this)">
 			<hr/>
 			<div>
 				<div style="float:left">
 					<div>
-						<p><?php echo $collectionName ?></p>
-						<p><?php echo $collectionNameError ?></p>
+						
 						<div class="catHeaderDiv"><?php echo $LANG['TAXON_HEADER']; ?></div>
 						<div style="margin:10px 0px 0px 5px;"><input type='checkbox' name='usethes' id='usethes' value='1' CHECKED />
 						<label for="usethes"><?php echo $LANG['INCLUDE_SYNONYMS']; ?></div></label>
