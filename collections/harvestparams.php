@@ -7,6 +7,36 @@ header("Content-Type: text/html; charset=".$CHARSET);
 
 $collManager = new OccurrenceManager();
 $searchVar = $collManager->getQueryTermStr();
+
+
+//------- Fetch the collection name from the api --------- //
+$collId = array_key_exists('db', $_REQUEST) ? htmlspecialchars($_REQUEST['db'], HTML_SPECIAL_CHARS_FLAGS) : null;
+$reffererUrl = $_SERVER['HTTP_REFERER'];
+$baseUrl = strstr($reffererUrl, $CLIENT_ROOT, true); // @TODO this feels janky, but I couldn't find a better way to get the beginning of the URL... does this work in /portal/ projects?
+$apiUrl = $baseUrl . $CLIENT_ROOT . "/api/v2/collection/" . $collId;
+$curlSession = curl_init($apiUrl);
+curl_setopt($curlSession, CURLOPT_RETURNTRANSFER, true);
+$response = curl_exec($curlSession);
+$collectionName = null;
+$collectionNameError = null;
+
+if (curl_errno($curlSession)) {
+    $collectionNameError = "API GET error: " . curl_error($curlSession);
+} else {
+    if ($response) {
+        $data = json_decode($response, true);
+        if ($data) {
+			$collectionName = isset($data['collectionName']) ? $data['collectionName'] : 'Unknown';
+        } else {
+            $collectionNameError = "Error decoding JSON response";
+        }
+    } else {
+        $collectionNameError = "Error making the API request";
+    }
+}
+curl_close($curlSession);
+//------- End fetch the collection name from the api --------- //
+
 ?>
 <html>
 <head>
@@ -73,6 +103,8 @@ $searchVar = $collManager->getQueryTermStr();
 			<div>
 				<div style="float:left">
 					<div>
+						<p><?php echo $collectionName ?></p>
+						<p><?php echo $collectionNameError ?></p>
 						<div class="catHeaderDiv"><?php echo $LANG['TAXON_HEADER']; ?></div>
 						<div style="margin:10px 0px 0px 5px;"><input type='checkbox' name='usethes' id='usethes' value='1' CHECKED />
 						<label for="usethes"><?php echo $LANG['INCLUDE_SYNONYMS']; ?></div></label>
