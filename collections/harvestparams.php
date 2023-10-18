@@ -38,7 +38,7 @@ $searchVar = $collManager->getQueryTermStr();
 	<style type="text/css">
 		hr{ clear:both; margin: 10px 0px }
 		.catHeaderDiv { font-weight:bold; font-size: 18px }
-		.coordBoxDiv { float:left; border:2px solid brown; padding:10px; margin:5px; white-space: nowrap; }
+		.coordBoxDiv { float:left; border:2px solid brown; padding:10px; margin:5px; white-space: nowrap; max-width: 40rem; }
 		.coordBoxDiv .labelDiv { font-weight:bold;float:left }
 		.coordBoxDiv .iconDiv { float:right;margin-left:5px; }
 		.coordBoxDiv .iconDiv img { width:18px; }
@@ -94,7 +94,7 @@ $searchVar = $collManager->getQueryTermStr();
 						</div>
 						<div>
 							<label for="taxa"><?php echo $LANG['TYPE_TAXON'] ?>:</label>
-							<input id="taxa" type="text" size="60" name="taxa" id="taxa" value="" title="<?php echo $LANG['SEPARATE_MULTIPLE']; ?>" />
+							<input class="adjusted-input-width" id="taxa" type="text" size="60" name="taxa" id="taxa" value="" title="<?php echo $LANG['SEPARATE_MULTIPLE']; ?>" />
 						</div>
 					</section>
 				</div>

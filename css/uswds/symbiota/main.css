@@ -25,7 +25,6 @@
 @import "base.css";
 @import "variables.css";
 @import "header.css";
-/* @import "footer.css"; */
 @import "styles.css";
 
 /* Global styles
@@ -39,7 +38,7 @@ body {
   color: var(--body-text-color);
   margin: 0;
   -webkit-text-size-adjust: 100%;
-  font-size: 1.7rem;
+  font-size: 1.2rem;
   font-weight: 400;
   font-family: var(--body-font-family);
 }
@@ -469,5 +468,9 @@ table.styledtable tr.alt td {
 }
 
 .harvest-param-breadcrumbs-margin {
-  margin-top: 7rem;
+  margin-top: 18rem;
+}
+
+.adjusted-input-width {
+  max-width: 37rem;
 }
