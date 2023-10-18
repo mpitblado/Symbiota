@@ -56,5 +56,9 @@ $LANG['CHECKLISTS'] = 'Checklists';
 $LANG['DATA_USE'] = 'Data Use';
 $LANG['ABOUT_SYMBIOTA'] = 'About Symbiota';
 $LANG['HELP'] = 'Help';
+$LANG['SPECIMENS'] = 'Specimens';
+$LANG['IMG_CONTR'] = 'Image Contributors';
+$LANG['OBS'] = 'Observations';
 
 ?>
+
