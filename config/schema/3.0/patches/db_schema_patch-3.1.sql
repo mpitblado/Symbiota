@@ -73,7 +73,7 @@ ALTER TABLE `tmattributes`
 
 ALTER TABLE `tmattributes` 
   CHANGE COLUMN `stateid` `stateID` INT(10) UNSIGNED NOT NULL ,
-  CHANGE COLUMN `xvalue` `xValue` DOUBLE(15,5) NULL DEFAULT NULL ,
+  CHANGE COLUMN `xvalue` `xValue` DOUBLE NULL DEFAULT NULL ,
   CHANGE COLUMN `imagecoordinates` `imageCoordinates` VARCHAR(45) NULL DEFAULT NULL ,
   CHANGE COLUMN `statuscode` `statusCode` TINYINT(4) NULL DEFAULT NULL ,
   CHANGE COLUMN `modifieduid` `modifiedUid` INT(10) UNSIGNED NULL DEFAULT NULL ,
@@ -85,6 +85,4 @@ ALTER TABLE `tmattributes`
   ADD CONSTRAINT `FK_tmattr_stateid`  FOREIGN KEY (`stateID`)  REFERENCES `tmstates` (`stateID`)  ON DELETE CASCADE  ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_tmattr_uidcreate`  FOREIGN KEY (`createdUid`)  REFERENCES `users` (`uid`)  ON DELETE SET NULL  ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_tmattr_uidmodified`  FOREIGN KEY (`modifiedUid`)  REFERENCES `users` (`uid`)  ON DELETE SET NULL  ON UPDATE CASCADE;
-  
-  
   
