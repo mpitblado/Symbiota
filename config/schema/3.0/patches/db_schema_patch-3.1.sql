@@ -80,3 +80,21 @@ SELECT cvID, "fieldNotes", "Field Notes" FROM ctcontrolvocab WHERE tableName = "
 INSERT INTO ctcontrolvocabterm(cvID, term, termDisplay)
 SELECT cvID, "genericResource", "Generic Resource" FROM ctcontrolvocab WHERE tableName = "omoccurassociations" AND fieldName = "relationship" AND filterVariable = "associationType:resource";
 
+
+ALTER TABLE `taxadescrprofile` 
+  DROP FOREIGN KEY `FK_taxadescrprofile_langid`,
+  DROP FOREIGN KEY `FK_taxadescrprofile_uid`;
+  
+ALTER TABLE `taxadescrprofile` 
+  ADD CONSTRAINT `FK_taxadescrprofile_langid`  FOREIGN KEY (`langid`)  REFERENCES `adminlanguages` (`langid`)  ON DELETE RESTRICT  ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_taxadescrprofile_uid`  FOREIGN KEY (`modifiedUid`)  REFERENCES `users` (`uid`)  ON DELETE RESTRICT  ON UPDATE CASCADE;
+
+ALTER TABLE `taxadescrblock` 
+  DROP FOREIGN KEY `FK_taxadesc_lang`,
+  DROP FOREIGN KEY `FK_taxadescrblock_tdProfileID`;
+
+ALTER TABLE `taxadescrblock` 
+  ADD CONSTRAINT `FK_taxadesc_lang`  FOREIGN KEY (`langid`)  REFERENCES `adminlanguages` (`langid`)  ON DELETE RESTRICT  ON UPDATE CASCADE,
+  ADD CONSTRAINT `FK_taxadescrblock_tdProfileID`  FOREIGN KEY (`tdProfileID`)  REFERENCES `taxadescrprofile` (`tdProfileID`)  ON DELETE RESTRICT  ON UPDATE CASCADE;
+
+  
