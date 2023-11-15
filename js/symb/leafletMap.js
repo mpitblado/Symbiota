@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 function getObservationSvg(opts = { color: "#7A8BE7", size: 24 }) {
   const default_ops = { color: "#7A8BE7", size: 24 };
   opts = { ...default_ops, ...opts };
   const half = opts.size / 2;
+=======
+function getObservationSvg(opts = {color: "#7A8BE7", size: 24, className:""}) {
+   const default_ops = {color: "#7A8BE7", size: 24};
+   opts = {...default_ops, ...opts};
+   const half = opts.size/2;
+>>>>>>> Development
 
   return L.divIcon({
     html: `
@@ -13,6 +20,7 @@ version="1.1"
 preserveAspectRatio="none"
 xmlns="http://www.w3.org/2000/svg"
 >
+<<<<<<< HEAD
 <polygon points="${half},0 0,${opts.size} ${opts.size},${
       opts.size
     }" style="fill:${opts.color};stroke:black;stroke-width:3" />
@@ -21,6 +29,15 @@ xmlns="http://www.w3.org/2000/svg"
     iconSize: [opts.size, opts.size],
     iconAnchor: [half, half],
   });
+=======
+<polygon class="${opts.className}" points="${half},0 0,${opts.size} ${opts.size},${opts.size}" style="fill:${opts.color};stroke:black;stroke-width:3" />
+</svg>`,
+      className: "",
+      observation: true,
+      iconSize: [opts.size, opts.size],
+      iconAnchor: [half, half],
+   });
+>>>>>>> Development
 }
 
 class LeafletMap {
@@ -58,8 +75,14 @@ class LeafletMap {
   //List of drawn shapes
   shapes = [];
 
+<<<<<<< HEAD
   /* Reference Leaflet Feature Group for all drawn items*/
   drawLayer;
+=======
+   constructor(map_id, map_options=this.DEFAULT_MAP_OPTIONS) {
+
+      this.mapLayer = L.map(map_id, map_options);
+>>>>>>> Development
 
   constructor(map_id, map_options = this.DEFAULT_MAP_OPTIONS) {
     this.mapLayer = L.map(map_id, map_options);
@@ -228,8 +251,93 @@ class LeafletMap {
         throw Error(`Can't draw ${shape.type}`);
     }
 
-    this.activeShape.id = id;
-    this.shapes.push(this.activeShape);
+      if(drawOptions.control || drawOptions.control === undefined) {
+         var drawControl = new L.Control.Draw({
+            position: 'topright',
+            draw: drawOptions,
+            edit: {
+               featureGroup: drawnItems,
+            }
+         });
+
+         this.mapLayer.addControl(drawControl);
+
+         //Event saved edit 
+         this.mapLayer.on('draw:edited', function(e) {
+            if(!e.layers || !e.layers._layers) return;
+            ///Some Extra steps to get at the layer
+            const layer = e.layers._layers;
+            const keys = Object.keys(layer);
+            let type = this.activeShape.type;
+
+            if(keys.length > 0) {
+               const edited_shape = getShapeCoords(type, layer[keys[0]]);
+               this.activeShape = edited_shape;
+               this.shapes = this.shapes.map(s=> s.layer._leaflet_id === edited_shape.layer._leaflet_id? edited_shape: s);
+            }
+
+            if(onDrawChange) onDrawChange(this.activeShape);
+         }.bind(this))
+
+         //Event saved delete 
+         this.mapLayer.on('draw:deleted', function(e) {
+            const ids = Object.keys(e.layers._layers);
+            this.shapes = this.shapes.filter(s => !ids.includes(`${s.layer._leaflet_id}`))
+            this.activeShape = null;
+            if(onDrawChange) onDrawChange(this.activeShape);
+         }.bind(this))
+
+         //Fires on New Draw
+         this.mapLayer.on('draw:created', function (e) {
+            if(!drawOptions || !drawOptions.multiDraw) {
+               this.drawLayer.clearLayers();
+            }
+
+            const id = this.shapes.length;
+
+            const layer = e.layer;
+            this.drawLayer.addLayer(layer);
+
+            this.activeShape = getShapeCoords(e.layerType, e.layer);
+            this.activeShape.id = id;
+            this.shapes.push(this.activeShape);
+
+            if(onDrawChange) onDrawChange(this.activeShape);
+         }.bind(this))
+      }
+
+   }
+
+   drawShape(shape) {
+      const id = this.shapes.length;
+      switch(shape.type) {
+         case "polygon":
+            const poly = L.polygon(shape.latlngs);
+            this.activeShape = getShapeCoords(shape.type, poly);
+            poly.addTo(this.drawLayer);
+            break;
+         case "rectangle":
+            const rec = L.rectangle([
+               [shape.upperLat, shape.rightLng],
+               [shape.lowerLat, shape.leftLng]
+            ]);
+            this.activeShape = getShapeCoords(shape.type, rec);
+            rec.addTo(this.drawLayer)
+            break;
+         case "circle":
+            const circ = L.circle(shape.latlng, shape.radius);
+            this.activeShape = getShapeCoords(shape.type, circ);
+            circ.addTo(this.drawLayer);
+            break;
+         default:
+            throw Error(`Can't draw ${shape.type}`)
+      }
+
+      this.activeShape.id = id;
+      this.shapes.push(this.activeShape);
+
+      this.mapLayer.fitBounds(this.activeShape.layer.getBounds());
+   }
 
     this.mapLayer.fitBounds(map.activeShape.layer.getBounds());
   }
