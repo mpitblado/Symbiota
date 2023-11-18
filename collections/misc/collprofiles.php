@@ -151,8 +151,7 @@ if ($SYMB_UID) {
 					?>
 					
 				</form>
-				<!-- <form name="quicksearch-editor" action="javascript:void(0);" onsubmit="submitAndRedirectSearchForm('<?php echo $CLIENT_ROOT ?>/collections/editor/occurrencetabledisplay.php?displayquery=1&collid=','&q_catalognumber=', '', '', '', true, <?php echo $occid ?>); return false;"> -->
-				<form name="quicksearch" action="javascript:void(0);" onsubmit="submitAndRedirectSearchForm('<?php echo $CLIENT_ROOT ?>/collections/list.php?db=','&catnum=', '&taxa=', '&includeothercatnum=1', '&usethes=1&taxontype=2 '); return false;">
+				<form name="quicksearch" action="javascript:void(0);" onsubmit="submitAndRedirectSearchForm('<?php echo $CLIENT_ROOT ?>/collections/list.php?db=','&catnum=', '&taxa=', '&includecult=1&includeothercatnum=1', '&includecult=1&usethes=1&taxontype=2 '); return false;">
 					<button class="top-breathing-room-rel" type="submit" id="search-by-catalog-number-btn" title="<?php echo (isset($LANG['IIDENTIFIER_PLACEHOLDER_LIST']) ? $LANG['IDENTIFIER_PLACEHOLDER_LIST'] : 'Occurrence ID and Record ID also accepted.'); ?>">
 						<?php echo (isset($LANG['SEARCH']) ? $LANG['SEARCH'] : 'Search'); ?>
 					</button>

@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $occManager->setCollId($collIdAsNum);
     $occManager->setQueryVariables();
     $occIndex = 0;
-    $recLimit = 1000; // @TODO this is likely not sufficient
+    $recLimit = 1000000; // @TODO this is likely not sufficient
     $recStart = floor($occIndex/$recLimit)*$recLimit;
     $recArr = $occManager->getOccurMap($recStart, $recLimit);
     foreach ($recArr as $key => $element) {
