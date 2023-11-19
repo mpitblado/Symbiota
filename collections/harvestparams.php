@@ -294,7 +294,11 @@ $searchVar = $collManager->getQueryTermStr();
 					<label for="hascoords"><?php echo isset($LANG['HAS_COORDS'])?$LANG['HAS_COORDS']:'Limit to Specimens with Geocoordinates Only'; ?></label>
 				</div>
 				<div>
+<<<<<<< HEAD
 					<input type='checkbox' name='includecult' id='includecult' value='1' />
+=======
+					<input type='checkbox' name='includecult' id='includecult' value='<?php echo $CSS_VERSION_RELEASE === 'uswds' ? '1' : '0' ?>' <?php echo $CSS_VERSION_RELEASE === 'uswds' ? 'checked' : '' ?> />
+>>>>>>> aafbdca2b (fix bugs causing exclusion of cultivated samples)
 					<label for="includecult"><?php echo isset($LANG['INCLUDE_CULTIVATED'])?$LANG['INCLUDE_CULTIVATED']:'Include cultivated/captive occurrences'; ?></label>
 				</div>
 			</div>
