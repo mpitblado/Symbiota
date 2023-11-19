@@ -8,7 +8,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $message = '<p>Fetching matching occurrence...</p>';
 
     $catalogNumber = $_POST['catalog-number'];
-    var_dump($catalogNumber);
     $taxon = $_POST['taxon-search'];
     $collid = $_POST['collid'];
 
