@@ -82,7 +82,7 @@
  * Address `[hidden]` styling not present in IE 8/9/10.
  * Hide the `template` element in IE 8/9/10/11, Safari, and Firefox < 22.
  */
-[hidden],
+.footer-header-wrapper [hidden],
 .footer-header-wrapper template {
   display: none;
 }
@@ -526,7 +526,7 @@
   /* stylelint-disable-line declaration-no-important */
 }
 
-[hidden] {
+.footer-header-wrapper [hidden] {
   display: none !important;
   /* stylelint-disable-line declaration-no-important */
 }
@@ -842,10 +842,10 @@
 .footer-header-wrapper .usa-button:visited,
 .footer-header-wrapper .usa-button-primary:visited,
 .footer-header-wrapper button,
-[type="button"],
-[type="submit"],
-[type="reset"],
-[type="image"] {
+.footer-header-wrapper [type="button"],
+.footer-header-wrapper [type="submit"],
+.footer-header-wrapper [type="reset"],
+.footer-header-wrapper [type="image"] {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   margin-top: 0.5em;
@@ -892,14 +892,14 @@
 .footer-header-wrapper .usa-button-primary:visited.usa-button-hover,
 .footer-header-wrapper button:hover,
 .footer-header-wrapper button.usa-button-hover,
-[type="button"]:hover,
-[type="button"].usa-button-hover,
-[type="submit"]:hover,
-[type="submit"].usa-button-hover,
-[type="reset"]:hover,
-[type="reset"].usa-button-hover,
-[type="image"]:hover,
-[type="image"].usa-button-hover {
+.footer-header-wrapper [type="button"]:hover,
+.footer-header-wrapper [type="button"].usa-button-hover,
+.footer-header-wrapper [type="submit"]:hover,
+.footer-header-wrapper [type="submit"].usa-button-hover,
+.footer-header-wrapper [type="reset"]:hover,
+.footer-header-wrapper [type="reset"].usa-button-hover,
+.footer-header-wrapper [type="image"]:hover,
+.footer-header-wrapper [type="image"].usa-button-hover {
   background-color: #205493;
   border-bottom: 0;
   color: #ffffff;
@@ -915,14 +915,14 @@
 .footer-header-wrapper .usa-button-primary:visited.usa-button-focus,
 .footer-header-wrapper button:focus,
 .footer-header-wrapper button.usa-button-focus,
-[type="button"]:focus,
-[type="button"].usa-button-focus,
-[type="submit"]:focus,
-[type="submit"].usa-button-focus,
-[type="reset"]:focus,
-[type="reset"].usa-button-focus,
-[type="image"]:focus,
-[type="image"].usa-button-focus {
+.footer-header-wrapper [type="button"]:focus,
+.footer-header-wrapper [type="button"].usa-button-focus,
+.footer-header-wrapper [type="submit"]:focus,
+.footer-header-wrapper [type="submit"].usa-button-focus,
+.footer-header-wrapper [type="reset"]:focus,
+.footer-header-wrapper [type="reset"].usa-button-focus,
+.footer-header-wrapper [type="image"]:focus,
+.footer-header-wrapper [type="image"].usa-button-focus {
   box-shadow: 0 0 3px #3e94cf, 0 0 7px #3e94cf;
 }
 .footer-header-wrapper .usa-button:active,
@@ -935,14 +935,14 @@
 .footer-header-wrapper .usa-button-primary:visited.usa-button-active,
 .footer-header-wrapper button:active,
 .footer-header-wrapper button.usa-button-active,
-[type="button"]:active,
-[type="button"].usa-button-active,
-[type="submit"]:active,
-[type="submit"].usa-button-active,
-[type="reset"]:active,
-[type="reset"].usa-button-active,
-[type="image"]:active,
-[type="image"].usa-button-active {
+.footer-header-wrapper [type="button"]:active,
+.footer-header-wrapper [type="button"].usa-button-active,
+.footer-header-wrapper [type="submit"]:active,
+.footer-header-wrapper [type="submit"].usa-button-active,
+.footer-header-wrapper [type="reset"]:active,
+.footer-header-wrapper [type="reset"].usa-button-active,
+.footer-header-wrapper [type="image"]:active,
+.footer-header-wrapper [type="image"].usa-button-active {
   background-color: #112e51;
 }
 .footer-header-wrapper .usa-button.usa-button-primary-alt,
@@ -950,10 +950,10 @@
 .footer-header-wrapper .usa-button:visited.usa-button-primary-alt,
 .footer-header-wrapper .usa-button-primary:visited.usa-button-primary-alt,
 .footer-header-wrapper button.usa-button-primary-alt,
-[type="button"].usa-button-primary-alt,
-[type="submit"].usa-button-primary-alt,
-[type="reset"].usa-button-primary-alt,
-[type="image"].usa-button-primary-alt {
+.footer-header-wrapper [type="button"].usa-button-primary-alt,
+.footer-header-wrapper [type="submit"].usa-button-primary-alt,
+.footer-header-wrapper [type="reset"].usa-button-primary-alt,
+.footer-header-wrapper [type="image"].usa-button-primary-alt {
   background-color: #02bfe7;
   color: #212121;
 }
@@ -970,14 +970,14 @@
   .usa-button-primary:visited.usa-button-primary-alt.usa-button-hover,
 .footer-header-wrapper button.usa-button-primary-alt:hover,
 .footer-header-wrapper button.usa-button-primary-alt.usa-button-hover,
-[type="button"].usa-button-primary-alt:hover,
-[type="button"].usa-button-primary-alt.usa-button-hover,
-[type="submit"].usa-button-primary-alt:hover,
-[type="submit"].usa-button-primary-alt.usa-button-hover,
-[type="reset"].usa-button-primary-alt:hover,
-[type="reset"].usa-button-primary-alt.usa-button-hover,
-[type="image"].usa-button-primary-alt:hover,
-[type="image"].usa-button-primary-alt.usa-button-hover {
+.footer-header-wrapper [type="button"].usa-button-primary-alt:hover,
+.footer-header-wrapper [type="button"].usa-button-primary-alt.usa-button-hover,
+.footer-header-wrapper [type="submit"].usa-button-primary-alt:hover,
+.footer-header-wrapper [type="submit"].usa-button-primary-alt.usa-button-hover,
+.footer-header-wrapper [type="reset"].usa-button-primary-alt:hover,
+.footer-header-wrapper [type="reset"].usa-button-primary-alt.usa-button-hover,
+.footer-header-wrapper [type="image"].usa-button-primary-alt:hover,
+.footer-header-wrapper [type="image"].usa-button-primary-alt.usa-button-hover {
   background-color: #00a6d2;
 }
 .footer-header-wrapper .usa-button.usa-button-primary-alt:active,
@@ -994,14 +994,14 @@
   .usa-button-primary:visited.usa-button-primary-alt.usa-button-active,
 .footer-header-wrapper button.usa-button-primary-alt:active,
 .footer-header-wrapper button.usa-button-primary-alt.usa-button-active,
-[type="button"].usa-button-primary-alt:active,
-[type="button"].usa-button-primary-alt.usa-button-active,
-[type="submit"].usa-button-primary-alt:active,
-[type="submit"].usa-button-primary-alt.usa-button-active,
-[type="reset"].usa-button-primary-alt:active,
-[type="reset"].usa-button-primary-alt.usa-button-active,
-[type="image"].usa-button-primary-alt:active,
-[type="image"].usa-button-primary-alt.usa-button-active {
+.footer-header-wrapper [type="button"].usa-button-primary-alt:active,
+.footer-header-wrapper [type="button"].usa-button-primary-alt.usa-button-active,
+.footer-header-wrapper [type="submit"].usa-button-primary-alt:active,
+.footer-header-wrapper [type="submit"].usa-button-primary-alt.usa-button-active,
+.footer-header-wrapper [type="reset"].usa-button-primary-alt:active,
+.footer-header-wrapper [type="reset"].usa-button-primary-alt.usa-button-active,
+.footer-header-wrapper [type="image"].usa-button-primary-alt:active,
+.footer-header-wrapper [type="image"].usa-button-primary-alt.usa-button-active {
   background-color: #046b99;
   color: #ffffff;
 }
@@ -1010,10 +1010,10 @@
 .footer-header-wrapper .usa-button:visited.usa-button-secondary,
 .footer-header-wrapper .usa-button-primary:visited.usa-button-secondary,
 .footer-header-wrapper button.usa-button-secondary,
-[type="button"].usa-button-secondary,
-[type="submit"].usa-button-secondary,
-[type="reset"].usa-button-secondary,
-[type="image"].usa-button-secondary {
+.footer-header-wrapper [type="button"].usa-button-secondary,
+.footer-header-wrapper [type="submit"].usa-button-secondary,
+.footer-header-wrapper [type="reset"].usa-button-secondary,
+.footer-header-wrapper [type="image"].usa-button-secondary {
   background-color: #e31c3d;
 }
 .footer-header-wrapper .usa-button.usa-button-secondary:hover,
@@ -1029,14 +1029,14 @@
   .usa-button-primary:visited.usa-button-secondary.usa-button-hover,
 .footer-header-wrapper button.usa-button-secondary:hover,
 .footer-header-wrapper button.usa-button-secondary.usa-button-hover,
-[type="button"].usa-button-secondary:hover,
-[type="button"].usa-button-secondary.usa-button-hover,
-[type="submit"].usa-button-secondary:hover,
-[type="submit"].usa-button-secondary.usa-button-hover,
-[type="reset"].usa-button-secondary:hover,
-[type="reset"].usa-button-secondary.usa-button-hover,
-[type="image"].usa-button-secondary:hover,
-[type="image"].usa-button-secondary.usa-button-hover {
+.footer-header-wrapper [type="button"].usa-button-secondary:hover,
+.footer-header-wrapper [type="button"].usa-button-secondary.usa-button-hover,
+.footer-header-wrapper [type="submit"].usa-button-secondary:hover,
+.footer-header-wrapper [type="submit"].usa-button-secondary.usa-button-hover,
+.footer-header-wrapper [type="reset"].usa-button-secondary:hover,
+.footer-header-wrapper [type="reset"].usa-button-secondary.usa-button-hover,
+.footer-header-wrapper [type="image"].usa-button-secondary:hover,
+.footer-header-wrapper [type="image"].usa-button-secondary.usa-button-hover {
   background-color: #cd2026;
 }
 .footer-header-wrapper .usa-button.usa-button-secondary:active,
@@ -1052,14 +1052,14 @@
   .usa-button-primary:visited.usa-button-secondary.usa-button-active,
 .footer-header-wrapper button.usa-button-secondary:active,
 .footer-header-wrapper button.usa-button-secondary.usa-button-active,
-[type="button"].usa-button-secondary:active,
-[type="button"].usa-button-secondary.usa-button-active,
-[type="submit"].usa-button-secondary:active,
-[type="submit"].usa-button-secondary.usa-button-active,
-[type="reset"].usa-button-secondary:active,
-[type="reset"].usa-button-secondary.usa-button-active,
-[type="image"].usa-button-secondary:active,
-[type="image"].usa-button-secondary.usa-button-active {
+.footer-header-wrapper [type="button"].usa-button-secondary:active,
+.footer-header-wrapper [type="button"].usa-button-secondary.usa-button-active,
+.footer-header-wrapper [type="submit"].usa-button-secondary:active,
+.footer-header-wrapper [type="submit"].usa-button-secondary.usa-button-active,
+.footer-header-wrapper [type="reset"].usa-button-secondary:active,
+.footer-header-wrapper [type="reset"].usa-button-secondary.usa-button-active,
+.footer-header-wrapper [type="image"].usa-button-secondary:active,
+.footer-header-wrapper [type="image"].usa-button-secondary.usa-button-active {
   background-color: #981b1e;
 }
 .footer-header-wrapper .usa-button.usa-button-gray,
@@ -1067,10 +1067,10 @@
 .footer-header-wrapper .usa-button:visited.usa-button-gray,
 .footer-header-wrapper .usa-button-primary:visited.usa-button-gray,
 .footer-header-wrapper button.usa-button-gray,
-[type="button"].usa-button-gray,
-[type="submit"].usa-button-gray,
-[type="reset"].usa-button-gray,
-[type="image"].usa-button-gray {
+.footer-header-wrapper [type="button"].usa-button-gray,
+.footer-header-wrapper [type="submit"].usa-button-gray,
+.footer-header-wrapper [type="reset"].usa-button-gray,
+.footer-header-wrapper [type="image"].usa-button-gray {
   background-color: #5b616b;
 }
 .footer-header-wrapper .usa-button.usa-button-gray:hover,
@@ -1084,14 +1084,14 @@
   .usa-button-primary:visited.usa-button-gray.usa-button-hover,
 .footer-header-wrapper button.usa-button-gray:hover,
 .footer-header-wrapper button.usa-button-gray.usa-button-hover,
-[type="button"].usa-button-gray:hover,
-[type="button"].usa-button-gray.usa-button-hover,
-[type="submit"].usa-button-gray:hover,
-[type="submit"].usa-button-gray.usa-button-hover,
-[type="reset"].usa-button-gray:hover,
-[type="reset"].usa-button-gray.usa-button-hover,
-[type="image"].usa-button-gray:hover,
-[type="image"].usa-button-gray.usa-button-hover {
+.footer-header-wrapper [type="button"].usa-button-gray:hover,
+.footer-header-wrapper [type="button"].usa-button-gray.usa-button-hover,
+.footer-header-wrapper [type="submit"].usa-button-gray:hover,
+.footer-header-wrapper [type="submit"].usa-button-gray.usa-button-hover,
+.footer-header-wrapper [type="reset"].usa-button-gray:hover,
+.footer-header-wrapper [type="reset"].usa-button-gray.usa-button-hover,
+.footer-header-wrapper [type="image"].usa-button-gray:hover,
+.footer-header-wrapper [type="image"].usa-button-gray.usa-button-hover {
   background-color: #323a45;
 }
 .footer-header-wrapper .usa-button.usa-button-gray:active,
@@ -1105,14 +1105,14 @@
   .usa-button-primary:visited.usa-button-gray.usa-button-active,
 .footer-header-wrapper button.usa-button-gray:active,
 .footer-header-wrapper button.usa-button-gray.usa-button-active,
-[type="button"].usa-button-gray:active,
-[type="button"].usa-button-gray.usa-button-active,
-[type="submit"].usa-button-gray:active,
-[type="submit"].usa-button-gray.usa-button-active,
-[type="reset"].usa-button-gray:active,
-[type="reset"].usa-button-gray.usa-button-active,
-[type="image"].usa-button-gray:active,
-[type="image"].usa-button-gray.usa-button-active {
+.footer-header-wrapper [type="button"].usa-button-gray:active,
+.footer-header-wrapper [type="button"].usa-button-gray.usa-button-active,
+.footer-header-wrapper [type="submit"].usa-button-gray:active,
+.footer-header-wrapper [type="submit"].usa-button-gray.usa-button-active,
+.footer-header-wrapper [type="reset"].usa-button-gray:active,
+.footer-header-wrapper [type="reset"].usa-button-gray.usa-button-active,
+.footer-header-wrapper [type="image"].usa-button-gray:active,
+.footer-header-wrapper [type="image"].usa-button-gray.usa-button-active {
   background-color: #212121;
 }
 .footer-header-wrapper .usa-button.usa-button-outline,
@@ -1120,10 +1120,10 @@
 .footer-header-wrapper .usa-button:visited.usa-button-outline,
 .footer-header-wrapper .usa-button-primary:visited.usa-button-outline,
 .footer-header-wrapper button.usa-button-outline,
-[type="button"].usa-button-outline,
-[type="submit"].usa-button-outline,
-[type="reset"].usa-button-outline,
-[type="image"].usa-button-outline {
+.footer-header-wrapper [type="button"].usa-button-outline,
+.footer-header-wrapper [type="submit"].usa-button-outline,
+.footer-header-wrapper [type="reset"].usa-button-outline,
+.footer-header-wrapper [type="image"].usa-button-outline {
   background-color: #ffffff;
   box-shadow: inset 0 0 0 2px #0071bc;
   color: #0071bc;
@@ -1139,14 +1139,14 @@
   .usa-button-primary:visited.usa-button-outline.usa-button-hover,
 .footer-header-wrapper button.usa-button-outline:hover,
 .footer-header-wrapper button.usa-button-outline.usa-button-hover,
-[type="button"].usa-button-outline:hover,
-[type="button"].usa-button-outline.usa-button-hover,
-[type="submit"].usa-button-outline:hover,
-[type="submit"].usa-button-outline.usa-button-hover,
-[type="reset"].usa-button-outline:hover,
-[type="reset"].usa-button-outline.usa-button-hover,
-[type="image"].usa-button-outline:hover,
-[type="image"].usa-button-outline.usa-button-hover {
+.footer-header-wrapper [type="button"].usa-button-outline:hover,
+.footer-header-wrapper [type="button"].usa-button-outline.usa-button-hover,
+.footer-header-wrapper [type="submit"].usa-button-outline:hover,
+.footer-header-wrapper [type="submit"].usa-button-outline.usa-button-hover,
+.footer-header-wrapper [type="reset"].usa-button-outline:hover,
+.footer-header-wrapper [type="reset"].usa-button-outline.usa-button-hover,
+.footer-header-wrapper [type="image"].usa-button-outline:hover,
+.footer-header-wrapper [type="image"].usa-button-outline.usa-button-hover {
   box-shadow: inset 0 0 0 2px #205493;
   color: #205493;
 }
@@ -1161,14 +1161,14 @@
   .usa-button-primary:visited.usa-button-outline.usa-button-active,
 .footer-header-wrapper button.usa-button-outline:active,
 .footer-header-wrapper button.usa-button-outline.usa-button-active,
-[type="button"].usa-button-outline:active,
-[type="button"].usa-button-outline.usa-button-active,
-[type="submit"].usa-button-outline:active,
-[type="submit"].usa-button-outline.usa-button-active,
-[type="reset"].usa-button-outline:active,
-[type="reset"].usa-button-outline.usa-button-active,
-[type="image"].usa-button-outline:active,
-[type="image"].usa-button-outline.usa-button-active {
+.footer-header-wrapper [type="button"].usa-button-outline:active,
+.footer-header-wrapper [type="button"].usa-button-outline.usa-button-active,
+.footer-header-wrapper [type="submit"].usa-button-outline:active,
+.footer-header-wrapper [type="submit"].usa-button-outline.usa-button-active,
+.footer-header-wrapper [type="reset"].usa-button-outline:active,
+.footer-header-wrapper [type="reset"].usa-button-outline.usa-button-active,
+.footer-header-wrapper [type="image"].usa-button-outline:active,
+.footer-header-wrapper [type="image"].usa-button-outline.usa-button-active {
   box-shadow: inset 0 0 0 2px #112e51;
   color: #112e51;
 }
@@ -1183,14 +1183,14 @@
   .usa-button-primary:visited.usa-button-outline.usa-button-focus,
 .footer-header-wrapper button.usa-button-outline:focus,
 .footer-header-wrapper button.usa-button-outline.usa-button-focus,
-[type="button"].usa-button-outline:focus,
-[type="button"].usa-button-outline.usa-button-focus,
-[type="submit"].usa-button-outline:focus,
-[type="submit"].usa-button-outline.usa-button-focus,
-[type="reset"].usa-button-outline:focus,
-[type="reset"].usa-button-outline.usa-button-focus,
-[type="image"].usa-button-outline:focus,
-[type="image"].usa-button-outline.usa-button-focus {
+.footer-header-wrapper [type="button"].usa-button-outline:focus,
+.footer-header-wrapper [type="button"].usa-button-outline.usa-button-focus,
+.footer-header-wrapper [type="submit"].usa-button-outline:focus,
+.footer-header-wrapper [type="submit"].usa-button-outline.usa-button-focus,
+.footer-header-wrapper [type="reset"].usa-button-outline:focus,
+.footer-header-wrapper [type="reset"].usa-button-outline.usa-button-focus,
+.footer-header-wrapper [type="image"].usa-button-outline:focus,
+.footer-header-wrapper [type="image"].usa-button-outline.usa-button-focus {
   box-shadow: inset 0 0 0 2px #112e51, 0 0 3px #3e94cf, 0 0 7px #3e94cf;
 }
 .footer-header-wrapper .usa-button.usa-button-outline-inverse,
@@ -1198,10 +1198,10 @@
 .footer-header-wrapper .usa-button:visited.usa-button-outline-inverse,
 .footer-header-wrapper .usa-button-primary:visited.usa-button-outline-inverse,
 .footer-header-wrapper button.usa-button-outline-inverse,
-[type="button"].usa-button-outline-inverse,
-[type="submit"].usa-button-outline-inverse,
-[type="reset"].usa-button-outline-inverse,
-[type="image"].usa-button-outline-inverse {
+.footer-header-wrapper [type="button"].usa-button-outline-inverse,
+.footer-header-wrapper [type="submit"].usa-button-outline-inverse,
+.footer-header-wrapper [type="reset"].usa-button-outline-inverse,
+.footer-header-wrapper [type="image"].usa-button-outline-inverse {
   background: transparent;
   box-shadow: inset 0 0 0 2px #ffffff;
   color: #ffffff;
@@ -1220,14 +1220,18 @@
   .usa-button-primary:visited.usa-button-outline-inverse.usa-button-hover,
 .footer-header-wrapper button.usa-button-outline-inverse:hover,
 .footer-header-wrapper button.usa-button-outline-inverse.usa-button-hover,
-[type="button"].usa-button-outline-inverse:hover,
-[type="button"].usa-button-outline-inverse.usa-button-hover,
-[type="submit"].usa-button-outline-inverse:hover,
-[type="submit"].usa-button-outline-inverse.usa-button-hover,
-[type="reset"].usa-button-outline-inverse:hover,
-[type="reset"].usa-button-outline-inverse.usa-button-hover,
-[type="image"].usa-button-outline-inverse:hover,
-[type="image"].usa-button-outline-inverse.usa-button-hover {
+.footer-header-wrapper [type="button"].usa-button-outline-inverse:hover,
+.footer-header-wrapper
+  [type="button"].usa-button-outline-inverse.usa-button-hover,
+.footer-header-wrapper [type="submit"].usa-button-outline-inverse:hover,
+.footer-header-wrapper
+  [type="submit"].usa-button-outline-inverse.usa-button-hover,
+.footer-header-wrapper [type="reset"].usa-button-outline-inverse:hover,
+.footer-header-wrapper
+  [type="reset"].usa-button-outline-inverse.usa-button-hover,
+.footer-header-wrapper [type="image"].usa-button-outline-inverse:hover,
+.footer-header-wrapper
+  [type="image"].usa-button-outline-inverse.usa-button-hover {
   box-shadow: inset 0 0 0 2px #d6d7d9;
   color: #d6d7d9;
 }
@@ -1245,14 +1249,18 @@
   .usa-button-primary:visited.usa-button-outline-inverse.usa-button-active,
 .footer-header-wrapper button.usa-button-outline-inverse:active,
 .footer-header-wrapper button.usa-button-outline-inverse.usa-button-active,
-[type="button"].usa-button-outline-inverse:active,
-[type="button"].usa-button-outline-inverse.usa-button-active,
-[type="submit"].usa-button-outline-inverse:active,
-[type="submit"].usa-button-outline-inverse.usa-button-active,
-[type="reset"].usa-button-outline-inverse:active,
-[type="reset"].usa-button-outline-inverse.usa-button-active,
-[type="image"].usa-button-outline-inverse:active,
-[type="image"].usa-button-outline-inverse.usa-button-active {
+.footer-header-wrapper [type="button"].usa-button-outline-inverse:active,
+.footer-header-wrapper
+  [type="button"].usa-button-outline-inverse.usa-button-active,
+.footer-header-wrapper [type="submit"].usa-button-outline-inverse:active,
+.footer-header-wrapper
+  [type="submit"].usa-button-outline-inverse.usa-button-active,
+.footer-header-wrapper [type="reset"].usa-button-outline-inverse:active,
+.footer-header-wrapper
+  [type="reset"].usa-button-outline-inverse.usa-button-active,
+.footer-header-wrapper [type="image"].usa-button-outline-inverse:active,
+.footer-header-wrapper
+  [type="image"].usa-button-outline-inverse.usa-button-active {
   box-shadow: inset 0 0 0 2px #aeb0b5;
   color: #d6d7d9;
 }
@@ -1270,14 +1278,18 @@
   .usa-button-primary:visited.usa-button-outline-inverse.usa-button-focus,
 .footer-header-wrapper button.usa-button-outline-inverse:focus,
 .footer-header-wrapper button.usa-button-outline-inverse.usa-button-focus,
-[type="button"].usa-button-outline-inverse:focus,
-[type="button"].usa-button-outline-inverse.usa-button-focus,
-[type="submit"].usa-button-outline-inverse:focus,
-[type="submit"].usa-button-outline-inverse.usa-button-focus,
-[type="reset"].usa-button-outline-inverse:focus,
-[type="reset"].usa-button-outline-inverse.usa-button-focus,
-[type="image"].usa-button-outline-inverse:focus,
-[type="image"].usa-button-outline-inverse.usa-button-focus {
+.footer-header-wrapper [type="button"].usa-button-outline-inverse:focus,
+.footer-header-wrapper
+  [type="button"].usa-button-outline-inverse.usa-button-focus,
+.footer-header-wrapper [type="submit"].usa-button-outline-inverse:focus,
+.footer-header-wrapper
+  [type="submit"].usa-button-outline-inverse.usa-button-focus,
+.footer-header-wrapper [type="reset"].usa-button-outline-inverse:focus,
+.footer-header-wrapper
+  [type="reset"].usa-button-outline-inverse.usa-button-focus,
+.footer-header-wrapper [type="image"].usa-button-outline-inverse:focus,
+.footer-header-wrapper
+  [type="image"].usa-button-outline-inverse.usa-button-focus {
   box-shadow: inset 0 0 0 2px #aeb0b5, 0 0 3px #3e94cf, 0 0 7px #3e94cf;
 }
 .footer-header-wrapper .usa-button.usa-button-big,
@@ -1285,10 +1297,10 @@
 .footer-header-wrapper .usa-button:visited.usa-button-big,
 .footer-header-wrapper .usa-button-primary:visited.usa-button-big,
 .footer-header-wrapper button.usa-button-big,
-[type="button"].usa-button-big,
-[type="submit"].usa-button-big,
-[type="reset"].usa-button-big,
-[type="image"].usa-button-big {
+.footer-header-wrapper [type="button"].usa-button-big,
+.footer-header-wrapper [type="submit"].usa-button-big,
+.footer-header-wrapper [type="reset"].usa-button-big,
+.footer-header-wrapper [type="image"].usa-button-big {
   font-size: 1.9rem;
   padding: 1.5rem 3rem;
 }
@@ -1476,8 +1488,8 @@
   margin-bottom: 0;
 }
 
-[type="checkbox"],
-[type="radio"] {
+.footer-header-wrapper [type="checkbox"],
+.footer-header-wrapper [type="radio"] {
   margin-left: -2rem;
   opacity: 0;
   position: absolute;
@@ -1491,15 +1503,15 @@
   width: auto;
 }
 
-[type="checkbox"] + label,
-[type="radio"] + label {
+.footer-header-wrapper [type="checkbox"] + label,
+.footer-header-wrapper [type="radio"] + label {
   cursor: pointer;
   font-weight: 400;
   margin-bottom: 0.5em;
 }
 
-[type="checkbox"] + label::before,
-[type="radio"] + label::before {
+.footer-header-wrapper [type="checkbox"] + label::before,
+.footer-header-wrapper [type="radio"] + label::before {
   background: #ffffff;
   border-radius: 0.3rem;
   box-shadow: 0 0 0 1px #757575;
@@ -1513,7 +1525,7 @@
   width: 1.8rem;
 }
 
-[type="radio"] + label::before {
+.footer-header-wrapper [type="radio"] + label::before {
   box-shadow: 0 0 0 2px #ffffff, 0 0 0 3px #757575;
   height: 1.6rem;
   line-height: 1.6rem;
@@ -1521,57 +1533,57 @@
   border-radius: 100%;
 }
 
-[type="checkbox"]:checked + label::before,
-[type="radio"]:checked + label::before {
+.footer-header-wrapper [type="checkbox"]:checked + label::before,
+.footer-header-wrapper [type="radio"]:checked + label::before {
   background-color: #0071bc;
   box-shadow: 0 0 0 1px #0071bc;
 }
 
-[type="radio"]:checked + label::before {
+.footer-header-wrapper [type="radio"]:checked + label::before {
   box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #0071bc;
 }
 
-[type="radio"]:focus + label::before {
+.footer-header-wrapper [type="radio"]:focus + label::before {
   box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #0071bc, 0 0 3px 4px #3e94cf,
     0 0 7px 4px #3e94cf;
 }
 
-[type="checkbox"]:checked + label::before,
-[type="checkbox"]:checked:disabled + label::before {
+.footer-header-wrapper [type="checkbox"]:checked + label::before,
+.footer-header-wrapper [type="checkbox"]:checked:disabled + label::before {
   background-image: url("../img/usa-icons/correct8.png");
   background-image: url("../img/usa-icons/correct8.svg");
   background-position: 50%;
   background-repeat: no-repeat;
 }
 
-[type="checkbox"]:focus + label::before {
+.footer-header-wrapper [type="checkbox"]:focus + label::before {
   box-shadow: 0 0 0 1px #ffffff, 0 0 0 3px #0071bc;
 }
 
-[type="checkbox"]:disabled + label {
+.footer-header-wrapper [type="checkbox"]:disabled + label {
   color: #5b616b;
 }
 
-[type="checkbox"]:disabled + label::before,
-[type="radio"]:disabled + label::before {
+.footer-header-wrapper [type="checkbox"]:disabled + label::before,
+.footer-header-wrapper [type="radio"]:disabled + label::before {
   background: #d6d7d9;
   box-shadow: 0 0 0 1px #aeb0b5;
   cursor: not-allowed;
 }
 
-[type="range"] {
+.footer-header-wrapper [type="range"] {
   -webkit-appearance: none;
   border: none;
   padding-left: 0;
   width: 100%;
 }
 
-[type="range"]:focus {
+.footer-header-wrapper [type="range"]:focus {
   box-shadow: none;
   outline: none;
 }
 
-[type="range"]::-webkit-slider-runnable-track {
+.footer-header-wrapper [type="range"]::-webkit-slider-runnable-track {
   background: #aeb0b5;
   border: 1px solid #757575;
   cursor: pointer;
@@ -1579,7 +1591,7 @@
   width: 100%;
 }
 
-[type="range"]::-moz-range-track {
+.footer-header-wrapper [type="range"]::-moz-range-track {
   background: #0071bc;
   border: 1px solid #757575;
   cursor: pointer;
@@ -1587,7 +1599,7 @@
   width: 100%;
 }
 
-[type="range"]::-ms-track {
+.footer-header-wrapper [type="range"]::-ms-track {
   background: transparent;
   color: transparent;
   cursor: pointer;
@@ -1595,7 +1607,7 @@
   width: 100%;
 }
 
-[type="range"]::-webkit-slider-thumb {
+.footer-header-wrapper [type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   border: 1px solid #757575;
   height: 2.2rem;
@@ -1606,7 +1618,7 @@
   width: 2.2rem;
 }
 
-[type="range"]::-moz-range-thumb {
+.footer-header-wrapper [type="range"]::-moz-range-thumb {
   background: #f1f1f1;
   border: 1px solid #757575;
   border-radius: 1.5rem;
@@ -1615,7 +1627,7 @@
   width: 2.2rem;
 }
 
-[type="range"]::-ms-thumb {
+.footer-header-wrapper [type="range"]::-ms-thumb {
   background: #f1f1f1;
   border: 1px solid #757575;
   border-radius: 1.5rem;
@@ -1624,27 +1636,27 @@
   width: 2.2rem;
 }
 
-[type="range"]::-ms-fill-lower {
+.footer-header-wrapper [type="range"]::-ms-fill-lower {
   background: #aeb0b5;
   border: 1px solid #757575;
   border-radius: 2rem;
 }
 
-[type="range"]::-ms-fill-upper {
+.footer-header-wrapper [type="range"]::-ms-fill-upper {
   background: #aeb0b5;
   border: 1px solid #757575;
   border-radius: 2rem;
 }
 
-[type="range"]:focus::-webkit-slider-thumb {
+.footer-header-wrapper [type="range"]:focus::-webkit-slider-thumb {
   border: 2px solid #3e94cf;
 }
 
-[type="range"]:focus::-moz-range-thumb {
+.footer-header-wrapper [type="range"]:focus::-moz-range-thumb {
   border: 2px solid #3e94cf;
 }
 
-[type="range"]:focus::-ms-thumb {
+.footer-header-wrapper [type="range"]:focus::-ms-thumb {
   border: 2px solid #3e94cf;
 }
 
@@ -4654,11 +4666,13 @@
 .footer-header-wrapper .label-done:visited {
   color: #323a45;
 }
-[href^="http"].label-alpha:not([href*=".gov"])::after,
-[href^="http"].label-beta:not([href*=".gov"])::after,
-[href^="http"].label-in-progress:not([href*=".gov"])::after,
-[href^="http"].label-recommended:not([href*=".gov"])::after,
-[href^="http"].label-done:not([href*=".gov"])::after {
+.footer-header-wrapper [href^="http"].label-alpha:not([href*=".gov"])::after,
+.footer-header-wrapper [href^="http"].label-beta:not([href*=".gov"])::after,
+.footer-header-wrapper
+  [href^="http"].label-in-progress:not([href*=".gov"])::after,
+.footer-header-wrapper
+  [href^="http"].label-recommended:not([href*=".gov"])::after,
+.footer-header-wrapper [href^="http"].label-done:not([href*=".gov"])::after {
   display: none;
 }
 
@@ -5264,35 +5278,35 @@
   margin-bottom: 0;
 }
 
-[class*="language-"] {
+.footer-header-wrapper [class*="language-"] {
   color: #212121;
 }
-[class*="language-"] .nt,
-[class*="language-"] .token.property,
-[class*="language-"] .token.tag,
-[class*="language-"] .token.boolean,
-[class*="language-"] .token.number,
-[class*="language-"] .token.constant,
-[class*="language-"] .token.symbol,
-[class*="language-"] .token.deleted {
+.footer-header-wrapper [class*="language-"] .nt,
+.footer-header-wrapper [class*="language-"] .token.property,
+.footer-header-wrapper [class*="language-"] .token.tag,
+.footer-header-wrapper [class*="language-"] .token.boolean,
+.footer-header-wrapper [class*="language-"] .token.number,
+.footer-header-wrapper [class*="language-"] .token.constant,
+.footer-header-wrapper [class*="language-"] .token.symbol,
+.footer-header-wrapper [class*="language-"] .token.deleted {
   color: #046b99;
 }
-[class*="language-"] .na,
-[class*="language-"] .token.selector,
-[class*="language-"] .token.attr-name,
-[class*="language-"] .token.string,
-[class*="language-"] .token.char,
-[class*="language-"] .token.builtin,
-[class*="language-"] .token.inserted {
+.footer-header-wrapper [class*="language-"] .na,
+.footer-header-wrapper [class*="language-"] .token.selector,
+.footer-header-wrapper [class*="language-"] .token.attr-name,
+.footer-header-wrapper [class*="language-"] .token.string,
+.footer-header-wrapper [class*="language-"] .token.char,
+.footer-header-wrapper [class*="language-"] .token.builtin,
+.footer-header-wrapper [class*="language-"] .token.inserted {
   color: #e31c3d;
 }
-[class*="language-"] .s,
-[class*="language-"] .token.atrule,
-[class*="language-"] .token.attr-value,
-[class*="language-"] .token.keyword {
+.footer-header-wrapper [class*="language-"] .s,
+.footer-header-wrapper [class*="language-"] .token.atrule,
+.footer-header-wrapper [class*="language-"] .token.attr-value,
+.footer-header-wrapper [class*="language-"] .token.keyword {
   color: #2e8540;
 }
-[class*="language-"] .token.punctuation {
+.footer-header-wrapper [class*="language-"] .token.punctuation {
   color: #046b99;
 }
 
@@ -5441,7 +5455,7 @@
   }
 }
 
-[href^="http"]:not([href*=".gov"])::after {
+.footer-header-wrapper [href^="http"]:not([href*=".gov"])::after {
   background: url("../img/usa-icons/external-link.png") no-repeat 0 0;
   background: url("../img/usa-icons/external-link.svg") no-repeat 0 0;
   background-size: 100%;
@@ -5452,7 +5466,7 @@
   margin-left: 4px;
   width: 0.65em;
 }
-[href^="http"]:not([href*=".gov"]):hover::after {
+.footer-header-wrapper [href^="http"]:not([href*=".gov"]):hover::after {
   background-image: url("../img/usa-icons/external-link-hover.png");
   background-image: url("../img/usa-icons/external-link-hover.svg");
 }
