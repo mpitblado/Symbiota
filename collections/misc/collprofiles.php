@@ -83,19 +83,6 @@ if ($SYMB_UID) {
 				console.log(err);
 			}
 		}
-
-		function validateForm (){
-			const taxonSearchVal = document?.forms['quicksearch']['taxon-search']?.value;
-			const catalogNumberValue = document.forms['quicksearch']['catalog-number'].value;
-			if(taxonSearchVal && !catalogNumberValue){
-				 alert("You cannot search the occurrence editor by taxon.");
-				 return false;
-			}else{
-				return true;
-			}
-
-		}
-		
 	</script>
 	<style type="text/css">
 		.importItem { margin-left:10px; display:none; }
@@ -117,7 +104,7 @@ if ($SYMB_UID) {
 		<section id="tabs" class="fieldset-like no-left-margin" style="float: right;">
 			<h1><span><?php echo (isset($LANG['QUICK_SEARCH']) ? $LANG['QUICK_SEARCH'] : 'Quick Search'); ?></span></h1>
 			<div id="dialogContainer" style="position: relative;">
-				<form name="quicksearch" action="processEditorSearch.php" method="POST" onsubmit="return validateForm()">
+				<form name="quicksearch" action="processEditorSearch.php" method="POST">
 					<label for="catalog-number"><?php echo (isset($LANG['OCCURENCE_IDENTIFIER']) ? $LANG['OCCURENCE_IDENTIFIER'] : 'Catalog Number'); ?></label>
 					<span class="skip-link">
 						<?php
