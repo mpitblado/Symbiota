@@ -1,4 +1,5 @@
 <link href="<?php echo htmlspecialchars($CSS_BASE_PATH, HTML_SPECIAL_CHARS_FLAGS); ?>/symbiota/nalStyleguide.css" type="text/css" rel="stylesheet">
+<link href="<?php echo htmlspecialchars($CSS_BASE_PATH, HTML_SPECIAL_CHARS_FLAGS); ?>/symbiota/nalStyleguideSupplement.css" type="text/css" rel="stylesheet">
 <footer class="footer-wrapper footer">
   <div class="footer__primary-section">
     <div class="container">
@@ -14,14 +15,14 @@
           <ul class="menu menu--footer nav">
             <li class="first">
               <a
-                href="/"
+                href="<?php echo $CLIENT_ROOT ?>"
                 data-drupal-link-system-path="&lt;front&gt;"
                 class="is-active"
                 >Home</a
               >
             </li>
             <li class="last">
-              <a href="https://www.nal.usda.gov/sitemap">Sitemap</a>
+              <a href="<?php echo $CLIENT_ROOT ?>/sitemap.php">Sitemap</a>
             </li>
           </ul>
         </nav>
@@ -76,7 +77,7 @@
               >FOIA</a
             >
           </li>
-          <li><a href="/accessibility">Accessibility Statement</a></li>
+          <li><a href="https://www.usda.gov/accessibility-statement">Accessibility Statement</a></li>
           <li>
             <a href="https://www.usda.gov/privacy-policy">Privacy Policy</a>
           </li>
