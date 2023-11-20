@@ -90,8 +90,8 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
 
   <!-- Gov banner END -->
   <!-- Logo  and Log-Text Begin -->
-  <div class="usa-nav-container" style="max-width:144rem; margin-left:0; margin-right: 0">
-    <div class="usa-navbar" style="margin-left:20rem;">
+  <div class="usa-nav-container">
+    <div class="usa-navbar">
       <button class="usa-menu-btn">Menu</button>
       <div class="usa-logo" id="logo">
         <span
@@ -137,7 +137,7 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
         <img src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/close.svg" alt="close" />
       </button>
       
-      <ul class="usa-nav-primary usa-accordion" style="margin-left:17rem;">
+      <ul class="usa-nav-primary usa-accordion">
         <li>
           <button
             id="btnMenu-0"
@@ -261,7 +261,7 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
         </li>
       </ul>
       <!-- Secondary Naivagation Start -->
-      <div class="usa-nav-secondary" style="margin-right:16rem;">
+      <div class="usa-nav-secondary">
         <ul class="usa-unstyled-list usa-nav-secondary-links">
           <?php
             if($USER_DISPLAY_NAME){
