@@ -295,7 +295,7 @@ $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT = $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT ??
 					<label for="hascoords"><?php echo isset($LANG['HAS_COORDS'])?$LANG['HAS_COORDS']:'Limit to Specimens with Geocoordinates Only'; ?></label>
 				</div>
 				<div>
-					<input type='checkbox' name='includecult' id='includecult' value='<?php echo $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT ? '1' : '0' ?>' <?php echo $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT ? 'checked' : '' ?> />
+					<input type='checkbox' name='includecult' id='includecult' value='1' <?php echo $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT ? 'checked' : '' ?> />
 					<label for="includecult"><?php echo isset($LANG['INCLUDE_CULTIVATED'])?$LANG['INCLUDE_CULTIVATED']:'Include cultivated/captive occurrences'; ?></label>
 				</div>
 			</div>
