@@ -342,7 +342,7 @@ ars-news-story-container ars-news-story imagecaption {
 /*End :ConnectwithARS*/
 /*
 /* media section */
-@media screen and (max-width: 950px) {
+@media screen and (max-width: 1250px) {
   .footer-header-wrapper .usa-nav .usa-nav-secondary {
     -webkit-box-ordinal-group: 4;
     -ms-flex-order: 3;
@@ -404,7 +404,7 @@ ars-news-story-container ars-news-story imagecaption {
   }
 }
 
-@media screen and (min-width: 951px) {
+@media screen and (min-width: 1250px) {
   .footer-header-wrapper .usa-width-three-fourths {
     margin-right: 0;
   }
@@ -632,7 +632,7 @@ ars-news-story-container ars-news-story imagecaption {
   }
 }
 
-@media screen and (min-width: 768px) and (max-width: 950px) {
+@media screen and (min-width: 768px) and (max-width: 1250px) {
   .footer-header-wrapper .usda-logo-img {
     height: 31px;
     position: absolute;
