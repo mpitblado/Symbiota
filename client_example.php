@@ -1,6 +1,6 @@
 <?php
-session_start();
-include_once($SERVER_ROOT.'/vendor/jumbojett/src/OpenIDConnect.php');
+include_once('config/symbini.php');
+include_once($SERVER_ROOT.'/vendor/jumbojett/openid-connect-php/src/OpenIDConnectClient.php');
 
 use Jumbojett\OpenIDConnectClient;
 
@@ -16,7 +16,8 @@ $oidc->addScope(array('openid'));
 $oidc->addScope(array('email'));
 $oidc->setResponseTypes(array('code'));
 //$oidc->setResponseTypes(array('id_token'));
-$oidc->setRedirectUrl('https://dev002.symbiota.org/callback.php');
+$oidc->setRedirectUrl('http://localhost/Symbiota/callback.php');
+$oidc->setVerifyPeer(false);
 
 $_SESSION['oidIssuer'] = $oidc->getIssuer();
 $oidc->authenticate();

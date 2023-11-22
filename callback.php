@@ -1,14 +1,16 @@
 <?php
-session_start();
-
-include_once($SERVER_ROOT.'/vendor/jumbojett/src/OpenIDConnect.php');
+include_once('config/symbini.php');
+include_once($SERVER_ROOT.'/vendor/jumbojett/openid-connect-php/src/OpenIDConnectClient.php');
 
 use Jumbojett\OpenIDConnectClient;
 
 $oidc = new OpenIDConnectClient($_SESSION['OID_ProviderURL'],
-                                $_SESSION['OID_clientID'],
-                                $_SESSION['OID_clientSecret'],
-				$_SESSION['oidIssuer']);
+  $_SESSION['OID_clientID'],
+  $_SESSION['OID_clientSecret'],
+  $_SESSION['oidIssuer']);
+
+$oidc->setVerifyPeer(false);
+
 
 if (array_key_exists('code', $_REQUEST) && $_REQUEST['code']) {
   if($oidc->authenticate()){
