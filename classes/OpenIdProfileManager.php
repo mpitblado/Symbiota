@@ -64,7 +64,7 @@ class OpenIdProfileManager extends Manager{
 	private function authenticateUsingOidSub($sub, $provider){
 		$status = false;
 		if($pwdStr){
-            $sql = 'SELECT uid from thirdparthauth WHERE sub = ? AND provider = ?';
+            $sql = 'SELECT uid from users_thirdpartyauth WHERE sub = ? AND provider = ?';
             if($stmt = $this->conn->prepare($sql)){
 				if($stmt->bind_param('ss', $sub, $provider)){
 					$stmt->execute();
