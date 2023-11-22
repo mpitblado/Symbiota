@@ -1,6 +1,6 @@
 <?php
 include_once('config/symbini.php');
-include_once($SERVER_ROOT.'/vendor/jumbojett/openid-connect-php/src/OpenIDConnectClient.php');
+require __DIR__ . '/vendor/autoload.php';
 
 use Jumbojett\OpenIDConnectClient;
 
@@ -17,7 +17,10 @@ $oidc->addScope(array('email'));
 $oidc->setResponseTypes(array('code'));
 //$oidc->setResponseTypes(array('id_token'));
 $oidc->setRedirectUrl('http://localhost/Symbiota/callback.php');
-$oidc->setVerifyPeer(false);
+
+// Needed for local Dev Env Only
+//$oidc->setVerifyPeer(false);
+$oidc->setHttpUpgradeInsecureRequests(false);
 
 $_SESSION['oidIssuer'] = $oidc->getIssuer();
 $oidc->authenticate();
