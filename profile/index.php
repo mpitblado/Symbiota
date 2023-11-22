@@ -5,6 +5,7 @@ include_once($SERVER_ROOT.'/classes/ProfileManager.php');
 include_once($SERVER_ROOT.'/content/lang/profile/index.'.$LANG_TAG.'.php');
 header("Content-Type: text/html; charset=".$CHARSET);
 
+$THIRD_PARTY_OID_AUTH_ENABLED = $THIRD_PARTY_OID_AUTH_ENABLED ?? false;
 $login = array_key_exists('login',$_REQUEST)?$_REQUEST['login']:'';
 $remMe = array_key_exists("remember",$_POST)?$_POST["remember"]:'';
 $emailAddr = array_key_exists('email',$_POST)?$_POST['email']:'';
@@ -191,8 +192,21 @@ include($SERVER_ROOT.'/includes/header.php');
 					<input type="hidden" id="resetpwd" name="resetpwd" value="">
 					<button name="action" type="submit" value="login"><?php echo (isset($LANG['SIGNIN'])?$LANG['SIGNIN']:'Sign In'); ?></button>
 				</div>
+				
 			</fieldset>
 		</form>
+		<?php 
+			if($THIRD_PARTY_OID_AUTH_ENABLED){
+
+		?>
+			<div style="margin:15px;">
+			<form action='openIdAuth.php'>
+				<button type="submit" value="login"><?php echo (isset($LANG['OID_LOGIN'])?$LANG['OID_LOGIN']:'Login with OID'); ?></button>
+			</form>
+			</div>
+		<?php 
+			}
+		?>
 		<div style="width:300px;text-align:center;margin:20px;">
 			<?php 
 				$shouldBeAbleToCreatePublicUser = $SHOULD_BE_ABLE_TO_CREATE_PUBLIC_USER ?? true;

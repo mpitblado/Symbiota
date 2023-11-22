@@ -1,6 +1,6 @@
 <?php
-include_once('config/symbini.php');
-require __DIR__ . '/vendor/autoload.php';
+include_once('../config/symbini.php');
+include_once($SERVER_ROOT . '/vendor/autoload.php');
 
 use Jumbojett\OpenIDConnectClient;
 
