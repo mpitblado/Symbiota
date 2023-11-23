@@ -20,8 +20,8 @@ if (array_key_exists('code', $_REQUEST) && $_REQUEST['code']) {
   if($oidc->authenticate()){
     echo '<html><pre>';
     var_dump($oidc); 
-    print_r($oidc->requestUserInfo('given_name'));
-    print_r($oidc->requestUserInfo('sub'));
+    // print_r($oidc->requestUserInfo('given_name'));
+    $sub = $oidc->requestUserInfo('sub');
     // @TODO grab sub
     $profManager->authenticate($sub, $_SESSION['OID_ProviderURL']);
     // @TODO query db for user with said sub

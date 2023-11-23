@@ -41,6 +41,7 @@ class OpenIdProfileManager extends Manager{
 		unset($_SESSION['userrights']);
 		unset($_SESSION['userparams']);
         $status = $this->authenticateUsingOidSub($sub, $provider);
+        var_dump($status);
         if($status){
             if(strlen($this->displayName) > 15) $this->displayName = $this->userName;
             if(strlen($this->displayName) > 15) $this->displayName = substr($this->displayName,0,10).'...';
@@ -63,8 +64,8 @@ class OpenIdProfileManager extends Manager{
 
 	private function authenticateUsingOidSub($sub, $provider){
 		$status = false;
-		if($pwdStr){
-            $sql = 'SELECT uid from users_thirdpartyauth WHERE sub = ? AND provider = ?';
+		if($sub && $provider){
+            $sql = 'SELECT uid from users_thirdpartyauth WHERE sub_uuid = ? AND provider = ?';
             if($stmt = $this->conn->prepare($sql)){
 				if($stmt->bind_param('ss', $sub, $provider)){
 					$stmt->execute();
@@ -77,11 +78,14 @@ class OpenIdProfileManager extends Manager{
             if($this->uid){
                 $sql = 'SELECT uid, firstname, username FROM users WHERE (uid = ?)';
                 if($stmt = $this->conn->prepare($sql)){
-                    if($stmt->bind_param('s', $uid)){
+                    if($stmt->bind_param('i', $this->uid)){
                         $stmt->execute();
                         $stmt->bind_result($this->uid, $this->displayName, $this->userName);
                         if($stmt->fetch()) $status = true;
                         $stmt->close();
+                        if($status){
+                            // authenticate
+                        }
                     }
                     else echo 'error binding parameters: '.$stmt->error;
                 }

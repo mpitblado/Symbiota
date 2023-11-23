@@ -23,7 +23,7 @@ $oidc->setRedirectUrl('http://localhost/Symbiota/callback.php');
 $oidc->setHttpUpgradeInsecureRequests(false);
 
 $_SESSION['oidIssuer'] = $oidc->getIssuer();
-$oidc->authenticate();
+$oidc->authenticate(); // @TODO redirect to landing page if authenticat returns true
 
 //$name = $oidc->requestUserInfo('given_name');
 
