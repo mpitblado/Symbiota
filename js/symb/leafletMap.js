@@ -192,10 +192,10 @@ class LeafletMap {
             this.drawLayer.clearLayers();
           }
 
-          const id = this.shapes.length;
-
-          const layer = e.layer;
-          this.drawLayer.addLayer(layer);
+      //Jank workaround for leaflet-draw api
+      const setDrawColor = (drawOption) => {
+         if(drawOptions[drawOption] === false)
+            return;
 
           this.activeShape = getShapeCoords(e.layerType, e.layer);
           this.activeShape.id = id;
@@ -221,36 +221,26 @@ class LeafletMap {
     }
   }
 
-  drawShape(shape) {
-    const id = this.shapes.length;
-    switch (shape.type) {
-      case "polygon":
-        const poly = L.polygon(shape.latlngs);
-        this.activeShape = getShapeCoords(shape.type, poly);
-        poly.addTo(this.drawLayer);
-        break;
-      case "rectangle":
-        const rec = L.rectangle([
-          [shape.upperLat, shape.rightLng],
-          [shape.lowerLat, shape.leftLng],
-        ]);
-        this.activeShape = getShapeCoords(shape.type, rec);
-        rec.addTo(this.drawLayer);
-        break;
-      case "circle":
-        const circ = L.circle(shape.latlng, shape.radius);
-        this.activeShape = getShapeCoords(shape.type, circ);
-        circ.addTo(this.drawLayer);
-        break;
-      default:
-        throw Error(`Can't draw ${shape.type}`);
-    }
+      if(drawOptions.drawColor) {
+         //Setting Styles for Pre Rendered
+         L.Path.mergeOptions(drawOptions.drawColor);
+         //Set Color for All Manual Draws 
+         setDrawColor("polyline");
+         setDrawColor("polygon");
+         setDrawColor("rectangle");
+         setDrawColor("circle");
+      }
+      if(drawOptions.map_mode_strict) {
+         if(drawOptions.mode !== "polygon") drawOptions.polygon = false;
+         if(drawOptions.mode !== "circle") drawOptions.circle = false;
+         if(drawOptions.mode !== "rectangle") drawOptions.rectangle= false;
+         if(drawOptions.mode !== "polyline") drawOptions.polyline = false;
+      }
 
     this.activeShape.id = id;
     this.shapes.push(this.activeShape);
 
     this.mapLayer.fitBounds(this.activeShape.layer.getBounds());
-  }
 }
 
 function getShapeCoords(layerType, layer) {
