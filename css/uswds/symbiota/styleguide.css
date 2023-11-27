@@ -4224,7 +4224,7 @@
     width: 4.5rem;
   }
 }
-@media screen and (max-width: 1249px) {
+@media screen and (max-width: 1250px) {
   .footer-header-wrapper .usa-search.usa-search-small.usa-sr-only {
     left: auto;
     position: relative;
