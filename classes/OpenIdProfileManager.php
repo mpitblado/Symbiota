@@ -41,7 +41,6 @@ class OpenIdProfileManager extends Manager{
 		unset($_SESSION['userrights']);
 		unset($_SESSION['userparams']);
         $status = $this->authenticateUsingOidSub($sub, $provider);
-        var_dump($status);
         if($status){
             if(strlen($this->displayName) > 15) $this->displayName = $this->userName;
             if(strlen($this->displayName) > 15) $this->displayName = substr($this->displayName,0,10).'...';
