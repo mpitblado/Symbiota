@@ -5,6 +5,7 @@ include_once($SERVER_ROOT . '/config/auth_config.php');
 
 use Jumbojett\OpenIDConnectClient;
 
+// $_SESSION['refUrl'] = array_key_exists('refUrl', $_REQUEST) ? $_REQUEST['refUrl'] : ''; // $_SERVER['SCRIPT_NAME'];
 
 $oidc = new OpenIDConnectClient($providerUrls['oid'],
                                 $clientIds['oid'],

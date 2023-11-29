@@ -197,10 +197,11 @@ include($SERVER_ROOT.'/includes/header.php');
 		</form>
 		<?php 
 			if($THIRD_PARTY_OID_AUTH_ENABLED){
+				$_SESSION['refurl'] = array_key_exists('refurl', $_REQUEST) ? $_REQUEST['refurl'] : '';
 
 		?>
 			<div style="margin:15px;">
-			<form action='openIdAuth.php'>
+			<form action='openIdAuth.php' onsubmit="">
 				<button type="submit" value="login"><?php echo (isset($LANG['OID_LOGIN'])?$LANG['OID_LOGIN']:'Login with OID'); ?></button>
 			</form>
 			</div>
