@@ -5,8 +5,6 @@ include_once($SERVER_ROOT . '/config/auth_config.php');
 
 use Jumbojett\OpenIDConnectClient;
 
-// $_SESSION['refUrl'] = array_key_exists('refUrl', $_REQUEST) ? $_REQUEST['refUrl'] : ''; // $_SERVER['SCRIPT_NAME'];
-
 $oidc = new OpenIDConnectClient($providerUrls['oid'],
                                 $clientIds['oid'],
                                 $clientSecrets['oid']);
@@ -21,11 +19,8 @@ $oidc->setRedirectUrl('http://localhost/Symbiota/callback.php');
 //$oidc->setVerifyPeer(false);
 $oidc->setHttpUpgradeInsecureRequests(false);
 
-// $_SESSION['oidIssuer'] = $oidc->getIssuer(); // moot for microsoft, but potentially useful for other auth providers?
-$oidc->authenticate(); // @TODO redirect to landing page if authenticat returns true
-
-//$name = $oidc->requestUserInfo('given_name');
-
+// $_SESSION['oidIssuer'] = $oidc->getIssuer(); // moot for microsoft where it's the same as the providerUrl, but potentially useful for other auth providers?
+$oidc->authenticate();
 
 ?>
 
