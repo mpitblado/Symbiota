@@ -20,6 +20,7 @@ if (array_key_exists('code', $_REQUEST) && $_REQUEST['code']) {
     if($profManager->authenticate($sub, $providerUrls['oid'])){
       if($_SESSION['refurl']){
         header("Location:" . $_SESSION['refurl']);
+        unset($_SESSION['refurl']);
       }
     }
     // @TODO need to handle the case of unsuccessful authentication
