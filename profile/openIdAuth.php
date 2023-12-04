@@ -5,9 +5,10 @@ include_once($SERVER_ROOT . '/config/auth_config.php');
 
 use Jumbojett\OpenIDConnectClient;
 
-$oidc = new OpenIDConnectClient($providerUrls['oid'],
-                                $clientIds['oid'],
-                                $clientSecrets['oid']);
+$AUTH_PROVIDER = $AUTH_PROVIDER ?? 'oid';
+$oidc = new OpenIDConnectClient($providerUrls[$AUTH_PROVIDER],
+                                $clientIds[$AUTH_PROVIDER],
+                                $clientSecrets[$AUTH_PROVIDER]);
 
 $oidc->addScope(array('openid'));
 $oidc->addScope(array('email'));
