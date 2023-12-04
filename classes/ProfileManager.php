@@ -308,7 +308,7 @@ class ProfileManager extends Manager{
 		return $newPassword;
 	}
 
-	public function register($postArr){
+	public function register($postArr, $adminRegister = false){
 		$status = false;
 
 		$firstName = strip_tags($postArr['firstname']);
@@ -336,8 +336,10 @@ class ProfileManager extends Manager{
 			if($stmt->affected_rows){
 				$this->uid = $stmt->insert_id;
 				$this->displayName = $firstName;
-				$this->reset();
-				$this->authenticate($pwd);
+				if(!$adminRegister){
+					$this->reset();
+					$this->authenticate($pwd);
+				}
 				$status = true;
 			}
 			elseif($stmt->error) $this->errorMessage = 'ERROR inserting new user: '.$stmt->error;
