@@ -334,16 +334,22 @@ hr {
   padding: 0.8rem;
 }
 
-.fieldset-like h1 {
+.fieldset-like h1,
+.fieldset-like h2,
+.fieldset-like h3 {
   font: 1.5rem normal;
   margin: -1.6rem -0.8rem 0rem;
 }
 
-.fieldset-like h1 span {
+.fieldset-like h1 span,
+.fieldset-like h2 span,
+.fieldset-like h3 span {
   float: left;
 }
 
-.fieldset-like h1:before {
+.fieldset-like h1:before,
+.fieldset-like h2:before,
+.fieldset-like h3:before {
   border-top: 0.15em solid;
   content: " ";
   float: left;
@@ -351,7 +357,9 @@ hr {
   width: 1.2rem;
 }
 
-.fieldset-like h1:after {
+.fieldset-like h1:after,
+.fieldset-like h2:after,
+.fieldset-like h3:after {
   border-top: 0.15em solid;
   content: " ";
   display: block;
@@ -891,4 +899,40 @@ hr {
 
 .left-breathing-room-rel-lg {
   margin-left: 2em;
+}
+
+.ui-autocomplete {
+  /* from https://stackoverflow.com/questions/32517694/jquery-autocomplete-dropdown-is-transparent */
+  background-color: inherit;
+}
+
+.full-width-pcnt {
+  width: 100%;
+}
+
+/* alert box from https://www.w3schools.com/howto/howto_js_alert.asp */
+/* The alert message box */
+.alert {
+  max-width: 30%;
+  padding: 20px;
+  background-color: green; /* Red */
+  color: white;
+  margin-bottom: 15px;
+}
+
+/* The close button */
+.closebtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* When moving the mouse over the close button */
+.closebtn:hover {
+  color: black;
 }
