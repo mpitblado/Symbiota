@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <?php
 include_once('../config/symbini.php');
+
+if($SYMB_UID){
+	if ($_REQUEST['refurl']){
+		header("Location:" . $_REQUEST['refurl']);	
+	}
+	else{
+		header("Location:" . $CLIENT_ROOT . '/profile/viewprofile.php');
+	}
+}
+
 include_once($SERVER_ROOT.'/classes/ProfileManager.php');
 include_once($SERVER_ROOT.'/content/lang/profile/index.'.$LANG_TAG.'.php');
 header("Content-Type: text/html; charset=".$CHARSET);
@@ -107,6 +117,11 @@ elseif($resetPwd){
 else{
 	$statusStr = $pHandler->getErrorMessage();
 }
+if (array_key_exists('last_message', $_SESSION)){
+	$statusStr .= $_SESSION['last_message'];
+	unset($_SESSION['last_message']);
+}
+
 ?>
 <html lang="<?php echo $LANG_TAG ?>">
 <head>

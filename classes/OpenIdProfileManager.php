@@ -94,6 +94,64 @@ class OpenIdProfileManager extends Manager{
 		return $status;
 	}
 
+	public function linkLocalUserOidSub($email, $sub, $provider){
+		$status = false;
+		if($email && $sub && $provider){
+            $sql = 'SELECT u.uid, oid.sub_uuid, oid.provider from users u LEFT join users_thirdpartyauth oid ON u.uid = oid.uid 
+			WHERE u.email = ?';
+            if($stmt = $this->conn->prepare($sql)){
+				if($stmt->bind_param('s', $email)){
+					$stmt->execute();
+					$results = mysqli_stmt_get_result($stmt);
+					//$stmt->bind_result($candidate_uid, $candidate_provider);
+					$stmt->close();
+				}
+				if ($results->num_rows < 1){
+					//Local user does not exist
+					return false;
+				}
+				else {
+					//Loop through results and check if provider matches
+					//Case: User exists - no 3rdparty_auth subscriber info known
+					if($results->num_rows == 1){
+						$row = $results->fetch_array(MYSQLI_ASSOC);
+						if (($row['provider'] == '' && $row['sub_uuid'] == '') || ($row['provider'] && $row['provider'] !== $provider)){
+						//found existing user. add 3rdparty auth info
+							$sql = 'INSERT INTO users_thirdpartyauth (uid, sub_uuid, provider) VALUES(?,?,?)';
+							$this->resetConnection();
+							if($stmt = $this->conn->prepare($sql)) {
+								$stmt->bind_param('iss', $row['uid'], $sub, $provider);
+								$stmt->execute();
+							}
+							$this->uid = $row['uid'];
+						}
+						if ($row['provider'] && $row['provider'] !== $provider){
+
+						}
+
+					}
+					else if($results->num_rows > 1){
+						while ($row = $results->fetch_array(MYSQLI_ASSOC)) {
+							if ($row['provider'] == $provider && $row['sub_uuid'] !== $sub){
+								//Should not have non-matching sub_uuid from same provider.  Error!!
+								return false;
+							}
+							else continue;
+						}
+						// Provider not found - handle adding new entry to users_thirdpartyauth table
+						
+					}
+				}
+				//else echo 'error binding parameters: '.$stmt->error;
+			}
+		}
+	}
+
+
+
+
+
+
 	private function authenticateLoginAs(){
 		$status = false;
 		if($this->userName){
