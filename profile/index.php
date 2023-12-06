@@ -3,6 +3,10 @@
 include_once('../config/symbini.php');
 
 if($SYMB_UID){
+	if($_SESSION['refurl']){
+		header("Location:" . $_SESSION['refurl']);
+		unset($_SESSION['refurl']);
+	}
 	if ($_REQUEST['refurl']){
 		header("Location:" . $_REQUEST['refurl']);	
 	}

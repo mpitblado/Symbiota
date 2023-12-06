@@ -124,21 +124,29 @@ class OpenIdProfileManager extends Manager{
 								$stmt->execute();
 							}
 							$this->uid = $row['uid'];
-						}
-						if ($row['provider'] && $row['provider'] !== $provider){
-
+							return true;
 						}
 
 					}
 					else if($results->num_rows > 1){
+						$uidPlaceholder = '';
 						while ($row = $results->fetch_array(MYSQLI_ASSOC)) {
+							$uidPlaceholder = $row['uid']; // assumes one-to-one relationship between user and email address
 							if ($row['provider'] == $provider && $row['sub_uuid'] !== $sub){
-								//Should not have non-matching sub_uuid from same provider.  Error!!
-								return false;
+								return false; // current assumption is that if this happens, the sub_uuid is not kosher. 
+								// If this assumption is ever violated, one solution would be to purge relevant rows from users_thirdpartyauth
 							}
 							else continue;
 						}
 						// Provider not found - handle adding new entry to users_thirdpartyauth table
+						$sql = 'INSERT INTO users_thirdpartyauth (uid, sub_uuid, provider) VALUES(?,?,?)';
+						$this->resetConnection();
+						if($stmt = $this->conn->prepare($sql)) {
+							$stmt->bind_param('iss', $uidPlaceholder, $sub, $provider);
+							$stmt->execute();
+						}
+						$this->uid = $row['uid'];
+						return true;
 						
 					}
 				}
