@@ -71,5 +71,4 @@ if (array_key_exists('code', $_REQUEST) && $_REQUEST['code']) {
   }
   $_SESSION['last_message'] = "Authentication failed. <ERR/>";
   header('Location:' . $CLIENT_ROOT . '/profile/index.php');
-    // @TODO need to handle the case of unsuccessful authentication
 }
