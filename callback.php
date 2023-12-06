@@ -9,9 +9,12 @@ $profManager = new OpenIdProfileManager();
 
 $oidc = new OpenIDConnectClient($providerUrls['oid'], $clientIds['oid'], $clientSecrets['oid'], $providerUrls['oid']); // assumes that the issuer is identical to the providerUrl, as seems to be the case for microsoft
 
-// Needed for local Dev Env Only TODO: Move this to paramaterized login in auth_config
-//$oidc->setVerifyPeer(false);
-$oidc->setHttpUpgradeInsecureRequests(false);
+if(isset($shouldUpgradeInsecureRequests)){
+  $oidc->setHttpUpgradeInsecureRequests($shouldUpgradeInsecureRequests);
+}
+if(isset($shouldVerifyPeers)){
+  $oidc->setVerifyPeer($shouldVerifyPeers);
+}
 
 
 if (array_key_exists('code', $_REQUEST) && $_REQUEST['code']) {
@@ -54,13 +57,6 @@ if (array_key_exists('code', $_REQUEST) && $_REQUEST['code']) {
       else{
         $_SESSION['last_message'] = "Unable to retrieve email address from authentication provider. <ERR/>";
         header('Location:' . $CLIENT_ROOT . '/profile/index.php');
-        
-        
-        //oidc email not retrieved
-        $arr = get_defined_vars();
-        echo '<html><pre>';
-        print_r($arr);
-        echo '</pre></html>';
       }
     }
   }

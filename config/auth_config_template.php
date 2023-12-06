@@ -3,4 +3,7 @@ $providerUrls = array('oid' => 'https://login.microsoftonline.com/AddMore/v2.0',
 $clientIds = array('oid' => 'someGuid', 'google' => 'foo');
 $clientSecrets = array('oid' => 'someGuid', 'google' => 'foo');
 
+// Needed for local Dev Env Only
+// $shouldUpgradeInsecureRequests = false; // this needs to be commented in if you're developing locally without ssl enabled
+// $shouldVerifyPeers = false;
 ?>
