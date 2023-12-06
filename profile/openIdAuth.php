@@ -16,9 +16,12 @@ $oidc->setResponseTypes(array('code'));
 //$oidc->setResponseTypes(array('id_token'));
 $oidc->setRedirectUrl($callBackRedirect);
 
-// Needed for local Dev Env Only
-//$oidc->setVerifyPeer(false);
-$oidc->setHttpUpgradeInsecureRequests(false);
+if(isset($shouldUpgradeInsecureRequests)){
+  $oidc->setHttpUpgradeInsecureRequests($shouldUpgradeInsecureRequests);
+}
+if(isset($shouldVerifyPeers)){
+  $oidc->setVerifyPeer($shouldVerifyPeers);
+}
 
 // $_SESSION['oidIssuer'] = $oidc->getIssuer(); // moot for microsoft where it's the same as the providerUrl, but potentially useful for other auth providers?
 $oidc->authenticate();
