@@ -14,7 +14,7 @@ $oidc->addScope(array('openid'));
 $oidc->addScope(array('email'));
 $oidc->setResponseTypes(array('code'));
 //$oidc->setResponseTypes(array('id_token'));
-$oidc->setRedirectUrl('http://localhost/Symbiota/callback.php');
+$oidc->setRedirectUrl($callBackRedirect);
 
 // Needed for local Dev Env Only
 //$oidc->setVerifyPeer(false);

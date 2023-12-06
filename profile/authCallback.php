@@ -1,8 +1,8 @@
 <?php
-include_once('config/symbini.php');
+include_once('../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/OpenIdProfileManager.php');
 include_once($SERVER_ROOT . '/config/auth_config.php');
-require __DIR__ . '/vendor/autoload.php';
+require_once($SERVER_ROOT . '/vendor/autoload.php');
 use Jumbojett\OpenIDConnectClient;
 
 $profManager = new OpenIdProfileManager();
@@ -18,7 +18,16 @@ if(isset($shouldVerifyPeers)){
 
 
 if (array_key_exists('code', $_REQUEST) && $_REQUEST['code']) {
-  if($oidc->authenticate()){
+  
+  try{
+    $status = $oidc->authenticate();
+  }
+  catch (Exception $ex){
+    $_SESSION['last_message'] = 'Caught exception: ' . $ex->getMessage() . ' <ERR/>';
+    header('Location:' . $CLIENT_ROOT . '/profile/index.php');
+    exit();
+  }  
+  if($status){
     $sub = $oidc->requestUserInfo('sub');
     if($profManager->authenticate($sub, $providerUrls['oid'])){
       if($_SESSION['refurl']){
