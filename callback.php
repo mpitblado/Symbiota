@@ -25,9 +25,15 @@ if (array_key_exists('code', $_REQUEST) && $_REQUEST['code']) {
     }
     else {
       if ($email = $oidc->requestUserInfo('email')){
-        // Authprovider returned a subscriber, however user was not authenticated to local user account
-        //echo "Looking for email: $email";
-        if($profManager->linkLocalUserOidSub($email, $sub, $oidc->getProviderURL())){
+        // Authprovider returned a subscriber; however, user was not authenticated to local user account
+        try{
+          $status = $profManager->linkLocalUserOidSub($email, $sub, $oidc->getProviderURL());
+        }catch (Exception $ex){
+          $_SESSION['last_message'] = 'Caught exception: ' . $ex->getMessage();
+          header('Location:' . $CLIENT_ROOT . '/profile/index.php');
+          exit();
+        }
+        if($status){
           if($profManager->authenticate($sub, $providerUrls['oid'])){
             if($_SESSION['refurl']){
               header("Location:" . $_SESSION['refurl']);
@@ -39,14 +45,18 @@ if (array_key_exists('code', $_REQUEST) && $_REQUEST['code']) {
             header('Location:' . $CLIENT_ROOT . '/profile/index.php');
             //@TODO Consider logging this error to PHP logfiles
           }
-        }
-        else{
+        }else{
           $_SESSION['last_message'] = "Error - Could not authenticate with Authentication provider <ERR/>";
           header('Location:' . $CLIENT_ROOT . '/profile/index.php');
         }
+        
       }
       else{
-        //authentication failed
+        $_SESSION['last_message'] = "Unable to retrieve email address from authentication provider. <ERR/>";
+        header('Location:' . $CLIENT_ROOT . '/profile/index.php');
+        
+        
+        //oidc email not retrieved
         $arr = get_defined_vars();
         echo '<html><pre>';
         print_r($arr);
@@ -54,5 +64,7 @@ if (array_key_exists('code', $_REQUEST) && $_REQUEST['code']) {
       }
     }
   }
+  $_SESSION['last_message'] = "Authentication failed. <ERR/>";
+  header('Location:' . $CLIENT_ROOT . '/profile/index.php');
     // @TODO need to handle the case of unsuccessful authentication
 }

@@ -108,11 +108,10 @@ class OpenIdProfileManager extends Manager{
 				}
 				if ($results->num_rows < 1){
 					//Local user does not exist
-					return false;
+					throw new Exception ("User does not exist in symbiota database <ERR/>");
+					// return false;
 				}
 				else {
-					//Loop through results and check if provider matches
-					//Case: User exists - no 3rdparty_auth subscriber info known
 					if($results->num_rows == 1){
 						$row = $results->fetch_array(MYSQLI_ASSOC);
 						if (($row['provider'] == '' && $row['sub_uuid'] == '') || ($row['provider'] && $row['provider'] !== $provider)){
