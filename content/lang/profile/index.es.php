@@ -27,4 +27,5 @@ $LANG['REMEMBER_LOGIN'] = "No puede recordar su nombre de usuario?";
 $LANG['RETRIEVE'] = 'Recuperar inicio de sesi&oacute;n';
 $LANG['YOUR_EMAIL'] = 'Su correo electr&oacute;nico';
 $LANG['OID_LOGIN'] = 'Iniciar sesión con OID';
+$LANG['THIRD_PARTY_LOGIN'] = 'Inicie sesión utilizando autenticación de terceros';
 ?>

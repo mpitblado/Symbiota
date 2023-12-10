@@ -382,11 +382,6 @@ hr {
   border: 2px outset #808080;
 }
 
-.profile-login {
-  margin: 20px;
-  width: 350px;
-}
-
 .profile-legend {
   font-weight: bold;
 }
@@ -935,4 +930,17 @@ hr {
 /* When moving the mouse over the close button */
 .closebtn:hover {
   color: black;
+}
+
+.justify-center-full-screen {
+  display: flex;
+  justify-content: center;
+  width: 100vw;
+}
+
+.flex-item-login {
+  width: 100%;
+  max-width: 350px;
+  margin-left: auto;
+  margin-right: auto;
 }

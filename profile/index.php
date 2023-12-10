@@ -190,47 +190,54 @@ include($SERVER_ROOT.'/includes/header.php');
 		<?php
 	}
 	?>
-	<div style="width:300px;margin-right:auto;margin-left:auto;">
-		<form id="loginform" name="loginform" action="index.php" onsubmit="return checkCreds();" method="post">
-			<?php if($SYMBIOTA_LOGIN_ENABLED){ ?>
-				<fieldset  class="profile-fieldset profile-login">
-					<legend class="profile-legend"><?php echo (isset($LANG['PORTAL_LOGIN'])?$LANG['PORTAL_LOGIN']:'Portal Login'); ?></legend>
-					<div style="margin: 10px;">
-						<label for="login"><?php echo (isset($LANG['LOGIN_NAME'])?$LANG['LOGIN_NAME']:'Login'); ?>:</label> 
-						<input id="login" name="login" value="<?php echo $login; ?>" style="border-style:inset;" />
-					</div>
-					<div style="margin:10px;">
-						<label for="password"><?php echo (isset($LANG['PASSWORD'])?$LANG['PASSWORD']:"Password"); ?>:</label>
-						<input type="password" id="password" name="password"  style="border-style:inset;" autocomplete="off" />
-					</div>
-					<div style="margin:10px">
-						<input type="checkbox" value='1' name="remember" id="remember" checked >
-						<label for="remember">
-							<?php echo (isset($LANG['REMEMBER'])?$LANG['REMEMBER']:'Remember me on this computer'); ?>
-						</label>
-					</div>
-					<div style="margin:15px;">
-						<input type="hidden" name="refurl" value="<?php echo $refUrl; ?>" />
-						<input type="hidden" id="resetpwd" name="resetpwd" value="">
-						<button name="action" type="submit" value="login"><?php echo (isset($LANG['SIGNIN'])?$LANG['SIGNIN']:'Sign In'); ?></button>
-					</div>
-				</fieldset>
-			<?php }?>
-		</form>
+	<div class="gridlike-form justify-center-full-screen" style="margin: 0;">
+		<div class="flex-item-login bottom-breathing-room-relative">
+			<form id="loginform" name="loginform" action="index.php" onsubmit="return checkCreds();" method="post">
+				<?php if($SYMBIOTA_LOGIN_ENABLED){ ?>
+					<fieldset class="profile-fieldset">
+						<legend class="profile-legend"><?php echo (isset($LANG['PORTAL_LOGIN'])?$LANG['PORTAL_LOGIN']:'Portal Login'); ?></legend>
+						<div>
+							<label for="login"><?php echo (isset($LANG['LOGIN_NAME'])?$LANG['LOGIN_NAME']:'Login'); ?>:</label> 
+							<input id="login" name="login" value="<?php echo $login; ?>" style="border-style:inset;" />
+						</div>
+						<div>
+							<label for="password"><?php echo (isset($LANG['PASSWORD'])?$LANG['PASSWORD']:"Password"); ?>:</label>
+							<input type="password" id="password" name="password"  style="border-style:inset;" autocomplete="off" />
+						</div>
+						<div>
+							<input type="checkbox" value='1' name="remember" id="remember" checked >
+							<label for="remember">
+								<?php echo (isset($LANG['REMEMBER'])?$LANG['REMEMBER']:'Remember me on this computer'); ?>
+							</label>
+						</div>
+						<div>
+							<input type="hidden" name="refurl" value="<?php echo $refUrl; ?>" />
+							<input type="hidden" id="resetpwd" name="resetpwd" value="">
+							<button name="action" type="submit" value="login"><?php echo (isset($LANG['SIGNIN'])?$LANG['SIGNIN']:'Sign In'); ?></button>
+						</div>
+					</fieldset>
+				<?php }?>
+			</form>
+		</div>
 		<?php 
 			if($THIRD_PARTY_OID_AUTH_ENABLED){
 				$_SESSION['refurl'] = array_key_exists('refurl', $_REQUEST) ? $_REQUEST['refurl'] : '';
 
 		?>
-			<div style="margin:15px;">
-			<form action='openIdAuth.php' onsubmit="">
-				<button type="submit" value="login"><?php echo (isset($LANG['OID_LOGIN'])?$LANG['OID_LOGIN']:'Login with OID'); ?></button>
-			</form>
+			<div class="flex-item-login bottom-breathing-room-relative">
+				<form action='openIdAuth.php' onsubmit="">
+					<fieldset  class="profile-fieldset">
+						<legend class="profile-legend"><?php echo (isset($LANG['THIRD_PARTY_LOGIN'])?$LANG['THIRD_PARTY_LOGIN']:'Login using third-party authentication'); ?></legend>
+						<div class="justify-center">
+							<button type="submit" value="login"><?php echo (isset($LANG['OID_LOGIN'])?$LANG['OID_LOGIN']:'Login with OID'); ?></button>
+						</div>
+					</fieldset>
+				</form>
 			</div>
 		<?php 
 			}
 		?>
-		<div style="width:300px;text-align:center;margin:20px;">
+		<div class="flex-item-login" style="text-align:center">
 			<?php 
 				$shouldBeAbleToCreatePublicUser = $SHOULD_BE_ABLE_TO_CREATE_PUBLIC_USER ?? true;
 				if($shouldBeAbleToCreatePublicUser){ 
