@@ -90,7 +90,7 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
 
   <!-- Gov banner END -->
   <!-- Logo  and Log-Text Begin -->
-  <div class="usa-nav-container" style="max-width:144rem; margin-left:0; margin-right: 0">
+  <div class="usa-nav-container" style="max-width:100%; margin-left:0; margin-right: 0">
     <div class="usa-navbar" style="margin-left:20rem;">
       <button class="usa-menu-btn">Menu</button>
       <div class="usa-logo" id="logo">
