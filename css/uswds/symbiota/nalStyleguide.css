@@ -13157,7 +13157,7 @@
 }
 
 .footer-wrapper .social-link--facebook {
-  background-image: url(/themes/custom/drupal-base-theme/images/social-icons/social-icon-facebook.svg);
+  background-image: url(../../../assets/uswds/img/social-icon-facebook.svg);
 }
 
 .footer-wrapper .social-link--flickr {
@@ -13169,11 +13169,11 @@
 }
 
 .footer-wrapper .social-link--twitter {
-  background-image: url(/themes/custom/drupal-base-theme/images/social-icons/social-icon-x.svg);
+  background-image: url(../../../assets/uswds/img/social-icon-x.svg);
 }
 
 .footer-wrapper .social-link--youtube {
-  background-image: url(/themes/custom/drupal-base-theme/images/social-icons/social-icon-youtube.svg);
+  background-image: url(../../../assets/uswds/img/social-icon-youtube.svg);
 }
 
 .footer-wrapper .social-link--rss {
