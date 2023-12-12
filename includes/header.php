@@ -133,11 +133,11 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
 
     <!-- Logo  and Log-Text End -->
     <nav role="navigation" class="usa-nav usa-color-primary-darkest">
-      <button class="usa-nav-close">
+      <button class="usa-menu-btn usa-nav-close">
         <img src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/close.svg" alt="close" />
       </button>
       
-      <ul class="usa-nav-primary usa-accordion" style="margin-left:17rem;">
+      <ul class="usa-nav-primary usa-accordion">
         <li>
           <button
             id="btnMenu-0"
