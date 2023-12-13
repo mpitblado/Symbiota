@@ -12,7 +12,10 @@ $collManager = new OccurrenceCollectionProfile();
 $collid = isset($_REQUEST['collid']) ? $collManager->sanitizeInt($_REQUEST['collid']) : 0;
 $occIndex = array_key_exists('occindex',$_REQUEST)?$_REQUEST['occindex']:0;
 $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT = $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT ?? false;
-$actionPage = $SHOULD_USE_HARVESTPARAMS ? ($CLIENT_ROOT . "/collections/harvestparams.php") : ($CLIENT_ROOT . "/collections/search/index.php");
+$actionPage = $SHOULD_USE_HARVESTPARAMS ? ("harvestparams.php") : ("/search/index.php");
+var_dump($actionPage);
+var_dump($CLIENT_ROOT);
+var_dump($SERVER_ROOT);
 
 $action = array_key_exists('action', $_REQUEST) ? $_REQUEST['action'] : '';
 $eMode = array_key_exists('emode', $_REQUEST) ? $collManager->sanitizeInt($_REQUEST['emode']) : 0;
@@ -601,7 +604,7 @@ if ($SYMB_UID) {
 			include('collprofilestats.php');
 			?>
 			<div style="margin-bottom: 2rem;">
-			<form action="<?php echo $actionPage ?>">
+			<form action="../<?php echo $actionPage ?>">
 				<input hidden id="'<?php 'coll-' . $collid . '-' ?>'" name="db[]" class="specobs" value='<?php echo $collid ?>' type="checkbox" onclick="selectAll(this);" checked />
 				<button type="submit" class="button button-primary">
 					<?php echo (isset($LANG['ADVANCED_SEARCH_THIS_COLLECTION'])?$LANG['ADVANCED_SEARCH_THIS_COLLECTION']:'Advanced Search this Collection'); ?>
