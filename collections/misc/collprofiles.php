@@ -13,9 +13,6 @@ $collid = isset($_REQUEST['collid']) ? $collManager->sanitizeInt($_REQUEST['coll
 $occIndex = array_key_exists('occindex',$_REQUEST)?$_REQUEST['occindex']:0;
 $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT = $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT ?? false;
 $actionPage = $SHOULD_USE_HARVESTPARAMS ? ("harvestparams.php") : ("/search/index.php");
-var_dump($actionPage);
-var_dump($CLIENT_ROOT);
-var_dump($SERVER_ROOT);
 
 $action = array_key_exists('action', $_REQUEST) ? $_REQUEST['action'] : '';
 $eMode = array_key_exists('emode', $_REQUEST) ? $collManager->sanitizeInt($_REQUEST['emode']) : 0;
