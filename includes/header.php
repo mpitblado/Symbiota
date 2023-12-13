@@ -4,6 +4,9 @@ else include_once($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php');
 include_once($SERVER_ROOT.'/classes/ProfileManager.php');
 $pHandler = new ProfileManager();
 $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
+
+$SHOULD_USE_HARVESTPARAMS = $SHOULD_USE_HARVESTPARAMS ?? true;
+$actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.php";
 ?>
 <a class="usa-skipnav" href="#main-content">Skip to main content</a>
 <header class="usa-header usa-header-basic footer-header-wrapper" role="banner">
@@ -163,16 +166,16 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
             aria-hidden="true"
           >
             <li>
-              <a href="<?php echo $CLIENT_ROOT?>/collections/harvestparams.php">Search All Collections</a>
+              <a href="<?php echo $CLIENT_ROOT?>/collections/<?php echo $actionPage ?>">Search All Collections</a>
             </li>
             <li>
-              <a href="<?php echo $CLIENT_ROOT?>/collections/harvestparams.php?db=<?php echo  $NA_COLLID?>">Search National Arboretum Herbarium</a>
+              <a href="<?php echo $CLIENT_ROOT?>/collections/<?php echo $actionPage ?>?db=<?php echo  $NA_COLLID?>">Search National Arboretum Herbarium</a>
             </li>
             <li>
-              <a href="<?php echo $CLIENT_ROOT?>/collections/harvestparams.php?db=<?php echo  $BARC_COLLID?>">Search National Seed Herbarium</a>
+              <a href="<?php echo $CLIENT_ROOT?>/collections/<?php echo $actionPage ?>?db=<?php echo  $BARC_COLLID?>">Search National Seed Herbarium</a>
             </li>
             <li>
-              <a href="<?php echo $CLIENT_ROOT?>/collections/harvestparams.php?db=<?php echo  $BPI_SNAPSHOT_COLLID?>">Search National Fungus Collections</a>
+              <a href="<?php echo $CLIENT_ROOT?>/collections/<?php echo $actionPage ?>?db=<?php echo  $BPI_SNAPSHOT_COLLID?>">Search National Fungus Collections</a>
             </li>
           </ul>
         </li>
