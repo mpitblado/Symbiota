@@ -1011,6 +1011,11 @@ table.styledtable tr.alt td {
   margin-right: auto;
 }
 
+button.no-margin-left,
+div.no-margin-left {
+  margin-left: 0;
+}
+
 /* USDA ********************************************************************************/
 
 .card-image {
