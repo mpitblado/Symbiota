@@ -278,6 +278,9 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
             }
           ?>
           <li>
+            <a title="My Profile" href="<?php echo $CLIENT_ROOT ?>/profile/viewprofile.php"><b>My Profile</b></a>
+          </li>
+          <li>
             <a title="ARS Home" href="https://www.ars.usda.gov/"><b>ARS Home</b></a>
           </li>
           <li>
@@ -287,9 +290,9 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
               </b>
             </a>
           </li>
-          <li>
+          <!-- <li>
             <a title="About ARS" href="https://www.ars.usda.gov/about-ars/"><b>About ARS</b></a>
-          </li>
+          </li> -->
           <?php
             if($USER_DISPLAY_NAME){
           ?>
