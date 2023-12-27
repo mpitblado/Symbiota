@@ -30,7 +30,7 @@
 /* Global styles
    ========================================================================== */
 html {
-  font-size: 10px; /*0.7rem; /* 1rem = 10px */
+  font-size: 14px; /*0.7rem; /* 1rem = 10px */
 }
 
 body {
@@ -107,7 +107,7 @@ hr {
 }
 
 #innertext {
-  margin: 0 auto;
+  margin: auto;
   padding: 3rem 0;
   background-color: var(--body-bg-color);
   width: 90%;
