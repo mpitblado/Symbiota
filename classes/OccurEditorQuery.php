@@ -481,36 +481,6 @@ class OccurEditorQuery extends OccurEditorBase {
 		return $sqlFrag;
 	}
 
-	private function setSqlOrderBy(&$sql){
-		if(isset($this->qryArr['orderby'])){
-			$sqlOrderBy = '';
-			$orderBy = $this->cleanInStr($this->qryArr['orderby']);
-			if($orderBy == 'catalognumber'){
-				if($this->catNumIsNum){
-					$sqlOrderBy = 'catalogNumber+1';
-				}
-				else{
-					$sqlOrderBy = 'catalogNumber';
-				}
-			}
-			elseif($orderBy == 'othercatalognumbers'){
-				if($this->otherCatNumIsNum){
-					$sqlOrderBy = 'othercatalognumbers+1';
-				}
-				else{
-					$sqlOrderBy = 'othercatalognumbers';
-				}
-			}
-			elseif($orderBy == 'recordnumber'){
-				$sqlOrderBy = 'recordnumber+1';
-			}
-			else{
-				$sqlOrderBy = $orderBy;
-			}
-			if($sqlOrderBy) $sql .= 'ORDER BY (o.'.$sqlOrderBy.') '.$this->qryArr['orderbydir'].' ';
-		}
-	}
-
 	public function getQueryRecordCount($reset = 0){
 		if(!$reset && array_key_exists('rc',$this->qryArr)) return $this->qryArr['rc'];
 		$recCnt = false;
@@ -683,122 +653,34 @@ class OccurEditorQuery extends OccurEditorBase {
 		}
 	}
 
-	private function setAdditionalIdentifiers(&$occurrenceArr){
-		if($occurrenceArr){
-			//Set identifiers for all occurrences
-			$identifierArr = $this->getIdentifiers(implode(',',array_keys($occurrenceArr)));
-			foreach($identifierArr as $occid => $iArr){
-				$occurrenceArr[$occid]['identifiers'] = $iArr;
-			}
-			//Iterate through occurrences and merge addtional identifiers and otherCatalogNumbers field values
-			foreach($occurrenceArr as $occid => $occurArr){
-				$otherCatNumArr = array();
-				$trimmableOccurArr = $occurArr['othercatalognumbers'] ?? "";
-				if($ocnStr = trim($trimmableOccurArr,',;| ')){
-					$ocnStr = str_replace(array(',',';'),'|',$ocnStr);
-					$ocnArr = explode('|',$ocnStr);
-					foreach($ocnArr as $identUnit){
-						$trimmableIdentUnit = $identUnit ?? "";
-						$unitArr = explode(':',trim($trimmableIdentUnit,': '));
-						$safeUnitArr = $unitArr ?? array();
-						$tag = '';
-						$trimmableShiftedUnitArr = array_shift($safeUnitArr) ?? "";
-						if(count($safeUnitArr) > 1) $tag = trim($trimmableShiftedUnitArr);
-						$value = trim(implode(', ',$safeUnitArr));
-						$otherCatNumArr[$value] = $tag;
-					}
+	private function setSqlOrderBy(&$sql){
+		if(isset($this->qryArr['orderby'])){
+			$sqlOrderBy = '';
+			$orderBy = $this->cleanInStr($this->qryArr['orderby']);
+			if($orderBy == 'catalognumber'){
+				if($this->catNumIsNum){
+					$sqlOrderBy = 'catalogNumber+1';
 				}
-				if(isset($occurArr['identifiers'])){
-					//Remove otherCatalogNumber values that are already within the omoccuridentifiers
-					foreach($occurArr['identifiers'] as $idKey => $idArr){
-						$idName = $idArr['name'];
-						$idValue = $idArr['value'];
-						if(array_key_exists($idValue, $otherCatNumArr)){
-							if(!$idName && $otherCatNumArr[$idValue]) $occurrenceArr[$occid]['identifiers'][$idKey]['name'] = $otherCatNumArr[$idValue];
-							unset($otherCatNumArr[$idValue]);
-						}
-					}
-				}
-				$newCnt = 0;
-				foreach($otherCatNumArr as $newValue => $newTag){
-					$occurrenceArr[$occid]['identifiers']['ocnid-'.$newCnt]['value'] = $newValue;
-					$occurrenceArr[$occid]['identifiers']['ocnid-'.$newCnt]['name'] = $newTag;
-					$newCnt++;
+				else{
+					$sqlOrderBy = 'catalogNumber';
 				}
 			}
-			foreach($occurrenceArr as $occid => $occurArr){
-				if(isset($occurArr['identifiers'])){
-					$idStr = '';
-					foreach($occurArr['identifiers'] as $idValueArr){
-						if($idValueArr['name']) $idStr .= $idValueArr['name'].': ';
-						$idStr .= $idValueArr['value'].', ';
-					}
-					$occurrenceArr[$occid]['othercatalognumbers'] = trim($idStr,', ');
+			elseif($orderBy == 'othercatalognumbers'){
+				if($this->otherCatNumIsNum){
+					$sqlOrderBy = 'othercatalognumbers+1';
+				}
+				else{
+					$sqlOrderBy = 'othercatalognumbers';
 				}
 			}
-		}
-	}
-
-	public function getLoanData(){
-		$retArr = array();
-		if($this->occid){
-			$sql = 'SELECT l.loanid, l.datedue, i.institutioncode '.
-				'FROM omoccurloanslink ll INNER JOIN omoccurloans l ON ll.loanid = l.loanid '.
-				'INNER JOIN institutions i ON l.iidBorrower = i.iid '.
-				'WHERE ll.returndate IS NULL AND l.dateclosed IS NULL AND occid = '.$this->occid;
-			$rs = $this->conn->query($sql);
-			while($r = $rs->fetch_object()){
-				$retArr['id'] = $r->loanid;
-				$retArr['date'] = $r->datedue;
-				$retArr['code'] = $r->institutioncode;
+			elseif($orderBy == 'recordnumber'){
+				$sqlOrderBy = 'recordnumber+1';
 			}
-			$rs->free();
-		}
-		return $retArr;
-	}
-
-	private function setPaleoData(){
-		if($this->paleoActivated){
-			$sql = 'SELECT '.implode(',',$this->fieldArr['omoccurpaleo']).' FROM omoccurpaleo WHERE occid = '.$this->occid;
-			//echo $sql;
-			$rs = $this->conn->query($sql);
-			if($r = $rs->fetch_assoc()){
-				foreach($this->fieldArr['omoccurpaleo'] as $term){
-					$this->occurrenceMap[$this->occid][$term] = $r[$term];
-				}
+			else{
+				$sqlOrderBy = $orderBy;
 			}
-			$rs->free();
+			if($sqlOrderBy) $sql .= 'ORDER BY (o.'.$sqlOrderBy.') '.$this->qryArr['orderbydir'].' ';
 		}
-	}
-
-	public function getExsiccati(){
-		$retArr = array();
-		if(isset($GLOBALS['ACTIVATE_EXSICCATI']) && $GLOBALS['ACTIVATE_EXSICCATI'] && $this->occid){
-			$sql = 'SELECT l.notes, l.ranking, l.omenid, n.exsnumber, t.ometid, t.title, t.abbreviation, t.editor '.
-				'FROM omexsiccatiocclink l INNER JOIN omexsiccatinumbers n ON l.omenid = n.omenid '.
-				'INNER JOIN omexsiccatititles t ON n.ometid = t.ometid '.
-				'WHERE l.occid = '.$this->occid;
-			//echo $sql;
-			$rs = $this->conn->query($sql);
-			if($r = $rs->fetch_object()){
-				$retArr['ometid'] = $r->ometid;
-				$retArr['exstitle'] = $r->title.($r->abbreviation?' ['.$r->abbreviation.']':'');
-				$retArr['exsnumber'] = $r->exsnumber;
-			}
-			$rs->free();
-		}
-		return $retArr;
-	}
-
-	public function getExsiccatiTitleArr(){
-		$retArr = array();
-		$sql = 'SELECT ometid, title, abbreviation FROM omexsiccatititles ORDER BY title ';
-		//echo $sql;
-		$rs = $this->conn->query($sql);
-		while ($r = $rs->fetch_object()) {
-			$retArr[$r->ometid] = $this->cleanOutStr($r->title.($r->abbreviation?' ['.$r->abbreviation.']':''));
-		}
-		return $retArr;
 	}
 
 	public function getObserverUid(){
@@ -817,7 +699,8 @@ class OccurEditorQuery extends OccurEditorBase {
 		return $obsId;
 	}
 
-	public function batchUpdateField($fieldName,$oldValue,$newValue,$buMatch){
+	//Batch update functions
+	public function batchUpdateField($fieldName, $oldValue, $newValue, $buMatch){
 		global $LANG;
 		$statusStr = '';
 		$fn = $this->cleanInStr($fieldName);
@@ -1257,133 +1140,6 @@ class OccurEditorQuery extends OccurEditorBase {
 		return $retArr;
 	}
 
-	//Edit locking functions (session variables)
-	public function getLock(){
-		$isLocked = false;
-		//Check lock
-		$delSql = 'DELETE FROM omoccureditlocks WHERE (ts < '.(time()-900).') OR (uid = '.$GLOBALS['SYMB_UID'].')';
-		if(!$this->conn->query($delSql)) return false;
-		//Try to insert lock for , existing lock is assumed if fails
-		$sql = 'INSERT INTO omoccureditlocks(occid,uid,ts) VALUES ('.$this->occid.','.$GLOBALS['SYMB_UID'].','.time().')';
-		if(!$this->conn->query($sql)){
-			$isLocked = true;
-		}
-		return $isLocked;
-	}
-
-	/*
-	 * Return: 0 = false, 2 = full editor, 3 = taxon editor, but not for this collection
-	 */
-	public function isTaxonomicEditor(){
-		global $USER_RIGHTS;
-		$isEditor = 0;
-
-		//Get list of userTaxonomyIds that user has been aproved for this collection
-		$udIdArr = array();
-		if(array_key_exists('CollTaxon',$USER_RIGHTS)){
-			foreach($USER_RIGHTS['CollTaxon'] as $vStr){
-				$tok = explode(':',$vStr);
-				if($tok[0] == $this->collId){
-					//Collect only userTaxonomyIds that are relevant to current collid
-					$udIdArr[] = $tok[1];
-				}
-			}
-		}
-		//Grab taxonomic node id and geographic scopes
-		$editTidArr = array();
-		$sqlut = 'SELECT idusertaxonomy, tid, geographicscope '.
-			'FROM usertaxonomy '.
-			'WHERE editorstatus = "OccurrenceEditor" AND uid = '.$GLOBALS['SYMB_UID'];
-		//echo $sqlut;
-		$rsut = $this->conn->query($sqlut);
-		while($rut = $rsut->fetch_object()){
-			if(in_array('all',$udIdArr) || in_array($rut->idusertaxonomy,$udIdArr)){
-				//Is an approved editor for given collection
-				$editTidArr[2][$rut->tid] = $rut->geographicscope;
-			}
-			else{
-				//Is a taxonomic editor, but not explicitly approved for this collection
-				$editTidArr[3][$rut->tid] = $rut->geographicscope;
-			}
-		}
-		$rsut->free();
-		//Get relevant tids for active occurrence
-		if($editTidArr){
-			$occTidArr = array();
-			$tid = 0;
-			$sciname = '';
-			$family = '';
-			if($this->occurrenceMap && $this->occurrenceMap['tidinterpreted']){
-				$tid = $this->occurrenceMap['tidinterpreted'];
-				$sciname = $this->occurrenceMap['sciname'];
-				$family = $this->occurrenceMap['family'];
-			}
-			if(!$tid && !$sciname && !$family){
-				$sql = 'SELECT tidinterpreted, sciname, family '.
-					'FROM omoccurrences '.
-					'WHERE occid = '.$this->occid;
-				$rs = $this->conn->query($sql);
-				while($r = $rs->fetch_object()){
-					$tid = $r->tidinterpreted;
-					$sciname = $r->sciname;
-					$family = $r->family;
-				}
-				$rs->free();
-			}
-			//Get relevant tids
-			if($tid){
-				$occTidArr[] = $tid;
-				$rs2 = $this->conn->query('SELECT parenttid FROM taxaenumtree WHERE (taxauthid = 1) AND (tid = '.$tid.')');
-				while($r2 = $rs2->fetch_object()){
-					$occTidArr[] = $r2->parenttid;
-				}
-				$rs2->free();
-			}
-			elseif($sciname || $family){
-				//Get all relevant tids within the taxonomy hierarchy
-				$sqlWhere = '';
-				if($sciname){
-					//Try to isolate genus
-					$taxon = $sciname;
-					$tok = explode(' ',$sciname);
-					if(count($tok) > 1){
-						if(strlen($tok[0]) > 2) $taxon = $tok[0];
-					}
-					$sqlWhere .= '(t.sciname = "'.$this->cleanInStr($taxon).'") ';
-				}
-				elseif($family){
-					$sqlWhere .= '(t.sciname = "'.$this->cleanInStr($family).'") ';
-				}
-				if($sqlWhere){
-					$sql2 = 'SELECT e.parenttid '.
-						'FROM taxaenumtree e INNER JOIN taxa t ON e.tid = t.tid '.
-						'WHERE e.taxauthid = 1 AND ('.$sqlWhere.')';
-					//echo $sql2;
-					$rs2 = $this->conn->query($sql2);
-					while($r2 = $rs2->fetch_object()){
-						$occTidArr[] = $r2->parenttid;
-					}
-					$rs2->free();
-				}
-			}
-			if($occTidArr){
-				//Check to see if approved tids have overlap
-				if(array_key_exists(2,$editTidArr) && array_intersect(array_keys($editTidArr[2]),$occTidArr)){
-					$isEditor = 2;
-					//TODO: check to see if specimen is within geographic scope
-				}
-				//If not, check to see if unapproved tids have overlap (e.g. taxon editor, but w/o explicit rights
-				if(!$isEditor){
-					if(array_key_exists(3,$editTidArr) && array_intersect(array_keys($editTidArr[3]),$occTidArr)){
-						$isEditor = 3;
-						//TODO: check to see if specimen is within geographic scope
-					}
-				}
-			}
-		}
-		return $isEditor;
-	}
-
 	//Misc data support functions
 	public function getCollectionList($limitToUser = true){
 		$retArr = array();
@@ -1531,28 +1287,5 @@ class OccurEditorQuery extends OccurEditorBase {
 		return $this->isPersonalManagement;
 	}
 
-	//Misc functions
-	private function encodeStrTargeted($inStr,$inCharset,$outCharset){
-		if($inCharset == $outCharset) return $inStr;
-		$retStr = $inStr;
-		if($inCharset == "latin" && $outCharset == 'utf8'){
-			if(mb_detect_encoding($retStr,'UTF-8,ISO-8859-1',true) == "ISO-8859-1"){
-				$retStr = utf8_encode($retStr);
-			}
-		}
-		elseif($inCharset == "utf8" && $outCharset == 'latin'){
-			if(mb_detect_encoding($retStr,'UTF-8,ISO-8859-1') == "UTF-8"){
-				$retStr = utf8_decode($retStr);
-			}
-		}
-		return $retStr;
-	}
-
-	protected function cleanOutArr(&$arr){
-		foreach($arr as $k => $v){
-			if(is_array($v)) $this->cleanOutArr($arr[$k]);
-			else $arr[$k] = $this->cleanOutStr($v);
-		}
-	}
 }
 ?>

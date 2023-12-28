@@ -4,14 +4,8 @@ include_once($SERVER_ROOT.'/classes/UuidFactory.php');
 
 class OccurEditorEdit extends OccurEditorBase {
 
-	private $occIndex = 0;
-	private $direction = '';
-	private $occidIndexArr = array();
 	private $sqlWhere;
 
-	private $otherCatNumIsNum = false;
-	private $qryArr = array();
-	private $crowdSourceMode = 0;
 	protected $isPersonalManagement = false;	//e.g. General Observations and owned by user
 	private $catNumIsNum;
 	protected $errorArr = array();
@@ -935,93 +929,6 @@ class OccurEditorEdit extends OccurEditorBase {
 		return $obsId;
 	}
 
-	public function batchUpdateField($fieldName,$oldValue,$newValue,$buMatch){
-		global $LANG;
-		$statusStr = '';
-		$fn = $this->cleanInStr($fieldName);
-		$ov = $this->conn->real_escape_string($oldValue);
-		$nv = $this->conn->real_escape_string($newValue);
-		if($fn && ($ov || $nv)){
-			//Get occids (where statement can't be part of UPDATE query without error being thrown)
-			$occidArr = array();
-			$sqlOccid = 'SELECT DISTINCT o.occid FROM omoccurrences o ';
-			$this->addTableJoins($sqlOccid);
-			$sqlOccid .= $this->getBatchUpdateWhere($fn,$ov,$buMatch);
-			//echo $sqlOccid.'<br/>';
-			$rs = $this->conn->query($sqlOccid);
-			while($r = $rs->fetch_object()){
-				$occidArr[] = $r->occid;
-			}
-			$rs->free();
-			//Batch update records
-			if($occidArr){
-				//Set full replace or replace fragment
-				$nvSqlFrag = '';
-				if(!$buMatch || $ov===''){
-					$nvSqlFrag = ($nv===''?'NULL':'"'.trim($nv).'"');
-				}
-				else{
-					//Selected "Match any part of field"
-					$nvSqlFrag = 'REPLACE('.$fn.',"'.$ov.'","'.$nv.'")';
-				}
-
-				$sqlWhere = 'WHERE occid IN('.implode(',',$occidArr).')';
-				//Add edits to the omoccuredit table
-				$sql = 'INSERT INTO omoccuredits(occid,fieldName,fieldValueOld,fieldValueNew,appliedStatus,uid,editType) '.
-					'SELECT occid, "'.$fn.'" AS fieldName, IFNULL('.$fn.',"") AS oldValue, IFNULL('.$nvSqlFrag.',"") AS newValue, '.
-					'1 AS appliedStatus, '.$GLOBALS['SYMB_UID'].' AS uid, 1 FROM omoccurrences '.$sqlWhere;
-				if(!$this->conn->query($sql)){
-					$statusStr = $LANG['ERROR_ADDING_UPDATE'].': '.$this->conn->error;
-				}
-				//Apply edits to core tables
-				if($this->paleoActivated && array_key_exists($fn, $this->fieldArr['omoccurpaleo'])){
-					$sql = 'UPDATE omoccurpaleo SET '.$fn.' = '.$nvSqlFrag.' '.$sqlWhere;
-				}
-				else{
-					$sql = 'UPDATE omoccurrences SET '.$fn.' = '.$nvSqlFrag.' '.$sqlWhere;
-				}
-				if(!$this->conn->query($sql)){
-					$statusStr = $LANG['ERROR_APPLYING_BATCH_EDITS'].': '.$this->conn->error;
-				}
-			}
-			else{
-				$statusStr = $LANG['ERROR_BATCH_NO_RECORDS'];
-			}
-		}
-		return $statusStr;
-	}
-
-	public function getBatchUpdateCount($fieldName,$oldValue,$buMatch){
-		$retCnt = 0;
-
-		$fn = $this->cleanInStr($fieldName);
-		$ov = $this->conn->real_escape_string($oldValue);
-
-		$sql = 'SELECT COUNT(DISTINCT o.occid) AS retcnt FROM omoccurrences o ';
-		$this->addTableJoins($sql);
-		$sql .= $this->getBatchUpdateWhere($fn,$ov,$buMatch);
-
-		$result = $this->conn->query($sql);
-		while ($row = $result->fetch_object()) {
-			$retCnt = $row->retcnt;
-		}
-		$result->free();
-		return $retCnt;
-	}
-
-	private function getBatchUpdateWhere($fn,$ov,$buMatch){
-		$sql = $this->sqlWhere;
-
-		if(!$buMatch || $ov===''){
-			$sql .= ' AND (o.'.$fn.' '.($ov===''?'IS NULL':'= "'.$ov.'"').') ';
-		}
-		else{
-			//Selected "Match any part of field"
-			$sql .= ' AND (o.'.$fn.' LIKE "%'.$ov.'%") ';
-		}
-		return $sql;
-	}
-
 	public function carryOverValues($fArr){
 		$locArr = Array('recordedby','associatedcollectors','eventdate','eventdate2','verbatimeventdate','month','day','year',
 			'startdayofyear','enddayofyear','country','stateprovince','county','municipality','locationid','locality','decimallatitude','decimallongitude',
@@ -1397,119 +1304,6 @@ class OccurEditorEdit extends OccurEditorBase {
 		return $isLocked;
 	}
 
-	/*
-	 * Return: 0 = false, 2 = full editor, 3 = taxon editor, but not for this collection
-	 */
-	public function isTaxonomicEditor(){
-		global $USER_RIGHTS;
-		$isEditor = 0;
-
-		//Get list of userTaxonomyIds that user has been aproved for this collection
-		$udIdArr = array();
-		if(array_key_exists('CollTaxon',$USER_RIGHTS)){
-			foreach($USER_RIGHTS['CollTaxon'] as $vStr){
-				$tok = explode(':',$vStr);
-				if($tok[0] == $this->collId){
-					//Collect only userTaxonomyIds that are relevant to current collid
-					$udIdArr[] = $tok[1];
-				}
-			}
-		}
-		//Grab taxonomic node id and geographic scopes
-		$editTidArr = array();
-		$sqlut = 'SELECT idusertaxonomy, tid, geographicscope '.
-			'FROM usertaxonomy '.
-			'WHERE editorstatus = "OccurrenceEditor" AND uid = '.$GLOBALS['SYMB_UID'];
-		//echo $sqlut;
-		$rsut = $this->conn->query($sqlut);
-		while($rut = $rsut->fetch_object()){
-			if(in_array('all',$udIdArr) || in_array($rut->idusertaxonomy,$udIdArr)){
-				//Is an approved editor for given collection
-				$editTidArr[2][$rut->tid] = $rut->geographicscope;
-			}
-			else{
-				//Is a taxonomic editor, but not explicitly approved for this collection
-				$editTidArr[3][$rut->tid] = $rut->geographicscope;
-			}
-		}
-		$rsut->free();
-		//Get relevant tids for active occurrence
-		if($editTidArr){
-			$occTidArr = array();
-			$tid = 0;
-			$sciname = '';
-			$family = '';
-			if($this->occurrenceMap && $this->occurrenceMap['tidinterpreted']){
-				$tid = $this->occurrenceMap['tidinterpreted'];
-				$sciname = $this->occurrenceMap['sciname'];
-				$family = $this->occurrenceMap['family'];
-			}
-			if(!$tid && !$sciname && !$family){
-				$sql = 'SELECT tidinterpreted, sciname, family '.
-					'FROM omoccurrences '.
-					'WHERE occid = '.$this->occid;
-				$rs = $this->conn->query($sql);
-				while($r = $rs->fetch_object()){
-					$tid = $r->tidinterpreted;
-					$sciname = $r->sciname;
-					$family = $r->family;
-				}
-				$rs->free();
-			}
-			//Get relevant tids
-			if($tid){
-				$occTidArr[] = $tid;
-				$rs2 = $this->conn->query('SELECT parenttid FROM taxaenumtree WHERE (taxauthid = 1) AND (tid = '.$tid.')');
-				while($r2 = $rs2->fetch_object()){
-					$occTidArr[] = $r2->parenttid;
-				}
-				$rs2->free();
-			}
-			elseif($sciname || $family){
-				//Get all relevant tids within the taxonomy hierarchy
-				$sqlWhere = '';
-				if($sciname){
-					//Try to isolate genus
-					$taxon = $sciname;
-					$tok = explode(' ',$sciname);
-					if(count($tok) > 1){
-						if(strlen($tok[0]) > 2) $taxon = $tok[0];
-					}
-					$sqlWhere .= '(t.sciname = "'.$this->cleanInStr($taxon).'") ';
-				}
-				elseif($family){
-					$sqlWhere .= '(t.sciname = "'.$this->cleanInStr($family).'") ';
-				}
-				if($sqlWhere){
-					$sql2 = 'SELECT e.parenttid '.
-						'FROM taxaenumtree e INNER JOIN taxa t ON e.tid = t.tid '.
-						'WHERE e.taxauthid = 1 AND ('.$sqlWhere.')';
-					//echo $sql2;
-					$rs2 = $this->conn->query($sql2);
-					while($r2 = $rs2->fetch_object()){
-						$occTidArr[] = $r2->parenttid;
-					}
-					$rs2->free();
-				}
-			}
-			if($occTidArr){
-				//Check to see if approved tids have overlap
-				if(array_key_exists(2,$editTidArr) && array_intersect(array_keys($editTidArr[2]),$occTidArr)){
-					$isEditor = 2;
-					//TODO: check to see if specimen is within geographic scope
-				}
-				//If not, check to see if unapproved tids have overlap (e.g. taxon editor, but w/o explicit rights
-				if(!$isEditor){
-					if(array_key_exists(3,$editTidArr) && array_intersect(array_keys($editTidArr[3]),$occTidArr)){
-						$isEditor = 3;
-						//TODO: check to see if specimen is within geographic scope
-					}
-				}
-			}
-		}
-		return $isEditor;
-	}
-
 	//Misc data support functions
 	public function getCollectionList($limitToUser = true){
 		$retArr = array();
@@ -1623,42 +1417,8 @@ class OccurEditorEdit extends OccurEditorBase {
 	}
 
 	//Setters and getters
-	public function setOccIndex($index){
-		if(is_numeric($index)){
-			$this->occIndex = $index;
-		}
-	}
-
-	public function getOccIndex(){
-		return $this->occIndex;
-	}
-
-	public function setDirection($cnt){
-		if(is_numeric($cnt) && $cnt){
-			$this->direction = $cnt;
-		}
-	}
-
-	private function setOccidIndexArr($occidStr){
-		if(preg_match('/^[,\d]+$/', $occidStr)){
-			$this->occidIndexArr = explode(',',$occidStr);
-		}
-	}
-
-	public function getOccidIndexStr(){
-		return implode(',', $this->occidIndexArr);
-	}
-
-	public function getQueryVariables(){
-		return $this->qryArr;
-	}
-
 	public function isPersonalManagement(){
 		return $this->isPersonalManagement;
-	}
-
-	public function setCrowdSourceMode($m){
-		if(is_numeric($m)) $this->crowdSourceMode = $m;
 	}
 
 	//Misc functions
@@ -1678,11 +1438,5 @@ class OccurEditorEdit extends OccurEditorBase {
 		return $retStr;
 	}
 
-	protected function cleanOutArr(&$arr){
-		foreach($arr as $k => $v){
-			if(is_array($v)) $this->cleanOutArr($arr[$k]);
-			else $arr[$k] = $this->cleanOutStr($v);
-		}
-	}
 }
 ?>
