@@ -21,21 +21,25 @@ $occManager = new OccurrenceSupport();
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET; ?>">
 	<title><?php echo $DEFAULT_TITLE; ?> Occurrence Search Page</title>
-	<link href="<?php echo $CSS_BASE_PATH; ?>/jquery-ui.css" type="text/css" rel="stylesheet">
+	<link href="<?php echo htmlspecialchars($CSS_BASE_PATH, HTML_SPECIAL_CHARS_FLAGS); ?>/jquery-ui.css" type="text/css" rel="stylesheet">
 	<?php
 	include_once($SERVER_ROOT.'/includes/head.php');
 	?>
 	<script src="../../js/jquery.js" type="text/javascript"></script>
 	<script src="../../js/jquery-ui.js" type="text/javascript"></script>
 	<script type="text/javascript">
-	    function updateParentForm(occId) {
-	        opener.document.getElementById("imgdisplay-<?php echo $targetId;?>").value = occId;
-	        opener.document.getElementById("imgoccid-<?php echo $targetId;?>").value = occId;
-	        self.close();
-	        return false;
-	    }
+		function updateParentForm(occId) {
+			if(opener.document.getElementById("imgdisplay-<?php echo $targetId;?>")){
+				opener.document.getElementById("imgdisplay-<?php echo $targetId;?>").value = occId;
+			}
+			if(opener.document.getElementById("imgoccid-<?php echo $targetId;?>")){
+				opener.document.getElementById("imgoccid-<?php echo $targetId;?>").value = occId;
+			}
+			self.close();
+			return false;
+		}
 
-	    function verifyOccurSearchForm(f){
+		function verifyOccurSearchForm(f){
 			if(!f.collid.value){
 				alert("You must select target collection");
 				return false;
@@ -45,14 +49,14 @@ $occManager = new OccurrenceSupport();
 				return false;
 			}
 			return true;
-	    }
+		}
 
-	    function linkToNewOccurrence(f){
-		    if(!f.collid.value){
+		function linkToNewOccurrence(f){
+			if(!f.collid.value){
 				alert("You must select target collection");
 				return false;
-		    }
-		    else{
+			}
+			else{
 				$.ajax({
 					type: "POST",
 					url: "../editor/rpc/occurAddData.php",
@@ -66,23 +70,23 @@ $occManager = new OccurrenceSupport();
 						alert("Unable to create new record due to error ("+retObj.error+"). Contact portal administrator");
 					}
 				});
-		    }
+			}
 		}
 
-	    function isNumeric(inStr){
-	       	var validChars = "0123456789-.";
-	       	var isNumber = true;
-	       	var charVar;
+		function isNumeric(inStr){
+		   	var validChars = "0123456789-.";
+		   	var isNumber = true;
+		   	var charVar;
 
-	       	for(var i = 0; i < inStr.length && isNumber == true; i++){
-	       		charVar = inStr.charAt(i);
-	    		if(validChars.indexOf(charVar) == -1){
-	    			isNumber = false;
-	    			break;
-	          	}
-	       	}
-	    	return isNumber;
-	    }
+		   	for(var i = 0; i < inStr.length && isNumber == true; i++){
+		   		charVar = inStr.charAt(i);
+				if(validChars.indexOf(charVar) == -1){
+					isNumber = false;
+					break;
+			  	}
+		   	}
+			return isNumber;
+		}
 	</script>
 	<style type="text/css">
 		body{ width: 700px; min-width: 400px; }
@@ -95,7 +99,7 @@ $occManager = new OccurrenceSupport();
 	<div id="innertext">
 		<?php
 		if($collEditorArr){
-			$collArr = $occManager->getCollectionArr($IS_ADMIN?'':$collEditorArr);
+			$collArr = $occManager->getCollectionArr($IS_ADMIN?null:$collEditorArr);
 			?>
 			<form name="occform" action="occurrencesearch.php" method="post" onsubmit="return verifyOccurSearchForm(this)" >
 				<fieldset>
@@ -131,7 +135,7 @@ $occManager = new OccurrenceSupport();
 						<div style="float:left;"><input name="recordnumber" type="text" value="<?php echo $recordNumber; ?>" /></div>
 					</div>
 					<div style="clear:both;padding:2px;">
-						<input name="action" type="submit" value="Search Occurrences" />
+						<button name="action" type="submit" value="Search Occurrences">Search Occurrences</button>
 						<input type="hidden" name="targetid" value="<?php echo $targetId;?>" />
 					</div>
 				</fieldset>

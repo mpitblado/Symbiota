@@ -1,14 +1,16 @@
 <?php
 include_once('../../../config/symbini.php');
-include_once($SERVER_ROOT.'/classes/OccurrenceEditorMaterialSample.php');
-include_once($SERVER_ROOT.'/content/lang/collections/fieldterms/materialSampleVars.'.$LANG_TAG.'.php');
+include_once($SERVER_ROOT . '/classes/OmMaterialSample.php');
+include_once($SERVER_ROOT . '/content/lang/collections/fieldterms/materialSampleVars.' . $LANG_TAG . '.php');
+if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/editor/includes/materialsampleinclude.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT . '/content/lang/collections/editor/includes/materialsampleinclude.' . $LANG_TAG . '.php');
+else include_once($SERVER_ROOT . '/content/lang/collections/editor/includes/materialsampleinclude.en.php');
 header('Content-Type: text/html; charset='.$CHARSET);
 
 $occid = $_REQUEST['occid'];
 $collid = isset($_REQUEST['collid'])?$_REQUEST['collid']:'';
 $occIndex = $_REQUEST['occindex'];
 
-$materialSampleManager = new OccurrenceEditorMaterialSample();
+$materialSampleManager = new OmMaterialSample();
 
 //Sanitation
 if(!is_numeric($occid)) $occid = 0;
@@ -40,7 +42,7 @@ $controlTermArr = $materialSampleManager->getMSTypeControlValues();
 			change: function( event, ui ) {
 				if(ui.item === null) {
 					$(this.form.ms_preparedByUid).val("");
-					if(this.value != "") alert("You must select a user from the list. If user is not in the system, enter information into preparation detials.");
+					if(this.value != "") alert("<?php echo $LANG['SEL_USER']; ?>");
 				}
 			},
 			select: function( event, ui ) {
@@ -49,8 +51,8 @@ $controlTermArr = $materialSampleManager->getMSTypeControlValues();
 		});
 	});
 </script>
-<link href="<?php echo $CSS_BASE_PATH; ?>/jquery-ui.css" type="text/css" rel="stylesheet" />
-<link href="<?php echo $CSS_BASE_PATH; ?>/symbiota/collections/editor/occureditormaterialsample.css" type="text/css" rel="stylesheet" >
+<link href="<?php echo htmlspecialchars($CSS_BASE_PATH, HTML_SPECIAL_CHARS_FLAGS); ?>/jquery-ui.css" type="text/css" rel="stylesheet" />
+<link href="<?php echo htmlspecialchars($CSS_BASE_PATH, HTML_SPECIAL_CHARS_FLAGS); ?>/symbiota/collections/editor/occureditormaterialsample.css" type="text/css" rel="stylesheet" >
 <style type="text/css">
 	botton { margin: 10px; }
 	.edit-control{ float:right; }
@@ -74,7 +76,7 @@ $controlTermArr = $materialSampleManager->getMSTypeControlValues();
 			$matSampleID = 0;
 			if($msArr) $matSampleID = $msArr['matSampleID'];
 			if($matSampleID){
-				echo '<fieldset><legend>Material Sample</legend>';
+				echo '<fieldset><legend>' . $LANG['MAT_SAMP'] . '</legend>';
 				?>
 				<div class="edit-control">
 					<span><a href="#" onclick="$('#formDiv-<?php echo $matSampleID; ?>').toggle()"><img src="../../images/edit.png" /></a></span>
@@ -90,18 +92,18 @@ $controlTermArr = $materialSampleManager->getMSTypeControlValues();
 			<div id="formDiv-<?php echo $matSampleID; ?>" style="display:<?php echo ($msCnt?'none':'block'); ?>">
 				<?php
 				if($matSampleID) echo '<hr/>';
-				else echo '<fieldset><legend>Add New Sample</legend>';
+				else echo '<fieldset><legend>' . $LANG['ADD_SAMPLE'] . '</legend>';
 				?>
 				<form name="matSampleForm-<?php echo $matSampleID; ?>" action="occurrenceeditor.php" method="post" >
 					<div style="clear:both">
-						<section class="spaced">
-							<label for="ms_sampleType"><?php echo $MS_LABEL_ARR['sampleType']; ?>: </label>
+						<div class="smSampleTypeDiv">
+							<label><?php echo $MS_LABEL_ARR['sampleType']; ?>: </label>
 							<span class="edit-elem">
 								<?php
 								if(isset($controlTermArr['ommaterialsample']['sampleType'])){
 									$limitToList = $controlTermArr['ommaterialsample']['sampleType']['l'];
 									?>
-									<select name="ms_sampleType" id="ms_sampleType" required>
+									<select name="ms_sampleType" required>
 										<option value="">-------</option>
 										<?php
 										foreach($controlTermArr['ommaterialsample']['sampleType']['t'] as $t){
@@ -118,27 +120,27 @@ $controlTermArr = $materialSampleManager->getMSTypeControlValues();
 								}
 								?>
 							</span>
-						</section>
-						<section class="spaced">
-							<label for="ms_catalogNumber"><?php echo $MS_LABEL_ARR['catalogNumber']; ?>: </label>
+						</div>
+						<div class="smCatalogNumberDiv">
+							<label><?php echo $MS_LABEL_ARR['catalogNumber']; ?>: </label>
 							<span class="edit-elem">
-								<input type="text" name="ms_catalogNumber" id="ms_catalogNumber" value="<?php echo isset($msArr['catalogNumber'])?$msArr['catalogNumber']:''; ?>" />
+								<input type="text" name="ms_catalogNumber" value="<?php echo isset($msArr['catalogNumber'])?$msArr['catalogNumber']:''; ?>" />
 							</span>
-						</section>
-						<section class="spaced">
-							<label for="ms_guid"><?php echo $MS_LABEL_ARR['guid']; ?>: </label>
+						</div>
+						<div class="smGuidDiv">
+							<label><?php echo $MS_LABEL_ARR['guid']; ?>: </label>
 							<span class="edit-elem">
-								<input type="text" name="ms_guid" id="ms_guid" value="<?php echo isset($msArr['guid'])?$msArr['guid']:''; ?>" />
+								<input type="text" name="ms_guid" value="<?php echo isset($msArr['guid'])?$msArr['guid']:''; ?>" />
 							</span>
-						</section>
-						<section class="spaced">
-							<label for="ms_sampleCondition"><?php echo $MS_LABEL_ARR['sampleCondition']; ?>: </label>
+						</div>
+						<div class="smSampleConditionDiv">
+							<label><?php echo $MS_LABEL_ARR['sampleCondition']; ?>: </label>
 							<span class="edit-elem">
 								<?php
 								if(isset($controlTermArr['ommaterialsample']['sampleCondition'])){
 									$limitToList = $controlTermArr['ommaterialsample']['sampleCondition']['l'];
 									?>
-									<select name="ms_sampleCondition" id="ms_sampleCondition">
+									<select name="ms_sampleCondition">
 										<option value="">-------</option>
 										<?php
 										foreach($controlTermArr['ommaterialsample']['sampleCondition']['t'] as $t){
@@ -155,15 +157,15 @@ $controlTermArr = $materialSampleManager->getMSTypeControlValues();
 								}
 								?>
 							</span>
-						</section>
-						<section class="spaced">
-							<label for="ms_disposition"><?php echo $MS_LABEL_ARR['disposition']; ?>: </label>
+						</div>
+						<div class="smDispositionDiv">
+							<label><?php echo $MS_LABEL_ARR['disposition']; ?>: </label>
 							<span class="edit-elem">
 								<?php
 								if(isset($controlTermArr['ommaterialsample']['disposition'])){
 									$limitToList = $controlTermArr['ommaterialsample']['disposition']['l'];
 									?>
-									<select name="ms_disposition" id="ms_disposition">
+									<select name="ms_disposition">
 										<option value="">-------</option>
 										<?php
 										foreach($controlTermArr['ommaterialsample']['disposition']['t'] as $t){
@@ -180,15 +182,15 @@ $controlTermArr = $materialSampleManager->getMSTypeControlValues();
 								}
 								?>
 							</span>
-						</section>
-						<section class="spaced">
-							<label for="ms_preservationType"><?php echo $MS_LABEL_ARR['preservationType']; ?>: </label>
+						</div>
+						<div class="smPreservationTypeDiv">
+							<label><?php echo $MS_LABEL_ARR['preservationType']; ?>: </label>
 							<span class="edit-elem">
 								<?php
 								if(isset($controlTermArr['ommaterialsample']['preservationType'])){
 									$limitToList = $controlTermArr['ommaterialsample']['preservationType']['l'];
 									?>
-									<select name="ms_preservationType" id="ms_preservationType">
+									<select name="ms_preservationType">
 										<option value="">-------</option>
 										<?php
 										foreach($controlTermArr['ommaterialsample']['preservationType']['t'] as $t){
@@ -205,46 +207,46 @@ $controlTermArr = $materialSampleManager->getMSTypeControlValues();
 								}
 								?>
 							</span>
-						</section>
-						<section class="spaced">
-							<label for="ms_preparationDate"><?php echo $MS_LABEL_ARR['preparationDate']; ?>: </label>
+						</div>
+						<div class="smPreparationDateDiv">
+							<label><?php echo $MS_LABEL_ARR['preparationDate']; ?>: </label>
 							<span class="edit-elem">
-								<input type="date" name="ms_preparationDate" id="ms_preparationDate" value="<?php echo isset($msArr['preparationDate'])?$msArr['preparationDate']:''; ?>" />
+								<input type="date" name="ms_preparationDate" value="<?php echo isset($msArr['preparationDate'])?$msArr['preparationDate']:''; ?>" />
 							</span>
-						</section>
-						<section class="spaced">
-							<label for="ms_preparedBy"><?php echo $MS_LABEL_ARR['preparedBy']; ?>: </label>
+						</div>
+						<div class="smPreparedByUidDiv">
+							<label><?php echo $MS_LABEL_ARR['preparedBy']; ?>: </label>
 							<span class="edit-elem">
-								<input class="ms_preparedBy" name="ms_preparedBy" id="ms_preparedBy" type="text" value="<?php echo isset($msArr['preparedBy'])?$msArr['preparedBy']:''; ?>" />
+								<input class="ms_preparedBy" name="ms_preparedBy" type="text" value="<?php echo isset($msArr['preparedBy'])?$msArr['preparedBy']:''; ?>" />
 								<input name="ms_preparedByUid" type="hidden" value="<?php echo isset($msArr['preparedByUid'])?$msArr['preparedByUid']:''; ?>" />
 							</span>
-						</section>
-						<section class="spaced">
-							<label for="ms_preparationDetails"><?php echo $MS_LABEL_ARR['preparationDetails']; ?>: </label>
+						</div>
+						<div class="smPreparationDetailsDiv">
+							<label><?php echo $MS_LABEL_ARR['preparationDetails']; ?>: </label>
 							<span class="edit-elem">
-								<input type="text" name="ms_preparationDetails" id="ms_preparationDetails" value="<?php echo isset($msArr['preparationDetails'])?$msArr['preparationDetails']:''; ?>" />
+								<input type="text" name="ms_preparationDetails" value="<?php echo isset($msArr['preparationDetails'])?$msArr['preparationDetails']:''; ?>" />
 							</span>
-						</section>
-						<section class="spaced">
-							<label for="ms_individualCount"><?php echo $MS_LABEL_ARR['individualCount']; ?>: </label>
+						</div>
+						<div class="smIndividualCountDiv">
+							<label><?php echo $MS_LABEL_ARR['individualCount']; ?>: </label>
 							<span class="edit-elem">
-								<input type="text" name="ms_individualCount" id="ms_individualCount" value="<?php echo isset($msArr['individualCount'])?$msArr['individualCount']:''; ?>" />
+								<input type="text" name="ms_individualCount" value="<?php echo isset($msArr['individualCount'])?$msArr['individualCount']:''; ?>" />
 							</span>
-						</section>
-						<section class="spaced">
-							<label for="ms_sampleSize"><?php echo $MS_LABEL_ARR['sampleSize']; ?>: </label>
+						</div>
+						<div class="smSampleSizeDiv">
+							<label><?php echo $MS_LABEL_ARR['sampleSize']; ?>: </label>
 							<span class="edit-elem">
-								<input type="text" name="ms_sampleSize" id="ms_sampleSize" value="<?php echo isset($msArr['sampleSize'])?$msArr['sampleSize']:''; ?>" />
+								<input type="text" name="ms_sampleSize" value="<?php echo isset($msArr['sampleSize'])?$msArr['sampleSize']:''; ?>" />
 							</span>
-						</section>
-						<section class="spaced">
-							<label for="ms_storageLocation"><?php echo $MS_LABEL_ARR['storageLocation']; ?>: </label>
+						</div>
+						<div class="smStorageLocationDiv">
+							<label><?php echo $MS_LABEL_ARR['storageLocation']; ?>: </label>
 							<span class="edit-elem">
 								<?php
 								if(isset($controlTermArr['ommaterialsample']['storageLocation'])){
 									$limitToList = $controlTermArr['ommaterialsample']['storageLocation']['l'];
 									?>
-									<select name="ms_storageLocation" id="ms_storageLocation">
+									<select name="ms_storageLocation">
 										<option value="">-------</option>
 										<?php
 										foreach($controlTermArr['ommaterialsample']['storageLocation']['t'] as $t){
@@ -261,13 +263,13 @@ $controlTermArr = $materialSampleManager->getMSTypeControlValues();
 								}
 								?>
 							</span>
-						</section>
-						<section class="spaced">
-							<label for="ms_remarks"><?php echo $MS_LABEL_ARR['remarks']; ?>: </label>
+						</div>
+						<div class="smRemarksDiv">
+							<label><?php echo $MS_LABEL_ARR['remarks']; ?>: </label>
 							<span class="edit-elem">
-								<input type="text" name="ms_remarks" id="ms_remarks" value="<?php echo isset($msArr['remarks'])?$msArr['remarks']:''; ?>" />
+								<input type="text" name="ms_remarks" value="<?php echo isset($msArr['remarks'])?$msArr['remarks']:''; ?>" />
 							</span>
-						</section>
+						</div>
 						<div style="clear:both;">
 							<input name="occid" type="hidden" value="<?php echo $occid; ?>" />
 							<input name="matSampleID" type="hidden" value="<?php echo $matSampleID; ?>" />
@@ -276,10 +278,10 @@ $controlTermArr = $materialSampleManager->getMSTypeControlValues();
 							<input name="tabtarget" type="hidden" value="3" />
 							<?php
 							if($msArr){
-								echo '<button name="submitaction" type="submit" value="updateMaterialSample">Save Changes</button>';
-								echo '<span style="margin-left: 20px"><button name="submitaction" type="submit" value="deleteMaterialSample">Delete Sample</button></span>';
+								echo '<button name="submitaction" type="submit" value="updateMaterialSample">' . $LANG['SAVE_CHANGES'] . '</button>';
+								echo '<span style="margin-left: 20px"><button name="submitaction" type="submit" value="deleteMaterialSample">' . $LANG['DELETE_SAMP'] . '</button></span>';
 							}
-							else echo '<button name="submitaction" type="submit" value="insertMaterialSample">Add Record</button>';
+							else echo '<button name="submitaction" type="submit" value="insertMaterialSample">' . $LANG['ADD_RECORD'] . '</button>';
 							?>
 						</div>
 					</div>

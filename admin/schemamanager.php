@@ -18,7 +18,7 @@ $curentVersion = $schemaManager->getCurrentVersion();
 //if(!$IS_ADMIN && $curentVersion) header('Location: ../profile/index.php?refurl=../admin/schemamanager.php');
 $IS_ADMIN = true;
 ?>
-<html>
+<html lang="en">
 	<head>
 		<title>Database Schema Manager</title>
 		<?php
@@ -53,6 +53,8 @@ $IS_ADMIN = true;
 							$schemaManager->setPort($port);
 							$schemaManager->setUsername($username);
 							$schemaManager->installPatch();
+							$verHistory = $schemaManager->getVersionHistory();
+							$curentVersion = $schemaManager->getCurrentVersion();
 						}
 						?>
 					</fieldset>

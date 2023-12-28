@@ -65,7 +65,7 @@ function searchform($name="") {
          success: function( data ) {
             $("#responseDiv").html(data);
             $("#loadedWithPage").html("");
-            var permalink = "&nbsp;<a href=\''.$CLIENT_ROOT.'/agents/index.php?" + frm.serialize() +"\'>Permalink</a>";
+            var permalink = "&nbsp;<a href=\'' . htmlspecialchars($CLIENT_ROOT, HTML_SPECIAL_CHARS_FLAGS) . '/agents/index.php?" + frm.serialize() +"\'>Permalink</a>";
             $("#plinkSpan").html(permalink);
          },
          error: function( xhr, status, errorThrown ) {
@@ -91,7 +91,7 @@ function searchform($name="") {
 function pageheader($name) {
    global $SERVER_ROOT, $DEFAULT_TITLE, $spDisplay, $CLIENT_ROOT, $agents_indexMenu, $agents_indexCrumbs;
 echo '<!DOCTYPE HTML>
-<html>
+<html lang="en">
 <head>
 	<title>'.$DEFAULT_TITLE.' - '.$spDisplay. '</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET; ?>"/>

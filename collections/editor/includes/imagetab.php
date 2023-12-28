@@ -103,16 +103,16 @@ $photographerArr = $occManager->getPhotographerArr();
 						</div>
 					</div>
 					<div>
-						<input type="checkbox" name="nolgimage" id="nolgimage" value="1" /> <label for="nolgimage"><?php echo $LANG['DO_NOT_MAP_LARGE']; ?></label>
+						<input type="checkbox" name="nolgimage" value="1" /> <?php echo $LANG['DO_NOT_MAP_LARGE']; ?>
 					</div>
 				</div>
 				<div style="clear:both;margin:20px 0px 5px 10px;">
-					<label for="caption"><b><?php echo $LANG['CAPTION']; ?>:</b></label>
-					<input name="caption" id="caption" type="text" size="40" value="" />
+					<b><?php echo $LANG['CAPTION']; ?>:</b>
+					<input name="caption" type="text" size="40" value="" />
 				</div>
 				<div style='margin:0px 0px 5px 10px;'>
-					<label for="photographeruid"><b><?php echo $LANG['PHOTOGRAPHER']; ?>:</b></label>
-					<select name='photographeruid' name='photographeruid' id="photographeruid">
+					<b><?php echo $LANG['PHOTOGRAPHER']; ?>:</b>
+					<select name='photographeruid' name='photographeruid'>
 						<option value=""><?php echo $LANG['SEL_PHOTOG']; ?></option>
 						<option value="">---------------------------------------</option>
 						<?php
@@ -128,25 +128,25 @@ $photographerArr = $occManager->getPhotographerArr();
 					</a>
 				</div>
 				<div id="imgaddoverride" style="margin:0px 0px 5px 10px;display:none;">
-					<label for="photographer"><b><?php echo $LANG['PHOTOG_OVER']; ?>:</b></label>
-					<input name='photographer' id="photographer" type='text' style="width:300px;" maxlength='100' />
+					<b><?php echo $LANG['PHOTOG_OVER']; ?>:</b>
+					<input name='photographer' type='text' style="width:300px;" maxlength='100' />
 					* <?php echo $LANG['WILL_OVERRIDE']; ?>
 				</div>
 				<div style="margin:0px 0px 5px 10px;">
-					<label for="notes"><b><?php echo $LANG['NOTES']; ?>:</b></label>
-					<input name="notes" id="notes" type="text" size="40" value="" />
+					<b><?php echo $LANG['NOTES']; ?>:</b>
+					<input name="notes" type="text" size="40" value="" />
 				</div>
 				<div style="margin:0px 0px 5px 10px;">
-					<label for="copyright"><b><?php echo $LANG['COPYRIGHT']; ?>:</b></label>
-					<input name="copyright" id="copyright" type="text" size="40" value="" />
+					<b><?php echo $LANG['COPYRIGHT']; ?>:</b>
+					<input name="copyright" type="text" size="40" value="" />
 				</div>
 				<div style="margin:0px 0px 5px 10px;">
-					<label for="sourceurl"><b><?php echo $LANG['SOURCE_WEBPAGE']; ?>:</b></label>
-					<input name="sourceurl" id="sourceurl" type="text" size="40" value="" />
+					<b><?php echo $LANG['SOURCE_WEBPAGE']; ?>:</b>
+					<input name="sourceurl" type="text" size="40" value="" />
 				</div>
 				<div style="margin:0px 0px 5px 10px;">
-					<label for="sortoccurrence"><b><?php echo $LANG['SORT']; ?>:</b></label>
-					<input name="sortoccurrence" id="sortoccurrence" type="text" size="10" value="" />
+					<b><?php echo $LANG['SORT']; ?>:</b>
+					<input name="sortoccurrence" type="text" size="10" value="" />
 				</div>
 				<div style="margin:0px 0px 5px 10px;">
 					<b><?php echo $LANG['DESCRIBE_IMAGE']; ?></b>
@@ -155,7 +155,7 @@ $photographerArr = $occManager->getPhotographerArr();
 					$imageTagArr = $occManager->getImageTagArr();
 					foreach($imageTagArr as $key => $description) {
 						echo '<div style="margin-left:10px;">';
-						echo '<input name="ch_' . $key . '" id="ch_' . $key . '" type="checkbox" value="1" /> <label for="ch_' . $key . '">' . $description . '</label></br>';
+						echo '<input name="ch_'.$key.'" type="checkbox" value="1" /> '.$description.'</br>';
 						echo '</div>';
 					}
 					?>
@@ -197,7 +197,7 @@ $photographerArr = $occManager->getPhotographerArr();
 									$tnUrl = $GLOBALS["imageDomain"].$tnUrl;
 								}
 							}
-							echo '<a href="'.$imgUrl.'" target="_blank">';
+							echo '<a href="' . htmlspecialchars($imgUrl, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank">';
 							if(array_key_exists('error', $imgArr)){
 								echo '<div style="font-weight:bold;font-size:140%">'.$imgArr['error'].'</div>';
 							}
@@ -205,8 +205,8 @@ $photographerArr = $occManager->getPhotographerArr();
 								echo '<img src="'.$imgUrl.'" style="width:250px;" title="'.$imgArr["caption"].'" />';
 							}
 							echo '</a>';
-							if($imgUrl != $origUrl) echo '<div><a href="'.$imgUrl.'" target="_blank">'.$LANG['OPEN_MED'].'</a></div>';
-							if($origUrl) echo '<div><a href="'.$origUrl.'" target="_blank">'.$LANG['OPEN_LARGE'].'</a></div>';
+							if($imgUrl != $origUrl) echo '<div><a href="' . htmlspecialchars($imgUrl, HTML_SPECIAL_CHARS_FLAGS) .'" target="_blank">' . htmlspecialchars($LANG['OPEN_MED'], HTML_SPECIAL_CHARS_FLAGS) . '</a></div>';
+							if($origUrl) echo '<div><a href="' . htmlspecialchars($origUrl, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank">' . htmlspecialchars($LANG['OPEN_LARGE'], HTML_SPECIAL_CHARS_FLAGS) . '</a></div>';
 							?>
 						</td>
 						<td style="text-align:left;padding:10px;">
@@ -245,7 +245,7 @@ $photographerArr = $occManager->getPhotographerArr();
 								</div>
 								<div>
 									<b><?php echo $LANG['SOURCE_WEBPAGE']; ?>:</b>
-									<a href="<?php echo $imgArr['sourceurl']; ?>" target="_blank">
+									<a href="<?php echo htmlspecialchars($imgArr['sourceurl'], HTML_SPECIAL_CHARS_FLAGS); ?>" target="_blank">
 										<?php
 										$sourceUrlDisplay = $imgArr['sourceurl'];
 										if(strlen($sourceUrlDisplay) > 60) $sourceUrlDisplay = '...'.substr($sourceUrlDisplay,-60);
@@ -255,7 +255,7 @@ $photographerArr = $occManager->getPhotographerArr();
 								</div>
 								<div>
 									<b><?php echo $LANG['WEB_URL']; ?>: </b>
-									<a href="<?php echo $imgArr["url"]; ?>"  title="<?php echo $imgArr["url"]; ?>" target="_blank">
+									<a href="<?php echo htmlspecialchars($imgArr["url"], HTML_SPECIAL_CHARS_FLAGS); ?>"  title="<?php echo htmlspecialchars($imgArr["url"], HTML_SPECIAL_CHARS_FLAGS); ?>" target="_blank">
 										<?php
 										$urlDisplay = $imgArr["url"];
 										if(strlen($urlDisplay) > 60) $urlDisplay = '...'.substr($urlDisplay,-60);
@@ -265,7 +265,7 @@ $photographerArr = $occManager->getPhotographerArr();
 								</div>
 								<div>
 									<b><?php echo $LANG['LARGE_IMG_URL']; ?>: </b>
-									<a href="<?php echo $imgArr["origurl"]; ?>" title="<?php echo $imgArr["origurl"]; ?>" target="_blank">
+									<a href="<?php echo htmlspecialchars($imgArr["origurl"], HTML_SPECIAL_CHARS_FLAGS); ?>" title="<?php echo htmlspecialchars($imgArr["origurl"], HTML_SPECIAL_CHARS_FLAGS); ?>" target="_blank">
 										<?php
 										$origUrlDisplay = $imgArr["origurl"];
 										if(strlen($origUrlDisplay) > 60) $origUrlDisplay = '...'.substr($origUrlDisplay,-60);
@@ -275,7 +275,7 @@ $photographerArr = $occManager->getPhotographerArr();
 								</div>
 								<div>
 									<b><?php echo $LANG['THUMB_URL']; ?>: </b>
-									<a href="<?php echo $imgArr["tnurl"]; ?>" title="<?php echo $imgArr["tnurl"]; ?>" target="_blank">
+									<a href="<?php echo htmlspecialchars($imgArr["tnurl"], HTML_SPECIAL_CHARS_FLAGS); ?>" title="<?php echo htmlspecialchars($imgArr["tnurl"], HTML_SPECIAL_CHARS_FLAGS); ?>" target="_blank">
 										<?php
 										$tnUrlDisplay = $imgArr["tnurl"];
 										if(strlen($tnUrlDisplay) > 60) $tnUrlDisplay = '...'.substr($tnUrlDisplay,-60);

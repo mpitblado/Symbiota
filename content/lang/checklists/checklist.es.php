@@ -33,6 +33,7 @@ $LANG['OGCHECK'] = 'Listado de Comprobaci&oacute;n Original';
 $LANG['NOTESVOUC'] = 'Notas &amp; Vouchers';
 $LANG['TAXONAUTHOR'] = 'Autores del Tax&oacute;n';
 $LANG['TAXONABC'] = 'Mostrar Taxa Alfab&eacute;ticamente';
+$LANG['SHOWSUBGENERA'] = 'Mostrar clasificación subgenérica dentro del nombre científico';
 $LANG['BUILD_LIST'] = 'Mostrar Lista';
 $LANG['DOWNLOAD_CHECKLIST'] = 'Descargar Lista';
 $LANG['PRINT_BROWSER'] = 'Imprimir';
@@ -70,6 +71,7 @@ $LANG['MORE'] = 'm&aacute;s';
 $LANG['LESS'] = 'menos';
 $LANG['NOTAXA'] = 'No se han encontrado Taxa';
 $LANG['CHECKNULL'] = 'ERROR: identificador de lista de Comprobación no válido';
+$LANG['IS_PRIVATE'] = 'Lista de verificación se define como privada';
 $LANG['DISPLAYNEXT'] = 'Mostrar Siguiente';
 $LANG['TAXA'] = 'taxa';
 $LANG['LOCALITY'] = 'Localidad';
@@ -80,4 +82,28 @@ $LANG['OF'] = 'de';
 $LANG['CHECKLIST'] = 'Listado de Comprobaci&oacute;n';
 $LANG['SEARCHSYNONYMS'] = "Buscar sinónimos";
 $LANG['TAXONFILTER'] = 'Filtro Taxonómico';
+$LANG['IMG_CHECKLIST_ADMIN'] = 'Botón de administración de la lista de verificación';
+$LANG['IMG_MANAGE_VOUCHERS'] = 'Botón Administrar vales vinculados';
+$LANG['IMG_EDIT_LIST'] = 'Botón Editar lista de especies';
+$LANG['IMG_OPEN_KEY'] = 'Abrir botón clave Symbiota';
+$LANG['GAMES'] = 'Mostrar juegos';
+$LANG['IMG_VOUCHERS_SIMPLE_MAP'] = 'Mostrar vales en mapa simple';
+$LANG['IMG_VOUCHERS_DYNAMIC_MAP'] = 'Mostrar vales en el mapa dinámico';
+$LANG['IMG_OCCUR_DYNAMIC_MAP'] = 'Mostrar todas las ocurrencias en el mapa dinámico';
+$LANG['EDIT_DETAILS'] = 'Botón Editar Detalles';
+$LANG['SEARCH_COMMON'] = 'Buscar nombres comunes';
+$LANG['IMG_DWNL_LIST'] = 'Descargar lista';
+$LANG['IMG_PRINT_LIST'] = 'Imprimir lista';
+$LANG['IMG_DOCX_EXPORT'] = 'Exportar a DOCX';
+$LANG['SKIP_LINK'] = 'Saltar a la lista de taxones';
+$LANG['IMAGE_SRC'] = 'Fuente de la imagen';
+$LANG['ALL_IMG'] = 'todas las imágenes';
+$LANG['LINKED_IMG'] = 'sólo imágenes de vales vinculadas';
+$LANG['IMAGE_SRC'] = 'Fuente de la imagen';
+$LANG['ALL_IMG'] = 'todas las imágenes';
+$LANG['LINKED_IMG'] = 'sólo imágenes de vales vinculadas';
+
+//from dynamicchecklist.php
+$LANG['ERROR_GEN_CHECK'] = 'ERROR al generar lista';
+
 ?>
