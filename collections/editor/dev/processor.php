@@ -1,6 +1,5 @@
 <?php
-include_once('../../config/symbini.php');
-
+include_once('../../../config/symbini.php');
 header('Content-Type: text/html; charset='.$CHARSET);
 
 $occId = array_key_exists('occid', $_REQUEST) ? filter_var($_REQUEST['occid'], FILTER_SANITIZE_NUMBER_INT) : '';
@@ -218,12 +217,12 @@ if($SYMB_UID){
 				if($cloneArr){
 					$statusStr = (isset($LANG['CLONES_CREATED'])?$LANG['CLONES_CREATED']:'Success! The following new clone record(s) have been created').' ';
 					$statusStr .= '<div style="margin:5px 10px;color:black">';
-					$statusStr .= '<div><a href="occurrenceeditor.php?occid='.$occId.'" target="_blank">#'.$occId.'</a> - '.(isset($LANG['CLONE_SOURCE'])?$LANG['CLONE_SOURCE']:'clone source').'</div>';
+					$statusStr .= '<div><a href="occureditor.php?occid='.$occId.'" target="_blank">#'.$occId.'</a> - '.(isset($LANG['CLONE_SOURCE'])?$LANG['CLONE_SOURCE']:'clone source').'</div>';
 					$occId = current($cloneArr);
 					$occManager->setOccId($occId);
 					foreach($cloneArr as $cloneOccid){
 						if($cloneOccid==$occId) $statusStr .= '<div>#'.$cloneOccid.' - '.(isset($LANG['THIS_RECORD'])?$LANG['THIS_RECORD']:'this record').'</div>';
-						else $statusStr .= '<div><a href="occurrenceeditor.php?occid='.$cloneOccid.'" target="_blank">#'.$cloneOccid.'</a></div>';
+						else $statusStr .= '<div><a href="occureditor.php?occid='.$cloneOccid.'" target="_blank">#'.$cloneOccid.'</a></div>';
 					}
 					$statusStr .= '</div>';
 					if(isset($_POST['targetcollid']) && $_POST['targetcollid'] && $_POST['targetcollid'] != $collId){
@@ -273,7 +272,7 @@ if($SYMB_UID){
 			}
 			elseif($action == 'Remap Image'){
 				if($occManager->remapImage($_POST['imgid'], $_POST['targetoccid'])){
-					$statusStr = (isset($LANG['IMAGE_REMAP_SUCCESS'])?$LANG['IMAGE_REMAP_SUCCESS']:'SUCCESS: Image remapped to record').' <a href="occurrenceeditor.php?occid='.$_POST["targetoccid"].'" target="_blank">'.$_POST["targetoccid"].'</a>';
+					$statusStr = (isset($LANG['IMAGE_REMAP_SUCCESS'])?$LANG['IMAGE_REMAP_SUCCESS']:'SUCCESS: Image remapped to record').' <a href="occureditor.php?occid='.$_POST["targetoccid"].'" target="_blank">'.$_POST["targetoccid"].'</a>';
 				}
 				else{
 					$statusStr = (isset($LANG['IMAGE_REMAP_ERROR'])?$LANG['IMAGE_REMAP_ERROR']:'ERROR linking image to new specimen').': '.$occManager->getErrorStr();
@@ -282,7 +281,7 @@ if($SYMB_UID){
 			elseif($action == 'remapImageToNewRecord'){
 				$newOccid = $occManager->remapImage($_POST['imgid'], 'new');
 				if($newOccid){
-					$statusStr = (isset($LANG['IMAGE_REMAP_SUCCESS'])?$LANG['IMAGE_REMAP_SUCCESS']:'SUCCESS: Image remapped to record').' <a href="occurrenceeditor.php?occid='.$newOccid.'" target="_blank">'.$newOccid.'</a>';
+					$statusStr = (isset($LANG['IMAGE_REMAP_SUCCESS'])?$LANG['IMAGE_REMAP_SUCCESS']:'SUCCESS: Image remapped to record').' <a href="occureditor.php?occid='.$newOccid.'" target="_blank">'.$newOccid.'</a>';
 				}
 				else{
 					$statusStr = (isset($LANG['NEW_IMAGE_ERROR'])?$LANG['NEW_IMAGE_ERROR']:'ERROR linking image to new blank specimen').': '.$occManager->getErrorStr();

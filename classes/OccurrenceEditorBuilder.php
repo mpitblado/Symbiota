@@ -37,18 +37,19 @@ class OccurrenceEditorBuilder extends Manager{
 					echo '<a href="#" onclick="return dwcDoc(\''.$fieldName.'\')" tabindex="-1"><img class="docimg" src="../../images/qmark.png" /></a>';
 					$fieldName = strtolower($fieldName);
 					$fieldValue = '';
-					if(array_key_exists($fieldName,$occArr)) $fieldValue = $occArr[$fieldName];
-					echo '<input type="text" id="catalognumber" name="'.$fieldName.'" value="'.$fieldValue.'" onchange="fieldChanged(\''.$fieldValue.'\');" <?php if($isEditor > 2) echo 'disabled'; ?> autocomplete="off" />
-												</div>
-
+					if(array_key_exists($fieldName, $occArr)) $fieldValue = $occArr[$fieldName];
+					echo '<input type="text" id="'.$fieldName.'" name="'.$fieldName.'" value="'.$fieldValue.'" onchange="fieldChanged(\''.$fieldValue.'\');" autocomplete="off" >';
+					echo '</div>';
+				}
 			}
 			if(isset($elemArr['block'])) $this->echoFieldBlock($elemArr['block']);
 			echo '</'.$elemType.'>';
-			!$this->blockCnt++;
+			$this->blockCnt++;
 		}
 	}
 
 	private function echoControlElements(){
+		global $LANG;
 		if($this->displayImageControl){
 			echo '<div style="float:right;margin:-7px -4px 0px 0px;font-weight:bold;">';
 			echo '<span id="imgProcOnSpan" style="display:block;"><a href="#" onclick="toggleImageTdOn();return false;">&gt;&gt;</a></span>';
@@ -64,6 +65,7 @@ class OccurrenceEditorBuilder extends Manager{
 	}
 
 	private function setDefaultFieldMap(){
+		global $LANG;
 		$this->fieldMap['block'][0]['type'] = 'fieldset';
 		$this->fieldMap['block'][0]['legend'] = (isset($LANG['COLLECTOR_INFO'])?$LANG['COLLECTOR_INFO']:'Collector Info');
 		$this->fieldMap['block'][0]['block'][0]['fields'][] = 'catalogNumber';
