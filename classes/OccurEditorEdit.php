@@ -4,14 +4,7 @@ include_once($SERVER_ROOT.'/classes/UuidFactory.php');
 
 class OccurEditorEdit extends OccurEditorBase {
 
-	private $sqlWhere;
-
-	protected $isPersonalManagement = false;	//e.g. General Observations and owned by user
-	private $catNumIsNum;
 	protected $errorArr = array();
-	protected $isShareConn = false;
-
-	private $paleoActivated = false;
 
 	public function __construct($conn = null){
 		parent::__construct(null, 'write', $conn);
@@ -340,20 +333,6 @@ class OccurEditorEdit extends OccurEditorBase {
 		return $status;
 	}
 
-	private function getIdentifiers($occidStr){
-		$retArr = array();
-		if($occidStr){
-			$sql = 'SELECT occid, idomoccuridentifiers, identifierName, identifierValue FROM omoccuridentifiers WHERE occid IN('.$occidStr.')';
-			$rs = $this->conn->query($sql);
-			while($r = $rs->fetch_object()){
-				$retArr[$r->occid][$r->idomoccuridentifiers]['name'] = $r->identifierName;
-				$retArr[$r->occid][$r->idomoccuridentifiers]['value'] = $r->identifierValue;
-			}
-			$rs->free();
-		}
-		return $retArr;
-	}
-
 	public function addOccurrence($postArr){
 		global $LANG;
 		$status = $LANG['SUCCESS_NEW_OCC_SUBMITTED'];
@@ -489,6 +468,13 @@ class OccurEditorEdit extends OccurEditorBase {
 				}
 			}
 		}
+	}
+
+	private function linkDuplicates($occidStr,$dupTitle){
+		$status = '';
+		$dupManager = new OccurrenceDuplicate();
+		$dupManager->linkDuplicates($this->occid,$occidStr,$dupTitle);
+		return $status;
 	}
 
 	public function deleteOccurrence($delOccid){
@@ -851,98 +837,6 @@ class OccurEditorEdit extends OccurEditorBase {
 		return $status;
 	}
 
-	public function getLoanData(){
-		$retArr = array();
-		if($this->occid){
-			$sql = 'SELECT l.loanid, l.datedue, i.institutioncode '.
-				'FROM omoccurloanslink ll INNER JOIN omoccurloans l ON ll.loanid = l.loanid '.
-				'INNER JOIN institutions i ON l.iidBorrower = i.iid '.
-				'WHERE ll.returndate IS NULL AND l.dateclosed IS NULL AND occid = '.$this->occid;
-			$rs = $this->conn->query($sql);
-			while($r = $rs->fetch_object()){
-				$retArr['id'] = $r->loanid;
-				$retArr['date'] = $r->datedue;
-				$retArr['code'] = $r->institutioncode;
-			}
-			$rs->free();
-		}
-		return $retArr;
-	}
-
-	private function setPaleoData(){
-		if($this->paleoActivated){
-			$sql = 'SELECT '.implode(',',$this->fieldArr['omoccurpaleo']).' FROM omoccurpaleo WHERE occid = '.$this->occid;
-			//echo $sql;
-			$rs = $this->conn->query($sql);
-			if($r = $rs->fetch_assoc()){
-				foreach($this->fieldArr['omoccurpaleo'] as $term){
-					$this->occurrenceMap[$this->occid][$term] = $r[$term];
-				}
-			}
-			$rs->free();
-		}
-	}
-
-	public function getExsiccati(){
-		$retArr = array();
-		if(isset($GLOBALS['ACTIVATE_EXSICCATI']) && $GLOBALS['ACTIVATE_EXSICCATI'] && $this->occid){
-			$sql = 'SELECT l.notes, l.ranking, l.omenid, n.exsnumber, t.ometid, t.title, t.abbreviation, t.editor '.
-				'FROM omexsiccatiocclink l INNER JOIN omexsiccatinumbers n ON l.omenid = n.omenid '.
-				'INNER JOIN omexsiccatititles t ON n.ometid = t.ometid '.
-				'WHERE l.occid = '.$this->occid;
-			//echo $sql;
-			$rs = $this->conn->query($sql);
-			if($r = $rs->fetch_object()){
-				$retArr['ometid'] = $r->ometid;
-				$retArr['exstitle'] = $r->title.($r->abbreviation?' ['.$r->abbreviation.']':'');
-				$retArr['exsnumber'] = $r->exsnumber;
-			}
-			$rs->free();
-		}
-		return $retArr;
-	}
-
-	public function getExsiccatiTitleArr(){
-		$retArr = array();
-		$sql = 'SELECT ometid, title, abbreviation FROM omexsiccatititles ORDER BY title ';
-		//echo $sql;
-		$rs = $this->conn->query($sql);
-		while ($r = $rs->fetch_object()) {
-			$retArr[$r->ometid] = $this->cleanOutStr($r->title.($r->abbreviation?' ['.$r->abbreviation.']':''));
-		}
-		return $retArr;
-	}
-
-	public function getObserverUid(){
-		$obsId = 0;
-		if($this->occurrenceMap && array_key_exists('observeruid',$this->occurrenceMap[$this->occid])){
-			$obsId = $this->occurrenceMap[$this->occid]['observeruid'];
-		}
-		elseif($this->occid){
-			$sql = 'SELECT observeruid FROM omoccurrences WHERE occid = '.$this->occid;
-			$rs = $this->conn->query($sql);
-			if($r = $rs->fetch_object()){
-				$obsId = $r->observeruid;
-			}
-			$rs->free();
-		}
-		return $obsId;
-	}
-
-	public function carryOverValues($fArr){
-		$locArr = Array('recordedby','associatedcollectors','eventdate','eventdate2','verbatimeventdate','month','day','year',
-			'startdayofyear','enddayofyear','country','stateprovince','county','municipality','locationid','locality','decimallatitude','decimallongitude',
-			'verbatimcoordinates','coordinateuncertaintyinmeters','footprintwkt','geodeticdatum','georeferencedby','georeferenceprotocol',
-			'georeferencesources','georeferenceverificationstatus','georeferenceremarks',
-			'minimumelevationinmeters','maximumelevationinmeters','verbatimelevation','minimumdepthinmeters','maximumdepthinmeters','verbatimdepth',
-			'habitat','substrate','lifestage', 'sex', 'individualcount', 'samplingprotocol', 'preparations',
-			'associatedtaxa','basisofrecord','language','labelproject','eon','era','period','epoch','earlyinterval','lateinterval','absoluteage','storageage','stage','localstage','biota',
-			'biostratigraphy','lithogroup','formation','taxonenvironment','member','bed','lithology','stratremarks','element');
-		$retArr = array_intersect_key($fArr,array_flip($locArr));
-		$this->cleanOutArr($retArr);
-		return $retArr;
-	}
-
 	//Verification functions
 	public function getIdentificationRanking(){
 		//Get Identification ranking
@@ -1044,14 +938,6 @@ class OccurEditorEdit extends OccurEditorBase {
 			asort($retArr);
 		}
 		return $retArr;
-	}
-
-	//Duplicate functions
-	private function linkDuplicates($occidStr,$dupTitle){
-		$status = '';
-		$dupManager = new OccurrenceDuplicate();
-		$dupManager->linkDuplicates($this->occid,$occidStr,$dupTitle);
-		return $status;
 	}
 
 	//Genetic link functions
@@ -1339,24 +1225,6 @@ class OccurEditorEdit extends OccurEditorBase {
 		return $retArr;
 	}
 
-	public function getExsiccatiList(){
-		$retArr = array();
-		if($this->collId){
-			$sql = 'SELECT DISTINCT t.ometid, t.title, t.abbreviation '.
-				'FROM omexsiccatititles t INNER JOIN omexsiccatinumbers n ON t.ometid = n.ometid '.
-				'INNER JOIN omexsiccatiocclink l ON n.omenid = l.omenid '.
-				'INNER JOIN omoccurrences o ON l.occid = o.occid '.
-				'WHERE (o.collid = '.$this->collId.') '.
-				'ORDER BY t.title ';
-			$rs = $this->conn->query($sql);
-			while($r = $rs->fetch_object()){
-				$retArr[$r->ometid] = $r->title.($r->abbreviation?' ['.$r->abbreviation.']':'');
-			}
-			$rs->free();
-		}
-		return $retArr;
-	}
-
 	public function getQuickHost(){
 		$retArr = Array();
 		if($this->occid){
@@ -1417,9 +1285,6 @@ class OccurEditorEdit extends OccurEditorBase {
 	}
 
 	//Setters and getters
-	public function isPersonalManagement(){
-		return $this->isPersonalManagement;
-	}
 
 	//Misc functions
 	private function encodeStrTargeted($inStr,$inCharset,$outCharset){

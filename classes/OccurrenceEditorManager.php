@@ -1694,17 +1694,6 @@ class OccurrenceEditorManager {
 		return $retArr;
 	}
 
-	public function getExsiccatiTitleArr(){
-		$retArr = array();
-		$sql = 'SELECT ometid, title, abbreviation FROM omexsiccatititles ORDER BY title ';
-		//echo $sql;
-		$rs = $this->conn->query($sql);
-		while ($r = $rs->fetch_object()) {
-			$retArr[$r->ometid] = $this->cleanOutStr($r->title.($r->abbreviation?' ['.$r->abbreviation.']':''));
-		}
-		return $retArr;
-	}
-
 	public function getObserverUid(){
 		$obsId = 0;
 		if($this->occurrenceMap && array_key_exists('observeruid',$this->occurrenceMap[$this->occid])){

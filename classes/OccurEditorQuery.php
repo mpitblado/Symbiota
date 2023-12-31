@@ -8,14 +8,10 @@ class OccurEditorQuery extends OccurEditorBase {
 	private $occidIndexArr = array();
 
 	private $sqlWhere;
-	private $otherCatNumIsNum = false;
 	private $qryArr = array();
-	protected $isPersonalManagement = false;	//e.g. General Observations and owned by user
 	private $catNumIsNum;
+	private $otherCatNumIsNum = false;
 	protected $errorArr = array();
-	protected $isShareConn = false;
-
-	private $paleoActivated = false;
 
 	public function __construct($conn = null){
 		parent::__construct(null, 'write', $conn);
@@ -572,53 +568,16 @@ class OccurEditorQuery extends OccurEditorBase {
 			}
 		}
 		if($sqlFrag){
-			$sql = 'SELECT DISTINCT o.occid, o.collid, o.'.implode(',o.',array_keys($this->fieldArr['omoccurrences'])).', datelastmodified FROM omoccurrences o '.$sqlFrag;
-			$previousOccid = 0;
-			$rs = $this->conn->query($sql);
-			$rsCnt = 0;
-			$indexArr = array();
-			while($row = $rs->fetch_assoc()){
-				if($previousOccid == $row['occid']) continue;
-				if($row['localitysecurityreason'] == '<Security Setting Locked>') $row['localitysecurityreason'] = '[Security Setting Locked]';
-				if($limit){
-					//Table request, thus load all within query
-					$retArr[$row['occid']] = $row;
-				}
-				elseif($this->occid == $row['occid']){
-					//Is target specimen
-					$retArr[$row['occid']] = $row;
-					if($this->collMap && $this->collMap['colltype'] == 'General Observations' && $row['observeruid'] == $GLOBALS['SYMB_UID']) $this->isPersonalManagement = true;
-				}
-				elseif(is_numeric($localIndex)){
-					if($localIndex == $rsCnt || (($rsCnt+1) == $rs->num_rows && !$this->occid)){
-						$retArr[$row['occid']] = $row;
-						$this->occid = $row['occid'];
-					}
-				}
-				if($this->direction && !$this->occidIndexArr) $indexArr[] = $row['occid'];
-				$previousOccid = $row['occid'];
-				$rsCnt++;
-			}
-			$rs->free();
-			if($indexArr) $this->occidIndexArr = $indexArr;
-			if($retArr && count($retArr) == 1){
-				if(!$this->occid) $this->occid = key($retArr);
-				if(!$this->collMap) $this->setCollMap();
-				if($this->collMap){
-					if(!$retArr[$this->occid]['institutioncode']) $retArr[$this->occid]['institutioncode'] = $this->collMap['institutioncode'];
-					if(!$retArr[$this->occid]['collectioncode']) $retArr[$this->occid]['collectioncode'] = $this->collMap['collectioncode'];
-					if(!$retArr[$this->occid]['ownerinstitutioncode']) $retArr[$this->occid]['ownerinstitutioncode'] = $this->collMap['institutioncode'];
+			parent::setOccurArr($sqlFrag, $localIndex);
+			if($this->occurrenceMap){
+				if($this->direction && !$this->occidIndexArr){
+					$this->occidIndexArr = array_keys($retArr);
 				}
 			}
-			$this->setAdditionalIdentifiers($retArr);
-			$this->cleanOutArr($retArr);
-			$this->occurrenceMap = $retArr;
-			if($this->occid) $this->setPaleoData();
 		}
 	}
 
 	private function addTableJoins(&$sql){
-
 		if(strpos($this->sqlWhere,'ocr.rawstr')){
 			if(strpos($this->sqlWhere,'ocr.rawstr IS NULL') && array_key_exists('io',$this->qryArr)){
 				$sql .= 'INNER JOIN images i ON o.occid = i.occid LEFT JOIN specprocessorrawlabels ocr ON i.imgid = ocr.imgid ';
@@ -681,22 +640,6 @@ class OccurEditorQuery extends OccurEditorBase {
 			}
 			if($sqlOrderBy) $sql .= 'ORDER BY (o.'.$sqlOrderBy.') '.$this->qryArr['orderbydir'].' ';
 		}
-	}
-
-	public function getObserverUid(){
-		$obsId = 0;
-		if($this->occurrenceMap && array_key_exists('observeruid',$this->occurrenceMap[$this->occid])){
-			$obsId = $this->occurrenceMap[$this->occid]['observeruid'];
-		}
-		elseif($this->occid){
-			$sql = 'SELECT observeruid FROM omoccurrences WHERE occid = '.$this->occid;
-			$rs = $this->conn->query($sql);
-			if($r = $rs->fetch_object()){
-				$obsId = $r->observeruid;
-			}
-			$rs->free();
-		}
-		return $obsId;
 	}
 
 	//Batch update functions
@@ -787,332 +730,6 @@ class OccurEditorQuery extends OccurEditorBase {
 		return $sql;
 	}
 
-	public function carryOverValues($fArr){
-		$locArr = Array('recordedby','associatedcollectors','eventdate','eventdate2','verbatimeventdate','month','day','year',
-			'startdayofyear','enddayofyear','country','stateprovince','county','municipality','locationid','locality','decimallatitude','decimallongitude',
-			'verbatimcoordinates','coordinateuncertaintyinmeters','footprintwkt','geodeticdatum','georeferencedby','georeferenceprotocol',
-			'georeferencesources','georeferenceverificationstatus','georeferenceremarks',
-			'minimumelevationinmeters','maximumelevationinmeters','verbatimelevation','minimumdepthinmeters','maximumdepthinmeters','verbatimdepth',
-			'habitat','substrate','lifestage', 'sex', 'individualcount', 'samplingprotocol', 'preparations',
-			'associatedtaxa','basisofrecord','language','labelproject','eon','era','period','epoch','earlyinterval','lateinterval','absoluteage','storageage','stage','localstage','biota',
-			'biostratigraphy','lithogroup','formation','taxonenvironment','member','bed','lithology','stratremarks','element');
-		$retArr = array_intersect_key($fArr,array_flip($locArr));
-		$this->cleanOutArr($retArr);
-		return $retArr;
-	}
-
-	//Verification functions
-	public function getIdentificationRanking(){
-		//Get Identification ranking
-		$retArr = array();
-		$sql = 'SELECT v.ovsid, v.ranking, v.notes, u.username '.
-			'FROM omoccurverification v LEFT JOIN users u ON v.uid = u.uid '.
-			'WHERE v.category = "identification" AND v.occid = '.$this->occid;
-		$rs = $this->conn->query($sql);
-		//There can only be one identification ranking per specimen
-		if($r = $rs->fetch_object()){
-			$retArr['ovsid'] = $r->ovsid;
-			$retArr['ranking'] = $r->ranking;
-			$retArr['notes'] = $r->notes;
-			$retArr['username'] = $r->username;
-		}
-		$rs->free();
-		return $retArr;
-	}
-
-	public function editIdentificationRanking($ranking,$notes=''){
-		global $LANG;
-		$statusStr = '';
-		if(is_numeric($ranking)){
-			//Will be replaced if an identification ranking already exists for occurrence record
-			$sql = 'REPLACE INTO omoccurverification(occid,category,ranking,notes,uid) '.
-				'VALUES('.$this->occid.',"identification",'.$ranking.','.($notes?'"'.$this->cleanInStr($notes).'"':'NULL').','.$GLOBALS['SYMB_UID'].')';
-			if(!$this->conn->query($sql)){
-				$statusStr .= $LANG['WARNING_EDIT_ADD_FAILED'].' ('.$this->conn->error.') ';
-				//echo $sql;
-			}
-		}
-		return $statusStr;
-	}
-
-	public function linkChecklistVoucher($clid,$tid){
-		global $LANG;
-		$status = '';
-		if(is_numeric($clid) && is_numeric($tid)){
-			//Check to see it the name is in the list, if not, add it
-			$clTaxaID = 0;
-			$sql = 'SELECT cl.clTaxaID '.
-				'FROM fmchklsttaxalink cl INNER JOIN taxstatus ts1 ON cl.tid = ts1.tid '.
-				'INNER JOIN taxstatus ts2 ON ts1.tidaccepted = ts2.tidaccepted '.
-				'WHERE (ts1.taxauthid = 1) AND (ts2.taxauthid = 1) AND (ts2.tid = ?) AND (cl.clid = ?)';
-			if($stmt = $this->conn->prepare($sql)){
-				$stmt->bind_param('ii', $tid, $clid);
-				$stmt->execute();
-				$stmt->bind_result($clTaxaID);
-				$stmt->fetch();
-				$stmt->close();
-			}
-			if(!$clTaxaID){
-				$sql = 'INSERT INTO fmchklsttaxalink(tid,clid) VALUES(?,?)';
-				if($stmt = $this->conn->prepare($sql)){
-					$stmt->bind_param('ii', $tid, $clid);
-					$stmt->execute();
-					if($stmt->affected_rows) $clTaxaID = $stmt->insert_id;
-					else $status .= '('.$LANG['WARNING_ADD_SCINAME'].': '.$stmt->error.'); ';
-					$stmt->close();
-				}
-			}
-			//Add voucher
-			if($clTaxaID){
-				$sql = 'INSERT INTO fmvouchers(clTaxaID, occid) VALUES(?,?) ';
-				if($stmt = $this->conn->prepare($sql)){
-					$stmt->bind_param('ii', $clTaxaID, $this->occid);
-					$stmt->execute();
-					if(!$stmt->affected_rows) $status .= '('.$LANG['WARNING_ADD_VOUCHER'].': '.$stmt->error.'); ';
-					$stmt->close();
-				}
-			}
-		}
-		return $status;
-	}
-
-	public function deleteChecklistVoucher($clid){
-		global $LANG;
-		$status = '';
-		if(is_numeric($clid)){
-			$sql = 'DELETE v.* FROM fmvouchers v INNER JOIN fmchklsttaxalink c ON v.clTaxaID = c.clTaxaID WHERE c.clid = '.$clid.' AND v.occid = '.$this->occid;
-			if(!$this->conn->query($sql)){
-				$status = $LANG['ERROR_DELETING_VOUCHER'].': '.$this->conn->error;
-			}
-		}
-		return $status;
-	}
-
-	public function getUserChecklists(){
-		// Return list of checklists to which user has editing writes
-		$retArr = Array();
-		if(ISSET($GLOBALS['USER_RIGHTS']['ClAdmin'])){
-			$sql = 'SELECT clid, name, access FROM fmchecklists WHERE (clid IN('.implode(',',$GLOBALS['USER_RIGHTS']['ClAdmin']).')) ';
-			//echo $sql; exit;
-			$rs = $this->conn->query($sql);
-			while($r = $rs->fetch_object()){
-				$retArr[$r->clid] = $r->name.($r->access == 'private'?' (private)':'');
-			}
-			$rs->free();
-			asort($retArr);
-		}
-		return $retArr;
-	}
-
-	//Genetic link functions
-	public function getGeneticArr(){
-		global $LANG;
-		$retArr = array();
-		if($this->occid){
-			$sql = 'SELECT idoccurgenetic, identifier, resourcename, locus, resourceurl, notes FROM omoccurgenetic WHERE occid = '.$this->occid;
-			$result = $this->conn->query($sql);
-			if($result){
-				while($r = $result->fetch_object()){
-					$retArr[$r->idoccurgenetic]['id'] = $r->identifier;
-					$retArr[$r->idoccurgenetic]['name'] = $r->resourcename;
-					$retArr[$r->idoccurgenetic]['locus'] = $r->locus;
-					$retArr[$r->idoccurgenetic]['resourceurl'] = $r->resourceurl;
-					$retArr[$r->idoccurgenetic]['notes'] = $r->notes;
-				}
-				$result->free();
-			}
-			else{
-				trigger_error($LANG['UNABLE_GENETIC_DATA'].'; '.$this->conn->error,E_USER_WARNING);
-			}
-		}
-		return $retArr;
-	}
-
-	public function editGeneticResource($genArr){
-		global $LANG;
-		$genId = $genArr['genid'];
-		if(is_numeric($genId)){
-			$sql = 'UPDATE omoccurgenetic SET '.
-				'identifier = "'.$this->cleanInStr($genArr['identifier']).'", '.
-				'resourcename = "'.$this->cleanInStr($genArr['resourcename']).'", '.
-				'locus = '.($genArr['locus']?'"'.$this->cleanInStr($genArr['locus']).'"':'NULL').', '.
-				'resourceurl = '.($genArr['resourceurl']?'"'.$genArr['resourceurl'].'"':'NULL').', '.
-				'notes = '.($genArr['notes']?'"'.$this->cleanInStr($genArr['notes']).'"':'NULL').' '.
-				'WHERE idoccurgenetic = '.$genArr['genid'];
-			if(!$this->conn->query($sql)){
-				return $LANG['ERROR_EDITING_GENETIC'].' #'.$genArr['genid'].': '.$this->conn->error;
-			}
-			return $LANG['GEN_RESOURCE_EDIT_SUCCESS'];
-		}
-		return false;
-	}
-
-	public function deleteGeneticResource($id){
-		global $LANG;
-		if(is_numeric($id)){
-			$sql = 'DELETE FROM omoccurgenetic WHERE idoccurgenetic = '.$id;
-			if(!$this->conn->query($sql)){
-				return $LANG['ERROR_DELETING_GENETIC'].' #'.$id.': '.$this->conn->error;
-			}
-			return $LANG['GEN_RESOURCE_DEL_SUCCESS'];
-		}
-		return false;
-	}
-
-	public function addGeneticResource($genArr){
-		global $LANG;
-		$sql = 'INSERT INTO omoccurgenetic(occid, identifier, resourcename, locus, resourceurl, notes) '.
-			'VALUES('.$this->cleanInStr($genArr['occid']).',"'.$this->cleanInStr($genArr['identifier']).'","'.
-			$this->cleanInStr($genArr['resourcename']).'",'.
-			($genArr['locus']?'"'.$this->cleanInStr($genArr['locus']).'"':'NULL').','.
-			($genArr['resourceurl']?'"'.$this->cleanInStr($genArr['resourceurl']).'"':'NULL').','.
-			($genArr['notes']?'"'.$this->cleanInStr($genArr['notes']).'"':'NULL').')';
-		if(!$this->conn->query($sql)){
-			return $LANG['ERROR_ADDING_GEN'].': '.$this->conn->error;
-		}
-		return $LANG['GEN_RES_ADD_SUCCESS'];
-	}
-
-	//OCR label processing methods
-	public function getRawTextFragments(){
-		$retArr = array();
-		if($this->occid){
-			$sql = 'SELECT r.prlid, r.imgid, r.rawstr, r.notes, r.source '.
-				'FROM specprocessorrawlabels r INNER JOIN images i ON r.imgid = i.imgid '.
-				'WHERE i.occid = '.$this->occid;
-			$rs = $this->conn->query($sql);
-			while($r = $rs->fetch_object()){
-				$retArr[$r->imgid][$r->prlid]['raw'] = $this->cleanOutStr($r->rawstr);
-				$retArr[$r->imgid][$r->prlid]['notes'] = $this->cleanOutStr($r->notes);
-				$retArr[$r->imgid][$r->prlid]['source'] = $this->cleanOutStr($r->source);
-			}
-			$rs->free();
-		}
-		return $retArr;
-	}
-
-	public function insertTextFragment($imgId,$rawFrag,$notes,$source){
-		global $LANG;
-		if($imgId && $rawFrag){
-			$statusStr = '';
-			//$rawFrag = preg_replace('/[^(\x20-\x7F)]*/','', $rawFrag);
-			$sql = 'INSERT INTO specprocessorrawlabels(imgid,rawstr,notes,source) '.
-				'VALUES ('.$imgId.',"'.$this->cleanRawFragment($rawFrag).'",'.
-				($notes?'"'.$this->cleanInStr($notes).'"':'NULL').','.
-				($source?'"'.$this->cleanInStr($source).'"':'NULL').')';
-			//echo $sql;
-			if($this->conn->query($sql)){
-				$statusStr = $this->conn->insert_id;
-			}
-			else{
-				$statusStr = $LANG['ERROR_UNABLE_INSERT'].'; '.$this->conn->error;
-				$statusStr .= '; SQL = '.$sql;
-			}
-			return $statusStr;
-		}
-	}
-
-	public function saveTextFragment($prlId,$rawFrag,$notes,$source){
-		global $LANG;
-		if(is_numeric($prlId) && $rawFrag){
-			$statusStr = '';
-			//$rawFrag = preg_replace('/[^(\x20-\x7F)]*/','', $rawFrag);
-			$sql = 'UPDATE specprocessorrawlabels '.
-				'SET rawstr = "'.$this->cleanRawFragment($rawFrag).'", '.
-				'notes = '.($notes?'"'.$this->cleanInStr($notes).'"':'NULL').', '.
-				'source = '.($source?'"'.$this->cleanInStr($source).'"':'NULL').' '.
-				'WHERE (prlid = '.$prlId.')';
-			if(!$this->conn->query($sql)){
-				$statusStr = $LANG['ERROR_UNABLE_UPDATE'].'; '.$this->conn->error;
-				$statusStr .= '; SQL = '.$sql;
-			}
-			return $statusStr;
-		}
-	}
-
-	public function deleteTextFragment($prlId){
-		global $LANG;
-		if(is_numeric($prlId)){
-			$statusStr = '';
-			$sql = 'DELETE FROM specprocessorrawlabels WHERE (prlid = '.$prlId.')';
-			if(!$this->conn->query($sql)){
-				$statusStr = $LANG['ERROR_UNABLE_DELETE'].'; '.$this->conn->error;
-			}
-			return $statusStr;
-		}
-	}
-
-	public function getImageMap($imgId = 0){
-		$imageMap = Array();
-		if($this->occid){
-			$sql = 'SELECT imgid, url, thumbnailurl, originalurl, caption, photographer, photographeruid, sourceurl, copyright, notes, occid, username, sortoccurrence, initialtimestamp FROM images ';
-			if($imgId) $sql .= 'WHERE (imgid = '.$imgId.') ';
-			else $sql .= 'WHERE (occid = '.$this->occid.') ';
-			$sql .= 'ORDER BY sortoccurrence';
-			//echo $sql;
-			$result = $this->conn->query($sql);
-			while($row = $result->fetch_object()){
-				$imageMap[$row->imgid]['url'] = $row->url;
-				$imageMap[$row->imgid]['tnurl'] = $row->thumbnailurl;
-				$imageMap[$row->imgid]['origurl'] = $row->originalurl;
-				$imageMap[$row->imgid]['caption'] = $this->cleanOutStr($row->caption);
-				$imageMap[$row->imgid]['photographer'] = $this->cleanOutStr($row->photographer);
-				$imageMap[$row->imgid]['photographeruid'] = $row->photographeruid;
-				$imageMap[$row->imgid]['sourceurl'] = $row->sourceurl;
-				$imageMap[$row->imgid]['copyright'] = $this->cleanOutStr($row->copyright);
-				$imageMap[$row->imgid]['notes'] = $this->cleanOutStr($row->notes);
-				$imageMap[$row->imgid]['occid'] = $row->occid;
-				$imageMap[$row->imgid]['username'] = $this->cleanOutStr($row->username);
-				$imageMap[$row->imgid]['sort'] = $row->sortoccurrence;
-			}
-			$result->free();
-		}
-		return $imageMap;
-	}
-
-	protected function getImageTags($imgIdStr){
-		$retArr = array();
-		$sql = 'SELECT t.imgid, k.tagkey, k.shortlabel, k.description_en FROM imagetag t INNER JOIN imagetagkey k ON t.keyvalue = k.tagkey WHERE t.imgid IN('.$imgIdStr.')';
-		$rs = $this->conn->query($sql);
-		while($r = $rs->fetch_object()){
-			$retArr[$r->imgid][$r->tagkey] = $r->shortlabel;
-		}
-		$rs->free();
-		return $retArr;
-	}
-
-	public function getEditArr(){
-		$retArr = array();
-		$this->setOccurArr();
-		$sql = 'SELECT e.ocedid, e.fieldname, e.fieldvalueold, e.fieldvaluenew, e.reviewstatus, e.appliedstatus, '.
-			'CONCAT_WS(", ",u.lastname,u.firstname) as editor, e.initialtimestamp '.
-			'FROM omoccuredits e INNER JOIN users u ON e.uid = u.uid '.
-			'WHERE e.occid = '.$this->occid.' ORDER BY e.initialtimestamp DESC ';
-		$result = $this->conn->query($sql);
-		if($result){
-			while($r = $result->fetch_object()){
-				$k = substr($r->initialtimestamp,0,16);
-				if(!isset($retArr[$k])){
-					$retArr[$k]['editor'] = $r->editor;
-					$retArr[$k]['ts'] = $r->initialtimestamp;
-					$retArr[$k]['reviewstatus'] = $r->reviewstatus;
-				}
-				$retArr[$k]['edits'][$r->appliedstatus][$r->ocedid]['fieldname'] = $r->fieldname;
-				$retArr[$k]['edits'][$r->appliedstatus][$r->ocedid]['old'] = $r->fieldvalueold;
-				$retArr[$k]['edits'][$r->appliedstatus][$r->ocedid]['new'] = $r->fieldvaluenew;
-				$currentCode = 0;
-				if(isset($this->occurrenceMap[$this->occid][strtolower($r->fieldname)])){
-					$fName = $this->occurrenceMap[$this->occid][strtolower($r->fieldname)];
-					if($fName == $r->fieldvaluenew) $currentCode = 1;
-					elseif($fName == $r->fieldvalueold) $currentCode = 2;
-				}
-				$retArr[$k]['edits'][$r->appliedstatus][$r->ocedid]['current'] = $currentCode;
-			}
-			$result->free();
-		}
-		return $retArr;
-	}
-
 	public function getExternalEditArr(){
 		$retArr = Array();
 		$sql = 'SELECT r.orid, r.oldvalues, r.newvalues, r.externalsource, r.externaleditor, r.reviewstatus, r.appliedstatus, '.
@@ -1141,40 +758,6 @@ class OccurEditorQuery extends OccurEditorBase {
 	}
 
 	//Misc data support functions
-	public function getCollectionList($limitToUser = true){
-		$retArr = array();
-		$sql = 'SELECT collid, collectionname FROM omcollections ';
-		if($limitToUser){
-			$collArr = array('0');
-			if(isset($GLOBALS['USER_RIGHTS']['CollAdmin'])) $collArr = $GLOBALS['USER_RIGHTS']['CollAdmin'];
-			$sql .= 'WHERE (collid IN('.implode(',',$collArr).')) ';
-			if(isset($GLOBALS['USER_RIGHTS']['CollEditor'])){
-				$sql .= 'OR (collid IN('.implode(',',$GLOBALS['USER_RIGHTS']['CollEditor']).') AND colltype = "General Observations")';
-			}
-		}
-		$rs = $this->conn->query($sql);
-		while($r = $rs->fetch_object()){
-			$retArr[$r->collid] = $r->collectionname;
-		}
-		$rs->free();
-		asort($retArr);
-		return $retArr;
-	}
-
-	public function getPaleoGtsTerms(){
-		$retArr = array();
-		if($this->paleoActivated){
-			$sql = 'SELECT gtsterm, rankid FROM omoccurpaleogts ';
-			$rs = $this->conn->query($sql);
-			while($r = $rs->fetch_object()){
-				$retArr[$r->gtsterm] = $r->rankid;
-			}
-			$rs->free();
-			ksort($retArr);
-		}
-		return $retArr;
-	}
-
 	public function getExsiccatiList(){
 		$retArr = array();
 		if($this->collId){
@@ -1191,65 +774,6 @@ class OccurEditorQuery extends OccurEditorBase {
 			$rs->free();
 		}
 		return $retArr;
-	}
-
-	public function getQuickHost(){
-		$retArr = Array();
-		if($this->occid){
-			$sql = 'SELECT associd, verbatimsciname FROM omoccurassociations WHERE relationship = "host" AND occid = '.$this->occid.' ';
-			//echo $sql; exit;
-			$rs = $this->conn->query($sql);
-			while($r = $rs->fetch_object()){
-				$retArr['associd'] = $r->associd;
-				$retArr['verbatimsciname'] = $r->verbatimsciname;
-			}
-			$rs->free();
-		}
-		return $retArr;
-	}
-
-	public function getAssociationControlVocab(){
-		$retArr = array();
-		$sql = 'SELECT t.cvTermID, t.term '.
-			'FROM ctcontrolvocabterm t INNER JOIN ctcontrolvocab v ON t.cvID = v.cvID '.
-			'WHERE v.tablename = "omoccurassociations" AND v.fieldName = "relationship" ORDER BY term';
-		$rs = $this->conn->query($sql);
-		if($rs){
-			while($r = $rs->fetch_object()){
-				$retArr[$r->cvTermID] = $r->term;
-			}
-			$rs->free();
-		}
-		return $retArr;
-	}
-
-	public function isCrowdsourceEditor(){
-		$isEditor = false;
-		if($this->occid){
-			$sql = 'SELECT reviewstatus, uidprocessor FROM omcrowdsourcequeue WHERE occid = '.$this->occid;
-			$rs = $this->conn->query($sql);
-			while($r = $rs->fetch_object()){
-				if($r->reviewstatus == 0){
-					//crowdsourcing status is open for editing
-					$isEditor = true;
-				}
-				elseif($r->reviewstatus == 5 && $r->uidprocessor == $GLOBALS['SYMB_UID']){
-					//CS status is pending (=5) and active user was original editor
-					$isEditor = true;
-				}
-			}
-			$rs->free();
-		}
-		return $isEditor;
-	}
-
-	public function traitCodingActivated(){
-		$bool = false;
-		$sql = 'SELECT traitid FROM tmtraits LIMIT 1';
-		$rs = $this->conn->query($sql);
-		if($rs->num_rows) $bool = true;
-		$rs->free();
-		return $bool;
 	}
 
 	//Setters and getters
@@ -1282,10 +806,5 @@ class OccurEditorQuery extends OccurEditorBase {
 	public function getQueryVariables(){
 		return $this->qryArr;
 	}
-
-	public function isPersonalManagement(){
-		return $this->isPersonalManagement;
-	}
-
 }
 ?>

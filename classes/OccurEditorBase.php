@@ -8,6 +8,8 @@ class OccurEditorBase extends Manager{
 	protected $collMap = array();
 	protected $fieldArr = array();
 	protected $crowdSourceMode = 0;
+	protected $paleoActivated = false;
+	protected $isPersonalManagement = false;	//e.g. General Observations and owned by user
 
 	public function __construct($conn = null){
 		parent::__construct(null, 'write', $conn);
@@ -50,7 +52,6 @@ class OccurEditorBase extends Manager{
 		$previousOccid = 0;
 		$rs = $this->conn->query($sql);
 		$rsCnt = 0;
-		$indexArr = array();
 		while($row = $rs->fetch_assoc()){
 			if($conditionFragment && $previousOccid == $row['occid']) continue;
 			if($row['localitysecurityreason'] == '<Security Setting Locked>') $row['localitysecurityreason'] = '[Security Setting Locked]';
@@ -160,6 +161,20 @@ class OccurEditorBase extends Manager{
 		return $retArr;
 	}
 
+	public function carryOverValues($fArr){
+		$locArr = Array('recordedby','associatedcollectors','eventdate','eventdate2','verbatimeventdate','month','day','year',
+			'startdayofyear','enddayofyear','country','stateprovince','county','municipality','locationid','locality','decimallatitude','decimallongitude',
+			'verbatimcoordinates','coordinateuncertaintyinmeters','footprintwkt','geodeticdatum','georeferencedby','georeferenceprotocol',
+			'georeferencesources','georeferenceverificationstatus','georeferenceremarks',
+			'minimumelevationinmeters','maximumelevationinmeters','verbatimelevation','minimumdepthinmeters','maximumdepthinmeters','verbatimdepth',
+			'habitat','substrate','lifestage', 'sex', 'individualcount', 'samplingprotocol', 'preparations',
+			'associatedtaxa','basisofrecord','language','labelproject','eon','era','period','epoch','earlyinterval','lateinterval','absoluteage','storageage','stage','localstage','biota',
+			'biostratigraphy','lithogroup','formation','taxonenvironment','member','bed','lithology','stratremarks','element');
+		$retArr = array_intersect_key($fArr,array_flip($locArr));
+		$this->cleanOutArr($retArr);
+		return $retArr;
+	}
+
 	private function setPaleoData(){
 		if($this->paleoActivated){
 			$sql = 'SELECT '.implode(',',$this->fieldArr['omoccurpaleo']).' FROM omoccurpaleo WHERE occid = '.$this->occid;
@@ -189,17 +204,6 @@ class OccurEditorBase extends Manager{
 				$retArr['exsnumber'] = $r->exsnumber;
 			}
 			$rs->free();
-		}
-		return $retArr;
-	}
-
-	public function getExsiccatiTitleArr(){
-		$retArr = array();
-		$sql = 'SELECT ometid, title, abbreviation FROM omexsiccatititles ORDER BY title ';
-		//echo $sql;
-		$rs = $this->conn->query($sql);
-		while ($r = $rs->fetch_object()) {
-			$retArr[$r->ometid] = $this->cleanOutStr($r->title.($r->abbreviation?' ['.$r->abbreviation.']':''));
 		}
 		return $retArr;
 	}
@@ -351,6 +355,22 @@ class OccurEditorBase extends Manager{
 	}
 
 	//Data and variable functions
+	private function getObserverUid(){
+		$obsId = 0;
+		if($this->occurrenceMap && array_key_exists('observeruid',$this->occurrenceMap[$this->occid])){
+			$obsId = $this->occurrenceMap[$this->occid]['observeruid'];
+		}
+		elseif($this->occid){
+			$sql = 'SELECT observeruid FROM omoccurrences WHERE occid = '.$this->occid;
+			$rs = $this->conn->query($sql);
+			if($r = $rs->fetch_object()){
+				$obsId = $r->observeruid;
+			}
+			$rs->free();
+		}
+		return $obsId;
+	}
+
 	protected function setCollMap(){
 		if(!$this->collMap){
 			if(!$this->collId && $this->occid) $this->setCollectionIdentifier();
@@ -430,6 +450,10 @@ class OccurEditorBase extends Manager{
 
 	public function setCrowdSourceMode($m){
 		if(is_numeric($m)) $this->crowdSourceMode = $m;
+	}
+
+	public function isPersonalManagement(){
+		return $this->isPersonalManagement;
 	}
 
 	//Misc functions
