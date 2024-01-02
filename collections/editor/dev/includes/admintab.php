@@ -1,5 +1,5 @@
 <?php
-include_once('../../../config/symbini.php');
+include_once('../../../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceEditorManager.php');
 if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/editor/includes/admintab.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/admintab.'.$LANG_TAG.'.php');
 else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/admintab.en.php');
@@ -7,7 +7,7 @@ header('Content-Type: text/html; charset='.$CHARSET);
 
 $occid = $_GET['occid'];
 $occIndex = $_GET['occindex'];
-$collId = $_GET['collid'];
+$collid = $_GET['collid'];
 
 $occManager = new OccurrenceEditorManager();
 $occManager->setOccId($occid);
@@ -22,10 +22,10 @@ $occManager->setOccId($occid);
 			<fieldset style="padding:15px;margin:10px 0px;">
 				<legend><b><?php echo $LANG['EDIT_HISTORY_INT']; ?></b></legend>
 				<?php
-				if($IS_ADMIN || (array_key_exists('CollAdmin',$USER_RIGHTS) && in_array($collId,$USER_RIGHTS['CollAdmin']))){
+				if($IS_ADMIN || (array_key_exists('CollAdmin',$USER_RIGHTS) && in_array($collid,$USER_RIGHTS['CollAdmin']))){
 					?>
 					<div style="float:right;" title="<?php echo $LANG['MANAGE_HISTORY']; ?>">
-						<a href="../editor/editreviewer.php?collid=<?php echo htmlspecialchars($collId, HTML_SPECIAL_CHARS_FLAGS) . '&occid=' . htmlspecialchars($occid, HTML_SPECIAL_CHARS_FLAGS); ?>" target="_blank"><img src="../../images/edit.png" style="border:0px;width:14px;" /></a>
+						<a href="../editor/editreviewer.php?collid=<?php echo $collid . '&occid=' . $occid ?>" target="_blank"><img src="<?= $CLIENT_ROOT ?>/images/edit.png" style="border:0px;width:14px;" /></a>
 					</div>
 					<?php
 				}
@@ -98,7 +98,7 @@ $occManager->setOccId($occid);
 		echo '<div style="margin:10px">'.$LANG['NO_PREV_EDITS'].'</div>';
 	}
 	$collAdminList = $occManager->getCollectionList();
-	unset($collAdminList[$collId]);
+	unset($collAdminList[$collid]);
 	if($collAdminList){
 		?>
 		<fieldset style="padding:15px;margin:10px 0px;">

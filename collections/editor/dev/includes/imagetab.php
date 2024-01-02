@@ -1,5 +1,5 @@
 <?php
-include_once('../../../config/symbini.php');
+include_once('../../../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceEditorImages.php');
 if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/editor/includes/imagetab.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imagetab.'.$LANG_TAG.'.php');
 else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/imagetab.en.php');
@@ -211,7 +211,7 @@ $photographerArr = $occManager->getPhotographerArr();
 						</td>
 						<td style="text-align:left;padding:10px;">
 							<div style="float:right;cursor:pointer;" onclick="toggle('img<?php echo $imgId; ?>editdiv');" title="<?php echo $LANG['EDIT_METADATA']; ?>">
-								<img style="border:0px;width:12px;" src="../../images/edit.png" />
+								<img style="border:0px;width:12px;" src="<?= $CLIENT_ROOT ?>/images/edit.png" />
 							</div>
 							<div style="margin-top:30px">
 								<div>

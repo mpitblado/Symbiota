@@ -1,5 +1,5 @@
 <?php
-include_once('../../../config/symbini.php');
+include_once('../../../../config/symbini.php');
 include_once($SERVER_ROOT . '/classes/OmMaterialSample.php');
 include_once($SERVER_ROOT . '/content/lang/collections/fieldterms/materialSampleVars.' . $LANG_TAG . '.php');
 if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/editor/includes/materialsampleinclude.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT . '/content/lang/collections/editor/includes/materialsampleinclude.' . $LANG_TAG . '.php');
@@ -79,7 +79,7 @@ $controlTermArr = $materialSampleManager->getMSTypeControlValues();
 				echo '<fieldset><legend>' . $LANG['MAT_SAMP'] . '</legend>';
 				?>
 				<div class="edit-control">
-					<span><a href="#" onclick="$('#formDiv-<?php echo $matSampleID; ?>').toggle()"><img src="../../images/edit.png" /></a></span>
+					<span><a href="#" onclick="$('#formDiv-<?php echo $matSampleID; ?>').toggle()"><img src="<?= $CLIENT_ROOT ?>/images/edit.png" /></a></span>
 				</div>
 				<?php
 			}

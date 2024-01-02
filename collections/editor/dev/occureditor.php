@@ -1273,7 +1273,7 @@ else{
 												<textarea name="associatedtaxa" onchange="fieldChanged('associatedtaxa');"><?php echo array_key_exists('associatedtaxa',$occArr)?$occArr['associatedtaxa']:''; ?></textarea>
 												<?php
 												if(!isset($ACTIVATEASSOCTAXAAID) || $ACTIVATEASSOCTAXAAID){
-													echo '<a href="#" onclick="openAssocSppAid();return false;"><img class="editimg" src="<?= $CLIENT_ROOT ?>/images/list.png" /></a>';
+													echo '<a href="#" onclick="openAssocSppAid();return false;"><img class="editimg" src="'.$CLIENT_ROOT.'/images/list.png" /></a>';
 												}
 												?>
 											</div>

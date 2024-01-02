@@ -1,5 +1,5 @@
 <?php
-include_once('../../../config/symbini.php');
+include_once('../../../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceEditorDeterminations.php');
 if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/editor/includes/determinationtab.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/determinationtab.'.$LANG_TAG.'.php');
 else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/determinationtab.en.php');
@@ -35,7 +35,7 @@ $specImgArr = $occManager->getImageMap();  // find out if there are images in or
 			if($editMode < 3){
 				?>
 				<a href="#" title="<?php echo $LANG['MODIFY_CURRENT_RANKING']; ?>" onclick="toggle('idrankeditdiv');toggle('idrankdiv');return false;">
-					<img src="../../images/edit.png" style="border:0px;width:12px;" />
+					<img src="<?= $CLIENT_ROOT ?>/images/edit.png" style="border:0px;width:12px;" />
 				</a>
 				<?php
 			}
@@ -230,7 +230,7 @@ $specImgArr = $occManager->getImageMap();  // find out if there are images in or
 						}
 						if($canEdit){
 							?>
-							<a href="#" onclick="toggle('editdetdiv-<?php echo $detId;?>');return false;" title="<?php echo $LANG['EDIT_DET']; ?>"><img style="border:0px;width:12px;" src="../../images/edit.png" /></a>
+							<a href="#" onclick="toggle('editdetdiv-<?php echo $detId;?>');return false;" title="<?php echo $LANG['EDIT_DET']; ?>"><img style="border:0px;width:12px;" src="<?= $CLIENT_ROOT ?>/images/edit.png" /></a>
 							<?php
 						}
 						if(!$detRec['appliedstatus']){
