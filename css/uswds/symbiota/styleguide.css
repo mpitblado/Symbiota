@@ -874,11 +874,11 @@
   .footer-header-wrapper .usa-button-primary,
   .footer-header-wrapper .usa-button:visited,
   .footer-header-wrapper .usa-button-primary:visited,
-  button,
-  [type="button"],
-  [type="submit"],
-  [type="reset"],
-  [type="image"] {
+  .footer-header-wrapper button,
+  .footer-header-wrapper [type="button"],
+  .footer-header-wrapper [type="submit"],
+  .footer-header-wrapper [type="reset"],
+  .footer-header-wrapper [type="image"] {
     width: 100%;
   }
 }
@@ -3722,7 +3722,7 @@
 @media screen and (min-width: 1250px) {
   .footer-header-wrapper .usa-nav-primary {
     display: inline;
-    margin-left:17rem;
+    margin-left: 17rem;
   }
 }
 @media screen and (min-width: 1250px) {
