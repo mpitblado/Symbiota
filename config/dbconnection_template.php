@@ -25,6 +25,10 @@ class MySQLiConnectionFactory {
 		// Figure out which connections are open, automatically opening any connections
 		// which are failed or not yet opened but can be (re)established.
 		for ($i = 0, $n = count(MySQLiConnectionFactory::$SERVERS); $i < $n; $i++) {
+			// BUG FIX for mysqli exceptions thrown for PHP > 8.0.0  TODO - 
+			if (version_compare(PHP_VERSION, '8.1.0') >= 0) {
+				mysqli_report(MYSQLI_REPORT_OFF);
+			}
 			$server = MySQLiConnectionFactory::$SERVERS[$i];
 			if($server['type'] == $type){
 				$connection = new mysqli($server['host'], $server['username'], $server['password'], $server['database'], $server['port']);
