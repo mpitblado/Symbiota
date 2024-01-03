@@ -30,6 +30,45 @@ if (array_key_exists('code', $_REQUEST) && $_REQUEST['code']) {
     exit();
   }  
   if($status){
+
+
+    // var_dump($oidc);
+    $idToken = $oidc->getIdToken();
+    
+    $accessToken =  ($idToken,true);
+    //json decode
+
+    // $tmp = $oidc['tokenResponse']['access_token'];
+    // var_dump($tmp);
+    // $options = [
+    //   'method' => 'GET',
+    //   'headers' => [
+    //     'Content-Type' => 'application/json',
+    //     'Authorization' => 'Bearer ' . $accessToken,
+    //   ],
+    // ];
+
+
+    $ch = curl_init();
+    $WINDOWS_GRAPH_URL = 'https://graph.windows.net/me?api-version=1.6';
+    $MICROSOFT_GRAPH_URL = 'https://graph.microsoft.com/v1.0/me';
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_URL, $MICROSOFT_GRAPH_URL);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json', 'Authorization: Bearer ' . $accessToken ));
+		curl_setopt($ch, CURLOPT_HTTPGET, true);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    // curl_setopt($ch, $options,true);
+    $resJson = curl_exec($ch);
+    if(!$resJson){
+			$this->errorMessage = 'FATAL CURL ERROR: '.curl_error($ch).' (#'.curl_errno($ch).')';
+			echo 'ERROR: '.$this->errorMessage;
+			//$header = curl_getinfo($ch);
+		}
+		curl_close($ch);
+    var_dump($resJson);
+
+
     $sub = $oidc->requestUserInfo('sub');
     if($profManager->authenticate($sub, $providerUrls['oid'])){
       if($_SESSION['refurl']){

@@ -6,6 +6,8 @@ include_once($SERVER_ROOT . '/config/auth_config.php');
 use Jumbojett\OpenIDConnectClient;
 
 $AUTH_PROVIDER = $AUTH_PROVIDER ?? 'oid';
+
+
 $oidc = new OpenIDConnectClient($providerUrls[$AUTH_PROVIDER],
                                 $clientIds[$AUTH_PROVIDER],
                                 $clientSecrets[$AUTH_PROVIDER]);
