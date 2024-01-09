@@ -9,7 +9,7 @@ const reorderElements = (parentDivId, desiredDivIds, removeDivIds) => {
       parent.appendChild(childEl);
       if (desiredDivIds[currentChildIdxInDesiredList + 1] === "hr") {
         const hrElement = document.createElement("hr");
-        hrElement.style.cssText = "margin-bottom: 2rem;";
+        hrElement.style.cssText = "margin-bottom: 2rem; clear: both;";
         parent.appendChild(hrElement);
       }
     }

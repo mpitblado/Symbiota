@@ -377,7 +377,10 @@ $traitArr = $indManager->getTraitArr();
 						</div>
 					</div>
 					<?php
-					$iconUrl = (substr($collMetadata["icon"],0,6)=='images'?'../../':'').$collMetadata['icon'];
+					$iconUrl=null;
+					if(isset($collMetadata["icon"])){
+						$iconUrl = (substr($collMetadata["icon"],0,6)=='images'?'../../':'').$collMetadata['icon'];
+					}
 					if($iconUrl){
 						?>
 						<div id="collicon-div">
@@ -403,32 +406,32 @@ $traitArr = $indManager->getTraitArr();
 						}
 						if(array_key_exists('relation',$occArr)){
 							?>
-							<fieldset id="association-div">
-								<legend><?php echo (isset($LANG['RELATED_OCCUR'])?$LANG['RELATED_OCCUR']:'Related Occurrences'); ?></legend>
-								<?php
-								$displayLimit = 5;
-								$cnt = 0;
-								foreach($occArr['relation'] as $id => $assocArr){
-									if($cnt == $displayLimit){
-										echo '<div class="relation-hidden"><a href="#" onclick="$(\'.relation-hidden\').toggle();return false;">show all records</a></div>';
-										echo '<div class="relation-hidden" style="display:none">';
+								<fieldset id="association-div" class="top-light-margin">
+									<legend><?php echo (isset($LANG['RELATED_OCCUR'])?$LANG['RELATED_OCCUR']:'Related Occurrences'); ?></legend>
+									<?php
+									$displayLimit = 5;
+									$cnt = 0;
+									foreach($occArr['relation'] as $id => $assocArr){
+										if($cnt == $displayLimit){
+											echo '<div class="relation-hidden"><a href="#" onclick="$(\'.relation-hidden\').toggle();return false;">show all records</a></div>';
+											echo '<div class="relation-hidden" style="display:none">';
+										}
+										echo '<div>';
+										echo $assocArr['relationship'];
+										if($assocArr['subtype']) echo ' ('.$assocArr['subtype'].')';
+										echo ': ';
+										$relID = $assocArr['identifier'];
+										$relUrl = $assocArr['resourceurl'];
+										if(!$relUrl && $assocArr['occidassoc']) $relUrl = $GLOBALS['CLIENT_ROOT'].'/collections/individual/index.php?occid='.$assocArr['occidassoc'];
+										if($relUrl) $relID = '<a href="' . htmlspecialchars($relUrl, HTML_SPECIAL_CHARS_FLAGS) . '">' . htmlspecialchars($relID, HTML_SPECIAL_CHARS_FLAGS) . '</a>';
+										if($relID) echo $relID;
+										elseif($assocArr['sciname']) echo $assocArr['sciname'];
+										echo '</div>';
+										$cnt++;
 									}
-									echo '<div>';
-									echo $assocArr['relationship'];
-									if($assocArr['subtype']) echo ' ('.$assocArr['subtype'].')';
-									echo ': ';
-									$relID = $assocArr['identifier'];
-									$relUrl = $assocArr['resourceurl'];
-									if(!$relUrl && $assocArr['occidassoc']) $relUrl = $GLOBALS['CLIENT_ROOT'].'/collections/individual/index.php?occid='.$assocArr['occidassoc'];
-									if($relUrl) $relID = '<a href="' . htmlspecialchars($relUrl, HTML_SPECIAL_CHARS_FLAGS) . '">' . htmlspecialchars($relID, HTML_SPECIAL_CHARS_FLAGS) . '</a>';
-									if($relID) echo $relID;
-									elseif($assocArr['sciname']) echo $assocArr['sciname'];
-									echo '</div>';
-									$cnt++;
-								}
-								if(count($occArr['relation']) > $displayLimit) echo '</div>';
-								?>
-							</fieldset>
+									if(count($occArr['relation']) > $displayLimit) echo '</div>';
+									?>
+								</fieldset>
 							<?php
 						}
 						if($occArr['catalognumber']){
@@ -1404,7 +1407,7 @@ $traitArr = $indManager->getTraitArr();
 													echo '<label>'.$LANG['NEW_VALUE'].':</label> '.$vArr['new'].'<br/>';
 													echo '</div>';
 												}
-												echo '<div style="margin:15px 0px;"><hr/></div>';
+												echo '<div style="margin:15px 0px; clear: both;"><hr/></div>';
 											}
 										}
 										?>
@@ -1517,6 +1520,7 @@ $traitArr = $indManager->getTraitArr();
 	<script type="text/javascript">
 		document.addEventListener('DOMContentLoaded', ()=>{
 			reorderElements("occur-div", ["cat-div", "hr", "sciname-div", "family-div","hr", "taxonremarks-div", "assoccatnum-div", "assoccatnum-div", "idqualifier-div","identref-div","identremarks-div", "determination-div", "hr", "identby-div", "identdate-div","verbeventid-div", "hr", "recordedby-div", "recordnumber-div", "record-id-div", "eventdate-div", "hr", "locality-div", "latlng-div", "verbcoord-div", "elev-div", "habitat-div", "assoctaxa-div", "attr-div", "notes-div", "hr", "rights-div", "contact-div", "openeditor-div"], ["occurrenceid-div", "disposition-div"]);
+
 		});
 	</script>
 </body>
