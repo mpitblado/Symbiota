@@ -1062,9 +1062,9 @@ $traitArr = $indManager->getTraitArr();
 							if(array_key_exists('fieldsModified',$_POST)){
 								echo '<div><label>'.$LANG['REFRESH_DATE'].':</label> '.(isset($occArr['source']['refreshTimestamp'])?$occArr['source']['refreshTimestamp']:'').'</div>';
 								//Input from refersh event
-								$dataStatus = filter_var($_POST['dataStatus'], FILTER_SANITIZE_STRING);
-								$fieldsModified = filter_var($_POST['fieldsModified'], FILTER_SANITIZE_STRING);
-								$sourceDateLastModified = filter_var($_POST['sourceDateLastModified'], FILTER_SANITIZE_STRING);
+								$dataStatus = htmlspecialchars($_POST['dataStatus'], HTML_SPECIAL_CHARS_FLAGS);
+								$fieldsModified = htmlspecialchars($_POST['fieldsModified'], HTML_SPECIAL_CHARS_FLAGS);
+								$sourceDateLastModified = htmlspecialchars($_POST['sourceDateLastModified'], HTML_SPECIAL_CHARS_FLAGS);
 								echo '<div><label>'.$LANG['UPDATE_STATUS'].':</label> '.$dataStatus.'</div>';
 								echo '<div><label>'.$LANG['FIELDS_MODIFIED'].':</label> '.$fieldsModified.'</div>';
 								echo '<div><label>'.$LANG['SOURCE_DATE_LAST_MODIFIED'].':</label> '.$sourceDateLastModified.'</div>';
