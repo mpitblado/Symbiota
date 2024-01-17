@@ -8,7 +8,35 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
 $SHOULD_USE_HARVESTPARAMS = $SHOULD_USE_HARVESTPARAMS ?? true;
 $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.php";
 ?>
-<div class="footer-wrapper dialog-off-canvas-main-canvas" data-off-canvas-main-canvas>
+<div class="spinner" id="spinner">
+  <svg viewBox="25 25 50 50" style="width: 50vw; height: auto;">
+    <circle cx="50" cy="50" r="20" fill="none" class="path"></circle>
+  </svg>
+</div>
+<script type="text/javascript">
+  const handleOnCssLoad = () =>{
+    setTimeout(()=>{
+      console.log('deleteMe this happens a1');
+      const headerWrapper = document.getElementById("header-wrapper");
+      if(headerWrapper){
+        headerWrapper.style.display="";
+      }
+      const everythingInTheMiddle = document.getElementById("everything-in-the-middle");
+      if(everythingInTheMiddle){
+        everythingInTheMiddle.style.display="";
+      }
+      const footer = document.getElementById("footer");
+      if(footer){
+        footer.style.display= "";
+      }
+      const spinner = document.getElementById("spinner");
+      if(spinner){
+        spinner.style.display= "none";
+      }
+    }, 3000);
+  }
+</script>
+<div id="header-wrapper" style="display:none;" class="footer-wrapper dialog-off-canvas-main-canvas" data-off-canvas-main-canvas>
   <div class="official-website-banner">
     <div class="container">    
       <div class="official-website-banner__message">
@@ -283,3 +311,4 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
     window.location.href = '<?php echo $CLIENT_ROOT; ?>/sitemap.php';
   };
 </script>
+<div id="everything-in-the-middle" style="display:none;">
