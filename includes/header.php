@@ -15,7 +15,7 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
 </div>
 <script type="text/javascript">
   const handleOnCssLoad = () =>{
-    setTimeout(()=>{
+    // setTimeout(()=>{
       console.log('deleteMe this happens a1');
       const headerWrapper = document.getElementById("header-wrapper");
       if(headerWrapper){
@@ -33,7 +33,7 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
       if(spinner){
         spinner.style.display= "none";
       }
-    }, 3000);
+    // }, 3000);
   }
 </script>
 <div id="header-wrapper" style="display:none;" class="footer-wrapper dialog-off-canvas-main-canvas" data-off-canvas-main-canvas>
