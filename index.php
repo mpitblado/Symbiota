@@ -22,7 +22,7 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
 	include($SERVER_ROOT . '/includes/header.php');
 	?>
 	<div class="navpath"></div>
-	<div id="innertext" class="footer-wrapper" style="max-width: 80%; padding: 0;">
+	<div id="innertext" class="footer-wrapper">
 		<?php
 		if($LANG_TAG == 'es'){
 			?>
