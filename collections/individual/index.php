@@ -1519,7 +1519,7 @@ $traitArr = $indManager->getTraitArr();
 	</div>
 	<script type="text/javascript">
 		document.addEventListener('DOMContentLoaded', ()=>{
-			reorderElements("occur-div", ["cat-div", "hr", "sciname-div", "family-div","hr", "taxonremarks-div", "assoccatnum-div", "assoccatnum-div", "idqualifier-div","identref-div","identremarks-div", "determination-div", "hr", "identby-div", "identdate-div","verbeventid-div", "hr", "recordedby-div", "recordnumber-div", "record-id-div", "eventdate-div", "hr", "locality-div", "latlng-div", "verbcoord-div", "elev-div", "habitat-div", "assoctaxa-div", "attr-div", "notes-div", "hr", "rights-div", "contact-div", "openeditor-div"], ["occurrenceid-div", "disposition-div"]);
+			reorderElements("occur-div", ["cat-div", "preparations-div", "othercatalognumbers", "br", "sciname-div", "idqualifier-div", "family-div","br", "taxonremarks-div", "assoccatnum-div", "assoccatnum-div", "idqualifier-div","identref-div","identremarks-div", "determination-div", "br", "identby-div", "identdate-div","verbeventid-div", "br", "recordedby-div", "recordnumber-div","br", "record-id-div", "eventdate-div", "br", "locality-div", "latlng-div", "verbcoord-div", "elev-div", "habitat-div", "reproductive-div", "assoctaxa-div", "attr-div", "notes-div", "br", "rights-div", "contact-div", "openeditor-div"], ["occurrenceid-div", "disposition-div"]);
 
 		});
 	</script>

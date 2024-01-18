@@ -1,14 +1,26 @@
 const reorderElements = (parentDivId, desiredDivIds, removeDivIds) => {
   const parent = document.getElementById(parentDivId);
   const allChildren = Array.from(parent.children);
-
+  const allChildrenIds = allChildren.map((child) => child.id);
+  const revisedDesired = desiredDivIds.filter((desiredDiv) => {
+    return (
+      allChildrenIds.includes(desiredDiv) ||
+      desiredDiv === "br" ||
+      desiredDiv == "hr"
+    );
+  });
   allChildren.forEach((childEl) => {
     const currentId = childEl.id;
-    if (desiredDivIds.includes(currentId)) {
-      currentChildIdxInDesiredList = desiredDivIds.indexOf(currentId);
+    if (revisedDesired.includes(currentId)) {
+      currentChildIdxInDesiredList = revisedDesired.indexOf(currentId);
       parent.appendChild(childEl);
-      if (desiredDivIds[currentChildIdxInDesiredList + 1] === "hr") {
+      if (revisedDesired[currentChildIdxInDesiredList + 1] === "hr") {
         const hrElement = document.createElement("hr");
+        hrElement.style.cssText = "margin-bottom: 2rem; clear: both;";
+        parent.appendChild(hrElement);
+      }
+      if (revisedDesired[currentChildIdxInDesiredList + 1] === "br") {
+        const hrElement = document.createElement("br");
         hrElement.style.cssText = "margin-bottom: 2rem; clear: both;";
         parent.appendChild(hrElement);
       }
