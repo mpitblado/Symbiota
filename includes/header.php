@@ -16,7 +16,6 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
 <script type="text/javascript">
   const handleOnCssLoad = () =>{
     // setTimeout(()=>{
-      console.log('deleteMe this happens a1');
       const headerWrapper = document.getElementById("header-wrapper");
       if(headerWrapper){
         headerWrapper.style.display="";
