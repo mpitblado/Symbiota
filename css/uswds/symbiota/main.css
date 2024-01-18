@@ -30,7 +30,7 @@
 /* Global styles
    ========================================================================== */
 html {
-  font-size: 14px; /*0.7rem; /* 1rem = 10px */
+  font-size: 13px; /*0.7rem; /* 1rem = 10px */
 }
 
 body {
@@ -333,7 +333,7 @@ table.styledtable tr.alt td {
 }
 
 .accessible-font {
-  font-size: 1.4em;
+  font-size: 1em;
 }
 
 .bottom-breathing-room {
