@@ -9,25 +9,34 @@ const reorderElements = (parentDivId, desiredDivIds, removeDivIds) => {
       desiredDiv == "hr"
     );
   });
-  allChildren.forEach((childEl) => {
-    const currentId = childEl.id;
-    if (revisedDesired.includes(currentId)) {
-      currentChildIdxInDesiredList = revisedDesired.indexOf(currentId);
-      parent.appendChild(childEl);
-      if (revisedDesired[currentChildIdxInDesiredList + 1] === "hr") {
-        const hrElement = document.createElement("hr");
-        hrElement.style.cssText = "margin-bottom: 2rem; clear: both;";
-        parent.appendChild(hrElement);
-      }
-      if (revisedDesired[currentChildIdxInDesiredList + 1] === "br") {
-        const hrElement = document.createElement("br");
-        hrElement.style.cssText = "margin-bottom: 2rem; clear: both;";
-        parent.appendChild(hrElement);
-      }
+
+  revisedDesired.forEach((desired) => {
+    if (desired === "hr") {
+      const hrElement = document.createElement("hr");
+      hrElement.style.cssText = "margin-bottom: 2rem; clear: both;";
+      parent.appendChild(hrElement);
     }
-    if (removeDivIds.includes(currentId)) {
-      childEl.remove();
+    if (desired === "br") {
+      const brElement = document.createElement("br");
+      brElement.style.cssText = "margin-bottom: 2rem; clear: both;";
+      parent.appendChild(brElement);
     }
+    if (desired !== "hr" && desired !== "br") {
+      const targetIndexInAllChildren = allChildrenIds.indexOf(desired);
+      parent.appendChild(allChildren[targetIndexInAllChildren]);
+    }
+  });
+
+  const leftOverChildren = allChildren.filter(
+    (child) => !revisedDesired.includes(child.id)
+  );
+  if (leftOverChildren.length > 0) {
+    const brElement = document.createElement("br");
+    brElement.style.cssText = "margin-bottom: 2rem; clear: both;";
+    parent.appendChild(brElement);
+  }
+  leftOverChildren.forEach((orphan) => {
+    parent.appendChild(orphan);
   });
 };
 
