@@ -11,12 +11,17 @@ const reorderElements = (parentDivId, desiredDivIds, removeDivIds) => {
   });
 
   revisedDesired.forEach((desired) => {
-    if (desired === "hr") {
+    //get tip of parent child array to make sure we're not repeating breaks or hrs
+    const tipId = Array.from(parent.children)?.slice(-1)[0]?.id;
+
+    if (desired === "hr" && tipId !== "") {
+      // @TODO skip if preceding entry in parent's id is hr
       const hrElement = document.createElement("hr");
       hrElement.style.cssText = "margin-bottom: 2rem; clear: both;";
       parent.appendChild(hrElement);
     }
-    if (desired === "br") {
+    if (desired === "br" && tipId !== "") {
+      // @TODO skip if preceding entry in parent's id is hr
       const brElement = document.createElement("br");
       brElement.style.cssText = "margin-bottom: 2rem; clear: both;";
       parent.appendChild(brElement);
