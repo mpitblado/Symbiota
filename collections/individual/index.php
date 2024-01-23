@@ -454,6 +454,7 @@ $traitArr = $indManager->getTraitArr();
 						}
 						if($occArr['othercatalognumbers']){
 							$char = substr($occArr['othercatalognumbers'],0,1);
+							echo '<div id="assoccatnum-parent-div">';
 							if($char == '{' || $char == '['){
 								$otherCatArr = json_decode($occArr['othercatalognumbers'],true);
 								foreach($otherCatArr as $catTag => $catValueArr){
@@ -471,6 +472,7 @@ $traitArr = $indManager->getTraitArr();
 								</div>
 								<?php
 							}
+							echo '</div>';
 						}
 						if($occArr['sciname']){
 							?>
@@ -1513,7 +1515,7 @@ $traitArr = $indManager->getTraitArr();
 	</div>
 	<script type="text/javascript">
 		document.addEventListener('DOMContentLoaded', ()=>{
-			reorderElements("occur-div", ["cat-div", "br", "preparations-div", "disposition-div", "sampleprotocol-div", "assoccatnum-div", "othercatalognumbers", "br", "sciname-div", "idqualifier-div", "family-div","br", "taxonremarks-div", "idqualifier-div","identref-div","identremarks-div", "determination-div", "br", "identby-div", "identdate-div","verbeventid-div", "br", "recordedby-div", "recordnumber-div","br", "record-id-div", "eventdate-div", "br", "locality-div", "latlng-div", "verbcoord-div", "elev-div", "habitat-div", "substrate-div", "sex-div", "lifestage-div", "reproductive-div", "attr-div", "assoctaxa-div", "indcnt-div", "notes-div", "br", "rights-div", "contact-div", "openeditor-div"], ["occurrenceid-div", "disposition-div"]);
+			reorderElements("occur-div", ["cat-div", "br", "preparations-div", "disposition-div", "sampleprotocol-div", "assoccatnum-parent-div" , "othercatalognumbers", "br", "sciname-div", "idqualifier-div", "family-div","br", "taxonremarks-div", "idqualifier-div","identref-div","identremarks-div", "determination-div", "br", "identby-div", "identdate-div","verbeventid-div", "br", "recordedby-div", "recordnumber-div","br", "record-id-div", "eventdate-div", "br", "locality-div", "latlng-div", "verbcoord-div", "elev-div", "habitat-div", "substrate-div", "sex-div", "lifestage-div", "reproductive-div", "attr-div", "assoctaxa-div", "indcnt-div", "notes-div", "br", "rights-div", "contact-div", "openeditor-div"], ["occurrenceid-div", "disposition-div"]);
 
 		});
 	</script>
