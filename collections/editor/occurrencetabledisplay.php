@@ -1,23 +1,17 @@
+<!DOCTYPE html>
+
 <?php
 include_once('../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceEditorManager.php');
 include_once($SERVER_ROOT.'/content/lang/collections/editor/occurrencetabledisplay.'.$LANG_TAG.'.php');
 header('Content-Type: text/html; charset='.$CHARSET);
 
-$collId = array_key_exists('collid',$_REQUEST)?$_REQUEST['collid']:false;
-$recLimit = array_key_exists('reclimit',$_REQUEST)?$_REQUEST['reclimit']:1000;
-$occIndex = array_key_exists('occindex',$_REQUEST)?$_REQUEST['occindex']:0;
-$crowdSourceMode = array_key_exists('csmode',$_REQUEST)?$_REQUEST['csmode']:0;
-$dynamicTable = array_key_exists('dynamictable',$_REQUEST)?$_REQUEST['dynamictable']:0;
-$action = array_key_exists('submitaction',$_REQUEST)?$_REQUEST['submitaction']:'';
-
-//Sanitation
-if(!is_numeric($collId)) $collId = false;
-if(!is_numeric($recLimit)) $recLimit = 1000;
-if(!is_numeric($occIndex)) $occIndex = false;
-if(!is_numeric($crowdSourceMode)) $crowdSourceMode = 0;
-if(!is_numeric($dynamicTable)) $dynamicTable = 0;
-$action = filter_var($action,FILTER_SANITIZE_STRING);
+$collId = array_key_exists('collid',$_REQUEST) ? filter_var($_REQUEST['collid'], FILTER_SANITIZE_NUMBER_INT) : false;
+$recLimit = array_key_exists('reclimit', $_REQUEST) ? filter_var($_REQUEST['reclimit'], FILTER_SANITIZE_NUMBER_INT) : 1000;
+$occIndex = array_key_exists('occindex', $_REQUEST) ? filter_var($_REQUEST['occindex'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$crowdSourceMode = array_key_exists('csmode', $_REQUEST) ? filter_var($_REQUEST['csmode'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$dynamicTable = array_key_exists('dynamictable', $_REQUEST) ? filter_var($_REQUEST['dynamictable'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$action = array_key_exists('submitaction', $_REQUEST) ? $_REQUEST['submitaction'] : '';
 
 $occManager = new OccurrenceEditorManager();
 
@@ -120,15 +114,15 @@ else{
 	header('Location: ../../profile/index.php?refurl=../collections/editor/occurrencetabledisplay.php?'.htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
 }
 ?>
-<html>
+<html lang="<?php echo $LANG_TAG ?>">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET; ?>">
 	<title><?php echo $DEFAULT_TITLE.' '.(isset($LANG['TABLE_VIEW'])?$LANG['TABLE_VIEW']:'Occurrence Table View'); ?></title>
-	<link href="<?php echo $CSS_BASE_PATH; ?>/jquery-ui.css" type="text/css" rel="stylesheet">
+	<link href="<?php echo htmlspecialchars($CSS_BASE_PATH, HTML_SPECIAL_CHARS_FLAGS); ?>/jquery-ui.css" type="text/css" rel="stylesheet">
 	<?php
 	include_once($SERVER_ROOT.'/includes/head.php');
 	?>
-	<link href="<?php echo $CLIENT_ROOT; ?>/js/datatables/datatables.min.css" type="text/css" rel="stylesheet">
+	<link href="<?php echo htmlspecialchars($CLIENT_ROOT, HTML_SPECIAL_CHARS_FLAGS); ?>/js/datatables/datatables.min.css" type="text/css" rel="stylesheet">
 	<script src="../../js/jquery.js" type="text/javascript"></script>
 	<script src="../../js/jquery-ui.js" type="text/javascript"></script>
 	<script src="../../js/datatables/datatables.min.js?ver=1" type="text/javascript"></script>
@@ -147,8 +141,8 @@ else{
 	</script>
 	<script src="../../js/symb/collections.editor.table.js?ver=2" type="text/javascript" ></script>
 	<script src="../../js/symb/collections.editor.query.js?ver=6" type="text/javascript" ></script>
-	<style type="text/css">
-		#titleDiv { font-weight: bold; font-size: 14px; width:790px; margin-bottom: 5px; }
+	<style>
+		#titleDiv { font-weight: bold; font-size: 1.5rem; width:790px; margin-bottom: 5px; }
 		table.styledtable td { white-space: nowrap; }
 		fieldset{ padding:15px }
 		fieldset > legend{ font-weight:bold }
@@ -159,17 +153,18 @@ else{
 	</style>
 </head>
 <body style="margin-left: 0px; margin-right: 0px;background-color:white;">
+	<a class="skip-link" href="#skip-search"><?php echo $LANG['SKIP_SEARCH'] ?></a>
 	<div id="innertext">
 		<?php
 		if(($isEditor || $crowdSourceMode)){
 			?>
 			<div id="titleDiv">
-				<div style="float:right;margin:">
-					<a href="#" title="<?php echo $LANG['SEARCH_FILTER']; ?>" onclick="toggleQueryForm();"><img src="../../images/find.png" style="width:16px;" /></a>
+				<div style="float:right;">
+					<a href="#" title="<?= $LANG['SEARCH_FILTER'] ?>" aria-label="<?= $LANG['SEARCH_FILTER'] ?>" onclick="toggleQueryForm();"><img src="../../images/find.png" style="width:1.3em;" alt="<?= $LANG['IMG_SEARCH'] ?>" /></a>
 					<?php
 					if($isEditor == 1 || $isGenObs){
 						?>
-						<a href="#" title="Batch Update Tool" onclick="toggleBatchUpdate();return false;"><img class="editimg" src="../../images/editplus.png" /></a>
+						<a href="#" title="<?= $LANG['BATCH_TOOL'] ?>" aria-label="<?= $LANG['BATCH_TOOL'] ?>" onclick="toggleBatchUpdate();return false;" style="width:1.3em;"><img class="editimg" src="../../images/editplus.png" alt="<?= $LANG['IMG_EDIT'] ?>" style="width:1.3em;"></a>
 						<?php
 					}
 					?>
@@ -187,7 +182,7 @@ else{
 				foreach($recArr as $id => $occArr){
 					foreach($occArr as $k => $v){
 						if(!is_array($v)){
-							if(trim($v) && !array_key_exists($k,$headerArr)){
+							if($v && trim($v) && !array_key_exists($k,$headerArr)){
 								$headerArr[$k] = $k;
 							}
 						}
@@ -284,22 +279,22 @@ else{
 			?>
 			<div style="width:850px;clear:both;">
 				<div class='navpath' style="float:left">
-					<a href="../../index.php"><?php echo (isset($LANG['HOME'])?$LANG['HOME']:'Home'); ?></a> &gt;&gt;
+					<a href="../../index.php"><?php echo htmlspecialchars((isset($LANG['HOME'])?$LANG['HOME']:'Home'), HTML_SPECIAL_CHARS_FLAGS); ?></a> &gt;&gt;
 					<?php
 					if($crowdSourceMode){
 						?>
-						<a href="../specprocessor/crowdsource/index.php"><?php echo (isset($LANG['CENTRAL_CROWD'])?$LANG['CENTRAL_CROWD']:'Crowd Source Central'); ?></a> &gt;&gt;
+						<a href="../specprocessor/crowdsource/index.php"><?php echo htmlspecialchars((isset($LANG['CENTRAL_CROWD'])?$LANG['CENTRAL_CROWD']:'Crowd Source Central'), HTML_SPECIAL_CHARS_FLAGS); ?></a> &gt;&gt;
 						<?php
 					}
 					else{
 						if(!$isGenObs || $IS_ADMIN){
 							?>
-							<a href="../misc/collprofiles.php?collid=<?php echo $collId; ?>&emode=1"><?php echo (isset($LANG['COL_MANAGEMENT'])?$LANG['COL_MANAGEMENT']:'Collection Management'); ?></a> &gt;&gt;
+							<a href="../misc/collprofiles.php?collid=<?php echo htmlspecialchars($collId, HTML_SPECIAL_CHARS_FLAGS); ?>&emode=1"><?php echo htmlspecialchars((isset($LANG['COL_MANAGEMENT'])?$LANG['COL_MANAGEMENT']:'Collection Management'), HTML_SPECIAL_CHARS_FLAGS); ?></a> &gt;&gt;
 							<?php
 						}
 						if($isGenObs){
 							?>
-							<a href="../../profile/viewprofile.php?tabindex=1"><?php echo (isset($LANG['PERS_MANAGEMENT'])?$LANG['PERS_MANAGEMENT']:'Personal Management'); ?></a> &gt;&gt;
+							<a href="../../profile/viewprofile.php?tabindex=1"><?php echo htmlspecialchars((isset($LANG['PERS_MANAGEMENT'])?$LANG['PERS_MANAGEMENT']:'Personal Management'), HTML_SPECIAL_CHARS_FLAGS); ?></a> &gt;&gt;
 							<?php
 						}
 					}
@@ -312,7 +307,7 @@ else{
 			<?php
 			if($recArr){
 				?>
-				<div style="clear: both; padding-top:10px">
+				<div style="clear: both; padding-top:10px" id="skip-search">
 					<?php
 					$tableId = 'defaulttable';
 					$tableClass = 'styledtable';
@@ -321,7 +316,7 @@ else{
 						$tableClass = 'stripe hover order-column compact nowrap cell-border';
 					}
 					?>
-					<table id="<?php echo $tableId; ?>" class="<?php echo $tableClass; ?>" style="font-family:Arial;font-size:12px;">
+					<table id="<?php echo $tableId; ?>" class="<?php echo $tableClass; ?> accessible-font" title="<?php echo htmlspecialchars((isset($LANG['TABLE_VIEW']) ? $LANG['TABLE_VIEW'] : 'Occurrence Table View'), HTML_SPECIAL_CHARS_FLAGS); ?>" aria-describedby="table-desc">
 						<thead>
 							<tr>
 								<th><?php echo (isset($LANG['SYMB_ID'])?$LANG['SYMB_ID']:'Symbiota ID'); ?></th>
@@ -342,17 +337,19 @@ else{
 								echo "<tr ".($recCnt%2?'class="alt"':'').">\n";
 								echo '<td>';
 								$url = 'occurrenceeditor.php?csmode='.$crowdSourceMode.'&occindex='.($recCnt+$recStart).'&occid='.$id.'&collid='.$collId;
-								echo '<a href="'.$url.'" title="open in same window">'.$id.'</a> ';
-								echo '<a href="'.$url.'" target="_blank" title="'.(isset($LANG['NEW_WINDOW'])?$LANG['NEW_WINDOW']:'open in new window').'">';
-								echo '<img src="../../images/newwin.png" style="width:10px;" />';
+								echo '<a href="' . htmlspecialchars($url, HTML_SPECIAL_CHARS_FLAGS) . '" title="' . htmlspecialchars((isset($LANG['SAME_WINDOW'])?$LANG['SAME_WINDOW']:'open in same window'), HTML_SPECIAL_CHARS_FLAGS) . '" aria-label="' .  htmlspecialchars($id, HTML_SPECIAL_CHARS_FLAGS) . '">' . htmlspecialchars($id, HTML_SPECIAL_CHARS_FLAGS) . '</a> ';
+								echo '<a href="' . htmlspecialchars($url, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank" title="' . (isset($LANG['NEW_WINDOW'])?$LANG['NEW_WINDOW']:'open in new window') . '" aria-label="' . (isset($LANG['NEW_WINDOW'])?$LANG['NEW_WINDOW']:'open in new window') . '">';
+								echo '<img src="../../images/newwin.png" style="width:1.1em;" alt="' . $LANG['IMG_LINK'] . '" />';
 								echo '</a>';
 								echo '</td>'."\n";
 								foreach($headerMap as $k => $v){
 									$displayStr = $occArr[$k];
-									if(strlen($displayStr) > 60){
-										$displayStr = substr($displayStr,0,60).'...';
+									if($displayStr){
+										if(strlen($displayStr) > 60){
+											$displayStr = substr($displayStr,0,60).'...';
+										}
 									}
-									if(!$displayStr) $displayStr = '&nbsp;';
+									else $displayStr = '&nbsp;';
 									echo '<td>'.$displayStr.'</td>'."\n";
 								}
 								echo "</tr>\n";
@@ -361,6 +358,9 @@ else{
 							?>
 						</tbody>
 					</table>
+					<p id="table-desc">
+							<?php echo htmlspecialchars((isset($LANG['TABLE_VIEW_DESC']) ? $LANG['TABLE_VIEW_DESC'] : 'Table displays occurrence information with columns showing Symbiota ID, Family, Event Date, Author, Location, and other details'), HTML_SPECIAL_CHARS_FLAGS); ?>
+					</p>
 				</div>
 				<div style="width:790px;">
 					<?php echo $navStr; ?>

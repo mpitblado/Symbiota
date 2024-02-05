@@ -84,7 +84,7 @@ $fieldArr = array('habitat' => 'Habitat', 'substrate' => 'Substrate', 'occurrenc
 <html>
 	<head>
 		<title>Occurrence Attribute Mining Tool</title>
-		<link href="<?php echo $CSS_BASE_PATH; ?>/jquery-ui.css" type="text/css" rel="stylesheet">
+		<link href="<?php echo htmlspecialchars($CSS_BASE_PATH, HTML_SPECIAL_CHARS_FLAGS); ?>/jquery-ui.css" type="text/css" rel="stylesheet">
 		<?php
 		include_once($SERVER_ROOT.'/includes/head.php');
 		?>
@@ -169,7 +169,7 @@ $fieldArr = array('habitat' => 'Habitat', 'substrate' => 'Substrate', 'occurrenc
 		<div class="navpath">
 			<a href="../../index.php">Home</a> &gt;&gt;
 			<?php
-			if(is_numeric($collid)) echo '<a href="../misc/collprofiles.php?collid='.$collid.'&emode=1">Collection Management</a> &gt;&gt;';
+			if(is_numeric($collid)) echo '<a href="../misc/collprofiles.php?collid=' . htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS) . '&emode=1">Collection Management</a> &gt;&gt;';
 			else if($IS_ADMIN || count($collRights) > 1) echo '<a href="attributemining.php">Adjust Collection Selection</a> &gt;&gt;';
 			?>
 			<b>Attribute Mining Tool</b>
@@ -289,8 +289,8 @@ $fieldArr = array('habitat' => 'Habitat', 'substrate' => 'Substrate', 'occurrenc
 								</div>
 								<div class="trianglediv" style="float:left;margin-left:20px">
 									<div style="margin:4px 3px;float:right;cursor:pointer" onclick="setAttributeTree(this)" title="Toggle attribute tree open/close">
-										<img class="triangleright" src="../../images/triangleright.png" style="" />
-										<img class="triangledown" src="../../images/triangledown.png" style="display:none" />
+										<img class="triangleright" src="../../images/triangleright.png" style="width:1.3em" />
+										<img class="triangledown" src="../../images/triangledown.png" style="display:none;width:1.3em" />
 									</div>
 								</div>
 								<div style="margin:10px 5px;clear:both">
