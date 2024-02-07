@@ -66,6 +66,14 @@ class ProfileManager extends Manager{
 						$stmt->execute();
 						$stmt->close();
 					}
+					$sql = 'INSERT INTO user_active_sessions (uid,session_id) VALUES = (?,?)';
+					// @TODO provider stuff here? 
+
+					if($stmt = $this->conn->prepare($sql)){
+						$stmt->bind_param('is', $this->uid, session_id());
+						$stmt->execute();
+						$stmt->close();
+					}
 				}
 			}
 		}
