@@ -155,4 +155,7 @@ $LANG['VALUE'] = 'Value';
 $LANG['LAT_LNG'] = 'Latitude/Longitude';
 $LANG['FULL_RECORD_DETAILS'] = 'Full Record Details';
 $LANG['SKIP_NAV'] = 'Skip Navigation';
+$LANG['CULT_STATUS'] = 'Cultivation Status';
+$LANG['CULTIVATED'] = 'Cultivated';
+$LANG['NOT_CULTIVATED'] = 'Not Cultivated';
 ?>

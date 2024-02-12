@@ -131,4 +131,5 @@ $LANG['CLOSE_PAREN_FIELD'] = 'Close Parentheses Field';
 $LANG['NEW_CUSTOM_FIELD'] = 'Add another custom field';
 $LANG['ORDER_BY'] = 'Order by';
 $LANG['IMG_EDIT'] = 'Edit Button';
+
 ?>

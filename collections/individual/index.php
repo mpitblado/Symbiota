@@ -889,10 +889,17 @@ $traitArr = $indManager->getTraitArr();
 							</div>
 							<?php
 						}
+						if($occArr['cultivationstatus'] && $occArr['cultivationstatus'] == "1"){
+							?>
+							<div id="cultivation-status-div" class="bottom-breathing-room-sm-rel">
+								<label><?php echo $LANG['CULT_STATUS']; ?>:</label>
+								<?php echo $LANG['CULTIVATED']?>
+							</div>
+							<?php
+						} 
 						$noteStr = '';
 						if($occArr['occurrenceremarks']) $noteStr .= "; ".$occArr['occurrenceremarks'];
 						if($occArr['establishmentmeans']) $noteStr .= "; ".$occArr['establishmentmeans'];
-						if($occArr['cultivationstatus']) $noteStr .= "; Cultivated or Captive";
 						if($noteStr){
 							?>
 							<div id="notes-div" class="bottom-breathing-room-sm-rel">
@@ -1517,7 +1524,7 @@ $traitArr = $indManager->getTraitArr();
 	</div>
 	<script type="text/javascript">
 		document.addEventListener('DOMContentLoaded', ()=>{
-			reorderElements("occur-div", ["cat-div", "br", "preparations-div", "disposition-div", "sampleprotocol-div", "assoccatnum-parent-div" , "othercatalognumbers", "br", "sciname-div", "idqualifier-div", "family-div","br", "taxonremarks-div", "idqualifier-div","identref-div","identremarks-div", "determination-div", "br", "identby-div", "identdate-div","verbeventid-div", "br", "recordedby-div", "recordnumber-div","br", "eventdate-div", "br", "locality-div", "latlng-div", "verbcoord-div", "elev-div", "habitat-div", "assoctaxa-div", "substrate-div", "sex-div", "lifestage-div", "reproductive-div", "attr-div", "indcnt-div", "notes-div", "br", "rights-div", "contact-div", "openeditor-div", "br", "record-id-div"], ["occurrenceid-div", "disposition-div"]);
+			reorderElements("occur-div", ["cat-div", "br", "preparations-div", "disposition-div", "sampleprotocol-div", "assoccatnum-parent-div" , "othercatalognumbers", "br", "sciname-div", "idqualifier-div", "family-div","br", "taxonremarks-div", "idqualifier-div","identref-div","identremarks-div", "determination-div", "br", "identby-div", "identdate-div","verbeventid-div", "br", "recordedby-div", "recordnumber-div","br", "eventdate-div", "br", "cultivation-status-div", "locality-div", "latlng-div", "verbcoord-div", "elev-div", "habitat-div", "assoctaxa-div", "substrate-div", "sex-div", "lifestage-div", "reproductive-div", "attr-div", "indcnt-div", "notes-div", "br", "rights-div", "contact-div", "openeditor-div", "br", "record-id-div"], ["occurrenceid-div", "disposition-div"]);
 
 		});
 	</script>
