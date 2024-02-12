@@ -304,7 +304,7 @@ if($spprid) $specManager->setProjVariables($spprid);
 									if($spprid){
 										?>
 										<div style="float:right;" onclick="toggle('editdiv');toggle('imgprocessdiv')" title="<?php echo $LANG['CLOSE_EDITOR']; ?>">
-											<img src="../../images/edit.png" style="border:0px" />
+											<img src="../../images/edit.png" style="width:1.5em;border:0px" />
 										</div>
 										<input name="projecttype" type="hidden" value="<?php echo $projectType; ?>" />
 										<?php
@@ -336,7 +336,7 @@ if($spprid) $specManager->setProjVariables($spprid);
 										<div style="float:left;">
 											<input name="speckeypattern" type="text" style="width:300px;" value="<?php echo $specManager->getSpecKeyPattern(); ?>" />
 											<a id="speckeypatterninfo" href="#" onclick="return false" title="<?php echo $LANG['MORE_INFO']; ?>">
-												<img src="../../images/info.png" style="width:15px;" />
+												<img src="../../images/info.png" style="width:1.2em;" />
 											</a>
 											<div id="speckeypatterninfodialog">
 												<?php echo $LANG['PATTERN_EXPLAIN']; ?>
@@ -346,9 +346,9 @@ if($spprid) $specManager->setProjVariables($spprid);
 									<div id="patternReplaceDiv" class="profileDiv" style="display:<?php echo ($projectType?'block':'none'); ?>">
 										<label><?php echo $LANG['REPLACEMENT_TERM']; ?>:</label>
 										<div style="float:left;">
-											<input name="patternreplace" type="text" style="width:300px;" value="<?php echo ($specManager->getPatternReplace()?$specManager->getPatternReplace() : '-- ' . $LANG['OPTIONAL'] . ' --'); ?>" />
+											<input name="patternreplace" type="text" style="width:300px;" value="<?php echo ($specManager->getPatternReplace()?$specManager->getPatternReplace():'-- $LANG['OPTIONAL'] --'); ?>" />
 											<a id="patternreplaceinfo" href="#" onclick="return false" title="<?php echo $LANG['MORE_INFO']; ?>">
-												<img src="../../images/info.png" style="width:15px;" />
+												<img src="../../images/info.png" style="width:1.2em;" />
 											</a>
 											<div id="patternreplaceinfodialog">
 												<?php echo $LANG['PATT_REPLACE_EXPLAIN']; ?>
@@ -358,9 +358,9 @@ if($spprid) $specManager->setProjVariables($spprid);
 									<div id="replaceStrDiv" class="profileDiv" style="display:<?php echo ($projectType?'block':'none'); ?>">
 										<label><?php echo $LANG['REPLACEMENT_STR']; ?>:</label>
 										<div style="float:left;">
-											<input name="replacestr" type="text" style="width:300px;" value="<?php echo ($specManager->getReplaceStr()?$specManager->getReplaceStr():'-- ' . $LANG['OPTIONAL'] . ' --'); ?>" />
+											<input name="replacestr" type="text" style="width:300px;" value="<?php echo ($specManager->getReplaceStr()?$specManager->getReplaceStr():'-- $LANG['OPTIONAL'] --'); ?>" />
 											<a id="replacestrinfo" href="#" onclick="return false" title="<?php echo $LANG['MORE_INFO']; ?>">
-												<img src="../../images/info.png" style="width:15px;" />
+												<img src="../../images/info.png" style="width:1.2em;" />
 											</a>
 											<div id="replacestrinfodialog">
 												<?php echo $LANG['REPLACE_EXPLAIN']; ?>
@@ -372,7 +372,7 @@ if($spprid) $specManager->setProjVariables($spprid);
 										<div style="float:left;">
 											<input name="sourcepath" type="text" style="width:600px;" value="<?php echo $specManager->getSourcePath(); ?>" />
 											<a id="sourcepathinfo" href="#" onclick="return false" title="<?php echo $LANG['MORE_INFO']; ?>">
-												<img src="../../images/info.png" style="width:15px;" />
+												<img src="../../images/info.png" style="width:1.2em;" />
 											</a>
 											<div id="sourcepathinfodialog">
 												<div id="sourcePathInfoIplant" class="profileDiv" style="display:<?php echo ($projectType == 'iplant'?'block':'none'); ?>">
@@ -401,7 +401,7 @@ if($spprid) $specManager->setProjVariables($spprid);
 										<div style="float:left;">
 											<input name="targetpath" type="text" style="width:600px;" value="<?php echo ($specManager->getTargetPath()?$specManager->getTargetPath():$IMAGE_ROOT_PATH); ?>" />
 											<a id="targetpathinfo" href="#" onclick="return false" title="<?php echo $LANG['MORE_INFO']; ?>">
-												<img src="../../images/info.png" style="width:15px;" />
+												<img src="../../images/info.png" style="width:1.2em;" />
 											</a>
 											<div id="targetpathinfodialog">
 												<?php echo $LANG['TARGET_PATH_EXPLAIN']; ?>
@@ -413,7 +413,8 @@ if($spprid) $specManager->setProjVariables($spprid);
 										<div style="float:left;">
 											<input name="imgurl" type="text" style="width:600px;" value="<?php echo ($specManager->getImgUrlBase()?$specManager->getImgUrlBase():$IMAGE_ROOT_URL); ?>" />
 											<a id="imgurlinfo" href="#" onclick="return false" title="<?php echo $LANG['MORE_INFO']; ?>">
-												<img src="../../images/info.png" style="width:15px;" />
+												<img src="../../images/info.png" style="width:1.2em;" />
+
 											</a>
 											<div id="imgurlinfodialog">
 												<?php echo $LANG['IMG_URL_EXPLAIN']; ?>
@@ -425,7 +426,8 @@ if($spprid) $specManager->setProjVariables($spprid);
 										<div style="float:left;">
 											<input name="webpixwidth" type="text" style="width:75px;" value="<?php echo ($specManager->getWebPixWidth()?$specManager->getWebPixWidth():$IMG_WEB_WIDTH); ?>" />
 											<a id="webpixwidthinfo" href="#" onclick="return false" title="<?php echo $LANG['MORE_INFO']; ?>">
-												<img src="../../images/info.png" style="width:15px;" />
+												<img src="../../images/info.png" style="width:1.2em;" />
+
 											</a>
 											<div id="webpixwidthinfodialog">
 												<?php echo $LANG['WEB_IMG_EXPLAIN']; ?>
@@ -437,7 +439,7 @@ if($spprid) $specManager->setProjVariables($spprid);
 										<div style="float:left;">
 											<input name="tnpixwidth" type="text" style="width:75px;" value="<?php echo ($specManager->getTnPixWidth()?$specManager->getTnPixWidth():$IMG_TN_WIDTH); ?>" />
 											<a id="tnpixwidthinfo" href="#" onclick="return false" title="<?php echo $LANG['MORE_INFO']; ?>">
-												<img src="../../images/info.png" style="width:15px;" />
+												<img src="../../images/info.png" style="width:1.2em;" />
 											</a>
 											<div id="tnpixwidthinfodialog">
 												<?php echo $LANG['TN_IMG_EXPLAIN']; ?>
@@ -449,7 +451,7 @@ if($spprid) $specManager->setProjVariables($spprid);
 										<div style="float:left;">
 											<input name="lgpixwidth" type="text" style="width:75px;" value="<?php echo ($specManager->getLgPixWidth()?$specManager->getLgPixWidth():$IMG_LG_WIDTH); ?>" />
 											<a id="lgpixwidthinfo" href="#" onclick="return false" title="<?php echo $LANG['MORE_INFO']; ?>">
-												<img src="../../images/info.png" style="width:15px;" />
+												<img src="../../images/info.png" style="width:1.2em;" />
 											</a>
 											<div id="lgpixwidthinfodialog">
 												<?php echo $LANG['LG_IMG_EXPLAIN']; ?>
@@ -461,7 +463,7 @@ if($spprid) $specManager->setProjVariables($spprid);
 										<div style="float:left;">
 											<input name="jpgcompression" type="text" style="width:75px;" value="<?php echo $specManager->getJpgQuality(); ?>" />
 											<a id="jpgcompressioninfo" href="#" onclick="return false" title="<?php echo $LANG['MORE_INFO']; ?>">
-												<img src="../../images/info.png" style="width:15px;" />
+												<img src="../../images/info.png" style="width:1.2em;" />
 											</a>
 											<div id="jpgcompressioninfodialog">
 												<?php echo $LANG['JPG_QUALITY_EXPLAIN']; ?>
@@ -532,10 +534,10 @@ if($spprid) $specManager->setProjVariables($spprid);
 									<fieldset style="padding:15px;">
 										<legend><b><?php echo $specManager->getTitle(); ?></b></legend>
 										<div style="float:right" title="<?php echo $LANG['SHOW_ALL_OR_ADD']; ?>">
-											<a href="index.php?tabindex=0&collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>"><img src="../../images/add.png" style="border:0px" /></a>
+											<a href="index.php?tabindex=0&collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>"><img src="../../images/add.png" style="width:1.5em;border:0px" /></a>
 										</div>
 										<div style="float:right" title="<?php echo $LANG['OPEN_EDITOR']; ?>">
-											<a href="#" onclick="toggle('editdiv');toggle('imgprocessdiv');return false;"><img src="../../images/edit.png" style="border:0px;width:15px;" /></a>
+											<a href="#" onclick="toggle('editdiv');toggle('imgprocessdiv');return false;"><img src="../../images/edit.png" style="border:0px;width:1.5em;" /></a>
 										</div>
 										<?php
 										if($projectType == 'iplant'){

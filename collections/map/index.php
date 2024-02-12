@@ -5,6 +5,7 @@ include_once($SERVER_ROOT.'/content/lang/collections/map/index.'.$LANG_TAG.'.php
 include_once($SERVER_ROOT.'/classes/OccurrenceMapManager.php');
 
 header('Content-Type: text/html; charset='.$CHARSET);
+header("Accept-Encoding: gzip, deflate, br");
 ob_start('ob_gzhandler');
 ini_set('max_execution_time', 180); //180 seconds = 3 minutes
 
@@ -665,7 +666,7 @@ value="${color}"
 							})
 						}))
 					.on('click', function() { openRecord(record) })
-					.bindTooltip(`<div>${record.id}</div>`)
+					.bindTooltip(`<div style="font-size:1.5rem">${record.id}</div>`)
 
 					//TODO (Logan) remove global
 					markers.push(marker);

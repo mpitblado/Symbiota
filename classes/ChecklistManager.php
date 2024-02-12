@@ -212,7 +212,7 @@ class ChecklistManager extends Manager{
 		if(!$this->basicSql) $this->setClSql();
 		$result = $this->conn->query($this->basicSql);
 		while($row = $result->fetch_object()){
-			$family = strtoupper($row->family);
+			$family = strtoupper($row->family ?? '');
 			if($row->rankid > 140 && !$family) $family = 'Incertae Sedis';
 			$this->filterArr[$family] = '';
 			$taxonGroup = $family;
@@ -339,9 +339,9 @@ class ChecklistManager extends Manager{
 			}
 			if($this->showSubgenera){
 				$this->setSubgenera();
-				$sciname = array_column($this->taxaList, 'sciname');
-				$group = array_column($this->taxaList, 'taxongroup');
-				array_multisort($group, $sciname, $this->taxaList);
+				uasort($this->taxaList, function($a, $b) {
+					return $a['sciname'] <=> $b['sciname'];
+				});
 			}
 		}
 		return $this->taxaList;
@@ -552,7 +552,7 @@ class ChecklistManager extends Manager{
 					$sql .= 'INNER JOIN omoccurpoints p ON o.occid = p.occid WHERE (ST_Within(p.point,GeomFromText("'.$this->clMetadata['footprintwkt'].'"))) ';
 				}
 				else{
-					$voucherManager = new ChecklistVoucherAdmin($this->conn);
+					$voucherManager = new ChecklistVoucherAdmin();
 					$voucherManager->setClid($this->clid);
 					$voucherManager->setCollectionVariables();
 					$sql .= 'WHERE ('.$voucherManager->getSqlFrag().') ';

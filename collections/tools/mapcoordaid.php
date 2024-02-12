@@ -4,13 +4,14 @@
    include_once($SERVER_ROOT.'/classes/ChecklistAdmin.php');
 header("Content-Type: text/html; charset=".$CHARSET);
 
-$clid = array_key_exists("clid",$_REQUEST)?$_REQUEST["clid"]:0;
+$clid = array_key_exists("clid",$_REQUEST) && is_numeric($_REQUEST["clid"])? $_REQUEST["clid"]:0;
 $formSubmit = array_key_exists("formsubmit",$_POST)?$_POST["formsubmit"]:0;
 $latDef = array_key_exists("latdef",$_REQUEST)?$_REQUEST["latdef"]:'';
 $lngDef = array_key_exists("lngdef",$_REQUEST)?$_REQUEST["lngdef"]:'';
-$zoom = array_key_exists("zoom",$_REQUEST)&&$_REQUEST["zoom"]?$_REQUEST["zoom"]:5;
-$mapMode = array_key_exists("mapmode",$_REQUEST)?$_REQUEST["mapmode"]:'';
-$mapModeStrict = array_key_exists("map_mode_strict",$_REQUEST)?$_REQUEST["map_mode_strict"]:false;
+$zoom = array_key_exists("zoom",$_REQUEST)&&is_numeric($_REQUEST["zoom"])?$_REQUEST["zoom"]:5;
+$mapMode = array_key_exists("mapmode",$_REQUEST)? htmlspecialchars($_REQUEST["mapmode"]):'';
+$mapModeStrict = array_key_exists("map_mode_strict",$_REQUEST) && is_bool($_REQUEST["map_mode_strict"])? $_REQUEST["map_mode_strict"]:false;
+$wktInputId = array_key_exists("wkt_input_id", $_REQUEST)? htmlspecialchars($_REQUEST["wkt_input_id"]):"footprintwkt";
 
 $clManager = new ChecklistAdmin();
 $clManager->setClid($clid);
@@ -106,6 +107,7 @@ else{
       const MILEStoKM = 1.60934;
       const KMtoM = 1000; 
       const SIG_FIGS = 6;
+      const wktInputId = "<?= $wktInputId?>";
 
       const setField = (id, v) => {
          var elem = opener.document.getElementById(id);
@@ -149,7 +151,7 @@ else{
       }
 
       function setPolygon(wkt) {
-         setField("footprintwkt", wkt);
+         setField(wktInputId, wkt);
       }
 
       /* setShapeToSearchForm: 
@@ -166,7 +168,7 @@ else{
          setField("radius", "");
          setField("radiusunits", "");
 
-         setField("footprintwkt", "");
+         setField(wktInputId, "");
 
          setField("upperlat", "");
          setField("bottomlat", "");
@@ -201,15 +203,15 @@ else{
       function loadShape(mapMode) {
          switch(mapMode) {
             case "polygon":
-               let origFootprintWkt = getField("footprintwkt");
+               let origFootprintWkt = getField(wktInputId);
                try {
                   let polyPoints = parseWkt(origFootprintWkt);
                   if(polyPoints) {
-                     return { type: "polygon", latlngs: polyPoints, wkt: getField("footprintwkt")};
+                     return { type: "polygon", latlngs: polyPoints, wkt: getField(wktInputId)};
                   }
                } catch(e) {
                   alert(e.message);
-						opener.document.getElementById("footprintwkt").value = origFootprintWkt;
+						opener.document.getElementById(wktInputId).value = origFootprintWkt;
                }
             break;
             case "rectangle":
@@ -247,7 +249,7 @@ else{
                }
                break;
             default:
-               alert(`No Settings fo Map Mode: ${mapMode}`)
+               alert(`No Settings for Map Mode: ${mapMode}`)
                return false;
             break;
          } 

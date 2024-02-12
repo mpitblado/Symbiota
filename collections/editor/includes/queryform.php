@@ -56,7 +56,7 @@ else{
 			'substrate'=>$LANG['SUBSTRATE'],'taxonRemarks'=>$LANG['TAXON_REMARKS'],'typeStatus'=>$LANG['TYPE_STATUS'],'verbatimCoordinates'=>$LANG['VERBAT_COORDS'],
 			'verbatimEventDate'=>$LANG['VERBATIM_DATE'],'verbatimDepth'=>$LANG['VERBATIM_DEPTH'],'verbatimElevation'=>$LANG['VERBATIM_ELE']);
 }
-$customTermArr = array('EQUALS', 'NOT_EQUALS', 'STARTS', 'LIKE', 'NOT_LIKE', 'GREATER', 'LESS', 'NULL', 'NOTNULL');
+$customTermArr = array('EQUALS', 'NOT_EQUALS', 'STARTS_WITH', 'LIKE', 'NOT_LIKE', 'GREATER_THAN', 'LESS_THAN', 'IS_NULL', 'NOT_NULL');
 $customArr = array();
 for($x=1; $x<9; $x++){
 	if(array_key_exists('cao'.$x, $qryArr) && ($qryArr['cao'.$x] == 'AND' || $qryArr['cao'.$x] == 'OR')) $customArr[$x]['andor'] = $qryArr['cao'.$x];
@@ -147,8 +147,8 @@ else{
 				</div>
 				<div class="fieldGroupDiv">
 					<div class="fieldDiv">
-						<?php echo $LANG['PROC_STATUS']; ?>:
-						<select name="q_processingstatus" onchange="setOrderBy(this)">
+						<label for="q_processingstatus"> <?php echo $LANG['PROC_STATUS']; ?>: </label>
+						<select id="q_processingstatus" name="q_processingstatus" onchange="setOrderBy(this)">
 							<option value=''><?php echo $LANG['ALL_RECORDS']; ?></option>
 							<option>-------------------</option>
 							<?php
@@ -205,7 +205,7 @@ else{
 				if(isset($customArr[$x]['value'])) $cValue = $customArr[$x]['value'];
 
 				$divDisplay = 'none';
-				if($x == 1 || $cValue != '' || $cTerm == 'NULL' || $cTerm == 'NOTNULL') $divDisplay = 'block';
+				if($x == 1 || $cValue != '' || $cTerm == 'IS_NULL' || $cTerm == 'NOT_NULL') $divDisplay = 'block';
 				?>
 				<div id="customdiv<?php echo $x; ?>" class="fieldGroupDiv" style="display:<?php echo $divDisplay; ?>;">
 					<?php echo $LANG['CUSTOM_FIELD'].' '.$x; ?>:
@@ -219,7 +219,7 @@ else{
 						<?php
 					}
 					?>
-					<select name="q_customopenparen<?php echo $x; ?>" onchange="customSelectChanged(<?php echo $x; ?>)">
+					<select name="q_customopenparen<?php echo $x; ?>" onchange="customSelectChanged(<?php echo $x; ?>)" aria-label="<?php echo $LANG['OPEN_PAREN_FIELD']; ?>">
 						<option value="">---</option>
 						<?php
 						echo '<option '.($cOpenParen == '(' ? 'SELECTED' : '').' value="(">(</option>';
@@ -227,7 +227,7 @@ else{
 						if($x < 8) echo '<option '.($cOpenParen == '(((' ? 'SELECTED' : '').' value="(((">(((</option>';
 						?>
 					</select>
-					<select name="q_customfield<?php echo $x; ?>" onchange="customSelectChanged(<?php echo $x; ?>)">
+					<select name="q_customfield<?php echo $x; ?>" onchange="customSelectChanged(<?php echo $x; ?>)" aria-label="<?php echo $LANG['CRITERIA']; ?>">
 						<option value=""><?php echo $LANG['SELECT_FIELD_NAME']; ?></option>
 						<option value="">---------------------------------</option>
 						<?php
@@ -236,15 +236,15 @@ else{
 						}
 						?>
 					</select>
-					<select name="q_customtype<?php echo $x; ?>">
+					<select name="q_customtype<?php echo $x; ?>" aria-label="<?php echo $LANG['CONDITION']; ?>">
 						<?php
 						foreach($customTermArr as $term){
-							echo '<option '.($cTerm == $term ? 'SELECTED' : '').' value="'.$term.'">'.$LANG[$term].'</option>';
+							echo '<option '.($cTerm == $term ? 'SELECTED' : '').' value="'.$term.'">'.$LANG[$term].'</option>' ;
 						}
 						?>
 					</select>
-					<input name="q_customvalue<?php echo $x; ?>" type="text" value="<?php echo $cValue; ?>" style="width:200px;" />
-					<select name="q_customcloseparen<?php echo $x; ?>" onchange="customSelectChanged(<?php echo $x; ?>)">
+					<input name="q_customvalue<?php echo $x; ?>" type="text" value="<?php echo $cValue; ?>" style="width:200px;" aria-label="<?php echo $LANG['CRITERIA']; ?>"/>
+					<select name="q_customcloseparen<?php echo $x; ?>" onchange="customSelectChanged(<?php echo $x; ?>)" aria-label="<?php echo $LANG['CLOSE_PAREN_FIELD']; ?>">
 						<option value="">---</option>
 						<?php
 						echo '<option '.($cCloseParen == ')' ? 'SELECTED' : '').' value=")">)</option>';
@@ -253,7 +253,7 @@ else{
 						?>
 					</select>
 					<a href="#" onclick="toggleCustomDiv(<?php echo ($x+1); ?>);return false;">
-						<img class="editimg" src="../../images/editplus.png" />
+						<img class="editimg" src="../../images/editplus.png" style="width:1.2em;" alt="<?php echo htmlspecialchars($LANG['IMG_EDIT'], HTML_SPECIAL_CHARS_FLAGS); ?>" />
 					</a>
 				</div>
 				<?php
@@ -272,8 +272,8 @@ else{
 			</div>
 			<div class="fieldGroupDiv">
 				<div class="bottom-breathing-room-relative">
-					<button type="button" class="icon-button no-margin-left" onclick="copyQueryLink(event)" title="<?php echo (isset($LANG['COPY_SEARCH'])?$LANG['COPY_SEARCH']:'Copy Search As Link'); ?>">
-						<img src="../../images/dl2.png" srcset="../../images/link.svg" class="svg-icon" style="width:15px; height:15px" alt="Link icon. Copies the search terms as a link." />
+					<button type="button" class="icon-button no-margin-left" onclick="copyQueryLink(event)" title="<?php echo (isset($LANG['COPY_SEARCH'])?$LANG['COPY_SEARCH']:'Copy Search As Link'); ?>" aria-label="<?php echo (isset($LANG['COPY_SEARCH'])?$LANG['COPY_SEARCH']:'Copy Search As Link'); ?>">
+						<img src="../../images/link.png" style="width:1.2em;margin-right:5px;" alt="Link icon. Copies the search terms as a link." /><?php echo (isset($LANG['COPY_LINK'])?$LANG['COPY_LINK']:'Copy Link'); ?>
 					</button>
 					<?php
 					if(!$crowdSourceMode){
@@ -290,7 +290,7 @@ else{
 							?>
 							<a href="../reports/labelmanager.php?collid=<?php echo htmlspecialchars($collId, HTML_SPECIAL_CHARS_FLAGS) . htmlspecialchars($qryStr, HTML_SPECIAL_CHARS_FLAGS); ?>" target="_blank">
 								<button type="button" class="icon-button" title="<?php echo $LANG['GO_LABEL_PRINT']; ?>">
-									<img src="../../images/list.png" style="width:15px; height:15px" />
+									<img src="../../images/list.png" style="width:1.3em" />
 								</button>
 							</a>
 							<?php
@@ -361,8 +361,8 @@ else{
 						</select> <?php //echo $LANG['RECORDS']; ?>
 				</section>
 				<div>
+					<input name="dynamictable" id="dynamictable-1" type="checkbox" value="1" <?php if(isset($dynamicTable) && $dynamicTable) echo 'checked'; ?> />
 					<label for="dynamictable-1"><?php echo $LANG['DYNAMIC_TABLE']; ?></label>
-					<input name="dynamictable" id="dynamictable-1" type="checkbox" value="1" <?php if(isset($dynamicTable) && $dynamicTable) echo 'checked'; ?> /> 
 				</div>
  			</div>
 		</fieldset>

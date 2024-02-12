@@ -139,12 +139,10 @@ class OccurrenceIndividual extends Manager{
 				if(!$this->collid) $this->collid = $this->occArr['collid'];
 				$this->loadMetadata();
 				if($this->occArr['institutioncode']){
-					if(!$this->metadataArr['institutioncode']) $this->metadataArr['institutioncode'] = $this->occArr['institutioncode'];
-					elseif($this->metadataArr['institutioncode'] != $this->occArr['institutioncode']) $this->metadataArr['institutioncode'] .= '-'.$this->occArr['institutioncode'];
+					if($this->metadataArr['institutioncode'] != $this->occArr['institutioncode']) $this->metadataArr['institutioncode'] = $this->occArr['institutioncode'];
 				}
 				if($this->occArr['collectioncode']){
-					if(!$this->metadataArr['collectioncode']) $this->metadataArr['collectioncode'] = $this->occArr['institutioncode'];
-					elseif($this->metadataArr['collectioncode'] != $this->occArr['collectioncode']) $this->metadataArr['collectioncode'] .= '-'.$this->occArr['institutioncode'];
+					if($this->metadataArr['collectioncode'] != $this->occArr['collectioncode']) $this->metadataArr['collectioncode'] = $this->occArr['collectioncode'];
 				}
 				if(!$this->occArr['occurrenceid']){
 					//Set occurrence GUID based on GUID target, but only if occurrenceID field isn't already populated
@@ -838,7 +836,7 @@ class OccurrenceIndividual extends Manager{
 		$status = false;
 		if($this->occid && is_numeric($postArr['vclid'])){
 			if(isset($GLOBALS['USER_RIGHTS']['ClAdmin']) && in_array($postArr['vclid'], $GLOBALS['USER_RIGHTS']['ClAdmin'])){
-				$voucherManager = new ChecklistVoucherAdmin($this->conn);
+				$voucherManager = new ChecklistVoucherAdmin();
 				$voucherManager->setClid($postArr['vclid']);
 				if($voucherManager->linkVoucher($postArr['vtid'], $this->occid, '', $postArr['veditnotes'], $postArr['vnotes'])){
 					$status = true;
@@ -1223,7 +1221,7 @@ class OccurrenceIndividual extends Manager{
 	public function activateOrcidID($inStr){
 		$retStr = $inStr;
 		$m = array();
-		if(preg_match('#ORCID[\s:]+((https://orcid.org/)?\d{4}-\d{4}-\d{4}-\d{3}[0-9X])#', $inStr,$m)){
+		if(preg_match('#((https://orcid.org/)?\d{4}-\d{4}-\d{4}-\d{3}[0-9X])#', $inStr, $m)){
 			$orcidAnchor = $m[1];
 			if(substr($orcidAnchor,5) != 'https') $orcidAnchor = 'https://orcid.org/'.$orcidAnchor;
 			$orcidAnchor = '<a href="' . htmlspecialchars($orcidAnchor, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank">' . htmlspecialchars($m[1], HTML_SPECIAL_CHARS_FLAGS) . '</a>';
