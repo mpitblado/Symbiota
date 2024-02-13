@@ -5,6 +5,13 @@ include_once($SERVER_ROOT.'/includes/head.php');
 ?>
 
 <script>
+
+	$(document).ready(function() {
+		var pos = $("#labelProcDiv").position();
+		var posLeft = pos.left - $(window).scrollLeft();
+		$("#labelProcFieldset").css('left', posLeft);
+	});
+
 	$(function() {
 		$( "#zoomInfoDialog" ).dialog({
 			autoOpen: false,
