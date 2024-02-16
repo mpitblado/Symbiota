@@ -967,6 +967,12 @@ div.no-margin-left {
   margin-left: 0;
 }
 
+.table-scroll {
+  display: block;
+  white-space: nowrap;
+  overflow-x: scroll;
+}
+
 /* USDA ********************************************************************************/
 
 .card-image {
