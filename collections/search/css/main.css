@@ -16,6 +16,7 @@
 */
 
 /******* 0. NEON COLORS ********/
+@import "../../../css/v202209/symbiota/variables.css";
 
 :root {
   --navy: #002c77;
@@ -46,8 +47,6 @@
   --alertred: #f5cccc;
   --alertredborder: #cc0000;
 }
-
-@import "../../../css/v202209/symbiota/variables.css";
 
 /******* 1. GENERAL ********/
 
