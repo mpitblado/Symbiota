@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <?php
 include_once('config/symbini.php');
 include_once($SERVER_ROOT.'/classes/SiteMapManager.php');
@@ -8,6 +7,7 @@ $submitAction = array_key_exists('submitaction',$_REQUEST)?$_REQUEST['submitacti
 $SHOULD_USE_HARVESTPARAMS = $SHOULD_USE_HARVESTPARAMS ?? false;
 $smManager = new SiteMapManager();
 ?>
+<!DOCTYPE html>
 <html lang="<?php echo $LANG_TAG ?>">
 <head>
 	<title><?php echo $DEFAULT_TITLE.' '.$LANG['SITEMAP'];?></title>
