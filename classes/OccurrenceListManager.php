@@ -28,7 +28,7 @@ class OccurrenceListManager extends OccurrenceManager{
 		if(!$this->recordCount || $this->reset) $this->setRecordCnt($sqlWhere);
 		$sql = 'SELECT o.occid, c.collid, c.institutioncode, c.collectioncode, c.collectionname, c.icon, o.institutioncode AS instcodeoverride, o.collectioncode AS collcodeoverride, '.
 			'o.catalognumber, o.family, o.sciname, o.scientificnameauthorship, o.tidinterpreted, o.recordedby, o.recordnumber, o.eventdate, '.
-			'o.country, o.stateprovince, o.county, o.locality, o.decimallatitude, o.decimallongitude, o.localitysecurity, o.localitysecurityreason, '.
+			'o.country, o.stateprovince, o.county, o.locality, o.decimallatitude, o.decimallongitude, o.cultivationStatus, o.localitysecurity, o.localitysecurityreason, '.
 			'o.habitat, o.substrate, o.minimumelevationinmeters, o.maximumelevationinmeters, o.observeruid, c.sortseq '.
 			'FROM omoccurrences o INNER JOIN omcollections c ON o.collid = c.collid ';
 		$sql .= $this->getTableJoins($sqlWhere).$sqlWhere;
@@ -50,6 +50,7 @@ class OccurrenceListManager extends OccurrenceManager{
 				$securityClearance = false;
 				if($isSecuredReader) $securityClearance = true;
 				elseif(in_array($row->collid,$securityCollArr)) $securityClearance = true;
+				elseif($row->cultivationStatus==1)$securityClearance = true;
 				$retArr[$row->occid]['collid'] = $row->collid;
 				$retArr[$row->occid]['instcode'] = $this->cleanOutStr($row->institutioncode);
 				if($row->instcodeoverride){
@@ -68,6 +69,7 @@ class OccurrenceListManager extends OccurrenceManager{
 				$retArr[$row->occid]['sciname'] = ($row->sciname?$this->cleanOutStr($row->sciname):'undetermined');
 				$retArr[$row->occid]['tid'] = $row->tidinterpreted;
 				$retArr[$row->occid]['author'] = $this->cleanOutStr($row->scientificnameauthorship);
+				
 				/*
 				if(isset($row->scinameprotected) && $row->scinameprotected && !$securityClearance){
 					$retArr[$row->occid]['taxonsecure'] = 1;
@@ -82,8 +84,8 @@ class OccurrenceListManager extends OccurrenceManager{
 				$retArr[$row->occid]['state'] = $this->cleanOutStr($row->stateprovince);
 				$retArr[$row->occid]['county'] = $this->cleanOutStr($row->county);
 				$retArr[$row->occid]['obsuid'] = $row->observeruid;
-				$retArr[$row->occid]['localitysecurity'] = $row->localitysecurity;
-				if($securityClearance || $row->localitysecurity != 1){
+				$retArr[$row->occid]['localitysecurity'] = ($row->localitysecurity && $row->cultivationStatus !== '1') ? '1' : '0';
+				if($securityClearance || $row->localitysecurity != 1 || $row->cultivationStatus ==1){
 					$locStr = $row->locality ?? '';
 					$retArr[$row->occid]['locality'] = str_replace('.,',',',$this->cleanOutStr(trim($locStr,' ,;')));
 					$retArr[$row->occid]['declat'] = $row->decimallatitude;

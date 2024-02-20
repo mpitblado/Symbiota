@@ -188,7 +188,7 @@ class OccurrenceIndividual extends Manager{
 			 }
 			 */
 			$protectLocality = false;
-			if($this->occArr['localitysecurity'] == 1 && !$isSecuredReader){
+			if($this->occArr['localitysecurity'] == 1 && !$isSecuredReader && $this->occArr['cultivationstatus'] !== '1'){
 				$protectLocality = true;
 				$this->occArr['localsecure'] = 1;
 				$redactArr = array('recordnumber','eventdate','verbatimeventdate','locality','locationid','decimallatitude','decimallongitude','verbatimcoordinates',

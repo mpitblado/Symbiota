@@ -592,23 +592,31 @@ else{
 								}
 								?>
 								<div class='navpath'>
-									<a href="../../index.php" onclick="return verifyLeaveForm()"><?= (isset($LANG['HOME'])?$LANG['HOME']:'Home'); ?></a> &gt;&gt;
+									<a href="../../index.php" onclick="return verifyLeaveForm()">
+										<?= (isset($LANG['HOME'])?$LANG['HOME']:'Home'); ?>
+									</a> &gt;&gt;
 									<?php
 									if($crowdSourceMode){
 										?>
-										<a href="../specprocessor/crowdsource/index.php"><?= (isset($LANG['CENTRAL_CROWD'])?$LANG['CENTRAL_CROWD']:'Crowd Source Central') ?></a> &gt;&gt;
+										<a href="../specprocessor/crowdsource/index.php">
+											<?= (isset($LANG['CENTRAL_CROWD'])?$LANG['CENTRAL_CROWD']:'Crowd Source Central') ?>
+										</a> &gt;&gt;
 										<?php
 									}
 									else{
 										if($isGenObs){
 											?>
-											<a href="../../profile/viewprofile.php?tabindex=1" onclick="return verifyLeaveForm()"><?= (isset($LANG['PERS_MANAGEMENT'])?$LANG['PERS_MANAGEMENT']:'Personal Management') ?></a> &gt;&gt;
+											<a href="../../profile/viewprofile.php?tabindex=1" onclick="return verifyLeaveForm()">
+												<?= (isset($LANG['PERS_MANAGEMENT'])?$LANG['PERS_MANAGEMENT']:'Personal Management') ?>
+											</a> &gt;&gt;
 											<?php
 										}
 										else{
 											if($isEditor == 1 || $isEditor == 2){
 												?>
-												<a href="../misc/collprofiles.php?collid=<?php echo $collId; ?>&emode=1" onclick="return verifyLeaveForm()"><?= (isset($LANG['COL_MANAGEMENT'])?$LANG['COL_MANAGEMENT']:'Collection Management') ?></a> &gt;&gt;
+												<a href="../misc/collprofiles.php?collid=<?php echo $collId; ?>&emode=1" onclick="return verifyLeaveForm()">
+													<?= (isset($LANG['COL_MANAGEMENT'])?$LANG['COL_MANAGEMENT']:'Collection Management') ?>
+												</a> &gt;&gt;
 												<?php
 											}
 										}
@@ -1053,8 +1061,8 @@ else{
 												<div style="float:left;">
 													<?php
 													echo $LANG['LOCALITY_SECURITY'];
-													$securityCode = array_key_exists('localitysecurity',$occArr)&&$occArr['localitysecurity']?$occArr['localitysecurity']:0;
-													$lsrValue = array_key_exists('localitysecurityreason',$occArr)?$occArr['localitysecurityreason']:'';
+													$securityCode = array_key_exists('localitysecurity',$occArr) && $occArr['localitysecurity'] ? $occArr['localitysecurity'] : 0;
+													$lsrValue = array_key_exists('localitysecurityreason',$occArr) ? $occArr['localitysecurityreason'] : '';
 													?>:
 													<select name="localitysecurity" onchange="securityChanged(this.form);" title="<?php echo (isset($LANG['SECURITY_SETTINGS'])?$LANG['SECURITY_SETTINGS']:'Security Settings'); ?>" tabindex="-1">
 														<option value="0"><?= $LANG['SECURITY_NOT_APPLIED'] ?></option>
@@ -1093,11 +1101,13 @@ else{
 												</div>
 												<div id="coordinateUncertaintyInMetersDiv" class="field-div">
 													<?php echo $LANG['COORDINATE_UNCERTAINITY_IN_METERS']; ?>
-													<a href="#" onclick="return dwcDoc('coordinateUncertaintyInMeters')" tabindex="-1"><img class="docimg" src="../../images/qmark.png" /></a>
+													<a href="#" onclick="return dwcDoc('coordinateUncertaintyInMeters')" tabindex="-1">
+														<img class="docimg" src="../../images/qmark.png" />
+													</a>
 													<br/>
 													<input type="text" id="coordinateuncertaintyinmeters" name="coordinateuncertaintyinmeters" maxlength="10" value="<?php echo array_key_exists('coordinateuncertaintyinmeters',$occArr)?$occArr['coordinateuncertaintyinmeters']:''; ?>" onchange="coordinateUncertaintyInMetersChanged(this.form);" title="<?php echo (isset($LANG['UNCERTAINTY_METERS'])?$LANG['UNCERTAINTY_METERS']:'Uncertainty in Meters'); ?>" />
 												</div>
-												<div id="googleDiv" onclick="openMappingAid();" title="<?php echo (isset($LANG['MAP_COORDS'])?$LANG['MAP_COORDS']:'Map Coordinates'); ?>">
+												<div id="googleDiv" onclick="openMappingAid();" title="<?php echo $LANG['MAP_COORDS'] ?>">
 													<img src="../../images/world.png" style="width:1.2em;" />
 												</div>
 												<div id="geoLocateDiv" title="<?php echo (isset($LANG['GEOLOCATE_LOC'])?$LANG['GEOLOCATE_LOC']:'GeoLocate Locality'); ?>">
@@ -1222,7 +1232,7 @@ else{
 													<div id="footprintWktDiv" class="field-div">
 														<?php echo $LANG['FOOTPRINT_WKT']; ?>
 														<br/>
-														<div style="float:right;margin-top:-2px;margin-left:2px;" id="googleDiv" onclick="openMappingPolyAid();" title="<?php echo $LANG['GOOGLE_MAPS']; ?>">
+														<div style="float:right;margin-top:-2px;margin-left:2px;" id="googleDiv" onclick="openMappingPolyAid();"title="<?php echo $LANG['OPEN_MAP_AID']; ?>">
 															<img src="../../images/world.png" />
 														</div>
 														<textarea name="footprintwkt" id="footprintwkt" onchange="footPrintWktChanged(this)" style="height:40px;resize:vertical;" ><?php echo array_key_exists('footprintwkt',$occArr)?$occArr['footprintwkt']:''; ?></textarea>

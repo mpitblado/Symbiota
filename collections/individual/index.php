@@ -677,7 +677,7 @@ $traitArr = $indManager->getTraitArr();
 								$localityArr[] = $locStr;
 							}
 							echo implode(', ', $localityArr);
-							if($occArr['localitysecurity'] == 1){
+							if($occArr['localitysecurity'] == 1 && $occArr['cultivationstatus']!=='1'){
 								echo '<div style="margin-left:10px"><span class="notice-span">'.$LANG['LOCALITY_PROTECTED'].':<span> ';
 								if($occArr['localitysecurityreason'] && substr($occArr['localitysecurityreason'],0,1) != '<') echo $occArr['localitysecurityreason'];
 								else echo $LANG['PROTECTED_REASON'];
@@ -774,7 +774,7 @@ $traitArr = $indManager->getTraitArr();
 							</div>
 							<?php
 						}
-						if($occArr['informationwithheld']){
+						if($occArr['informationwithheld'] && $occArr['cultivationstatus']!=='1'){
 							?>
 							<div id="infowithheld-div" class="bottom-breathing-room-sm-rel">
 								<?php
