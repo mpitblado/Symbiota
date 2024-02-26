@@ -133,6 +133,34 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
 									</div>
 								</div>
 							</div>
+							
+							<div  class="layout__region layout__region--first">
+								<div class="block block-layout-builder block-inline-blockcard usa-card clearfix">
+									<div class="usa-card__container top-breathing-room-rel">
+										<header class="usa-card__header">
+											<h3 class="usa-card__heading">ARS Collections of Entomopathogenic Fungi (ARSEF)</h3>
+										</header>
+										<div class="usa-card__media">
+											<div class="usa-card__img">
+												<img style="height:235px;" loading="lazy" src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/ARSEF_tilephoto.jpg" width="330" height="220" alt="An image of a flower" class="img-responsive" />
+											</div>
+										</div>
+										<div class="usa-card__body">
+											<div class="field field--name-card-body field--type-text-long field--label-hidden field--item">
+												<p>The largest, most comprehensive repository of insect pathogenic fungal strains and germplasm.</p>
+											</div>
+										</div>
+										<div class="usa-card__footer">
+											<div class="field field--name-card-link field--type-link field--label-hidden field--item">
+												<a href="<?php echo $CLIENT_ROOT?>/collections/misc/collprofiles.php?collid=<?php echo  $ARSEF_SNAPSHOT_COLLID?>" class="usa-button card-button" style="margin-bottom: 1rem;">About Collection</a>
+											</div>
+											<div class="field field--name-card-link field--type-link field--label-hidden field--item">
+												<a href="<?php echo $CLIENT_ROOT?>/collections/<?php echo $actionPage ?>?db=<?php echo  $ARSEF_SNAPSHOT_COLLID?>" class="usa-button card-button">Search Collection</a>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
