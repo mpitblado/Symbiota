@@ -4,6 +4,8 @@
  Language: English
  ------------------
  */
+
+
 $LANG['DETAILS'] = 'Details';
 $LANG['MAP'] = 'Map';
 $LANG['GENETIC'] = 'Genetic';
@@ -158,4 +160,11 @@ $LANG['SKIP_NAV'] = 'Skip Navigation';
 $LANG['CULT_STATUS'] = 'Cultivation Status';
 $LANG['CULTIVATED'] = 'Cultivated';
 $LANG['NOT_CULTIVATED'] = 'Not Cultivated';
+//Used within OccurrenceIndividual class
+$LANG['INAPPROPRIATE'] = 'Inappropriate comment reported';
+$LANG['REPORTED_AS_INAPPROPRIATE'] = 'The following comment has been reported as inappropriate';
+$LANG['EMAIL_NOT_DEFINED'] = 'ERROR: Portal admin email not defined in central configuration file';
+$LANG['PRIVATE_STATUS'] = 'private status';
+$LANG['UNABLE_TO_VERIFY_TARGET'] = 'ERROR deleting voucher: unable to verify target checklist for voucher';
+$LANG['PERMISSION_ERROR'] = 'ERROR deleting voucher: permission error';
 ?>
