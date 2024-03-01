@@ -218,7 +218,7 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
                           <a href="<?php echo $CLIENT_ROOT?>/collections/<?php echo $actionPage ?>?db=<?php echo  $BPI_SNAPSHOT_COLLID?>">Search National Fungus Collections</a>
                         </li>
                         <li>
-                          <a href="<?php echo $CLIENT_ROOT?>/collections/<?php echo $actionPage ?>?db=<?php echo  $ARSEF_SNAPSHOT_COLLID?>">Search ARS Collections of Entomopathogenic Fungi</a>
+                          <a href="<?php echo $CLIENT_ROOT?>/collections/<?php echo $actionPage ?>?db=<?php echo  $ARSEF_SNAPSHOT_COLLID?>">Search Entomopathogenic Fungal Cultures Collection</a>
                         </li>
                       </ul>
                     </li>
@@ -241,7 +241,7 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
                           <a href="<?php echo $CLIENT_ROOT?>/collections/map/index.php?db=<?php echo  $BPI_SNAPSHOT_COLLID?>">Map Search National Fungus Collections</a>
                         </li>
                         <li>
-                          <a href="<?php echo $CLIENT_ROOT?>/collections/map/index.php?db=<?php echo  $ARSEF_SNAPSHOT_COLLID?>">Map ARS Collections of Entomopathogenic Fungi</a>
+                          <a href="<?php echo $CLIENT_ROOT?>/collections/map/index.php?db=<?php echo  $ARSEF_SNAPSHOT_COLLID?>">Map Entomopathogenic Fungal Cultures Collection</a>
                         </li>
                       </ul>
                     </li>
@@ -260,7 +260,7 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
                           <a href="<?php echo $CLIENT_ROOT?>/collections/misc/collprofiles.php?collid=<?php echo  $BPI_SNAPSHOT_COLLID?>">About National Fungus Collections</a>
                         </li>
                         <li>
-                          <a href="<?php echo $CLIENT_ROOT?>/collections/misc/collprofiles.php?collid=<?php echo  $ARSEF_SNAPSHOT_COLLID?>">About ARS Collections of Entomopathogenic Fungi</a>
+                          <a href="<?php echo $CLIENT_ROOT?>/collections/misc/collprofiles.php?collid=<?php echo  $ARSEF_SNAPSHOT_COLLID?>">About Entomopathogenic Fungal Cultures Collection</a>
                         </li>
                       </ul>
                     </li>

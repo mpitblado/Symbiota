@@ -138,7 +138,7 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
 								<div class="block block-layout-builder block-inline-blockcard usa-card clearfix">
 									<div class="usa-card__container top-breathing-room-rel">
 										<header class="usa-card__header">
-											<h3 class="usa-card__heading">ARS Collections of Entomopathogenic Fungi (ARSEF)</h3>
+											<h3 class="usa-card__heading">Entomopathogenic Fungal Cultures Collection</h3>
 										</header>
 										<div class="usa-card__media">
 											<div class="usa-card__img">
