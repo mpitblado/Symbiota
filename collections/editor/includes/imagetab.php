@@ -174,12 +174,12 @@ $photographerArr = $occManager->getPhotographerArr();
 		<?php
 		if($specImgArr){
 			?>
-			<table>
+			<section class="gridlike-form">
 				<?php
 				foreach($specImgArr as $imgId => $imgArr){
 					?>
-					<tr>
-						<td style="width:300px;text-align:center;padding:20px;">
+					<section class="gridlike-form-row">
+						<div style="width:300px;text-align:center;padding:20px;">
 							<?php
 							$imgUrl = $imgArr["url"];
 							$origUrl = $imgArr["origurl"];
@@ -208,15 +208,15 @@ $photographerArr = $occManager->getPhotographerArr();
 							if($imgUrl != $origUrl) echo '<div><a href="' . htmlspecialchars($imgUrl, HTML_SPECIAL_CHARS_FLAGS) .'" target="_blank">' . htmlspecialchars($LANG['OPEN_MED'], HTML_SPECIAL_CHARS_FLAGS) . '</a></div>';
 							if($origUrl) echo '<div><a href="' . htmlspecialchars($origUrl, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank">' . htmlspecialchars($LANG['OPEN_LARGE'], HTML_SPECIAL_CHARS_FLAGS) . '</a></div>';
 							?>
-						</td>
-						<td style="text-align:left;padding:10px;">
+						</div>
+						<div style="text-align:left;padding:10px;">
 							<div style="float:right;cursor:pointer;" onclick="toggle('img<?php echo $imgId; ?>editdiv');" title="<?php echo $LANG['EDIT_METADATA']; ?>">
 								<img style="border:0px;width:1.2em;" src="../../images/edit.png" />
 							</div>
 							<div style="margin-top:30px">
 								<div>
 									<b><?php echo $LANG['CAPTION']; ?>:</b>
-									<?php echo $imgArr["caption"]; ?>
+									<?php echo $imgArr["caption"]; ?> testing testing testing testing testing testing testing testing testing testing testing testing
 								</div>
 								<div>
 									<b><?php echo $LANG['PHOTOGRAPHER']; ?>:</b>
@@ -288,10 +288,10 @@ $photographerArr = $occManager->getPhotographerArr();
 									<?php echo $imgArr['sort']; ?>
 								</div>
 							</div>
-						</td>
-					</tr>
-					<tr>
-						<td colspan="2">
+								</div>
+					</section>
+					<section class="gridlike-form-row">
+						<div colspan="2">
 							<div id="img<?php echo $imgId; ?>editdiv" style="display:none;clear:both;">
 								<form name="img<?php echo $imgId; ?>editform" action="occurrenceeditor.php" method="post" onsubmit="return verifyImgEditForm(this);">
 									<fieldset style="padding:15px">
@@ -460,12 +460,12 @@ $photographerArr = $occManager->getPhotographerArr();
 								</form>
 							</div>
 							<hr/>
-						</td>
-					</tr>
+							</div>
+					</section>
 					<?php
 				}
 				?>
-			</table>
+			</section>
 			<?php
 		}
 		?>

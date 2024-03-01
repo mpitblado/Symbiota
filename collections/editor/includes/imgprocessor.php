@@ -6,12 +6,6 @@ include_once($SERVER_ROOT.'/includes/head.php');
 
 <script>
 
-	$(document).ready(function() {
-		var pos = $("#labelProcDiv").position();
-		var posLeft = pos.left - $(window).scrollLeft();
-		$("#labelProcFieldset").css('left', posLeft);
-	});
-
 	$(function() {
 		$( "#zoomInfoDialog" ).dialog({
 			autoOpen: false,
@@ -25,7 +19,6 @@ include_once($SERVER_ROOT.'/includes/head.php');
 
 	function floatImgPanel(){
 		$( "#labelProcFieldset" ).css('position', 'fixed');
-		$( "#labelProcFieldset" ).css('top', '20px');
 		var pos = $( "#labelProcDiv" ).position();
 		var posLeft = pos.left - $(window).scrollLeft();
 		$( "#labelProcFieldset" ).css('left', posLeft);
@@ -49,9 +42,8 @@ include_once($SERVER_ROOT.'/includes/head.php');
 		$( "#draggableImgDiv" ).show();
 		$( "#floatImgDiv" ).show();
 		$( "#anchorImgDiv" ).hide();
-		$( "#labelProcFieldset" ).css('position', 'static');
-		$( "#labelProcFieldset" ).css('top', '');
-		$( "#labelProcFieldset" ).css('left', '');
+		$( "#labelProcFieldset" ).css('position', 'relative');
+		$( "#labelProcFieldset" ).css('top', '-20.75rem');
 		try {
 			$( "#labelProcFieldset" ).draggable( "destroy" );
 			$( "#labelHeaderDiv" ).css('cursor', 'default');

@@ -938,8 +938,7 @@ div.no-margin-left {
 
 .fieldset-sticky {
   position: fixed;
-  top: 1.25rem;
+  top: 8.25rem;
   height:95%;
   background-color:white;
-  left: 53.75rem;
 }
