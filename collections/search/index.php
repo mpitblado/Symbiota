@@ -13,12 +13,11 @@ else include_once($SERVER_ROOT . '/content/lang/collections/search/index.en.php'
 
 $collManager = new OccurrenceManager();
 $collectionSource = $collManager->getQueryTermStr();
-
 $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT = $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT ?? false;
 $collData = new CollectionMetadata();
 $siteData = new DatasetsMetadata();
 
-$catId = array_key_exists("catid",$_REQUEST)?$_REQUEST["catid"]:'';
+$catId = array_key_exists("catid",$_REQUEST) ? $_REQUEST["catid"]:'';
 $collManager = new OccurrenceManager();
 $collList = $collManager->getFullCollectionList($catId);
 $specArr = (isset($collList['spec'])?$collList['spec']:null);
@@ -447,7 +446,7 @@ $obsArr = (isset($collList['obs'])?$collList['obs']:null);
 <script src="<?php echo $CLIENT_ROOT . '/js/symb/collections.index.js?ver=20171215' ?>" type="text/javascript"></script>
 <script>
 	let alerts = [{
-		'alertMsg': '<?php echo $LANG['ALERT_MSG_PREVIOUS_SEARCH_FORM'] ?> <a href="<?php echo $CLIENT_ROOT ?>/collections/harvestparams.php" alt="Traditional Sample Search Form">' . $LANG['PREVIOUS_SAMPLE_SEARCH'] . '</a>.'
+		'alertMsg': '<?php echo $LANG['ALERT_MSG_PREVIOUS_SEARCH_FORM'] ?> <a href="<?php echo $CLIENT_ROOT ?>/collections/harvestparams.php" alt="Traditional Sample Search Form"><?= $LANG['PREVIOUS_SAMPLE_SEARCH']; ?></a>.'
 	}];
 	handleAlerts(alerts, 3000);
 
@@ -458,6 +457,8 @@ $obsArr = (isset($collList['obs'])?$collList['obs']:null);
 	}
 
 	const collectionSource = <?php echo $collectionSource ?>;
+	console.log('deleteMe collectionSource is: ');
+	console.log(collectionSource);
 
 	if(collectionSource){
 		// go through all collections and set them all to unchecked
