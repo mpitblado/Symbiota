@@ -209,14 +209,14 @@ $photographerArr = $occManager->getPhotographerArr();
 							if($origUrl) echo '<div><a href="' . htmlspecialchars($origUrl, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank">' . htmlspecialchars($LANG['OPEN_LARGE'], HTML_SPECIAL_CHARS_FLAGS) . '</a></div>';
 							?>
 						</div>
-						<div style="text-align:left;padding:10px;">
+						<div class="div--overflow-wrap-anywhere" style="text-align:left;padding:10px;">
 							<div style="float:right;cursor:pointer;" onclick="toggle('img<?php echo $imgId; ?>editdiv');" title="<?php echo $LANG['EDIT_METADATA']; ?>">
 								<img style="border:0px;width:1.2em;" src="../../images/edit.png" />
 							</div>
 							<div style="margin-top:30px">
 								<div>
 									<b><?php echo $LANG['CAPTION']; ?>:</b>
-									<?php echo $imgArr["caption"]; ?> testing testing testing testing testing testing testing testing testing testing testing testing
+									<?php echo $imgArr["caption"]; ?>
 								</div>
 								<div>
 									<b><?php echo $LANG['PHOTOGRAPHER']; ?>:</b>

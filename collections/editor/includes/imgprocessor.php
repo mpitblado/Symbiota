@@ -22,12 +22,14 @@ include_once($SERVER_ROOT.'/includes/head.php');
 		var pos = $( "#labelProcDiv" ).position();
 		var posLeft = pos.left - $(window).scrollLeft();
 		$( "#labelProcFieldset" ).css('left', posLeft);
+		$( "#labelProcFieldset" ).css('top', '8.75rem');
 		$( "#floatImgDiv" ).hide();
 		$( "#draggableImgDiv" ).hide();
 		$( "#anchorImgDiv" ).show();
 	}
 
 	function draggableImgPanel(){
+		$( "#labelProcFieldset" ).css('position', 'fixed');
 		$( "#labelProcFieldset" ).draggable();
 		$( "#labelProcFieldset" ).draggable({ cancel: "#labelprocessingdiv" });
 		$( "#labelHeaderDiv" ).css('cursor', 'move');
@@ -44,6 +46,8 @@ include_once($SERVER_ROOT.'/includes/head.php');
 		$( "#anchorImgDiv" ).hide();
 		$( "#labelProcFieldset" ).css('position', 'relative');
 		$( "#labelProcFieldset" ).css('top', '-20.75rem');
+		$( "#labelProcFieldset" ).css('left', '0');
+		console.log(pos.left);
 		try {
 			$( "#labelProcFieldset" ).draggable( "destroy" );
 			$( "#labelHeaderDiv" ).css('cursor', 'default');
