@@ -5,7 +5,7 @@ include_once($SERVER_ROOT.'/content/lang/collections/misc/collstats.' . $LANG_TA
 header("Content-Type: text/html; charset=" . $CHARSET);
 ini_set('max_execution_time', 1200); //1200 seconds = 20 minutes
 
-$catID = array_key_exists('catid', $_REQUEST) ? $_REQUEST['catid'] : 0;
+$catID = array_key_exists('catid', $_REQUEST) ? filter_var($_REQUEST['catid'], FILTER_SANITIZE_NUMBER_INT) : 0;
 if(!$catID && isset($DEFAULTCATID) && $DEFAULTCATID) $catID = $DEFAULTCATID;
 $collId = array_key_exists('collid', $_REQUEST) ? $_REQUEST['collid'] : 0;
 $cPartentTaxon = array_key_exists('taxon', $_REQUEST) ? $_REQUEST['taxon'] : '';
