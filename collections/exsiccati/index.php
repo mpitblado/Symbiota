@@ -3,15 +3,15 @@ include_once('../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceExsiccatae.php');
 header('Content-Type: text/html; charset='.$CHARSET);
 
-$ometid = array_key_exists('ometid',$_REQUEST)?$_REQUEST['ometid']:0;
-$omenid = array_key_exists('omenid',$_REQUEST)?$_REQUEST['omenid']:0;
-$occidToAdd = array_key_exists('occidtoadd',$_REQUEST)?$_REQUEST['occidtoadd']:0;
-$searchTerm = array_key_exists('searchterm',$_POST)?$_POST['searchterm']:'';
-$specimenOnly = array_key_exists('specimenonly',$_REQUEST)?$_REQUEST['specimenonly']:0;
-$collId = array_key_exists('collid',$_REQUEST)?$_REQUEST['collid']:0;
-$imagesOnly = array_key_exists('imagesonly',$_REQUEST)?$_REQUEST['imagesonly']:0;
-$sortBy = array_key_exists('sortby',$_REQUEST)?$_REQUEST['sortby']:0;
-$formSubmit = array_key_exists('formsubmit',$_REQUEST)?$_REQUEST['formsubmit']:'';
+$ometid = array_key_exists('ometid',$_REQUEST) ? filter_var($_REQUEST['ometid'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$omenid = array_key_exists('omenid',$_REQUEST) ? filter_var($_REQUEST['omenid'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$occidToAdd = array_key_exists('occidtoadd',$_REQUEST) ? filter_var($_REQUEST['occidtoadd'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$searchTerm = array_key_exists('searchterm',$_POST) ? htmlspecialchars($_POST['searchterm'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$specimenOnly = array_key_exists('specimenonly',$_REQUEST) ? filter_var($_REQUEST['specimenonly'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$collId = array_key_exists('collid',$_REQUEST) ? filter_var($_REQUEST['collid'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$imagesOnly = array_key_exists('imagesonly',$_REQUEST) ? filter_var($_REQUEST['imagesonly'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$sortBy = array_key_exists('sortby',$_REQUEST) ? filter_var($_REQUEST['sortby'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$formSubmit = array_key_exists('formsubmit',$_REQUEST) ? htmlspecialchars($_REQUEST['formsubmit'], HTML_SPECIAL_CHARS_FLAGS):'';
 
 //Sanitation
 if(!is_numeric($ometid)) $ometid = 0;
