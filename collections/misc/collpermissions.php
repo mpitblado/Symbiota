@@ -12,6 +12,7 @@ if (array_key_exists('action', $_REQUEST) && $action_key = array_search($_REQUES
 else $action = "";
 $collId = array_key_exists("collid",$_REQUEST) ? filter_var($_REQUEST["collid"], FILTER_SANITIZE_NUMBER_INT) : 0;
 $targetUID = array_key_exists('uid', $_POST) ? filter_var($targetUID, FILTER_SANITIZE_NUMBER_INT) : 0;
+$persObsCollId = array_key_exists('persobscollid', $_POST) ? filter_var($persObsCollId, FILTER_SANITIZE_NUMBER_INT) : 0;
 
 $permManager = new PermissionsManager();
 
@@ -57,7 +58,7 @@ if($isEditor){
 		//$permManager->addPermission($pTokens[0],'CollTaxon-'.$collId.':'.$pTokens[1]);
 	}
 	elseif($action == 'Sponsor Personal Observation User'){
-		$permManager->addPermission($targetUID,'CollEditor',$_POST['persobscollid']);
+		$permManager->addPermission($targetUID,'CollEditor',$persObsCollId);
 	}
 	elseif($action == 'Sponsor Checklist User'){
 		$permManager->addClCreateRole($targetUID);
