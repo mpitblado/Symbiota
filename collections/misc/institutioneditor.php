@@ -3,11 +3,11 @@ include_once('../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/InstitutionManager.php');
 if(!$SYMB_UID) header('Location: ../../profile/index.php?refurl=../collections/admin/institutioneditor.php?'.htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
 
-$iid = array_key_exists("iid",$_REQUEST)?$_REQUEST["iid"]:0;
-$targetCollid = array_key_exists("targetcollid",$_REQUEST)?$_REQUEST["targetcollid"]:0;
-$eMode = array_key_exists("emode",$_REQUEST)?$_REQUEST["emode"]:0;
-$instCodeDefault = array_key_exists("instcode",$_REQUEST)?$_REQUEST["instcode"]:'';
-$formSubmit = array_key_exists("formsubmit",$_POST)?$_POST["formsubmit"]:"";
+$iid = array_key_exists("iid",$_REQUEST) ? filter_var($_REQUEST["iid"], FILTER_SANITIZE_NUMBER_INT) : 0;
+$targetCollid = array_key_exists("targetcollid",$_REQUEST) ? filter_var($_REQUEST["targetcollid"], FILTER_SANITIZE_NUMBER_INT) : 0;
+$eMode = array_key_exists("emode",$_REQUEST) ? filter_var($_REQUEST["emode"], FILTER_SANITIZE_NUMBER_INT) : 0;
+$instCodeDefault = array_key_exists("instcode",$_REQUEST) ? htmlspecialchars($_REQUEST["instcode"], HTML_SPECIAL_CHARS_FLAGS) : '';
+$formSubmit = array_key_exists("formsubmit",$_POST) ? htmlspecialchars($_POST["formsubmit"], HTML_SPECIAL_CHARS_FLAGS) : "";
 
 $instManager = new InstitutionManager();
 $fullCollList = $instManager->getCollectionList();
@@ -33,7 +33,7 @@ elseif(array_key_exists("CollAdmin",$USER_RIGHTS)){
 }
 if($editorCode){
 	if($formSubmit == "Add Institution"){
-		$iid = $instManager->submitInstitutionAdd($_POST);
+		$iid = $instManager->submitInstitutionAdd(array_map('htmlspecialchars', $_POST));
 		if($iid){
 			if($targetCollid) header('Location: ../misc/collprofiles.php?collid='.$targetCollid);
 			$statusStr = 'SUCCESS! Institution added.';
@@ -63,7 +63,7 @@ if($editorCode){
 				}
 			}
 			elseif($formSubmit == "Add Collection"){
-				if($instManager->addCollection($_POST['addcollid'],$iid)){
+				if($instManager->addCollection(array_map('htmlspecialchars', $_POST['addcollid']),$iid)){
 					$collList[$_POST['addcollid']] = $fullCollList[$_POST['addcollid']]['name'];
 				}
 				else{
@@ -327,7 +327,7 @@ include($SERVER_ROOT.'/includes/header.php');
 								URL:
 							</div>
 							<div class="editdiv" style="display:<?php echo $eMode?'none':'block'; ?>;">
-								<a href="<?php echo htmlspecialchars($instArr['url'], HTML_SPECIAL_CHARS_FLAGS); ?>" target="_blank">
+								<a href="<?php echo htmlspecialchars($instArr['url'], HTML_SPECIAL_CHARS_FLAGS); ?>" target="_blank" rel="noopener noreferrer">
 									<?php echo $instArr['url']; ?>
 								</a>
 							</div>
