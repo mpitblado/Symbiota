@@ -7,8 +7,9 @@ header('Content-Type: text/html; charset=' . $CHARSET);
 unset($_SESSION['editorquery']);
 
 $collManager = new OccurrenceCollectionProfile();
+$collManagerTest = new Manager();
 
-$collid = isset($_REQUEST['collid']) ? filter_var($_REQUEST['collid'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$collid = isset($_REQUEST['collid']) ? $collManagerTest->sanitizeInt($_REQUEST['collid']) : 0;
 $occIndex = array_key_exists('occindex',$_REQUEST)?$_REQUEST['occindex']:0;
 $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT = $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT ?? false;
 $SHOULD_USE_HARVESTPARAMS = $SHOULD_USE_HARVESTPARAMS ?? false;
