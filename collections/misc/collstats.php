@@ -241,6 +241,25 @@ if($action != "Update Statistics"){
 					}
 					$("#tabs").tabs({<?php echo ($action == "Run Statistics"?'active: 1':''); ?>});
 
+					<?php 
+						if($action == "Run Statistics"){
+					?>
+						document.getElementById('accessibility-button-span').style.display= 'none';
+					<?php 
+						}
+					?>
+
+					document.getElementById('specobsdiv-link').addEventListener('click', ()=>{
+						console.log('deleteMe specobsdiv-link clicked');
+						document.getElementById('accessibility-button-span').style.display = "block";
+					});
+
+					document.getElementById('statsdiv-link').addEventListener('click', ()=>{
+						console.log('deleteMe statsdiv-link clicked');
+						document.getElementById('accessibility-button-span').style.display= 'none';
+					});
+
+
                     function split( val ) {
                         return val.split( /,\s*/ );
                     }
@@ -391,13 +410,18 @@ if($action != "Update Statistics"){
 			?>
 			<!-- This is inner text! -->
 			<div id="innertext">
-				<h1><?php echo $LANG['SELECT_COLS']; ?></h1>
+				<div style="display:flex; justify-content: space-between; align-items: center;">
+					<h1><?php echo $LANG['SELECT_COLS']; ?></h1>
+							<span id="accessibility-button-span" style="white-space: nowrap; padding: 0.8rem;" class="button button-secondary">
+								<a class="accessibility-button" onclick="toggleAccessibilityStyles('<?php echo $CLIENT_ROOT . '/includes' . '/' ?>', '<?php echo $CSS_BASE_PATH ?>', '<?php echo $LANG['TOGGLE_508_OFF'] ?>', '<?php echo $LANG['TOGGLE_508_ON'] ?>')" id="accessibility-button" data-accessibility="accessibility-button" ><?php echo (isset($LANG['TOGGLE_508_ON'])?$LANG['TOGGLE_508_ON']:'Accessibility Mode'); ?></a>
+							</span>
+				</div>
 				<div id="tabs" class="tabby">
 					<ul class="full-tab">
-						<li><a href="#specobsdiv"><?php echo htmlspecialchars($LANG['COLLECTIONS'], HTML_SPECIAL_CHARS_FLAGS); ?></a></li>
+						<li><a href="#specobsdiv" id="specobsdiv-link"><?php echo htmlspecialchars($LANG['COLLECTIONS'], HTML_SPECIAL_CHARS_FLAGS); ?></a></li>
 						<?php
                         if($action == "Run Statistics"){
-							echo '<li><a href="#statsdiv">' . htmlspecialchars($LANG['STATISTICS'], HTML_SPECIAL_CHARS_FLAGS) . '</a></li>';
+							echo '<li><a href="#statsdiv" id="statsdiv-link">' . htmlspecialchars($LANG['STATISTICS'], HTML_SPECIAL_CHARS_FLAGS) . '</a></li>';
 						}
 						?>
 					</ul>

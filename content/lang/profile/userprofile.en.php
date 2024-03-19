@@ -50,5 +50,5 @@ $LANG['OCC_EDIT'] = 'Occurrence Editor';
 $LANG['TAX_THES'] = 'Taxonomic Thesaurus Editor';
 $LANG['NO_RELS'] = 'No relationships defined';
 $LANG['ACCESSIBILITY_PREF'] = 'Accessibility Preference';
-$LANG['ACCESSIBILITY_PREF_DESC'] = 'Check to indicate a preference for accessibility-optimized styles';
+$LANG['ACCESSIBILITY_PREF_DESC'] = 'Check to indicate a preference for form layouts that contain one input per row';
 ?>

@@ -50,5 +50,5 @@ $LANG['OCC_EDIT'] = 'Editor de Ocurrencias';
 $LANG['TAX_THES'] = 'Editor de Tesauro Taxonómico';
 $LANG['NO_RELS'] = 'Sin relaciones definidas';
 $LANG['ACCESSIBILITY_PREF'] = 'Preferencias de accesibilidad';
-$LANG['ACCESSIBILITY_PREF_DESC'] = 'Marque para indicar una preferencia por estilos optimizados para accesibilidad';
+$LANG['ACCESSIBILITY_PREF_DESC'] = 'Marque para indicar una preferencia por diseños de formulario que contengan una entrada por fila';
 ?>
