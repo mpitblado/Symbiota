@@ -413,7 +413,7 @@ if($action != "Update Statistics"){
 				<div style="display:flex; justify-content: space-between; align-items: center;">
 					<h1><?php echo $LANG['SELECT_COLS']; ?></h1>
 							<span id="accessibility-button-span" style="white-space: nowrap; padding: 0.8rem;" class="button button-secondary">
-								<a class="accessibility-button" onclick="toggleAccessibilityStyles('<?php echo $CLIENT_ROOT . '/includes' . '/' ?>', '<?php echo $CSS_BASE_PATH ?>', '<?php echo $LANG['TOGGLE_508_OFF'] ?>', '<?php echo $LANG['TOGGLE_508_ON'] ?>')" id="accessibility-button" data-accessibility="accessibility-button" ><?php echo (isset($LANG['TOGGLE_508_ON'])?$LANG['TOGGLE_508_ON']:'Accessibility Mode'); ?></a>
+								<a class="accessibility-button" onclick="toggleAccessibilityStyles('<?php echo $CLIENT_ROOT . '/includes' . '/' ?>', '<?php echo $CSS_BASE_PATH ?>', '<?php echo $LANG['TOGGLE_508_OFF'] ?>', '<?php echo $LANG['TOGGLE_508_ON'] ?>')" id="accessibility-button" data-accessibility="accessibility-button" ><?php echo $LANG['TOGGLE_508_ON']; ?></a>
 							</span>
 				</div>
 				<div id="tabs" class="tabby">

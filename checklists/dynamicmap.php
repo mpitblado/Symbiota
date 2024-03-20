@@ -235,7 +235,7 @@ if(!$zoomInt){
       data-latCen="<?=htmlspecialchars($latCen) ?>"
       data-lngCen="<?=htmlspecialchars($longCen) ?>"
       data-mapZoom="<?=htmlspecialchars($zoomInt) ?>"
-   />
+   ></div>
 	<?php
 		$displayLeftMenu = false;
 		include($SERVER_ROOT.'/includes/header.php');
@@ -250,10 +250,17 @@ if(!$zoomInt){
 		}
 		else{
 			?>
-			<div class='navpath'>
-				<a href='../index.php'><?php echo htmlspecialchars($LANG['HOME'], HTML_SPECIAL_CHARS_FLAGS); ?></a> &gt;
-				<b><?php echo $LANG['DYNAMIC_MAP']; ?></b>
-			</div>
+         <div style="display:flex; justify-content: space-between; align-items: center;">
+            <div class='navpath'>
+               <a href='../index.php'><?php echo htmlspecialchars($LANG['HOME'], HTML_SPECIAL_CHARS_FLAGS); ?></a> &gt;
+               <b><?php echo $LANG['DYNAMIC_MAP']; ?></b>
+            </div>
+            <div>
+               <span style="white-space: nowrap; padding: 0.8rem;" class="button button-secondary">
+                  <a class="accessibility-button" onclick="toggleAccessibilityStyles('<?php echo $CLIENT_ROOT . '/includes' . '/' ?>', '<?php echo $CSS_BASE_PATH ?>', '<?php echo $LANG['TOGGLE_508_OFF'] ?>', '<?php echo $LANG['TOGGLE_508_ON'] ?>')" id="accessibility-button" data-accessibility="accessibility-button" ><?php echo (isset($LANG['TOGGLE_508_ON'])?$LANG['TOGGLE_508_ON']:'Accessibility Mode'); ?></a>
+               </span>
+            </div>
+         </div>
 			<?php
 		}
 		?>
