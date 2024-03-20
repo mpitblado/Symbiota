@@ -299,6 +299,11 @@ if($isEditor){
 			echo '<h2>'.$occManager->getCollName().'</h2>';
 			?>
 			<div>
+				<div style="display:flex; justify-content: flex-end; align-items: center;">
+					<span style="white-space: nowrap; padding: 0.8rem;" class="button button-secondary">
+						<a class="accessibility-button" onclick="toggleAccessibilityStyles('<?php echo $CLIENT_ROOT . '/includes' . '/' ?>', '<?php echo $CSS_BASE_PATH ?>', '<?php echo $LANG['TOGGLE_508_OFF'] ?>', '<?php echo $LANG['TOGGLE_508_ON'] ?>')" id="accessibility-button" data-accessibility="accessibility-button" ><?php echo (isset($LANG['TOGGLE_508_ON'])?$LANG['TOGGLE_508_ON']:'Accessibility Mode'); ?></a>
+					</span>
+				</div>
 				<section class="fieldset-like">
 					<h1> <span> <?php echo $LANG['DEFINE_RECORDSET']; ?> </span> </h1>
 					<div class="left-breathing-room-rel-lg">
