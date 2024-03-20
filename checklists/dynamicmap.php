@@ -250,64 +250,65 @@ if(!$zoomInt){
 		}
 		else{
 			?>
-         <div style="display:flex; justify-content: space-between; align-items: center;">
             <div class='navpath'>
                <a href='../index.php'><?php echo htmlspecialchars($LANG['HOME'], HTML_SPECIAL_CHARS_FLAGS); ?></a> &gt;
                <b><?php echo $LANG['DYNAMIC_MAP']; ?></b>
             </div>
-            <div>
-               <span style="white-space: nowrap; padding: 0.8rem;" class="button button-secondary">
-                  <a class="accessibility-button" onclick="toggleAccessibilityStyles('<?php echo $CLIENT_ROOT . '/includes' . '/' ?>', '<?php echo $CSS_BASE_PATH ?>', '<?php echo $LANG['TOGGLE_508_OFF'] ?>', '<?php echo $LANG['TOGGLE_508_ON'] ?>')" id="accessibility-button" data-accessibility="accessibility-button" ><?php echo (isset($LANG['TOGGLE_508_ON'])?$LANG['TOGGLE_508_ON']:'Accessibility Mode'); ?></a>
-               </span>
-            </div>
-         </div>
 			<?php
 		}
 		?>
-		<div class="flex-form" id='innertext'>
-			<div style="margin-left: 2rem; margin-bottom: 1rem;">
-				<?php echo $LANG['CAPTURE_COORDS']; ?>
-				<span id="moredetails" style="cursor:pointer;color:blue;font-size:80%;" onclick="this.style.display='none';document.getElementById('moreinfo').style.display='inline';document.getElementById('lessdetails').style.display='inline';">
-					<?php echo $LANG['MORE_DETAILS']; ?>
-				</span>
-				<span id="moreinfo" style="display:none;">
-					<?php echo $LANG['RADIUS_DESCRIPTION']; ?>
-				</span>
-				<span id="lessdetails" style="cursor:pointer;color:blue;font-size:80%;display:none;" onclick="this.style.display='none';document.getElementById('moreinfo').style.display='none';document.getElementById('moredetails').style.display='inline';">
-					<?php echo $LANG['LESS_DETAILS']; ?>
-				</span>
-			</div>
-			<div>
-				<form name="mapForm" action="dynamicchecklist.php" method="post" onsubmit="return checkForm();" class="flex-form">
-					<div>
-						<input type="hidden" name="interface" value="<?php echo $interface; ?>" />
-						<input type="hidden" id="latbox" name="lat" value="" />
-						<input type="hidden" id="lngbox" name="lng" value="" />
-						<div class="bottom-breathing-room-relative">
-							<b><?php echo $LANG['POINT']; ?>:</b>
-							<span id="latlngspan"> &lt; <?php echo $LANG['CLICK_MAP']; ?> &gt; </span>
-						</div>
-						<button type="submit" class="bottom-breathing-room-relative" name="buildchecklistbutton" value="Build Checklist" disabled ><?php echo $LANG['BUILD_CHECKLIST']; ?></button>
-					</div>
-					<div class="flex-form">
-						<div style="margin-left: 0;">
-							<label for="taxa"><?php echo $LANG['TAXON_FILTER']; ?>:</label>
-							<input id="taxa" name="taxa" type="text" value="<?php echo $taxa; ?>" />
-							<input id="tid" name="tid" type="hidden" value="<?php echo $tid; ?>" />
-						</div>
-						<div style="margin-left: 0;">
-							<label for="radius"><?php echo $LANG['RADIUS']; ?>:</label>
-							<input name="radius" id="radius" value="(optional)" type="text" style="width:140px;" onfocus="this.value = ''" />
-							<select id="radiusunits" name="radiusunits">
-								<option value="km"><?php echo $LANG['KM']; ?></option>
-								<option value="mi"><?php echo $LANG['MILES']; ?></option>
-							</select>
-						</div>
-					</div>
-				</form>
-			</div>
-			<div id='map_canvas' style='width:100%; height:650px; clear:both;'></div>
-		</div>
+      <div id='innertext'>
+         <div style="margin: auto; display:flex; justify-content: flex-end; align-items: center;">
+                  <span style="white-space: nowrap; padding: 0.8rem;" class="button button-secondary">
+                     <a class="accessibility-button" onclick="toggleAccessibilityStyles('<?php echo $CLIENT_ROOT . '/includes' . '/' ?>', '<?php echo $CSS_BASE_PATH ?>', '<?php echo $LANG['TOGGLE_508_OFF'] ?>', '<?php echo $LANG['TOGGLE_508_ON'] ?>')" id="accessibility-button" data-accessibility="accessibility-button" ><?php echo (isset($LANG['TOGGLE_508_ON'])?$LANG['TOGGLE_508_ON']:'Accessibility Mode'); ?></a>
+                  </span>
+         </div>
+         <div class="flex-form">
+            <div style="margin-left: 2rem; margin-bottom: 1rem;">
+               <?php echo $LANG['CAPTURE_COORDS']; ?>
+               <span id="moredetails" style="cursor:pointer;color:blue;font-size:80%;" onclick="this.style.display='none';document.getElementById('moreinfo').style.display='inline';document.getElementById('lessdetails').style.display='inline';">
+                  <?php echo $LANG['MORE_DETAILS']; ?>
+               </span>
+               <span id="moreinfo" style="display:none;">
+                  <?php echo $LANG['RADIUS_DESCRIPTION']; ?>
+               </span>
+               <span id="lessdetails" style="cursor:pointer;color:blue;font-size:80%;display:none;" onclick="this.style.display='none';document.getElementById('moreinfo').style.display='none';document.getElementById('moredetails').style.display='inline';">
+                  <?php echo $LANG['LESS_DETAILS']; ?>
+               </span>
+            </div>
+            <div>
+               <form name="mapForm" action="dynamicchecklist.php" method="post" onsubmit="return checkForm();" class="flex-form">
+                  <div>
+                     <input type="hidden" name="interface" value="<?php echo $interface; ?>" />
+                     <input type="hidden" id="latbox" name="lat" value="" />
+                     <input type="hidden" id="lngbox" name="lng" value="" />
+                     <div class="bottom-breathing-room-relative">
+                        <b><?php echo $LANG['POINT']; ?>:</b>
+                        <span id="latlngspan"> &lt; <?php echo $LANG['CLICK_MAP']; ?> &gt; </span>
+                     </div>
+                     <button type="submit" class="bottom-breathing-room-relative" name="buildchecklistbutton" value="Build Checklist" disabled ><?php echo $LANG['BUILD_CHECKLIST']; ?></button>
+                  </div>
+                  <div class="flex-form">
+                     <div style="margin-left: 0;">
+                        <label for="taxa"><?php echo $LANG['TAXON_FILTER']; ?>:</label>
+                        <input id="taxa" name="taxa" type="text" value="<?php echo $taxa; ?>" />
+                        <input id="tid" name="tid" type="hidden" value="<?php echo $tid; ?>" />
+                     </div>
+                     <div style="margin-left: 0;">
+                        <label for="radius"><?php echo $LANG['RADIUS']; ?>:</label>
+                        <input name="radius" id="radius" value="(optional)" type="text" style="width:140px;" onfocus="this.value = ''" />
+                        <select id="radiusunits" name="radiusunits">
+                           <option value="km"><?php echo $LANG['KM']; ?></option>
+                           <option value="mi"><?php echo $LANG['MILES']; ?></option>
+                        </select>
+                     </div>
+                  </div>
+               </form>
+            </div>
+            <div id='map_canvas' style='width:100%; height:650px; clear:both;'>
+            </div>
+         </div>
+      </div>
 	<?php
 	include_once($SERVER_ROOT.'/includes/footer.php');
 	?>
