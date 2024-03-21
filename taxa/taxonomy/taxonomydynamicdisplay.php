@@ -119,7 +119,14 @@ reset($treePath);
 		<div>
 			<?php
 			$taxMetaArr = $taxonDisplayObj->getTaxonomyMeta();
-			echo '<div class="tax-meta-arr">'.$taxMetaArr['name'].'</div>';
+			?>
+			<div style="display:flex; justify-content: space-between; align-items: center;">
+				<div class="tax-meta-arr"><?php echo $taxMetaArr['name']; ?></div>
+				<span style="white-space: nowrap; padding: 0.8rem; margin-right: 1rem;" class="button button-secondary">
+					<a class="accessibility-button" onclick="toggleAccessibilityStyles('<?php echo $CLIENT_ROOT . '/includes' . '/' ?>', '<?php echo $CSS_BASE_PATH ?>', '<?php echo $LANG['TOGGLE_508_OFF'] ?>', '<?php echo $LANG['TOGGLE_508_ON'] ?>')" id="accessibility-button" data-accessibility="accessibility-button" ><?php echo (isset($LANG['TOGGLE_508_ON'])?$LANG['TOGGLE_508_ON']:'Accessibility Mode'); ?></a>
+				</span>
+			</div>
+			<?php 
 			if(count($taxMetaArr) > 1){
 				//echo '<div id="taxDetailDiv" class="tax-detail-div"><a href="#" onclick="displayTaxomonyMeta()">(more details)</a></div>';
 				echo '<div id="taxMetaDiv" class="tax-meta-div">';
