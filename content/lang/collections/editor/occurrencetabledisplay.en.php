@@ -48,5 +48,7 @@ $LANG['IMG_EDIT'] = 'Edit Button';
 $LANG['IMG_LINK'] = 'Link Button';
 $LANG['SKIP_SEARCH'] = 'Skip to Table Content';
 $LANG['SAME_WINDOW'] = 'open in same window';
+$LANG['TOGGLE_508_OFF'] = "Switch Form Layout";
+$LANG['TOGGLE_508_ON'] = "Switch Form Layout";
 
 ?>

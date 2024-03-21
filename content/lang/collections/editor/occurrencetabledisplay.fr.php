@@ -48,5 +48,7 @@ $LANG['IMG_EDIT'] = 'Bouton Modifier';
 $LANG['IMG_LINK'] = 'Bouton Lier';
 $LANG['SKIP_SEARCH'] = 'Passer au contenu du tableau';
 $LANG['SAME_WINDOW'] = 'ouvrir dans la même fenêtre';
+$LANG['TOGGLE_508_OFF'] = "Changer la disposition du formulaire";
+$LANG['TOGGLE_508_ON'] = "Changer la disposition du formulaire";
 
 ?>

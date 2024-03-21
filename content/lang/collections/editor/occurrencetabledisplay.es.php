@@ -50,5 +50,7 @@ $LANG['IMG_EDIT'] = 'Botón Editar';
 $LANG['IMG_LINK'] = 'Botón Vincular';
 $LANG['SKIP_SEARCH'] = 'Saltar al contenido de la tabla';
 $LANG['SAME_WINDOW'] = 'abrir en la misma ventana';
+$LANG['TOGGLE_508_OFF'] = "Cambiar diseño de formulario";
+$LANG['TOGGLE_508_ON'] = "Cambiar diseño de formulario";
 
 ?>

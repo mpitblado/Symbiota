@@ -158,7 +158,7 @@ else{
 		if(($isEditor || $crowdSourceMode)){
 			?>
 			<div id="titleDiv">
-				<div style="float:right;">
+				<div style="float:right; margin-bottom: 1rem;">
 					<a href="#" title="<?= $LANG['SEARCH_FILTER'] ?>" aria-label="<?= $LANG['SEARCH_FILTER'] ?>" onclick="toggleQueryForm();"><img src="../../images/find.png" style="width:1.3em;" alt="<?= $LANG['IMG_SEARCH'] ?>" /></a>
 					<?php
 					if($isEditor == 1 || $isGenObs){
@@ -167,6 +167,9 @@ else{
 						<?php
 					}
 					?>
+						<!-- <span style="white-space: nowrap; padding: 0.8rem;" class="button button-secondary">
+							<a class="accessibility-button" onclick="toggleAccessibilityStyles('<?php echo $CLIENT_ROOT . '/includes' . '/' ?>', '<?php echo $CSS_BASE_PATH ?>', '<?php echo $LANG['TOGGLE_508_OFF'] ?>', '<?php echo $LANG['TOGGLE_508_ON'] ?>')" id="accessibility-button" data-accessibility="accessibility-button" ><?php echo (isset($LANG['TOGGLE_508_ON'])?$LANG['TOGGLE_508_ON']:'Accessibility Mode'); ?></a>
+						</span> -->
 				</div>
 				<?php
 				if($collMap) echo $collMap['collectionname'].' ('.$collMap['institutioncode'].($collMap['collectioncode']?':'.$collMap['collectioncode']:'').')';
