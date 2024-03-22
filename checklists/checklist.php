@@ -27,6 +27,7 @@ $searchSynonyms = array_key_exists('searchsynonyms', $_REQUEST) ? filter_var($_R
 $defaultOverride = array_key_exists('defaultoverride', $_REQUEST) ? filter_var($_REQUEST['defaultoverride'], FILTER_SANITIZE_NUMBER_INT) : 0;
 $printMode = array_key_exists('printmode', $_REQUEST) ? filter_var($_REQUEST['printmode'], FILTER_SANITIZE_NUMBER_INT) : 0;
 
+
 $statusStr='';
 
 //Search Synonyms is default
@@ -55,7 +56,7 @@ if(isset($clArray['defaultSettings'])){
 	if(isset($defaultArr['activatekey'])) $activateKey = $defaultArr['activatekey'];
 }
 if($pid) $clManager->setProj($pid);
-elseif(array_key_exists('proj',$_REQUEST) && $_REQUEST['proj']) $pid = $clManager->setProj($_REQUEST['proj']);
+elseif(array_key_exists('proj',$_REQUEST) && $_REQUEST['proj']) $pid = $clManager->setProj(filter_var($_REQUEST['proj'], FILTER_SANITIZE_NUMBER_INT));
 if($thesFilter) $clManager->setThesFilter($thesFilter);
 if($taxonFilter) $clManager->setTaxonFilter($taxonFilter);
 $clManager->setLanguage($LANG_TAG);
