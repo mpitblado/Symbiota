@@ -6,8 +6,12 @@ header("Content-Type: text/html; charset=".$CHARSET);
 
 //Sanitization
 $allowed_actions = array('Add Permissions for User','Add Identification Editor','Sponsor Personal Observation User','Sponsor Checklist User');
-if (array_key_exists('action', $_REQUEST) && $action_key = array_search($_REQUEST["action"], $allowed_actions)){
-	$action = $allowed_actions[$action_key];
+if (array_key_exists('action', $_REQUEST)){
+	$action_key = array_search($_REQUEST["action"], $allowed_actions);
+	if($action_key !== false){
+		$action = $allowed_actions[$action_key];
+	}
+	else $action = false;
 }
 else $action = "";
 $collId = array_key_exists("collid",$_REQUEST) ? filter_var($_REQUEST["collid"], FILTER_SANITIZE_NUMBER_INT) : 0;
@@ -51,12 +55,13 @@ if($isEditor){
 			$permManager->addPermission($targetUID,"RareSppReader",$collId);
 		}
 	}
-	elseif($action == 'Add Identification Editor'){
-		$identEditor = $_POST['identeditor'];
-		$pTokens = explode(':',$identEditor);
-		$permManager->addPermission($pTokens[0],'CollTaxon',$collId,$pTokens[1]);
-		//$permManager->addPermission($pTokens[0],'CollTaxon-'.$collId.':'.$pTokens[1]);
-	}
+// TODO: Identification Editor features need to be reviewed and refactored
+//	elseif($action == 'Add Identification Editor'){
+//		$identEditor = $_POST['identeditor'];
+//		$pTokens = explode(':',$identEditor);
+//		$permManager->addPermission($pTokens[0],'CollTaxon',$collId,$pTokens[1]);
+//		//$permManager->addPermission($pTokens[0],'CollTaxon-'.$collId.':'.$pTokens[1]);
+//	}
 	elseif($action == 'Sponsor Personal Observation User'){
 		$permManager->addPermission($targetUID,'CollEditor',$persObsCollId);
 	}
