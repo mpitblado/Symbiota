@@ -369,6 +369,19 @@ if($action != "Update Statistics"){
 					}
 				}
 			</script>
+			<style>
+				.icon-mrgn-rel {
+					margin-bottom: 0.6rem;
+				}
+				.gridlike-form-row-align {
+					flex: 1;
+					text-align: center;
+				}
+				.gridlike-form-no-margin {
+					display: flex;
+					flex-direction: column;
+				}
+			</style>
 		</head>
 		<body>
 			<?php
@@ -492,7 +505,7 @@ if($action != "Update Statistics"){
 															</a>
 														</div>
 													</section>
-													<section class="gridlike-form-row bottom-breathing-room-relative">
+													<section class="gridlike-form-row bottom-breathing-room-rel">
 														<div>
 															<div id="cat-<?php echo $idStr; ?>" style="<?php echo (($DEFAULTCATID && $DEFAULTCATID != $catid)?'display:none;':'') ?>">
 																<section class="gridlike-form">
@@ -503,7 +516,7 @@ if($action != "Update Statistics"){
 																	<?php
 																	foreach($catArr as $collid => $collName2){
 																		?>
-																		<div class="gridlike-form-row bottom-breathing-room-relative">
+																		<div class="gridlike-form-row bottom-breathing-room-rel">
 																				<input id="db-<?php echo $collid?>" name="db[]" value="<?php echo $collid; ?>" type="checkbox" class="cat-<?php echo $idStr; ?>" onclick="unselectCat('cat-<?php echo $idStr; ?>-Input')" <?php echo ($collIdArr&&in_array($collid,$collIdArr)?'checked':''); ?> />
 																				<label for="db-<?php echo $collid?>">
 																					<a href='collprofiles.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>'>
@@ -543,7 +556,7 @@ if($action != "Update Statistics"){
 												<?php
 												foreach($collArr as $collid => $cArr){
 													?>
-													<div class="gridlike-form-row bottom-breathing-room-relative">
+													<div class="gridlike-form-row bottom-breathing-room-rel">
 														<div>
 															<input id="current-collid" name="current-collid" value="<?php echo $collid; ?>" type="checkbox" onclick="uncheckAll();" <?php echo ($collIdArr&&in_array($collid,$collIdArr)?'checked':''); ?> />
 															<label for="current-collid">Collection ID TODO</label>
@@ -603,7 +616,7 @@ if($action != "Update Statistics"){
 													unset($catArr['icon']);
 													$idStr = $collArrIndex.'-'.$catid;
 													?>
-													<div class="gridlike-form-row bottom-breathing-room-relative">
+													<div class="gridlike-form-row bottom-breathing-room-rel">
 														<div>
 															<input id="cat-<?php echo $idStr; ?>-Input" name="cat[]" value="<?php echo $catid; ?>" type="checkbox" onclick="selectAllCat(this,'cat-<?php echo $idStr; ?>')" <?php echo ($collIdArr&&($collIdArr==array_keys($catArr))?'checked':''); ?> />
 															<label for="cat-<?php echo $idStr; ?>-Input">
@@ -626,7 +639,7 @@ if($action != "Update Statistics"){
 														</div>
 													</div>
 													<div>
-														<div class="gridlike-form-row bottom-breathing-room-relative" id="cat-<?php echo $idStr; ?>" style="<?php echo (($DEFAULTCATID && $DEFAULTCATID != $catid)?'display:none;':'') ?> margin-left:2rem;">
+														<div class="gridlike-form-row bottom-breathing-room-rel" id="cat-<?php echo $idStr; ?>" style="<?php echo (($DEFAULTCATID && $DEFAULTCATID != $catid)?'display:none;':'') ?> margin-left:2rem;">
 															<section class="gridlike-form">
 																<fieldset class="fieldset-observation-padding-rem">
 																	<legend>
@@ -635,7 +648,7 @@ if($action != "Update Statistics"){
 																	<?php
 																		foreach($catArr as $collid => $collName2){
 																			?>
-																				<div class="gridlike-form-row bottom-breathing-room-relative">
+																				<div class="gridlike-form-row bottom-breathing-room-rel">
 																					<div>
 																						<input class="input-margin cat-<?php echo $idStr; ?>" id="db-<?php echo $collid ?>" name="db[]" value="<?php echo $collid; ?>" type="checkbox" onclick="unselectCat('cat-<?php echo $idStr; ?>-Input')" <?php echo ($collIdArr&&in_array($collid,$collIdArr)?'checked':''); ?> />
 																						<label for="db-<?php echo $collid ?>">
@@ -678,7 +691,7 @@ if($action != "Update Statistics"){
 																<input id="db-<?php echo $collid ?>" name="db[]" value="<?php echo $collid; ?>" type="checkbox" onclick="uncheckAll();" <?php echo ($collIdArr&&in_array($collid,$collIdArr)?'checked':''); ?> />
 																<label for="db-<?php echo $collid ?>"><?php echo $LANG['SELECT_DESELECT'] ?></label>
 															</div>
-															<div class="gridlike-form-row bottom-breathing-room-relative">
+															<div class="gridlike-form-row bottom-breathing-room-rel">
 																<div class="collectiontitle">
 																	<a href = 'collprofiles.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>'>
 																		<?php
@@ -818,7 +831,7 @@ if($action != "Update Statistics"){
 											</div>
 										</form>
 									</fieldset>
-										<fieldset class="extra-stats bottom-breathing-room-relative">
+										<fieldset class="extra-stats bottom-breathing-room-rel">
 											<legend><?php echo $LANG['EXTRA_STATS']; ?></legend>
 											<form name="famstatscsv" id="famstatscsv" action="collstatscsv.php" method="post" onsubmit="">
 												<!-- <div class='legend'> -->
@@ -896,7 +909,7 @@ if($action != "Update Statistics"){
 								<fieldset id="statspercollbox" class="statspercollbox">
 									<legend><b><?php echo $LANG['STATS_PER_COL']; ?></b></legend>
 									<section class="gridlike-form">
-										<section class="gridlike-form-row bottom-breathing-room-relative">
+										<section class="gridlike-form-row bottom-breathing-room-rel">
 											<div class="cntr-text gridlike-form-row-align"><?php echo $LANG['COLLECTION']; ?></div>
 											<div class="cntr-text gridlike-form-row-align"><?php echo $LANG['OCCS']; ?></div>
 											<div class="cntr-text gridlike-form-row-align"><?php echo $LANG['G_GEOREFERENCED']; ?></div>
@@ -910,7 +923,7 @@ if($action != "Update Statistics"){
 										</section>
 										<?php
 										foreach($resultsTemp as $name => $data){
-											echo '<section class="gridlike-form-row bottom-breathing-room-relative">';
+											echo '<section class="gridlike-form-row bottom-breathing-room-rel">';
 											echo '<div class="gridlike-form-row-align">'.wordwrap($name,40,"<br />\n",true).'</div>';
 											echo '<div class="gridlike-form-row-align">'.(array_key_exists('recordcnt',$data)?$data['recordcnt']:0).'</div>';
 											echo '<div class="gridlike-form-row-align">'.(array_key_exists('georefcnt',$data)?$data['georefcnt']:0).'</div>';
@@ -929,7 +942,7 @@ if($action != "Update Statistics"){
 								<fieldset id="famdistbox" class="famdistbox">
 									<legend><b><?php echo $LANG['FAM_DIST']; ?></b></legend>
 									<section class="gridlike-form">
-										<section class="gridlike-form-row bottom-breathing-room-relative">
+										<section class="gridlike-form-row bottom-breathing-room-rel">
 											<div class="cntr-text gridlike-form-row-align">
 											<?php echo $LANG['FAMILY']; ?>
 										</div>
@@ -986,7 +999,7 @@ if($action != "Update Statistics"){
 								<fieldset id="geodistbox" class="geodistbox">
 									<legend><b><?php echo $LANG['GEO_DIST']; ?></b></legend>
 									<section class="gridlike-form">
-										<section class="gridlike-form-row bottom-breathing-room-relative">
+										<section class="gridlike-form-row bottom-breathing-room-rel">
 											<div class="cntr-text gridlike-form-row-align">
 											<?php echo $LANG['COUNTRY']; ?>
 										</div>
