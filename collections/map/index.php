@@ -1583,22 +1583,23 @@ value="${color}"
 			data-records="<?=htmlspecialchars(json_encode($recordArr))?>"
 			data-external-portal-hosts="<?=htmlspecialchars(json_encode($EXTERNAL_PORTAL_HOSTS))?>"
 			class="service-container"
-		/>
+		>
+		</div>
 		<div>
 			<button onclick="document.getElementById('defaultpanel').style.width='380px';  " style="position:absolute;top:0;left:0;margin:0px;z-index:10;font-size: 14px;">&#9776; <b>Open Search Panel</b></button>
 		</div>
 		<div id='map' style='width:100vw;height:100vh;z-index:1'></div>
 		<div id="defaultpanel" class="sidepanel" style="width:390px">
 			<div class="panel-content">
-				<span style="position:absolute; top:0.7rem; right:0.7rem; z-index:1">
+				<span style="position:absolute; top:0.7rem; right:2.1rem; z-index:1">
 					<a href="<?php echo htmlspecialchars($CLIENT_ROOT, HTML_SPECIAL_CHARS_FLAGS); ?>/index.php">
 						<?php echo (isset($LANG['H_HOME'])?$LANG['H_HOME']:'Home'); ?>
 					</a>
-					<button onclick="document.getElementById('defaultpanel').style.width='0px'" style="margin-left:1rem">&times</button>
+					<button onclick="document.getElementById('defaultpanel').style.width='0px'" style="margin-left:0.5rem">&times</button>
 				</span>
 				<div id="mapinterface">
 					<div id="accordion">
-						<h3 style="padding-left:30px;"><?php echo (isset($LANG['SEARCH_CRITERIA'])?$LANG['SEARCH_CRITERIA']:'Search Criteria and Options'); ?></h3>
+						<h3 style="padding-left:30px; font-size: 1.5rem;"><?php echo (isset($LANG['SEARCH_CRITERIA'])?$LANG['SEARCH_CRITERIA']:'Search Criteria and Options'); ?></h3>
 						<div id="tabs1" style="padding:0px;height:100%">
 							<form name="mapsearchform" id="mapsearchform" data-ajax="false">
 								<ul>
@@ -1638,10 +1639,6 @@ value="${color}"
 								</div>
 								<div id="searchcriteria" style="">
 									<div style="height:25px;">
-										<!-- <div style="float:left;<?php echo (isset($SOLR_MODE) && $SOLR_MODE?'display:none;':''); ?>">
-Record Limit:
-<input data-role="none" type="text" id="recordlimit" style="width:75px;" name="recordlimit" value="<?php echo ($recLimit?$recLimit:""); ?>" title="Maximum record amount returned from search." onchange="return checkRecordLimit(this.form);" />
-										</div> -->
 										<div style="float:right;">
 											<input type="hidden" id="selectedpoints" value="" />
 											<input type="hidden" id="deselectedpoints" value="" />
@@ -1850,7 +1847,7 @@ Record Limit:
 							<ul>
 								<li><a href='#occurrencelist'><span><?php echo htmlspecialchars((isset($LANG['RECORDS'])?$LANG['RECORDS']:'Records'), HTML_SPECIAL_CHARS_FLAGS); ?></span></a></li>
 								<li id="cross_portal_results"><a href='#external_occurrencelist'><span><?php echo htmlspecialchars((isset($LANG['EXTERNAL_RECORDS'])?$LANG['EXTERNAL_RECORDS']:'External Records'), HTML_SPECIAL_CHARS_FLAGS); ?></span></a></li>
-							<li><a href='#symbology'><span><?php echo htmlspecialchars((isset($LANG['COLLECTIONS'])?$LANG['COLLECTIONS']:'Collections'), HTML_SPECIAL_CHARS_FLAGS); ?></span></a></li>
+								<li><a href='#symbology'><span><?php echo htmlspecialchars((isset($LANG['COLLECTIONS'])?$LANG['COLLECTIONS']:'Collections'), HTML_SPECIAL_CHARS_FLAGS); ?></span></a></li>
 								<li><a href='#maptaxalist'><span><?php echo htmlspecialchars((isset($LANG['TAXA_LIST'])?$LANG['TAXA_LIST']:'Taxa List'), HTML_SPECIAL_CHARS_FLAGS); ?></span></a></li>
 							</ul>
 							<div id="occurrencelist" style="">
@@ -1863,7 +1860,7 @@ Record Limit:
 								<div style="height:40px;margin-bottom:15px;">
 									<?php
 									?>
-								<div style="float:left;">
+									<div style="float:left;">
 										<div>
 											<svg xmlns="http://www.w3.org/2000/svg" style="height:15px;width:15px;margin-bottom:-2px;">">
 												<g>
@@ -1901,7 +1898,7 @@ Record Limit:
 								<div style="height:40px;margin-bottom:15px;">
 									<?php
 									?>
-								<div style="float:left;">
+									<div style="float:left;">
 										<div>
 											<svg xmlns="http://www.w3.org/2000/svg" style="height:15px;width:15px;margin-bottom:-2px;">">
 												<g>
