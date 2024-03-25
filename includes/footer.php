@@ -65,6 +65,61 @@
       <nav class="row" aria-labelledby="nal-usda-links">
         <h2 id="nal-usda-links" class="visually-hidden">Government Links</h2>
         <ul>
+          <li>
+            <a
+              href="#example-modal-1"
+              class="usa-button"
+              aria-controls="example-modal-1"
+              data-open-modal
+              style="margin-top: 0;"
+              >Accessibilitiy Options
+            </a>
+            <div
+              class="usa-modal"
+              id="example-modal-1"
+              aria-labelledby="modal-1-heading"
+              aria-describedby="modal-1-description"
+            >
+                <div class="usa-modal__content">
+                  <div class="usa-modal__main">
+                    <h2 class="usa-modal__heading" id="modal-1-heading">
+                      Accessibilitiy Options
+                    </h2>
+                    <div class="usa-prose">
+                      <p id="modal-1-description">
+                        More accessibility features will be added over time. Toggle those that suit your needs.
+                      </p>
+                    </div>
+                    <div class="usa-modal__footer">
+                      <ul class="usa-button-group">
+                        <li class="usa-button-group__item">
+                          <button type="button" class="usa-button" onclick="toggleAccessibilityStyles('<?php echo $CLIENT_ROOT . '/includes' . '/' ?>', '<?php echo $CSS_BASE_PATH ?>', '<?php echo $LANG['TOGGLE_508_OFF'] ?>', '<?php echo $LANG['TOGGLE_508_ON'] ?>')" id="accessibility-button" data-accessibility="accessibility-button">
+                            <?php echo (isset($LANG['TOGGLE_508_ON'])?$LANG['TOGGLE_508_ON']:'Switch Form Layout'); ?>
+                          </button>
+                        </li>
+                      </ul>
+                      <ul class="usa-button-group">
+                        <li class="usa-button-group__item">
+                          <button type="button" class="usa-button" data-close-modal>
+                            Close
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    class="usa-button usa-modal__close"
+                    aria-label="Close this window"
+                    data-close-modal
+                  >
+                    <svg class="usa-icon" aria-hidden="true" focusable="false" role="img">
+                      <use xlink:href="/assets/img/sprite.svg#close"></use>
+                    </svg>
+                  </button>
+                </div>
+            </div>
+          </li>
           <li><a href="https://ask.usda.gov/s/">AskUSDA</a></li>
           <li>
             <a href="/web-policies-and-important-links">Policies and Links</a>

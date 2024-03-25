@@ -145,13 +145,6 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
                     <li>
                       <a title="ARS Home" href="https://www.ars.usda.gov/"><b>ARS Home</b></a>
                     </li>
-                    <li>
-                      <a class="accessibility-button" onclick="toggleAccessibilityStyles('<?php echo $CLIENT_ROOT . '/includes' . '/' ?>', '<?php echo $CSS_BASE_PATH ?>', '<?php echo $LANG['TOGGLE_508_OFF'] ?>', '<?php echo $LANG['TOGGLE_508_ON'] ?>')" id="accessibility-button" data-accessibility="accessibility-button" >
-                        <b>
-                          <?php echo (isset($LANG['TOGGLE_508_ON'])?$LANG['TOGGLE_508_ON']:'Accessibility Mode'); ?>
-                        </b>
-                      </a>
-                    </li>
                     <?php
                       if($USER_DISPLAY_NAME){
                     ?>
