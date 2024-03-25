@@ -134,7 +134,7 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
                     <?php
                       if($USER_DISPLAY_NAME){
                     ?>
-                    <li style="font-size: 1.1rem; color: rgb(91, 97, 107)">
+                    <li style="font-size: 1.1rem; color: #333333">
                       <b>
                         <?php echo (isset($LANG['H_WELCOME'])?$LANG['H_WELCOME']:'Welcome').' '.$USER_DISPLAY_NAME; ?>
                       </b>

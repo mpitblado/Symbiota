@@ -12154,12 +12154,12 @@
 }
 
 .footer-wrapper .region-header nav ul.menu li + li::before {
-  color: #565c65;
+  color: #333333;
   content: "|";
 }
 
 .footer-wrapper .region-header nav ul.menu a {
-  color: #71767a;
+  color: #333333;
   display: inline-block;
   font-size: 0.93162rem;
   text-decoration: none;
