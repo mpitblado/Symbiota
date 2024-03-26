@@ -692,7 +692,7 @@ $traitArr = $indManager->getTraitArr();
 						<?php
 						if($occArr['decimallatitude']){
 							?>
-							<div id="latlng-div" class="bottom-breathing-room-sm-rel">
+							<div id="latlng-div" class="bottom-breathing-room-rel-sm">
 								<label>
 									<?php echo $LANG['LAT_LNG'] ?>:
 								</label>
@@ -891,7 +891,7 @@ $traitArr = $indManager->getTraitArr();
 						}
 						if($occArr['cultivationstatus'] && $occArr['cultivationstatus'] == "1"){
 							?>
-							<div id="cultivation-status-div" class="bottom-breathing-room-sm-rel">
+							<div id="cultivation-status-div" class="bottom-breathing-room-rel-sm">
 								<label><?php echo $LANG['CULT_STATUS']; ?>:</label>
 								<?php echo $LANG['CULTIVATED']?>
 							</div>

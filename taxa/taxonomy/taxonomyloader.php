@@ -78,7 +78,7 @@ if($isEditor){
 				<fieldset>
 					<legend><b><?php echo (isset($LANG['ADD_NEW_TAXON']) ? $LANG['ADD_NEW_TAXON'] : 'Add a New Taxon'); ?></b></legend>
 					<div>
-						<div class="left-column bottom-breathing-room-relative">
+						<div class="left-column bottom-breathing-room-rel">
 							<label for="sciname"> 
 								<?php echo (isset($LANG['TAXON_NAME']) ? $LANG['TAXON_NAME'] : 'Taxon Name'); ?>: 
 							</label>
@@ -86,7 +86,7 @@ if($isEditor){
 						<input type="text" id="sciname" name="sciname" class="search-bar-long" value="" onchange="parseName(this.form)"/>
 					</div>
 					<div style="clear:both;">
-						<div class="left-column bottom-breathing-room-relative">
+						<div class="left-column bottom-breathing-room-rel">
 							<label for="author">
 								<?php echo (isset($LANG['AUTHOR']) ? $LANG['AUTHOR'] : 'Author'); ?>:
 							</label>
@@ -94,7 +94,7 @@ if($isEditor){
 						<input type='text' id='author' name='author' class='search-bar-long' />
 					</div>
 					<div style="clear:both;">
-						<div class="left-column  bottom-breathing-room-relative"> 
+						<div class="left-column  bottom-breathing-room-rel"> 
 							<label for="rankid">
 								 <?php echo (isset($LANG['TAXON_RANK']) ? $LANG['TAXON_RANK'] : 'Taxon Rank'); ?>: 
 							</label>
@@ -115,7 +115,7 @@ if($isEditor){
 						<script src="../../js/symb/taxa.taxonomyloader.js"> </script>
 					</div>
 					<div style="clear:both;">
-						<div class="left-column bottom-breathing-room-relative">
+						<div class="left-column bottom-breathing-room-rel">
 							<label id="unitind1label" for="unitind1">
 								<?php echo (isset($LANG['GENUS_NAME']) ? $LANG['GENUS_NAME'] : 'Genus Name'); ?>:
 							</label>
@@ -131,7 +131,7 @@ if($isEditor){
 					if ($rankId > 150){
 						?>
 							<div id="div1hide" style="clear:both;">
-								<div class="left-column bottom-breathing-room-relative">
+								<div class="left-column bottom-breathing-room-rel">
 									<label for="unitind2">
 										<?php echo (isset($LANG['UNITNAME2']) ? $LANG['UNITNAME2'] : 'Specific Epithet'); ?>:
 									</label>
@@ -143,7 +143,7 @@ if($isEditor){
 								<input type='text' id='unitname2' name='unitname2' onchange="updateFullname(this.form)" class='search-bar' aria-label="<?php echo (isset($LANG['SPECIF_EPITHET_FIELD']) ? $LANG['SPECIF_EPITHET_FIELD'] : 'Specific Epithet Field'); ?>" title="<?php echo (isset($LANG['SPECIF_EPITHET_FIELD']) ? $LANG['SPECIF_EPITHET_FIELD'] : 'Specific Epithet Field'); ?>"/>
 							</div>
 							<div id="div2hide" style="clear:both;">
-								<div class="left-column bottom-breathing-room-relative">
+								<div class="left-column bottom-breathing-room-rel">
 									<label for="unitind3">
 										<?php echo (isset($LANG['UNITNAME3']) ? $LANG['UNITNAME3'] : 'Infraspecific Epithet'); ?>:
 									</label>
@@ -155,7 +155,7 @@ if($isEditor){
 					}?>
 
 					<div style="clear:both;">
-						<div class="left-column bottom-breathing-room-relative">
+						<div class="left-column bottom-breathing-room-rel">
 							<label for="parentname">
 								<?php echo (isset($LANG['PARENT_TAXON']) ? $LANG['PARENT_TAXON'] : 'Parent Taxon'); ?>:
 							</label>
@@ -169,7 +169,7 @@ if($isEditor){
 						<input id="parenttid" name="parenttid" type="hidden" value="" />
 					</div>
 					<div style="clear:both;">
-						<div class="left-column bottom-breathing-room-relative">
+						<div class="left-column bottom-breathing-room-rel">
 							<label for="notes">
 								<?php echo (isset($LANG['NOTES']) ? $LANG['NOTES'] : 'Notes'); ?>:
 							</label>
@@ -177,14 +177,14 @@ if($isEditor){
 						<input type='text' id='notes' name='notes' class='search-bar-long'/>
 					</div>
 					<div style="clear:both;">
-						<div class="left-column bottom-breathing-room-relative">
+						<div class="left-column bottom-breathing-room-rel">
 							<label for="source"> <?php echo (isset($LANG['SOURCE']) ? $LANG['SOURCE'] : 'Source'); ?>:
 							</label>
 						</div>
 						<input type='text' id='source' name='source' class='search-bar-long'/>
 					</div>
 					<div style="clear:both;">
-						<div class="left-column bottom-breathing-room-relative">
+						<div class="left-column bottom-breathing-room-rel">
 							<label for="securitystatus"> <?php echo (isset($LANG['LOC_SECURITY']) ? $LANG['LOC_SECURITY'] : 'Locality Security'); ?>:
 							</label>
 						</div>
@@ -202,7 +202,7 @@ if($isEditor){
 							</div>
 							<div id="accdiv" style="display:none;margin-top:3px;">
 								<div>
-									<div class="left-column bottom-breathing-room-relative">
+									<div class="left-column bottom-breathing-room-rel">
 										<label for="acceptedstr"> <?php echo (isset($LANG['ACCEPTED_TAXON']) ? $LANG['ACCEPTED_TAXON'] : 'Accepted Taxon'); ?>:
 										</label>
 									</div>
@@ -210,7 +210,7 @@ if($isEditor){
 									<input id="tidaccepted" name="tidaccepted" type="hidden" />
 								</div>
 								<div>
-									<div class="left-column bottom-breathing-room-relative">
+									<div class="left-column bottom-breathing-room-rel">
 										<label for="unacceptabilityreason"> <?php echo (isset($LANG['UNACCEPT_REASON']) ? $LANG['UNACCEPT_REASON'] : 'Unacceptability Reason'); ?>:
 										</label>
 									</div>
