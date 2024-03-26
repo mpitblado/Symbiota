@@ -6,6 +6,10 @@
  */
 
 
+$LANG['FLAGGED_COMMENT'] = "Commentaire signalé comme inapproprié. Le commentaire ne sera pas accessible au public jusqu'à ce qu'il soit examiné par un administrateur";
+$LANG['OCCURRENCE_PROFILE'] = "Profil d'occurrence";
+$LANG['SKIP_NAV'] = 'Sauter la Navigation';
+$LANG['FULL_RECORD_DETAILS'] = 'Détails Complets du Dossier';
 $LANG['DETAILS'] = 'Détails';
 $LANG['MAP'] = 'Carte';
 $LANG['GENETIC'] = 'Génétique';
@@ -155,11 +159,10 @@ $LANG['RESTORE_RECORD'] = 'Restore Record';
 $LANG['RECORD_DELETED'] = 'Enregistrement supprimé';
 $LANG['VALUE'] = 'Valeur';
 $LANG['LAT_LNG'] = 'Latitude/Longitude';
-$LANG['FULL_RECORD_DETAILS'] = 'Détails Complets du Dossier';
-$LANG['SKIP_NAV'] = 'Sauter la Navigation';
 $LANG['CULT_STATUS'] = 'Statut de Culture';
 $LANG['CULTIVATED'] = 'Cultivé';
 $LANG['NOT_CULTIVATED'] = 'Non Cultivé';
+
 //Used within OccurrenceIndividual class
 $LANG['INAPPROPRIATE'] = 'Commentaire inapproprié signalé';
 $LANG['REPORTED_AS_INAPPROPRIATE'] = 'Le commentaire suivant a été enregistré comme inapproprié';

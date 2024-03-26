@@ -65,4 +65,9 @@ $LANG['NAV_IMG_LIB'] = 'Image Library';
 $LANG['NAV_IMG_CONTR'] = 'Image Contributors';
 $LANG['NAV_IMG_SEARCH'] = 'Image Search';
 $LANG['SKIP_NAV'] = 'Skip Navigation';
+
+// Footer-specific
+$LANG['ACCESSIBILITY_OPTIONS'] = 'Accessibility Options';
+$LANG['ACCESSIBILITY_OPTIONS_DESCRIPTION'] = 'More accessibility features will be added over time. Toggle those that suit your needs.';
+$LANG['CLOSE'] = 'Close';
 ?>
