@@ -13,7 +13,7 @@ $dynClid = array_key_exists('dynclid', $_REQUEST) ? filter_var($_REQUEST['dyncli
 $pageNumber = array_key_exists('pagenumber', $_REQUEST) ? filter_var($_REQUEST['pagenumber'], FILTER_SANITIZE_NUMBER_INT) : 1;
 $pid = array_key_exists('pid', $_REQUEST) ? filter_var($_REQUEST['pid'], FILTER_SANITIZE_NUMBER_INT) : '';
 $thesFilter = array_key_exists('thesfilter', $_REQUEST) ? filter_var($_REQUEST['thesfilter'], FILTER_SANITIZE_NUMBER_INT) : 0;
-$taxonFilter = array_key_exists('taxonfilter', $_REQUEST) ? $_REQUEST['taxonfilter'] : '';
+$taxonFilter = array_key_exists('taxonfilter', $_REQUEST) ? htmlspecialchars($_REQUEST['taxonfilter'], ENT_QUOTES, 'UTF-8') : '';
 $showAuthors = array_key_exists('showauthors', $_REQUEST) ? filter_var($_REQUEST['showauthors'], FILTER_SANITIZE_NUMBER_INT) : 0;
 $showSynonyms = array_key_exists('showsynonyms', $_REQUEST) ? filter_var($_REQUEST['showsynonyms'], FILTER_SANITIZE_NUMBER_INT) : 0;
 $showCommon = array_key_exists('showcommon', $_REQUEST) ? filter_var($_REQUEST['showcommon'], FILTER_SANITIZE_NUMBER_INT) : 0;
@@ -41,7 +41,13 @@ $clArray = $clManager->getClMetaData();
 $activateKey = $KEY_MOD_IS_ACTIVE;
 $showDetails = 0;
 if(isset($clArray['defaultSettings'])){
-	$defaultArr = json_decode($clArray['defaultSettings'], true);
+	try {
+		$defaultArr = json_decode($clArray['defaultSettings'], true, $depth=512, JSON_THROW_ON_ERROR);
+	}
+	catch (Exception $e){
+		$statusStr = $e->getMessage();
+		$defaultArr = [];
+	}
 	$showDetails = $defaultArr['ddetails'];
 	if(!$defaultOverride){
 		if(array_key_exists('dsynonyms',$defaultArr)) $showSynonyms = $defaultArr['dsynonyms'];
