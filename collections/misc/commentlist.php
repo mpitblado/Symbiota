@@ -6,14 +6,14 @@ else include_once($SERVER_ROOT.'/content/lang/collections/misc/commentlist.en.ph
 
 if(!$SYMB_UID) header('Location: '.$CLIENT_ROOT.'/profile/index.php?refurl=../collections/misc/commentlist.php?'.htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
 
-$collid = $_REQUEST['collid'];
-$start = array_key_exists('start',$_REQUEST)?$_REQUEST['start']:0;
-$limit = array_key_exists('limit',$_REQUEST)?$_REQUEST['limit']:100;
-$tsStart = array_key_exists('tsstart',$_POST)?$_POST['tsstart']:'';
-$tsEnd = array_key_exists('tsend',$_POST)?$_POST['tsend']:'';
-$uid = array_key_exists('uid',$_POST)?$_POST['uid']:0;
-$rs = array_key_exists('rs',$_POST)?$_POST['rs']:1;
-$showAllGeneralObservations = (array_key_exists('showallgenobs',$_POST) && $_POST['showallgenobs'] == 1?true:false);
+$collid = array_key_exists('collid', $_REQUEST) ? filter_var($_REQUEST['collid'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$start = array_key_exists('start',$_REQUEST) ? filter_var($_REQUEST['start'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$limit = array_key_exists('limit',$_REQUEST) ? filter_var($_REQUEST['limit'], FILTER_SANITIZE_NUMBER_INT) : 100;
+$tsStart = array_key_exists('tsstart',$_POST) ? htmlspecialchars($_POST['tsstart'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$tsEnd = array_key_exists('tsend',$_POST) ? htmlspecialchars($_POST['tsend'], HTML_SPECIAL_CHARS_FLAGS) :'';
+$uid = array_key_exists('uid',$_POST) ? filter_var($_POST['uid'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$rs = array_key_exists('rs',$_POST) ? filter_var($_POST['rs'], FILTER_SANITIZE_NUMBER_INT) : 1;
+$showAllGeneralObservations = (array_key_exists('showallgenobs', $_POST) && $_POST['showallgenobs'] === 1) ? true : false;
 
 //Sanition
 if(!is_numeric($collid)) $collid = 0;
@@ -49,30 +49,31 @@ if($SYMB_UID){
 $statusStr = '';
 $commentArr = null;
 if($isEditor){
-	$formSubmit = array_key_exists('formsubmit',$_REQUEST)?$_REQUEST['formsubmit']:'';
+	$formSubmit = array_key_exists('formsubmit',$_REQUEST) ? $_REQUEST['formsubmit'] : '';
 	if($formSubmit){
+		$comId = htmlspecialchars($_POST['comid'], HTML_SPECIAL_CHARS_FLAGS) ?? '';
 		if($formSubmit == 'Delete Comment'){
-			if(!$commentManager->deleteComment($_POST['comid'])){
+			if(!$commentManager->deleteComment($comId)){
 				$statusStr = $commentManager->getErrorStr();
 			}
 		}
 		elseif($formSubmit == 'Make Comment Public'){
-			if(!$commentManager->setReviewStatus($_POST['comid'],1)){
+			if(!$commentManager->setReviewStatus($comId,1)){
 				$statusStr = $commentManager->getErrorStr();
 			}
 		}
 		elseif($formSubmit == 'Hide Comment from Public'){
-			if(!$commentManager->setReviewStatus($_POST['comid'],2)){
+			if(!$commentManager->setReviewStatus($comId,2)){
 				$statusStr = $commentManager->getErrorStr();
 			}
 		}
 		elseif($formSubmit == 'Mark as Reviewed'){
-			if(!$commentManager->setReviewStatus($_POST['comid'],3)){
+			if(!$commentManager->setReviewStatus($comId,3)){
 				$statusStr = $commentManager->getErrorStr();
 			}
 		}
 		elseif($formSubmit == 'Mark as Unreviewed'){
-			if(!$commentManager->setReviewStatus($_POST['comid'],1)){
+			if(!$commentManager->setReviewStatus($comId,1)){
 				$statusStr = $commentManager->getErrorStr();
 			}
 		}
@@ -87,6 +88,12 @@ if($isEditor){
 		<?php
 		include_once($SERVER_ROOT.'/includes/head.php');
 		?>
+		<style>
+			.fieldset-like--small-float-right {
+				float: right;
+				width: 35rem;
+			}
+		</style>
 	</head>
 	<body>
 		<?php
@@ -114,7 +121,52 @@ if($isEditor){
 		?>
 		<!-- This is inner text! -->
 		<div id="innertext">
-			<h1><?php echo $collMeta['name']; ?></h1>
+			<div class="justify-center">
+				<h1><?php echo $collMeta['name']; ?></h1>
+				<section class="fieldset-like fieldset-like--small-float-right">
+						<h1>
+							<span><?php echo $LANG['FILTER_OPT'];?></span>
+						</h1>
+						<form name="optionform" action="commentlist.php" method="post">
+							<div>
+								<label for="commenter"> <?php echo (isset($LANG['COMMENTER']) ? $LANG['COMMENTER'] : 'Commenter'); ?>:</label>
+								<select id="commenter" name="uid">
+									<option value="0"><?php echo $LANG['ALL_COMMENTERS']; ?></option>
+									<option value="0">------------------------</option>
+									<?php
+									$userArr = $commentManager->getCommentUsers($showAllGeneralObservations);
+									foreach($userArr as $userid => $userStr){
+										echo '<option value="'.$userid.'" '.($uid==$userid?'selected':'').'>'.$userStr.'</option>';
+									}
+									?>
+								</select>
+							</div>
+							<?php
+							if($IS_ADMIN && $collMeta['colltype'] == 'General Observations'){
+								echo '<div><input name="showallgenobs" type="checkbox" value="1" onchange="this.form.submit()" '.($showAllGeneralObservations?'checked':'').' /> '.$LANG['DISP_ALL_GEN_OBS'].'</div>';
+							}
+							?>
+							<div>
+								<label for="tsstart"><?php echo $LANG['DATE']; ?>: </label>
+								<input id="tsstart" name="tsstart" type="date" value="<?php echo $tsStart; ?>" title="<?php echo (isset($LANG['START_DATE']) ? $LANG['START_DATE'] : 'Start Date'); ?>" aria-label="<?php echo (isset($LANG['START_DATE']) ? $LANG['START_DATE'] : 'Start Date'); ?>"/>
+								- <input name="tsend" type="date" value="<?php echo $tsEnd; ?>" title="<?php echo (isset($LANG['END_DATE']) ? $LANG['END_DATE'] : 'End Date'); ?>" aria-label="<?php echo (isset($LANG['END_DATE']) ? $LANG['END_DATE'] : 'End Date'); ?>" />
+							</div>
+							<fieldset>
+								<legend> <?php echo (isset($LANG['COMMENT_TYPE']) ? $LANG['COMMENT_TYPE'] : 'Comment Type'); ?> </legend>
+								<input id="public" name="rs" type="radio" value="1" <?php echo ($rs==1?'checked':''); ?> /> <label for="public"> <?php echo $LANG['PUBLIC']; ?> <br/> </label>
+								<input id="nonpublic" name="rs" type="radio" value="2" <?php echo ($rs==2?'checked':''); ?> /> <label for="nonpublic"> <?php echo $LANG['NON-PUBLIC']; ?> <br/> </label>
+								<input id="reviewed" name="rs" type="radio" value="3" <?php echo ($rs==3?'checked':''); ?> /> <label for="reviewed"> <?php echo $LANG['REVIEWED']; ?> <br/> </label>
+								<input id="all" name="rs" type="radio" value="0" <?php echo (!$rs?'checked':''); ?> /> <label for="all"> <?php echo $LANG['ALL']; ?> </label>
+							</fieldset>
+							<div class="top-breathing-room-rel" >
+								<button type="submit" name="submitbutton" value="Refresh List"><?php echo $LANG['REFRESH_LIST']; ?></button>
+							</div>
+							<div>
+								<input name="collid" type="hidden" value="<?php echo $collid; ?>" />
+							</div>
+						</form>
+					</section>
+			</div>
 			<?php
 			if($collid){
 				$pageBar = '';
@@ -125,9 +177,9 @@ if($isEditor){
 						unset($commentArr['cnt']);
 					}
 					$urlVars = 'collid='.$collid.'&limit='.$limit.'&tsstart='.$tsStart.'&tsend='.$tsEnd.'&uid='.$uid.'&rs='.$rs;
-					$currentPage = ($start/$limit)+1;
-					$lastPage = ceil($recCnt / $limit);
-					$startPage = $currentPage > 4?$currentPage - 4:1;
+					$currentPage = ($limit != 0) ? ($start / $limit) + 1 : 1;
+					$lastPage = ($limit != 0) ? ceil($recCnt / $limit) : 1;
+					$startPage = $currentPage > 4 ? $currentPage - 4 : 1;
 					$endPage = ($lastPage > $startPage + 9?$startPage + 9:$lastPage);
 					$hrefPrefix = 'commentlist.php?' . $urlVars . "&start=";
 					$pageBar .= "<span style='margin:5px;'>\n";
@@ -156,54 +208,11 @@ if($isEditor){
 				}
 				?>
 				<!-- Option box -->
-				<section class="fieldset-like" style="float:right;width:350px;margin:10px;">
-					<h1>
-						<span><?php echo $LANG['FILTER_OPT'];?></span>
-					</h1>
-					<form name="optionform" action="commentlist.php" method="post">
-						<div>
-							<label for="commenter"> <?php echo (isset($LANG['COMMENTER']) ? $LANG['COMMENTER'] : 'Commenter'); ?>:</label>
-							<select id="commenter" name="uid">
-								<option value="0"><?php echo $LANG['ALL_COMMENTERS']; ?></option>
-								<option value="0">------------------------</option>
-								<?php
-								$userArr = $commentManager->getCommentUsers($showAllGeneralObservations);
-								foreach($userArr as $userid => $userStr){
-									echo '<option value="'.$userid.'" '.($uid==$userid?'selected':'').'>'.$userStr.'</option>';
-								}
-								?>
-							</select>
-						</div>
-						<?php
-						if($IS_ADMIN && $collMeta['colltype'] == 'General Observations'){
-							echo '<div><input name="showallgenobs" type="checkbox" value="1" onchange="this.form.submit()" '.($showAllGeneralObservations?'checked':'').' /> '.$LANG['DISP_ALL_GEN_OBS'].'</div>';
-						}
-						?>
-						<div>
-							<label for="tsstart"><?php echo $LANG['DATE']; ?>: </label>
-							<input id="tsstart" name="tsstart" type="date" value="<?php echo $tsStart; ?>" title="<?php echo (isset($LANG['START_DATE']) ? $LANG['START_DATE'] : 'Start Date'); ?>" aria-label="<?php echo (isset($LANG['START_DATE']) ? $LANG['START_DATE'] : 'Start Date'); ?>"/>
-							- <input name="tsend" type="date" value="<?php echo $tsEnd; ?>" title="<?php echo (isset($LANG['END_DATE']) ? $LANG['END_DATE'] : 'End Date'); ?>" aria-label="<?php echo (isset($LANG['END_DATE']) ? $LANG['END_DATE'] : 'End Date'); ?>" />
-						</div>
-						<fieldset>
-							<legend> <?php echo (isset($LANG['COMMENT_TYPE']) ? $LANG['COMMENT_TYPE'] : 'Comment Type'); ?> </legend>
-							<input id="public" name="rs" type="radio" value="1" <?php echo ($rs==1?'checked':''); ?> /> <label for="public"> <?php echo $LANG['PUBLIC']; ?> <br/> </label>
-							<input id="nonpublic" name="rs" type="radio" value="2" <?php echo ($rs==2?'checked':''); ?> /> <label for="nonpublic"> <?php echo $LANG['NON-PUBLIC']; ?> <br/> </label>
-							<input id="reviewed" name="rs" type="radio" value="3" <?php echo ($rs==3?'checked':''); ?> /> <label for="reviewed"> <?php echo $LANG['REVIEWED']; ?> <br/> </label>
-							<input id="all" name="rs" type="radio" value="0" <?php echo (!$rs?'checked':''); ?> /> <label for="all"> <?php echo $LANG['ALL']; ?> </label>
-						</fieldset>
-						<div class="top-breathing-room-rel" >
-							<button type="submit" name="submitbutton" value="Refresh List"><?php echo $LANG['REFRESH_LIST']; ?></button>
-						</div>
-						<div>
-							<input name="collid" type="hidden" value="<?php echo $collid; ?>" />
-						</div>
-					</form>
-				</section>
 				<?php
 				if($commentArr){
 					foreach($commentArr as $comid => $cArr){
 						echo '<div style="margin:15px;">';
-						echo '<div style="margin-bottom:10px;"><a href="../individual/index.php?occid=' . htmlspecialchars($cArr['occid'], HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank">' . htmlspecialchars($cArr['occurstr'], HTML_SPECIAL_CHARS_FLAGS) . '</a></div>';
+						echo '<div style="margin-bottom:10px;"><a href="../individual/index.php?occid=' . htmlspecialchars($cArr['occid'], HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank" rel="noopener"><b>' . strip_tags($cArr['occurstr']) . '</b></a></div>';
 						echo '<div>';
 						echo '<b>'.$userArr[$cArr['uid']].'</b> <span style="color:gray;">'.$LANG['POSTED_ON'].' '.$cArr['ts'].'</span>';
 						if($cArr['rs'] == 2 || $cArr['rs'] === '0'){

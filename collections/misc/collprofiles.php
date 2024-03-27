@@ -8,7 +8,7 @@ unset($_SESSION['editorquery']);
 
 $collManager = new OccurrenceCollectionProfile();
 
-$collid = isset($_REQUEST['collid']) ? $collManager->sanitizeInt($_REQUEST['collid']) : 0;
+$collid = array_key_exists('collid', $_REQUEST) ? filter_var($_REQUEST['collid'], FILTER_SANITIZE_NUMBER_INT) : 0;
 $occIndex = array_key_exists('occindex',$_REQUEST)?$_REQUEST['occindex']:0;
 $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT = $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT ?? false;
 $SHOULD_USE_HARVESTPARAMS = $SHOULD_USE_HARVESTPARAMS ?? false;
@@ -93,11 +93,37 @@ if ($SYMB_UID) {
 			}
 		}
 	</script>
-	<style type="text/css">
+	<style>
 		.importItem { margin-left:10px; display:none; }
 		.field-div { margin: 10px 0px; clear: both; }
 		.label { font-weight: bold; }
+		.float-rt-no-overlap {
+			/* this should occur after fieldset-like definitions */
+			float: right;
+			clear: both;
+			margin: 2rem 2rem 2rem 2rem;
+		}
+		.no-left-margin {
+			margin-left: 0;
+		}
+		.col-profile-img {
+			border: 1px;
+			height: 6.4rem;
+			width: 6.4rem;
+		}
+		.col-profile-header {
+			margin-left: 0.5em;
+		}
+		.col-profile-inst-code {
+			min-width: 9rem;
+			max-width: 9rem;
+		}
+		.bigger-left-margin-rel {
+			margin-left: 3rem;
+		}
 	</style>
+	<link href="<?php echo $CLIENT_ROOT ?>/collections/search/css/searchStyles.css?ver=1" type="text/css" rel="stylesheet" />
+	<link href="<?php echo $CLIENT_ROOT ?>/collections/search/css/searchStylesInner.css" type="text/css" rel="stylesheet" />
 </head>
 <body>
 	<?php
@@ -122,7 +148,7 @@ if ($SYMB_UID) {
 					</span>
 					<input name="catalog-number" id="catalog-number" type="text" />
 					<a href="#" id="q_catalognumberinfo" style="text-decoration:none;">
-						<img src="../../images/info.png" style="width:1.3em;" alt="<?php echo (isset($LANG['MORE_INFO_ALT']) ? $LANG['MORE_INFO_ALT'] : 'More information about catalog number'); ?>" title="<?php echo (isset($LANG['MORE_INFO']) ? $LANG['MORE_INFO'] : 'More information.'); ?>"/>
+						<img src="../../images/info.png" style="width:1.3em;" alt="<?php echo $LANG['MORE_INFO_ALT']; ?>" title="<?php echo $LANG['MORE_INFO']; ?>" aria-label="<?php echo $LANG['MORE_INFO']; ?>"/>
 					</a>
 					<dialog id="dialogEl" aria-live="polite" aria-label="Catalog number search dialog">
 						<?php
@@ -139,7 +165,7 @@ if ($SYMB_UID) {
 					<?php
 						if($editCode == 1 || $editCode == 2 || $editCode == 3){
 					?>
-						<button type="submit" id="search-by-catalog-number-admin-btn"; ?>
+						<button type="submit" id="search-by-catalog-number-admin-btn">
 							<?php echo (isset($LANG['OCCURRENCE_EDITOR']) ? $LANG['OCCURRENCE_EDITOR'] : 'Edit'); ?>
 						</button>
 					<?php
@@ -483,7 +509,7 @@ if ($SYMB_UID) {
 					$dataUrl = 'http://www.gbif.org/dataset/' . $datasetKey;
 					?>
 					<div style="margin-top:5px;">
-						<div><b><?php echo (isset($LANG['GBIF_DATASET']) ? $LANG['GBIF_DATASET'] : 'GBIF Dataset page'); ?>:</b> <a href="<?php echo htmlspecialchars($dataUrl, HTML_SPECIAL_CHARS_FLAGS); ?>" target="_blank"><?php echo htmlspecialchars($dataUrl, HTML_SPECIAL_CHARS_FLAGS); ?></a></div>
+						<div><b><?php echo (isset($LANG['GBIF_DATASET']) ? $LANG['GBIF_DATASET'] : 'GBIF Dataset page'); ?>:</b> <a href="<?php echo htmlspecialchars($dataUrl, HTML_SPECIAL_CHARS_FLAGS); ?>" target="_blank" rel="noopener noreferrer"><?php echo htmlspecialchars($dataUrl, HTML_SPECIAL_CHARS_FLAGS); ?></a></div>
 					</div>
 					<?php
 				}
@@ -494,7 +520,7 @@ if ($SYMB_UID) {
 						$dataUrl = 'https://www.idigbio.org/portal/recordsets/' . $idigbioKey;
 						?>
 						<div style="margin-top:5px;">
-							<div><b><?php echo (isset($LANG['IDIGBIO_DATASET']) ? $LANG['IDIGBIO_DATASET'] : 'iDigBio Dataset page'); ?>:</b> <a href="<?php echo htmlspecialchars($dataUrl, HTML_SPECIAL_CHARS_FLAGS); ?>" target="_blank"><?php echo htmlspecialchars($dataUrl, HTML_SPECIAL_CHARS_FLAGS); ?></a></div>
+							<div><b><?php echo (isset($LANG['IDIGBIO_DATASET']) ? $LANG['IDIGBIO_DATASET'] : 'iDigBio Dataset page'); ?>:</b> <a href="<?php echo htmlspecialchars($dataUrl, HTML_SPECIAL_CHARS_FLAGS); ?>" target="_blank" rel="noopener noreferrer"><?php echo htmlspecialchars($dataUrl, HTML_SPECIAL_CHARS_FLAGS); ?></a></div>
 						</div>
 						<?php
 					}
@@ -505,6 +531,10 @@ if ($SYMB_UID) {
 					if ($collData['publishtogbif'] && $datasetKey && file_exists($SERVER_ROOT . '/includes/citationgbif.php')) {
 						$gbifUrl = 'http://api.gbif.org/v1/dataset/' . $datasetKey;
 						$responseData = json_decode(file_get_contents($gbifUrl));
+						if ($responseData === null && json_last_error() !== JSON_ERROR_NONE) {
+							error_log('Error in JSON decoding: ' . json_last_error_msg());
+							throw new Exception('Error in JSON decoding');
+						}
 						$collData['gbiftitle'] = $responseData->title;
 						$collData['doi'] = $responseData->doi;
 						$_SESSION['colldata'] = $collData;
@@ -539,7 +569,12 @@ if ($SYMB_UID) {
 				//Collection Statistics
 				$statsArr = $collManager->getBasicStats();
 				$georefPerc = 0;
-				if ($statsArr['georefcnt'] && $statsArr['recordcnt']) $georefPerc = (100 * ($statsArr['georefcnt'] / $statsArr['recordcnt']));
+				if ($statsArr['georefcnt'] && $statsArr['recordcnt'] && $statsArr['recordcnt'] !== 0){
+					$georefPerc = (100 * ($statsArr['georefcnt'] / $statsArr['recordcnt']));
+				}
+				else if ($statsArr['recordcnt'] === 0){
+					throw new Exception("Division by zero error.");
+				}
 				?>
 				<section class="fieldset-like no-left-margin">
 					<h1><span><?php echo (isset($LANG['COLL_STATISTICS']) ? $LANG['COLL_STATISTICS'] : 'Collection Statistics'); ?></span></h1>
@@ -561,7 +596,12 @@ if ($SYMB_UID) {
 									}
 									if ($imgSpecCnt) {
 										$imgPerc = 0;
-										if ($statsArr['recordcnt']) $imgPerc = (100 * ($imgSpecCnt / $statsArr['recordcnt']));
+										if ($statsArr['recordcnt'] && $statsArr['recordcnt'] !== 0){
+											$imgPerc = (100 * ($imgSpecCnt / $statsArr['recordcnt']));
+										}
+										else if ($statsArr['recordcnt'] === 0){
+											throw new Exception("Division by zero error.");
+										}
 										echo '<li>';
 										echo number_format($imgSpecCnt) . ($imgPerc ? " (" . ($imgPerc > 1 ? round($imgPerc) : round($imgPerc, 2)) . "%)" : '') . ' ' . (isset($LANG['WITH_IMAGES']) ? $LANG['WITH_IMAGES'] : 'with images');
 										if ($imgCnt) echo ' (' . number_format($imgCnt) . ' ' . (isset($LANG['TOTAL_IMAGES']) ? $LANG['TOTAL_IMAGES'] : 'total images') . ')';
@@ -574,9 +614,12 @@ if ($SYMB_UID) {
 								if (isset($extrastatsArr['geneticcnt']) && $extrastatsArr['geneticcnt']) $genRefStr .= number_format($extrastatsArr['geneticcnt']) . ' ' . (isset($LANG['OTHER_GENETIC_REF']) ? $LANG['OTHER_GENETIC_REF'] : 'other');
 								if ($genRefStr) echo '<li>' . trim($genRefStr, ' ,') . ' ' . (isset($LANG['GENETIC_REF']) ? $LANG['GENETIC_REF'] : 'genetic references') . '</li>';
 								if (isset($extrastatsArr['refcnt']) && $extrastatsArr['refcnt']) echo '<li>' . number_format($extrastatsArr['refcnt']) . ' ' . (isset($LANG['PUB_REFS']) ? $LANG['PUB_REFS'] : 'publication references') . '</li>';
-								if (isset($extrastatsArr['SpecimensCountID']) && $extrastatsArr['SpecimensCountID']) {
+								if (isset($extrastatsArr['SpecimensCountID']) && $extrastatsArr['SpecimensCountID'] && $statsArr['recordcnt'] !== 0) {
 									$spidPerc = (100 * ($extrastatsArr['SpecimensCountID'] / $statsArr['recordcnt']));
 									echo '<li>' . number_format($extrastatsArr['SpecimensCountID']) . ($spidPerc ? " (" . ($spidPerc > 1 ? round($spidPerc) : round($spidPerc, 2)) . "%)" : '') . ' ' . (isset($LANG['IDED_TO_SPECIES']) ? $LANG['IDED_TO_SPECIES'] : 'identified to species') . '</li>';
+								}
+								else if ($statsArr['recordcnt'] === 0){
+									throw new Exception("Division by zero error.");
 								}
 							}
 							if (isset($statsArr['familycnt']) && $statsArr['familycnt']) echo '<li>' . number_format($statsArr['familycnt']) . ' ' . (isset($LANG['FAMILIES']) ? $LANG['FAMILIES'] : 'families') . '</li>';
@@ -619,7 +662,7 @@ if ($SYMB_UID) {
 			?>
 			<h2><?php echo $DEFAULT_TITLE . ' ' . (isset($LANG['COLLECTION_PROJECTS']) ? $LANG['COLLECTION_PROJECTS'] : 'Natural History Collections and Observation Projects'); ?></h2>
 			<div>
-				<a href="../datasets/rsshandler.php" target="_blank"><?php echo (isset($LANG['RSS_FEED']) ? $LANG['RSS_FEED'] : 'RSS feed'); ?></a>
+				<a href="../datasets/rsshandler.php" target="_blank" rel="noopener noreferrer"><?php echo (isset($LANG['RSS_FEED']) ? $LANG['RSS_FEED'] : 'RSS feed'); ?></a>
 				<hr />
 			</div>
 			<div class="gridlike-form">

@@ -7,21 +7,21 @@ include_once($SERVER_ROOT.'/content/lang/collections/admin/specupload.'.$LANG_TA
 header('Content-Type: text/html; charset='.$CHARSET);
 if(!$SYMB_UID) header('Location: ../../profile/index.php?refurl=../collections/admin/specupload.php?'.htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
 
-$collid = array_key_exists('collid',$_REQUEST) ? $_REQUEST['collid'] : '';
-$uploadType = array_key_exists('uploadtype',$_REQUEST) ? $_REQUEST['uploadtype'] : '';
-$uspid = array_key_exists('uspid',$_REQUEST) ? $_REQUEST['uspid'] : '';
+$collid = htmlspecialchars(array_key_exists('collid',$_REQUEST) ? $_REQUEST['collid']: '', HTML_SPECIAL_CHARS_FLAGS);
+$uploadType = htmlspecialchars(array_key_exists('uploadtype',$_REQUEST) ? $_REQUEST['uploadtype']: '', HTML_SPECIAL_CHARS_FLAGS);
+$uspid = htmlspecialchars(array_key_exists('uspid',$_REQUEST) ? $_REQUEST['uspid']: '', HTML_SPECIAL_CHARS_FLAGS);
 $autoMap = array_key_exists('automap',$_POST) ? true : false;
-$action = array_key_exists('action',$_REQUEST) ? $_REQUEST['action'] : '';
-$ulPath = array_key_exists('ulpath',$_REQUEST) ? $_REQUEST['ulpath'] : '';
+$action = htmlspecialchars(array_key_exists('action',$_REQUEST) ? $_REQUEST['action']: '', HTML_SPECIAL_CHARS_FLAGS);
+$ulPath = htmlspecialchars(array_key_exists('ulpath',$_REQUEST) ? $_REQUEST['ulpath']: '', HTML_SPECIAL_CHARS_FLAGS);
 $importIdent = array_key_exists('importident',$_REQUEST) ? true : false;
 $importImage = array_key_exists('importimage',$_REQUEST) ? true : false;
-$observerUid = array_key_exists('observeruid',$_POST) ? $_POST['observeruid'] : '';
+$observerUid = htmlspecialchars(array_key_exists('observeruid',$_POST) ? $_POST['observeruid']: '', HTML_SPECIAL_CHARS_FLAGS);
 $matchCatNum = array_key_exists('matchcatnum',$_REQUEST) ? true : false;
 $matchOtherCatNum = array_key_exists('matchothercatnum',$_REQUEST)&&$_REQUEST['matchothercatnum'] ? true : false;
 $versionData = array_key_exists('versiondata',$_REQUEST) && $_REQUEST['versiondata'] ? true : false;
 $verifyImages = array_key_exists('verifyimages',$_REQUEST) && $_REQUEST['verifyimages'] ? true : false;
-$processingStatus = array_key_exists('processingstatus',$_REQUEST) ? $_REQUEST['processingstatus'] : '';
-$dbpk = array_key_exists('dbpk',$_REQUEST) ? $_REQUEST['dbpk'] : '';
+$processingStatus = htmlspecialchars(array_key_exists('processingstatus',$_REQUEST) ? $_REQUEST['processingstatus']: '', HTML_SPECIAL_CHARS_FLAGS);
+$dbpk = htmlspecialchars(array_key_exists('dbpk',$_REQUEST) ? $_REQUEST['dbpk']: '', HTML_SPECIAL_CHARS_FLAGS);
 
 if(strpos($uspid,'-')){
 	$tok = explode('-',$uspid);
