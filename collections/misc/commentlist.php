@@ -9,8 +9,8 @@ if(!$SYMB_UID) header('Location: '.$CLIENT_ROOT.'/profile/index.php?refurl=../co
 $collid = array_key_exists('collid', $_REQUEST) ? filter_var($_REQUEST['collid'], FILTER_SANITIZE_NUMBER_INT) : 0;
 $start = array_key_exists('start',$_REQUEST) ? filter_var($_REQUEST['start'], FILTER_SANITIZE_NUMBER_INT) : 0;
 $limit = array_key_exists('limit',$_REQUEST) ? filter_var($_REQUEST['limit'], FILTER_SANITIZE_NUMBER_INT) : 100;
-$tsStart = array_key_exists('tsstart',$_POST) ? htmlspecialchars($_POST['tsstart'], HTML_SPECIAL_CHARS_FLAGS) : '';
-$tsEnd = array_key_exists('tsend',$_POST) ? htmlspecialchars($_POST['tsend'], HTML_SPECIAL_CHARS_FLAGS) :'';
+$tsStart = array_key_exists('tsstart',$_POST) ? htmlspecialchars($_POST['tsstart'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : '';
+$tsEnd = array_key_exists('tsend',$_POST) ? htmlspecialchars($_POST['tsend'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) :'';
 $uid = array_key_exists('uid',$_POST) ? filter_var($_POST['uid'], FILTER_SANITIZE_NUMBER_INT) : 0;
 $rs = array_key_exists('rs',$_POST) ? filter_var($_POST['rs'], FILTER_SANITIZE_NUMBER_INT) : 1;
 $showAllGeneralObservations = (array_key_exists('showallgenobs', $_POST) && $_POST['showallgenobs'] === 1) ? true : false;
@@ -171,8 +171,16 @@ if($isEditor){
 						unset($commentArr['cnt']);
 					}
 					$urlVars = 'collid='.$collid.'&limit='.$limit.'&tsstart='.$tsStart.'&tsend='.$tsEnd.'&uid='.$uid.'&rs='.$rs;
-					$currentPage = ($limit != 0) ? ($start / $limit) + 1 : 1;
-					$lastPage = ($limit != 0) ? ceil($recCnt / $limit) : 1;
+					try {
+						$currentPage = ($limit != 0) ? ($start / $limit) + 1 : 1;
+					} catch (Exception $e) {
+						$currentPage = 1;
+					}
+					try {
+						$currentPage = ($limit != 0) ? ($start / $limit) + 1 : 1;
+					} catch (Exception $e) {
+						$lastPage = 1;
+					}
 					$startPage = $currentPage > 4 ? $currentPage - 4 : 1;
 					$endPage = ($lastPage > $startPage + 9?$startPage + 9:$lastPage);
 					$hrefPrefix = 'commentlist.php?' . $urlVars . "&start=";
