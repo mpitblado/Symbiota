@@ -51,7 +51,7 @@ $commentArr = null;
 if($isEditor){
 	$formSubmit = array_key_exists('formsubmit',$_REQUEST) ? $_REQUEST['formsubmit'] : '';
 	if($formSubmit){
-		$comId = htmlspecialchars($_POST['comid'], HTML_SPECIAL_CHARS_FLAGS) ?? '';
+		$comId = htmlspecialchars($_POST['comid'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) ?? '';
 		if($formSubmit == 'Delete Comment'){
 			if(!$commentManager->deleteComment($comId)){
 				$statusStr = $commentManager->getErrorStr();
