@@ -8,11 +8,11 @@ ini_set('max_execution_time', 1200); //1200 seconds = 20 minutes
 $catID = array_key_exists('catid', $_REQUEST) ? filter_var($_REQUEST['catid'], FILTER_SANITIZE_NUMBER_INT) : 0;
 if(!$catID && isset($DEFAULTCATID) && $DEFAULTCATID) $catID = $DEFAULTCATID;
 $collId = array_key_exists('collid', $_REQUEST) ? filter_var($_REQUEST['collid'], FILTER_SANITIZE_NUMBER_INT) : 0;
-$cPartentTaxon = htmlspecialchars(isset($_REQUEST['taxon']) ? $_REQUEST['taxon'] : '', HTML_SPECIAL_CHARS_FLAGS);
-$cCountry = isset($_REQUEST['country']) ? htmlspecialchars($_REQUEST['country'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$cPartentTaxon = isset($_REQUEST['taxon']) ? htmlspecialchars($_REQUEST['taxon'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : '';
+$cCountry = isset($_REQUEST['country']) ? htmlspecialchars($_REQUEST['country'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : '';
 $days = array_key_exists('days', $_REQUEST) ? filter_var($_REQUEST['days'], FILTER_SANITIZE_NUMBER_INT) : 365;
 $months = array_key_exists('months', $_REQUEST)? filter_var($_REQUEST['months'], FILTER_SANITIZE_NUMBER_INT) : 12;
-$action = array_key_exists('submitaction', $_REQUEST) ? htmlspecialchars($_REQUEST['submitaction'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$action = array_key_exists('submitaction', $_REQUEST) ? htmlspecialchars($_REQUEST['submitaction'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : '';
 
 //Variable sanitation
 if(!preg_match('/^[0-9,]+$/',$catID)) $catID = 0;
@@ -68,10 +68,10 @@ if($collId){
 			}
 
 			if($collArr['dynamicProperties']){
-				$dynPropTempArr = json_decode($collArr['dynamicProperties'],true);
-				if ($dynPropTempArr === null && json_last_error() !== JSON_ERROR_NONE) {
-					error_log('Error in JSON decoding: ' . json_last_error_msg());
-					throw new Exception('Error in JSON decoding');
+				try {
+					$dynPropTempArr = json_decode($collArr['dynamicProperties'], true);
+				} catch (Exception $e) {
+					error_log('Exception: ' . $e->getMessage());
 				}
 
 				if(is_array($dynPropTempArr)){
@@ -766,30 +766,33 @@ if($action != "Update Statistics"){
 											echo "<li>";
 											$percGeo = '';
 											if($results['SpecimenCount'] && $results['GeorefCount'] && $results['SpecimenCount'] !== 0){
-												$percGeo = (100* ($results['GeorefCount'] / $results['SpecimenCount']));
-											}
-											else{
-												throw new Exception("Division by zero error.");
+												try {
+													$percGeo = (100* ($results['GeorefCount'] / $results['SpecimenCount']));
+												} catch (Exception $e) {
+													error_log('Exception: ' . $e->getMessage());
+												}
 											}
 											echo ($results['GeorefCount'] ? number_format($results['GeorefCount']) : 0) . ($percGeo ? " (" . ($percGeo>1 ? round($percGeo) : round($percGeo,2)) . "%)" : '') . " " . $LANG['GEOREFERENCED'];
 											echo "</li>";
 											echo "<li>";
 											$percImg = '';
 											if($results['SpecimenCount'] && $results['TotalImageCount'] && $results['SpecimenCount'] !== 0){
-												$percImg = (100* ($results['TotalImageCount'] / $results['SpecimenCount']));
-											}
-											else{
-												throw new Exception("Division by zero error.");
+												try {
+													$percImg = (100* ($results['TotalImageCount'] / $results['SpecimenCount']));
+												} catch (Exception $e) {
+													error_log('Exception: ' . $e->getMessage());
+												}
 											}
 											echo ($results['TotalImageCount'] ? number_format($results['TotalImageCount']) : 0) . ($percImg ? " (" . ($percImg>1 ? round($percImg) : round($percImg,2)) . "%)" : '') . " " . $LANG['OCCS_IMAGED'];
 											echo "</li>";
 											echo "<li>";
 											$percId = '';
 											if($results['SpecimenCount'] && $results['SpecimensCountID'] && $results['SpecimenCount'] !== 0){
-												$percId = (100* ($results['SpecimensCountID'] / $results['SpecimenCount']));
-											}
-											else{
-												throw new Exception("Division by zero error.");
+												try {
+													$percId = (100* ($results['SpecimensCountID'] / $results['SpecimenCount']));
+												} catch (Exception $e) {
+													error_log('Exception: ' . $e->getMessage());
+												}
 											}
 											echo ($results['SpecimensCountID'] ? number_format($results['SpecimensCountID']) : 0) . ($percId?" (" . ($percId>1 ? round($percId) : round($percId,2)) . "%)" : '') . " " . $LANG['IDED_TO_SP'];
 											echo "</li>";
@@ -977,14 +980,12 @@ if($action != "Update Statistics"){
 												echo '</a>';
 											}
 											echo '</div>';
-											if ($data['SpecimensPerFamily'] !== 0)
-											{
+											try {
 												echo '<div class="gridlike-form-row-align">'.($data['GeorefSpecimensPerFamily'] ? round(100*($data['GeorefSpecimensPerFamily']/$data['SpecimensPerFamily'])) : 0).'%</div>';
 												echo '<div class="gridlike-form-row-align">'.($data['IDSpecimensPerFamily'] ? round(100*($data['IDSpecimensPerFamily']/$data['SpecimensPerFamily'])) : 0).'%</div>';
 												echo '<div class="gridlike-form-row-align">'.($data['IDGeorefSpecimensPerFamily'] ? round(100*($data['IDGeorefSpecimensPerFamily']/$data['SpecimensPerFamily'])) : 0).'%</div>';
-											}
-											else{
-												throw new Exception("Division by zero error.");
+											} catch (Exception $e) {
+												error_log('Exception: ' . $e->getMessage());
 											}
 											echo '</section>';
 											$total = $total + $data['SpecimensPerFamily'];
@@ -1034,14 +1035,12 @@ if($action != "Update Statistics"){
 												echo '</a>';
 											}
 											echo '</div>';
-											if ($data['CountryCount'] !== 0)
-											{
+											try {
 												echo '<div class="gridlike-form-row-align">'.($data['GeorefSpecimensPerCountry'] ? round(100*($data['GeorefSpecimensPerCountry']/$data['CountryCount'])) : 0).'%</div>';
 												echo '<div class="gridlike-form-row-align">'.($data['IDSpecimensPerCountry'] ? round(100*($data['IDSpecimensPerCountry']/$data['CountryCount'])) : 0).'%</div>';
 												echo '<div class="gridlike-form-row-align">'.($data['IDGeorefSpecimensPerCountry'] ? round(100*($data['IDGeorefSpecimensPerCountry']/$data['CountryCount'])) : 0).'%</div>';
-											}
-											else{
-												throw new Exception("Division by zero error.");
+											} catch (Exception $e) {
+												error_log('Exception: ' . $e->getMessage());
 											}
 											echo '</section>';
 											$total = $total + $data['CountryCount'];
