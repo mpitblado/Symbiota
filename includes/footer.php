@@ -5,54 +5,39 @@
   <div class="footer__primary-section">
     <div class="container">
       <div class="region region-footer">
-        <nav
-          aria-labelledby="block-bootstrap-core-footer-menu"
-          id="block-bootstrap-core-footer"
-        >
+        <nav aria-labelledby="block-bootstrap-core-footer-menu" id="block-bootstrap-core-footer">
           <h2 class="visually-hidden" id="block-bootstrap-core-footer-menu">
             Footer menu
           </h2>
 
           <ul class="menu menu--footer nav">
             <li class="first">
-              <a
-                href="<?php echo $CLIENT_ROOT ?>"
-                data-drupal-link-system-path="&lt;front&gt;"
-                class="is-active"
-                >Home</a
-              >
+              <a href="<?php echo $CLIENT_ROOT ?>" data-drupal-link-system-path="&lt;front&gt;" class="is-active">
+                Home
+              </a>
             </li>
             <li class="last">
               <a href="<?php echo $CLIENT_ROOT ?>/sitemap.php">Sitemap</a>
             </li>
           </ul>
         </nav>
-        <section
-          id="block-socialmediaicons"
-          class="block block-nal-social-icons block-social-icons-block clearfix"
-        >
+        <section id="block-socialmediaicons" class="block block-nal-social-icons block-social-icons-block clearfix">
           <h2 class="visually-hidden">Social Media</h2>
           <ul class="social-links links">
             <li class="facebook">
-              <a
-                href="https://www.facebook.com/AgriculturalResearchService"
-                class="social-link social-link--facebook"
-                ><span class="social-link__text">Facebook</span></a
-              >
+              <a href="https://www.facebook.com/AgriculturalResearchService" class="social-link social-link--facebook">
+                <span class="social-link__text">Facebook</span>
+              </a>
             </li>
             <li class="twitter">
-              <a
-                href="https://twitter.com/usda_ars"
-                class="social-link social-link--twitter"
-                ><span class="social-link__text">Twitter</span></a
-              >
+              <a href="https://twitter.com/usda_ars" class="social-link social-link--twitter">
+                <span class="social-link__text">Twitter</span>
+              </a>
             </li>
             <li class="youtube">
-              <a
-                href="https://www.youtube.com/channel/UCbY4NfKJTwEO1rxTdNGjYbA"
-                class="social-link social-link--youtube"
-                ><span class="social-link__text">YouTube</span></a
-              >
+              <a href="https://www.youtube.com/channel/UCbY4NfKJTwEO1rxTdNGjYbA" class="social-link social-link--youtube">
+                <span class="social-link__text">YouTube</span>
+              </a>
             </li>
           </ul>
         </section>
@@ -128,29 +113,28 @@
             <a href="https://www.usda.gov/plain-writing">Plain Writing</a>
           </li>
           <li>
-            <a
-              href="https://www.ars.usda.gov/oc/foia/freedom-of-information-act-and-privacy-act-reference-guide/"
-              >FOIA</a
-            >
+            <a href="https://www.ars.usda.gov/oc/foia/freedom-of-information-act-and-privacy-act-reference-guide/">
+              FOIA
+            </a>
           </li>
           <li><a href="https://www.usda.gov/accessibility-statement">Accessibility Statement</a></li>
           <li>
             <a href="https://www.usda.gov/privacy-policy">Privacy Policy</a>
           </li>
           <li>
-            <a href="https://www.usda.gov/non-discrimination-statement"
-              >Non-Discrimination Statement</a
-            >
+            <a href="https://www.usda.gov/non-discrimination-statement">
+              Non-Discrimination Statement
+            </a>
           </li>
           <li>
-            <a href="https://www.usda.gov/oascr/civil-rights-statements"
-              >Civil Rights Policy</a
-            >
+            <a href="https://www.usda.gov/oascr/civil-rights-statements">
+              Civil Rights Policy
+            </a>
           </li>
           <li>
-            <a href="https://www.ars.usda.gov/docs/quality-of-information/"
-              >Information Quality</a
-            >
+            <a href="https://www.ars.usda.gov/docs/quality-of-information/">
+              Information Quality
+            </a>
           </li>
           <li>
             <a href="https://www.ars.usda.gov">Agricultural Research Service</a>

@@ -36,71 +36,77 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
   }
 </script>
 <div id="header-wrapper" style="display:none;" class="footer-wrapper dialog-off-canvas-main-canvas" data-off-canvas-main-canvas>
-  <div class="official-website-banner">
-    <div class="container">    
-      <div class="official-website-banner__message">
-        <div style="display: flex; justify-content: start;">
-          <img style="max-height: 13.5px;" src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/us_flag_small.png" alt="" aria-hidden="true" />
-          <p style="font-size: 12px; margin: 0;">An official website of the United States government.</p>
-          <button class="official-website-banner__trigger content-collapsed" style="margin-left: 0.5rem; max-width: 155px; width: 180px; font-size: 12px; padding: 0;">Here&apos;s how you know.</button>
-        </div>
-        <div class="official-website-banner__content">
-          <div class="content-region content-region__first col-sm-6">
-            <svg class="banner-svg" id="dot_gov_icon" data-name="dot gov icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54 54">
-              <defs>  
-                <style>
-                    .icon-dot-gov-1 {
-                        fill: #007faa;
-                    }
-  
-                    .icon-dot-gov-2 {
-                        fill: none;
-                        stroke: #046b99 !important;
-                        stroke-miterlimit: 10;
-                    }
-                </style>
-              </defs>
-              <title>dot gov icon</title>
-              <path class="icon-dot-gov-1"
-                d="M36.5,20.91v1.36H35.15a0.71,0.71,0,0,1-.73.68H18.23a0.71,0.71,0,0,1-.73-0.68H16.14V20.91l10.18-4.07Zm0,13.57v1.36H16.14V34.48a0.71,0.71,0,0,1,.73-0.68h18.9A0.71,0.71,0,0,1,36.5,34.48ZM21.57,23.62v8.14h1.36V23.62h2.71v8.14H27V23.62h2.71v8.14h1.36V23.62h2.71v8.14h0.63a0.71,0.71,0,0,1,.73.68v0.68H17.5V32.45a0.71,0.71,0,0,1,.73-0.68h0.63V23.62h2.71Z" />
-              <circle class="icon-dot-gov-2" cx="27" cy="27.12" r="26" />
-            </svg>
-            <p>
-            <strong>Official websites use .gov</strong>
-            <br>
-            A <strong>.gov</strong> website belongs to an official government organization in the United States.    </p>
+  <header>
+    <div class="official-website-banner" role="banner">
+      <div class="container">    
+        <div class="official-website-banner__message">
+          <div style="display: flex; justify-content: start;">
+            <img style="max-height: 13.5px;" src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/us_flag_small.png" alt="" aria-hidden="true" />
+            <p style="font-size: 1rem; margin: 0;">An official website of the United States government.</p>
+            <button class="official-website-banner__trigger content-collapsed" style="margin-left: 0.5rem; max-width: 155px; width: 180px; font-size: 0.9rem; padding: 0;">Here&apos;s how you know.</button>
           </div>
-          <div class="content-region content-region__second col-sm-6">
-            <svg class="banner-svg" id="https_icon" data-name="https icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54 54">
-              <defs>
-                <style>
-                    .icon-https-1 {
-                        fill: #549500;
-                    }
-  
-                    .icon-https-2 {
-                        fill: none;
-                        stroke: #458600;
-                        stroke-miterlimit: 10;
-                    }
-                </style>
-              </defs>
-              <title>https icon</title>
-              <path class="icon-https-1"
-                d="M34.72,34.84a1.29,1.29,0,0,1-1.29,1.29H20.57a1.29,1.29,0,0,1-1.29-1.29V27.12a1.29,1.29,0,0,1,1.29-1.29H21V23.26a6,6,0,0,1,12,0v2.57h0.43a1.29,1.29,0,0,1,1.29,1.29v7.72Zm-4.29-9V23.26a3.43,3.43,0,0,0-6.86,0v2.57h6.86Z" />
-              <circle class="icon-https-2" cx="27" cy="27.12" r="26" />
-            </svg>
-            <p>
-            <strong>Secure .gov websites use HTTPS</strong>
-            <br>
-            A <strong>lock</strong> ( <span class="icon-lock"><svg xmlns="http://www.w3.org/2000/svg" width="52" height="64" viewBox="0 0 52 64" class="usa-banner__lock-image" role="img" aria-hidden="true"><path fill="#000000" fill-rule="evenodd" d="M26 0c10.493 0 19 8.507 19 19v9h3a4 4 0 0 1 4 4v28a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4V32a4 4 0 0 1 4-4h3v-9C7 8.507 15.507 0 26 0zm0 8c-5.979 0-10.843 4.77-10.996 10.712L15 19v9h22v-9c0-6.075-4.925-11-11-11z"/></svg></span> ) or <strong>https://</strong> means you&apos;ve safely connected to the .gov website. Share sensitive information only on official, secure websites.    </p>
+          <div class="official-website-banner__content">
+            <div class="content-region content-region__first col-sm-6">
+              <svg class="banner-svg" id="dot_gov_icon" data-name="dot gov icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54 54">
+                <defs>  
+                  <style>
+                      .icon-dot-gov-1 {
+                          fill: #007faa;
+                      }
+    
+                      .icon-dot-gov-2 {
+                          fill: none;
+                          stroke: #046b99 !important;
+                          stroke-miterlimit: 10;
+                      }
+                  </style>
+                </defs>
+                <title>dot gov icon</title>
+                <path class="icon-dot-gov-1"
+                  d="M36.5,20.91v1.36H35.15a0.71,0.71,0,0,1-.73.68H18.23a0.71,0.71,0,0,1-.73-0.68H16.14V20.91l10.18-4.07Zm0,13.57v1.36H16.14V34.48a0.71,0.71,0,0,1,.73-0.68h18.9A0.71,0.71,0,0,1,36.5,34.48ZM21.57,23.62v8.14h1.36V23.62h2.71v8.14H27V23.62h2.71v8.14h1.36V23.62h2.71v8.14h0.63a0.71,0.71,0,0,1,.73.68v0.68H17.5V32.45a0.71,0.71,0,0,1,.73-0.68h0.63V23.62h2.71Z" />
+                <circle class="icon-dot-gov-2" cx="27" cy="27.12" r="26" />
+              </svg>
+              <p>
+                <strong>Official websites use .gov</strong>
+                <br>
+                A <strong>.gov</strong> website belongs to an official government organization in the United States.
+              </p>
+            </div>
+            <div class="content-region content-region__second col-sm-6">
+              <svg class="banner-svg" id="https_icon" data-name="https icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54 54">
+                <defs>
+                  <style>
+                      .icon-https-1 {
+                          fill: #549500;
+                      }
+    
+                      .icon-https-2 {
+                          fill: none;
+                          stroke: #458600;
+                          stroke-miterlimit: 10;
+                      }
+                  </style>
+                </defs>
+                <title>https icon</title>
+                <path class="icon-https-1"
+                  d="M34.72,34.84a1.29,1.29,0,0,1-1.29,1.29H20.57a1.29,1.29,0,0,1-1.29-1.29V27.12a1.29,1.29,0,0,1,1.29-1.29H21V23.26a6,6,0,0,1,12,0v2.57h0.43a1.29,1.29,0,0,1,1.29,1.29v7.72Zm-4.29-9V23.26a3.43,3.43,0,0,0-6.86,0v2.57h6.86Z" />
+                <circle class="icon-https-2" cx="27" cy="27.12" r="26" />
+              </svg>
+              <p>
+                <strong>Secure .gov websites use HTTPS</strong>
+                <br>
+                A <strong>lock</strong> ( 
+                <span class="icon-lock"><svg xmlns="http://www.w3.org/2000/svg" width="52" height="64" viewBox="0 0 52 64" class="usa-banner__lock-image" role="img" aria-hidden="true">
+                  <path fill="#000000" fill-rule="evenodd" d="M26 0c10.493 0 19 8.507 19 19v9h3a4 4 0 0 1 4 4v28a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4V32a4 4 0 0 1 4-4h3v-9C7 8.507 15.507 0 26 0zm0 8c-5.979 0-10.843 4.77-10.996 10.712L15 19v9h22v-9c0-6.075-4.925-11-11-11z"/>
+                  </svg>
+                </span>
+                 ) or <strong>https://</strong> means you&apos;ve safely connected to the .gov website. Share sensitive information only on official, secure websites.
+              </p>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-
-  <header>
     <div class="container">
       <div class="row">                  
         <div class="col-md-6 site-branding clearfix">
