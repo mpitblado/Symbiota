@@ -1,19 +1,17 @@
 <?php
-include_once($SERVER_ROOT.'/config/dbconnection.php');
+include_once('Manager.php');
 
-class InstitutionManager {
+class InstitutionManager extends Manager{
 
-	private $conn;
 	private $iid;
 	private $collid;
-	private $errorStr;
 
 	public function __construct(){
-		$this->conn = MySQLiConnectionFactory::getCon("write");
+		parent::__construct(null, 'write');
 	}
 
 	public function __destruct(){
-		if(!($this->conn === null)) $this->conn->close();
+		parent::__destruct();
 	}
 
 	public function getInstitutionData(){
@@ -26,7 +24,7 @@ class InstitutionManager {
 			//echo $sql;
 			$rs = $this->conn->query($sql);
 			while($row = $rs->fetch_assoc()){
-				$retArr = $this->cleanOutArr($row);
+				$retArr = $this->cleanOutArray($row);
 			}
 			$rs->free();
 		}
@@ -55,7 +53,7 @@ class InstitutionManager {
 			//echo "<div>$sql</div>"; exit;
 			if(!$this->conn->query($sql)){
 				$status = false;
-				$this->errorStr = 'ERROR editing institution: '.$this->conn->error;
+				$this->errorMessage = 'ERROR editing institution: '.$this->conn->error;
 			}
 		}
 		return $status;
@@ -88,7 +86,7 @@ class InstitutionManager {
 			}
 		}
 		else{
-			$this->errorStr = 'ERROR creating institution: '.$this->conn->error;
+			$this->errorMessage = 'ERROR creating institution: '.$this->conn->error;
 		}
 		return $newIID;
 	}
@@ -102,12 +100,12 @@ class InstitutionManager {
 		$rs = $this->conn->query($sql);
 		if($rs->num_rows){
 			$status = false;
-			$this->errorStr = 'ERROR deleting institution: Following collections need to be unlinked to institution before deletion is allowed';
-			$this->errorStr .= '<ul style="margin-left:20px">';
+			$this->errorMessage = 'ERROR deleting institution: Following collections need to be unlinked to institution before deletion is allowed';
+			$this->errorMessage .= '<ul style="margin-left:20px">';
 			while($r = $rs->fetch_object()){
-				$this->errorStr .= '<li>'.$r->name.'</li>';
+				$this->errorMessage .= '<li>'.$r->name.'</li>';
 			}
-			$this->errorStr .= '</ul><br/>';
+			$this->errorMessage .= '</ul><br/>';
 		}
 		$rs->free();
 		if(!$status) return false;
@@ -119,7 +117,7 @@ class InstitutionManager {
 		$rs = $this->conn->query($sql);
 		if($rs->num_rows){
 			$status = false;
-			$this->errorStr = 'ERROR deleting institution: Institution is linked to '.$rs->num_rows.' loan records';
+			$this->errorMessage = 'ERROR deleting institution: Institution is linked to '.$rs->num_rows.' loan records';
 		}
 		$rs->free();
 
@@ -129,7 +127,7 @@ class InstitutionManager {
 			//echo $sql; exit;
 			if(!$this->conn->query($sql)){
 				$status = false;
-				$this->errorStr = 'ERROR deleting institution: '.$this->conn->error;
+				$this->errorMessage = 'ERROR deleting institution: '.$this->conn->error;
 			}
 		}
 		return $status;
@@ -141,7 +139,7 @@ class InstitutionManager {
 		//echo $sql; exit;
 		if(!$this->conn->query($sql)){
 			$status = false;
-			$this->errorStr = 'ERROR removing collection from institution: '.$this->conn->error;
+			$this->errorMessage = 'ERROR removing collection from institution: '.$this->conn->error;
 		}
 		return $status;
 	}
@@ -153,7 +151,7 @@ class InstitutionManager {
 			//echo $sql; exit;
 			if(!$this->conn->query($sql)){
 				$status = false;
-				$this->errorStr = 'ERROR adding collection to institution: '.$this->conn->error;
+				$this->errorMessage = 'ERROR adding collection to institution: '.$this->conn->error;
 			}
 		}
 		return $status;
@@ -170,24 +168,25 @@ class InstitutionManager {
 	}
 
 	public function getErrorStr(){
-		return $this->errorStr;
+		return $this->errorMessage;
 	}
 
 	public function getInstitutionList(){
 		$retArr = Array();
-		$sql = 'SELECT i.iid, c.collid, i.institutioncode, i.institutionname, i.institutionname2, i.address1, i.address2, i.city, '.
-			'i.stateprovince, i.postalcode, i.country, i.phone, i.contact, i.email, i.url, i.notes '.
+		$sql = 'SELECT i.iid, c.collid, i.institutioncode, i.institutionname '.
 			'FROM institutions i LEFT JOIN omcollections c ON i.iid = c.iid '.
 			'ORDER BY i.institutionname, i.institutioncode';
 		//echo $sql;
 		$rs = $this->conn->query($sql);
 		while($r = $rs->fetch_object()){
 			if(isset($retArr[$r->iid])){
-				$collStr = $retArr[$r->iid]['collid'].','.$r->collid;
+				$collStr = $retArr[$r->iid]['collid'] . ',' . $r->collid;
 				$retArr[$r->iid]['collid'] = $collStr;
 			}
 			else{
-				$retArr[$r->iid] = $this->cleanOutArr($r);
+				$retArr[$r->iid]['collid'] = $r->collid;
+				$retArr[$r->iid]['institutioncode'] = $r->institutioncode;
+				$retArr[$r->iid]['institutionname'] = $r->institutionname;
 			}
 		}
 		$rs->free();
@@ -207,31 +206,6 @@ class InstitutionManager {
 		}
 		$rs->free();
 		return $retArr;
-	}
-
-	private function cleanOutArr($inArr){
-		$outArr = array();
-		foreach($inArr as $k => $v){
-			$outArr[$k] = $this->cleanOutStr($v);
-		}
-		return $outArr;
-	}
-
- 	private function cleanOutStr($str){
-		$newStr = $str;
-		if(isset($newStr)){
-			$newStr = str_replace('"',"&quot;",$str);
-			$newStr = str_replace("'","&apos;",$newStr);
-		}
-		//$newStr = $this->conn->real_escape_string($newStr);
-		return $newStr;
-	}
-
-	private function cleanInStr($str){
-		$newStr = trim($str);
-		$newStr = preg_replace('/\s\s+/', ' ',$newStr);
-		$newStr = $this->conn->real_escape_string($newStr);
-		return $newStr;
 	}
 }
 ?>
