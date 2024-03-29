@@ -69,7 +69,7 @@ class InstitutionManager extends Manager{
 
 	public function insertInstitution($postData){
 		$status = false;
-		if(!empty($postData['institutioncode']) || !empty($postData['institutionname'])){
+		if(empty($postData['institutioncode']) || empty($postData['institutionname'])){
 			$this->errorMessage = 'required field are null';
 			return false;
 		}
@@ -89,7 +89,7 @@ class InstitutionManager extends Manager{
 		$notes = !empty($postData['notes']) ? $postData['notes'] : null;
 		$modifiedUid = $GLOBALS['SYMB_UID'];
 		$sql = 'INSERT INTO institutions (institutioncode, institutionname, institutionname2, address1, address2, city, stateprovince, postalcode, country, phone, contact, email, url, notes, modifiedUid, modifiedTimeStamp)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())';
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())';
 		if($stmt = $this->conn->prepare($sql)){
 			$stmt->bind_param('ssssssssssssssi', $institutionCode, $institutionName, $institutionName2, $address1, $address2,
 				$city, $stateProvince, $postalCode, $country, $phone, $contact, $email, $url, $notes, $modifiedUid);
