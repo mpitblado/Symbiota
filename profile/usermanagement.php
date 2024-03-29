@@ -46,7 +46,7 @@ if($IS_ADMIN){
 	<style>
 		th{ font-size: 90% }
 		/* alert box from https://www.w3schools.com/howto/howto_js_alert.asp */
-		
+
 		/* The alert message box */
 		.alert {
 			max-width: 30%;
@@ -99,7 +99,7 @@ if($IS_ADMIN){
 
 					<span class="skip-link">
 						<a href = "#userlist"><?php echo (isset($LANG['SKIP_LINK'])?$LANG['SKIP_LINK']:'Skip to list of users'); ?></a>
-					</span>			
+					</span>
 
 					<?php echo (isset($LANG['QUICK_SEARCH'])?$LANG['QUICK_SEARCH']:'Quick Search'); ?>:
 					<div style='margin:2px 0px 0px 10px;'>
@@ -313,10 +313,12 @@ if($IS_ADMIN){
 								$collList = $userPermissions["CollAdmin"];
 								echo "<ul>";
 								foreach($collList as $k => $v){
-									echo '<li><span title="'.$v['aby'].'"><a href="../collections/misc/collprofiles.php?collid=' . htmlspecialchars($k, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank">' . htmlspecialchars($v['name'], HTML_SPECIAL_CHARS_FLAGS) . '</a></span> ';
-									echo "<a href='usermanagement.php?delrole=CollAdmin&tablepk=$k&userid=$userId'>";
-									echo "<img src='../images/del.png' style='border:0px;width:1.2em;' title=".(isset($LANG['DEL_PERM'])?$LANG['DEL_PERM']:'Delete permission').'/>';
-									echo "</a></li>";
+									if(!empty($v['name'])){
+										echo '<li><span title="'.$v['aby'].'"><a href="../collections/misc/collprofiles.php?collid=' . htmlspecialchars($k, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank">' . htmlspecialchars($v['name'], HTML_SPECIAL_CHARS_FLAGS) . '</a></span> ';
+										echo "<a href='usermanagement.php?delrole=CollAdmin&tablepk=$k&userid=$userId'>";
+										echo "<img src='../images/del.png' style='border:0px;width:1.2em;' title=".(isset($LANG['DEL_PERM'])?$LANG['DEL_PERM']:'Delete permission').'/>';
+										echo "</a></li>";
+									}
 								}
 								echo "</ul>";
 							}
