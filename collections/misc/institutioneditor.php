@@ -33,50 +33,62 @@ elseif(array_key_exists("CollAdmin",$USER_RIGHTS)){
 }
 if($editorCode){
 	if($formSubmit == "Add Institution"){
-		$iid = $instManager->submitInstitutionAdd($_POST);
-		if($iid){
-			if($targetCollid) header('Location: ../misc/collprofiles.php?collid='.$targetCollid);
+		if($instManager->insertInstitution($_POST)){
+			$iid = $instManager->getInstitutionId()
 			$statusStr = 'SUCCESS! Institution added.';
+			if($targetCollid) header('Location: ../misc/collprofiles.php?collid='.$targetCollid);
 		}
 		else{
-			$statusStr = $instManager->getErrorStr();
+			$statusStr = 'ERROR creating institution: ' . $instManager->getErrorStr();
 		}
 	}
 	else{
 		if($editorCode > 1){
 			if($formSubmit == "Update Institution Address"){
-				if($instManager->submitInstitutionEdits($_POST)){
+				if($instManager->updateInstitution($_POST)){
 					if($targetCollid) header('Location: ../misc/collprofiles.php?collid='.$targetCollid);
 				}
 				else{
-					$statusStr = $instManager->getErrorStr();
+					$statusStr = 'ERROR updating institutions record: ' . $instManager->getErrorStr();
 				}
 			}
-			elseif(isset($_POST['deliid'])){
-				$delIid = $_POST['deliid'];
-				if($instManager->deleteInstitution($delIid)){
+			elseif(!empty($_POST['deliid'])){
+				if($instManager->deleteInstitution($_POST['deliid'])){
 					$statusStr = 'SUCCESS! Institution deleted.';
 					$iid = 0;
 				}
 				else{
-					$statusStr = $instManager->getErrorStr();
+					$statusStr = 'Unable to delete: ';
+					$errorStr = $instManager->getErrorStr();
+					if($errorStr == 'LINKED_COLLECTIONS'){
+						$statusStr .= 'following collections need to be unlinked before deletion is allowed';
+						$statusStr .= '<ul><li>' . implode('</li><li>', $instManager->getWarningArr()) . '</li></ul>';
+					}
+					elseif($errorStr == 'LINKED_LOANS'){
+						$statusStr .= 'institution is linked to ' . count($instManager->getWarningArr()) . ' loans';
+					}
+					else{
+						$errorStr = 'ERROR deleting institution: ' . $errorStr;
+					}
 				}
 			}
-			elseif($formSubmit == "Add Collection"){
-				if($instManager->addCollection($_POST['addcollid'],$iid)){
-					$collList[$_POST['addcollid']] = $fullCollList[$_POST['addcollid']]['name'];
-				}
-				else{
-					$statusStr = $instManager->getErrorStr();
+			elseif($formSubmit == 'Add Collection'){
+				if($_POST['addcollid'] && is_numeric($_POST['addcollid'])){
+					if($instManager->updateCollectionLink($_POST['addcollid'], $iid)){
+						$collList[$_POST['addcollid']] = $fullCollList[$_POST['addcollid']]['name'];
+					}
+					else{
+						$statusStr = 'ERROR linking collection to institution: ' . $instManager->getErrorStr();
+					}
 				}
 			}
 			elseif(isset($_GET['removecollid'])){
-				if($instManager->removeCollection($_GET['removecollid'])){
+				if($instManager->updateCollectionLink($_GET['removecollid'], null)){
 					$statusStr = 'SUCCESS! Institution removed';
 					unset($collList[$_GET['removecollid']]);
 				}
 				else{
-					$statusStr = $instManager->getErrorStr();
+					$statusStr = 'ERROR deleting institution: ' . $instManager->getErrorStr();
 				}
 			}
 		}
@@ -583,6 +595,7 @@ include($SERVER_ROOT.'/includes/header.php');
 					<ul>
 						<?php
 						$instList = $instManager->getInstitutionList();
+						$instList = $instManager->cleanOutArray($instList);
 						if($instList){
 							foreach($instList as $iid => $iArr){
 								echo '<li><a href="institutioneditor.php?iid='.$iid.'">';
