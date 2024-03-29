@@ -223,9 +223,7 @@ class InstitutionManager extends Manager{
 
 	//Setters and getters
 	public function setInstitutionId($id){
-		if(is_numeric($id)){
-			$this->iid = $id;
-		}
+		$this->iid = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
 	}
 
 	public function getInstitutionId(){

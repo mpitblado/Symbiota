@@ -239,8 +239,8 @@ if($collid && $isEditor){
 						<input name="action" type="submit" value="<?php echo (isset($LANG['LINK_ADDRESS'])?$LANG['LINK_ADDRESS']:'Link Address'); ?>" />
 					</form>
 					<div style="margin:15px;">
-						<a href="institutioneditor.php?emode=1&targetcollid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>" title="<?php echo htmlspecialchars((isset($LANG['ADD_ADDRESS'])?$LANG['ADD_ADDRESS']:'Add a new address not on the list'), HTML_SPECIAL_CHARS_FLAGS); ?>">
-							<b><?php echo (isset($LANG['ADD_INST'])?$LANG['ADD_INST']:'Add an institution not on list'); ?></b>
+						<a href="institutioneditor.php?emode=1&instcode=<?= $collMetaArr['institutioncode'] ?>&targetcollid=<?= $collid ?>" title="<?= (isset($LANG['ADD_ADDRESS']) ? htmlspecialchars($LANG['ADD_ADDRESS'], HTML_SPECIAL_CHARS_FLAGS) : 'Add a new address not on the list') ?>">
+							<b><?= (isset($LANG['ADD_INST']) ? $LANG['ADD_INST'] : 'Add an institution not on list') ?></b>
 						</a>
 					</div>
 				</div>
