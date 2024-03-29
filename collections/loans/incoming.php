@@ -6,7 +6,7 @@ else include_once($SERVER_ROOT . '/content/lang/collections/loans/loan_langs.en.
 header("Content-Type: text/html; charset=".$CHARSET);
 if(!$SYMB_UID) header('Location: ' . $CLIENT_ROOT . '/profile/index.php?refurl=../collections/loans/incoming.php?' . htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
 
-$collid = $_REQUEST['collid'];
+$collid = array_key_exists('collid', $_REQUEST) ? filter_var($_REQUEST['collid'], FILTER_SANITIZE_NUMBER_INT) : 0;
 $loanId = array_key_exists('loanid',$_REQUEST)?$_REQUEST['loanid']:0;
 $loanIdborr = array_key_exists('loanidentifierborr',$_REQUEST)?$_REQUEST['loanidentifierborr']:0;
 $formSubmit = array_key_exists('formsubmit',$_REQUEST)?$_REQUEST['formsubmit']:'';
@@ -27,11 +27,11 @@ $statusStr = '';
 if($isEditor){
 	if($formSubmit){
 		if($formSubmit == 'createLoanIn'){
-			$loanId = $loanManager->createNewLoanIn($_POST);
+			$loanId = filter_var($loanManager->createNewLoanIn($_POST), FILTER_SANITIZE_NUMBER_INT);
 			if(!$loanId) $statusStr = $loanManager->getErrorMessage();
 		}
 		elseif($formSubmit == 'Save Incoming'){
-			$statusStr = $loanManager->editLoanIn($_POST);
+			$statusStr = htmlspecialchars($loanManager->editLoanIn($_POST), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);
 		}
 		elseif ($formSubmit == "delAttachment") {
 			// Delete correspondence attachment
@@ -313,7 +313,7 @@ if($isEditor){
 										foreach($attachments as $attachId => $attachArr){
 											echo '<li><div style="float: left;">' . $attachArr['timestamp'] . ' -</div>';
 											echo '<div style="float: left; margin-left: 5px;"><a href="../../' .
-												$attachArr['path'] . $attachArr['filename']  . '" target="_blank">' .
+												$attachArr['path'] . $attachArr['filename']  . '" target="_blank" rel="noopener">' .
 												($attachArr['title'] != "" ? $attachArr['title'] : $attachArr['filename']) . '</a></div>';
 											echo '<a href="incoming.php?collid=' . htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS) . '&loanid=' . htmlspecialchars($loanId, HTML_SPECIAL_CHARS_FLAGS) . '&attachid=' . htmlspecialchars($attachId, HTML_SPECIAL_CHARS_FLAGS) . '&formsubmit=delAttachment"><img src="../../images/del.png" style="width: 1.2em; margin-left: 5px;"></a></li>';
 										}
