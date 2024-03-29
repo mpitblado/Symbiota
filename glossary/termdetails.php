@@ -8,8 +8,13 @@ if(!$SYMB_UID) header('Location: ../profile/index.php?refurl='.$CLIENT_ROOT.'/gl
 
 $glossId = array_key_exists('glossid', $_REQUEST) ? filter_var($_REQUEST['glossid'], FILTER_SANITIZE_NUMBER_INT) : 0;
 $formSubmit = array_key_exists('formsubmit', $_POST) ? htmlspecialchars($_POST['formsubmit']) : '';
-$statusStr = array_key_exists('statusstr',$_REQUEST)?$_REQUEST['statusstr']:'';
+$statusStr = array_key_exists('statusstr',$_REQUEST) ? htmlspecialchars($_REQUEST['statusstr'], HTML_SPECIAL_CHARS_FLAGS) : '';
 $tabIndex = array_key_exists('tabindex', $_REQUEST) ? filter_var($_REQUEST['tabindex'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$glimgid = array_key_exists('glimgid', $_POST) ? filter_var($_POST['glimgid'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$relglossid = array_key_exists('relglossid', $_POST) ? filter_var($_POST['relglossid'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$relationship = array_key_exists('relationship', $_POST) ? htmlspecialchars($_POST['relationship'], HTML_SPECIAL_CHARS_FLAGS) : 0;
+$gltlinkid = array_key_exists('gltlinkid', $_POST) ? filter_var($_POST['gltlinkid'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$tid = array_key_exists('tid', $_POST) ? filter_var($_POST['tid'], FILTER_SANITIZE_NUMBER_INT) : 0;
 
 $isEditor = false;
 if($IS_ADMIN || array_key_exists('GlossaryEditor', $USER_RIGHTS)) $isEditor = true;
@@ -32,44 +37,44 @@ if($formSubmit){
 		$statusStr = $glosManager->editImageData($_POST);
 	}
 	elseif($formSubmit == 'Delete Image'){
-		$statusStr = $glosManager->deleteImage($_POST['glimgid']);
+		$statusStr = $glosManager->deleteImage($glimgid);
 	}
 	elseif($formSubmit == 'Link Translation'){
-		if(!$glosManager->linkTranslation($_POST['relglossid'])){
+		if(!$glosManager->linkTranslation($relglossid)){
 			$statusStr = $glosManager->getErrorMessage();
 		}
 		$glosManager->setGlossId($glossId);
 	}
 	elseif($formSubmit == 'Link Related Term'){
-		if(!$glosManager->linkRelation($_POST['relglossid'],$_POST['relationship'])){
+		if(!$glosManager->linkRelation($relglossid, $relationship)){
 			$statusStr = $glosManager->getErrorMessage();
 		}
 		$glosManager->setGlossId($glossId);
 	}
 	elseif($formSubmit == 'Remove Translation'){
-		if(!$glosManager->removeRelation($_POST['gltlinkid'],$_POST['relglossid'])){
+		if(!$glosManager->removeRelation($gltlinkid, $relglossid)){
 			$statusStr = $glosManager->getErrorMessage();
 		}
 		$glosManager->setGlossId($glossId);
 	}
 	elseif($formSubmit == 'removeSynonym'){
-		if(!$glosManager->removeRelation($_POST['gltlinkid'], $_POST['relglossid'])){
+		if(!$glosManager->removeRelation($gltlinkid, $relglossid)){
 			$statusStr = $glosManager->getErrorMessage();
 		}
 		$glosManager->setGlossId($glossId);
 	}
 	elseif($formSubmit == 'Unlink Related Term'){
-		if(!$glosManager->removeRelation($_POST['gltlinkid'])){
+		if(!$glosManager->removeRelation($gltlinkid)){
 			$statusStr = $glosManager->getErrorMessage();
 		}
 	}
 	elseif($formSubmit == 'Add Taxa Group'){
-		if(!$glosManager->addGroupTaxaLink($_POST['tid'])){
+		if(!$glosManager->addGroupTaxaLink($tid)){
 			$statusStr = $glosManager->getErrorMessage();
 		}
 	}
 	elseif($formSubmit == 'Delete Taxa Group'){
-		if(!$glosManager->deleteGroupTaxaLink($_POST['tid'])){
+		if(!$glosManager->deleteGroupTaxaLink($tid)){
 			$statusStr = $glosManager->getErrorMessage();
 		}
 	}

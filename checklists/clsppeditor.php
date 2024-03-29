@@ -8,7 +8,21 @@ header('Content-Type: text/html; charset='.$CHARSET);
 $clid = array_key_exists('clid', $_REQUEST) ? filter_var($_REQUEST['clid'], FILTER_SANITIZE_NUMBER_INT) : 0;
 $tid = array_key_exists('tid', $_REQUEST) ? filter_var($_REQUEST['tid'], FILTER_SANITIZE_NUMBER_INT) : 0;
 $tabIndex = array_key_exists('tabindex', $_POST) ? filter_var($_POST['tabindex'], FILTER_SANITIZE_NUMBER_INT) : 0;
-$action = array_key_exists('action', $_POST) ? $_POST['action'] : '';
+$action = array_key_exists('action', $_POST) ? htmlspecialchars($_POST['action'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$cltype = array_key_exists('cltype', $_POST) ? htmlspecialchars($_POST['cltype'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$renametid = array_key_exists('renametid', $_POST) ? htmlspecialchars($_POST['renametid'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$locality = array_key_exists('locality', $_POST) ? htmlspecialchars($_POST['locality'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$habitat = array_key_exists('habitat', $_POST) ? htmlspecialchars($_POST['habitat'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$abundance = array_key_exists('abundance', $_POST) ? htmlspecialchars($_POST['abundance'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$notes = array_key_exists('notes', $_POST) ? htmlspecialchars($_POST['notes'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$internalnotes = array_key_exists('internalnotes', $_POST) ? htmlspecialchars($_POST['internalnotes'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$source = array_key_exists('source', $_POST) ? htmlspecialchars($_POST['source'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$familyoverride = array_key_exists('familyoverride', $_POST) ? htmlspecialchars($_POST['familyoverride'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$voucherID = array_key_exists('voucherID', $_POST) ? htmlspecialchars($_POST['voucherID'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$editornotes = array_key_exists('editornotes', $_POST) ? htmlspecialchars($_POST['editornotes'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$voccid = array_key_exists('voccid', $_POST) ? htmlspecialchars($_POST['voccid'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$vnotes = array_key_exists('vnotes', $_POST) ? htmlspecialchars($_POST['vnotes'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$veditnotes = array_key_exists('veditnotes', $_POST) ? htmlspecialchars($_POST['veditnotes'], HTML_SPECIAL_CHARS_FLAGS) : '';
 
 $isEditor = false;
 if($IS_ADMIN || (array_key_exists('ClAdmin', $USER_RIGHTS) && in_array($clid, $USER_RIGHTS['ClAdmin']))){
@@ -24,42 +38,42 @@ $followUpAction = '';
 
 if($action == 'renameTransfer'){
 	$rareLocality = '';
-	if($_POST['cltype'] == 'rarespp') $rareLocality = $_POST['locality'];
-	if($vManager->renameTaxon($_POST['renametid'], $rareLocality)){
+	if($cltype == 'rarespp') $rareLocality = $locality;
+	if($vManager->renameTaxon($renametid, $rareLocality)){
 		$followUpAction = 'removeTaxon()';
 	}
 	else echo $vManager->getErrorMessage();
 }
 elseif($action == 'editChecklist'){
 	$eArr = Array();
-	$eArr['habitat'] = $_POST['habitat'];
-	$eArr['abundance'] = $_POST['abundance'];
-	$eArr['notes'] = $_POST['notes'];
-	$eArr['internalnotes'] = $_POST['internalnotes'];
-	$eArr['source'] = $_POST['source'];
-	$eArr['familyoverride'] = $_POST['familyoverride'];
+	$eArr['habitat'] = $habitat;
+	$eArr['abundance'] = $abundance;
+	$eArr['notes'] = $notes;
+	$eArr['internalnotes'] = $internalnotes;
+	$eArr['source'] = $source;
+	$eArr['familyoverride'] = $familyoverride;
 	$status = $vManager->editClData($eArr);
 	$followUpAction = 'self.close()';
 }
 elseif($action == 'deleteTaxon'){
 	$rareLocality = '';
-	if($_POST['cltype'] == 'rarespp') $rareLocality = $_POST['locality'];
+	if($cltype == 'rarespp') $rareLocality = $locality;
 	$status = $vManager->deleteTaxon($rareLocality);
 	$followUpAction = 'removeTaxon()';
 }
 elseif($action == 'editVoucher'){
-	if(!$vManager->editVoucher($_POST['voucherID'], $_POST['notes'], $_POST['editornotes'])){
+	if(!$vManager->editVoucher($voucherID, $notes, $editornotes)){
 		$status = $vManager->getErrorMessage();
 	}
 }
 elseif($action == 'deleteVoucher'){
-	if(!$vManager->deleteVoucher($_POST['voucherID'])){
+	if(!$vManager->deleteVoucher($voucherID)){
 		$status = $vManager->getErrorMessage();
 	}
 }
 elseif($action == 'Add Voucher'){
 	//For processing requests sent from /collections/individual/index.php
-	$status = $vManager->addVoucher($_POST['voccid'],$_POST['vnotes'],$_POST['veditnotes']);
+	$status = $vManager->addVoucher($voccid, $vnotes, $veditnotes);
 }
 $clArray = $vManager->getChecklistData();
 ?>

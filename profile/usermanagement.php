@@ -5,11 +5,11 @@ include_once($SERVER_ROOT.'/classes/ProfileManager.php');
 @include_once($SERVER_ROOT.'/content/lang/profile/usermanagement.'.$LANG_TAG.'.php');
 header("Content-Type: text/html; charset=".$CHARSET);
 
-$loginAs = array_key_exists("loginas",$_REQUEST)?trim($_REQUEST["loginas"]):"";
-$searchTerm = array_key_exists("searchterm",$_REQUEST)?trim($_REQUEST["searchterm"]):"";
-$userId = array_key_exists("userid",$_REQUEST)?$_REQUEST["userid"]:"";
-$delRole = array_key_exists("delrole",$_REQUEST)?$_REQUEST["delrole"]:"";
-$tablePk = array_key_exists("tablepk",$_REQUEST)?$_REQUEST["tablepk"]:"";
+$loginAs = array_key_exists("loginas",$_REQUEST) ? htmlspecialchars($_REQUEST["loginas"], HTML_SPECIAL_CHARS_FLAGS) : "";
+$searchTerm = array_key_exists("searchterm",$_REQUEST) ? htmlspecialchars($_REQUEST["searchterm"], HTML_SPECIAL_CHARS_FLAGS) : "";
+$userId = array_key_exists("userid",$_REQUEST) ? htmlspecialchars($_REQUEST["userid"], HTML_SPECIAL_CHARS_FLAGS) : "";
+$delRole = array_key_exists("delrole",$_REQUEST) ? htmlspecialchars($_REQUEST["delrole"], HTML_SPECIAL_CHARS_FLAGS) : "";
+$tablePk = array_key_exists("tablepk",$_REQUEST) ? htmlspecialchars($_REQUEST["tablepk"], HTML_SPECIAL_CHARS_FLAGS) : "";
 
 $userManager = new PermissionsManager();
 if($IS_ADMIN){

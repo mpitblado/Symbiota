@@ -6,7 +6,7 @@ else include_once($SERVER_ROOT.'/content/lang/collections/loans/loan_langs.en.ph
 header("Content-Type: text/html; charset=".$CHARSET);
 if(!$SYMB_UID) header('Location: '.$CLIENT_ROOT.'/profile/index.php?refurl=../collections/loans/exchange.php?' . htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
 
-$collid = $_REQUEST['collid'];
+$collid = array_key_exists('collid', $_REQUEST) ? filter_var($_REQUEST['collid'], FILTER_SANITIZE_NUMBER_INT) : 0;
 $exchangeId = array_key_exists('exchangeid',$_REQUEST)?$_REQUEST['exchangeid']:0;
 $identifier = array_key_exists('identifier',$_REQUEST)?$_REQUEST['identifier']:0;
 $formSubmit = array_key_exists('formsubmit',$_REQUEST)?$_REQUEST['formsubmit']:'';
@@ -26,12 +26,13 @@ if($collid) $loanManager->setCollId($collid);
 $statusStr = '';
 if($isEditor){
 	if($formSubmit){
+		$sanitizedData = array_map('htmlspecialchars', $_POST);
 		if($formSubmit == 'createExchange'){
-			$exchangeId = $loanManager->createNewExchange($_POST);
+			$exchangeId = $loanManager->createNewExchange($sanitizedData);
 			if(!$exchangeId) $statusStr = $loanManager->getErrorMessage();
 		}
 		elseif($formSubmit == 'Save Exchange'){
-			$statusStr = $loanManager->editExchange($_POST);
+			$statusStr = $loanManager->editExchange($sanitizedData);
 		}
 		elseif ($formSubmit == "delAttachment") {
 			// Delete correspondence attachment
@@ -345,7 +346,7 @@ if($isEditor){
 										foreach($attachments as $attachId => $attachArr){
 											echo '<li><div style="float: left;">' . $attachArr['timestamp'] . ' -</div>';
 											echo '<div style="float: left; margin-left: 5px;"><a href="../../' .
-												$attachArr['path'] . $attachArr['filename']  .'" target="_blank">' .
+												$attachArr['path'] . $attachArr['filename']  .'" target="_blank" rel="noopener noreferrer">' .
 												($attachArr['title'] != "" ? $attachArr['title'] : $attachArr['filename']) . '</a></div>';
 											echo '<a href="exchange.php?collid=' . htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS) . '&exchangeid=' . htmlspecialchars($exchangeId, HTML_SPECIAL_CHARS_FLAGS) . '&attachid=' . htmlspecialchars($attachId, HTML_SPECIAL_CHARS_FLAGS) . '&formsubmit=delAttachment"><img src="../../images/del.png" style="width: 1.2em; margin-left: 5px;"></a></li>';
 										}

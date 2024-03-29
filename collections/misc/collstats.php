@@ -5,14 +5,14 @@ include_once($SERVER_ROOT.'/content/lang/collections/misc/collstats.' . $LANG_TA
 header("Content-Type: text/html; charset=" . $CHARSET);
 ini_set('max_execution_time', 1200); //1200 seconds = 20 minutes
 
-$catID = array_key_exists('catid', $_REQUEST) ? $_REQUEST['catid'] : 0;
+$catID = array_key_exists('catid', $_REQUEST) ? filter_var($_REQUEST['catid'], FILTER_SANITIZE_NUMBER_INT) : 0;
 if(!$catID && isset($DEFAULTCATID) && $DEFAULTCATID) $catID = $DEFAULTCATID;
-$collId = array_key_exists('collid', $_REQUEST) ? $_REQUEST['collid'] : 0;
-$cPartentTaxon = array_key_exists('taxon', $_REQUEST) ? $_REQUEST['taxon'] : '';
-$cCountry = array_key_exists('country', $_REQUEST) ? $_REQUEST['country'] : '';
+$collId = array_key_exists('collid', $_REQUEST) ? filter_var($_REQUEST['collid'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$cPartentTaxon = isset($_REQUEST['taxon']) ? htmlspecialchars($_REQUEST['taxon'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : '';
+$cCountry = isset($_REQUEST['country']) ? htmlspecialchars($_REQUEST['country'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : '';
 $days = array_key_exists('days', $_REQUEST) ? filter_var($_REQUEST['days'], FILTER_SANITIZE_NUMBER_INT) : 365;
 $months = array_key_exists('months', $_REQUEST)? filter_var($_REQUEST['months'], FILTER_SANITIZE_NUMBER_INT) : 12;
-$action = array_key_exists('submitaction', $_REQUEST) ? $_REQUEST['submitaction'] : '';
+$action = array_key_exists('submitaction', $_REQUEST) ? htmlspecialchars($_REQUEST['submitaction'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : '';
 
 //Variable sanitation
 if(!preg_match('/^[0-9,]+$/',$catID)) $catID = 0;
@@ -68,7 +68,11 @@ if($collId){
 			}
 
 			if($collArr['dynamicProperties']){
-				$dynPropTempArr = json_decode($collArr['dynamicProperties'],true);
+				try {
+					$dynPropTempArr = json_decode($collArr['dynamicProperties'], true);
+				} catch (Exception $e) {
+					error_log('Exception: ' . $e->getMessage());
+				}
 
 				if(is_array($dynPropTempArr)){
 					$resultsTemp[$k]['speciesID'] = $dynPropTempArr['SpecimensCountID'];
@@ -250,7 +254,7 @@ if($action != "Update Statistics"){
 
                     $( "#taxon" )
                     // don't navigate away from the field on tab when selecting an item
-                        .bind( "keydown", function( event ) {
+						.on( "keydown", function( event ) {
                             if ( event.keyCode === $.ui.keyCode.TAB &&
                                 $( this ).data( "autocomplete" ).menu.active ) {
                                 event.preventDefault();
@@ -761,22 +765,34 @@ if($action != "Update Statistics"){
 											echo "</li>";
 											echo "<li>";
 											$percGeo = '';
-											if($results['SpecimenCount'] && $results['GeorefCount']){
-												$percGeo = (100* ($results['GeorefCount'] / $results['SpecimenCount']));
+											if($results['SpecimenCount'] && $results['GeorefCount'] && $results['SpecimenCount'] !== 0){
+												try {
+													$percGeo = (100* ($results['GeorefCount'] / $results['SpecimenCount']));
+												} catch (Exception $e) {
+													error_log('Exception: ' . $e->getMessage());
+												}
 											}
 											echo ($results['GeorefCount'] ? number_format($results['GeorefCount']) : 0) . ($percGeo ? " (" . ($percGeo>1 ? round($percGeo) : round($percGeo,2)) . "%)" : '') . " " . $LANG['GEOREFERENCED'];
 											echo "</li>";
 											echo "<li>";
 											$percImg = '';
-											if($results['SpecimenCount'] && $results['TotalImageCount']){
-												$percImg = (100* ($results['TotalImageCount'] / $results['SpecimenCount']));
+											if($results['SpecimenCount'] && $results['TotalImageCount'] && $results['SpecimenCount'] !== 0){
+												try {
+													$percImg = (100* ($results['TotalImageCount'] / $results['SpecimenCount']));
+												} catch (Exception $e) {
+													error_log('Exception: ' . $e->getMessage());
+												}
 											}
 											echo ($results['TotalImageCount'] ? number_format($results['TotalImageCount']) : 0) . ($percImg ? " (" . ($percImg>1 ? round($percImg) : round($percImg,2)) . "%)" : '') . " " . $LANG['OCCS_IMAGED'];
 											echo "</li>";
 											echo "<li>";
 											$percId = '';
-											if($results['SpecimenCount'] && $results['SpecimensCountID']){
-												$percId = (100* ($results['SpecimensCountID'] / $results['SpecimenCount']));
+											if($results['SpecimenCount'] && $results['SpecimensCountID'] && $results['SpecimenCount'] !== 0){
+												try {
+													$percId = (100* ($results['SpecimensCountID'] / $results['SpecimenCount']));
+												} catch (Exception $e) {
+													error_log('Exception: ' . $e->getMessage());
+												}
 											}
 											echo ($results['SpecimensCountID'] ? number_format($results['SpecimensCountID']) : 0) . ($percId?" (" . ($percId>1 ? round($percId) : round($percId,2)) . "%)" : '') . " " . $LANG['IDED_TO_SP'];
 											echo "</li>";
@@ -957,16 +973,20 @@ if($action != "Update Statistics"){
 											echo '<div class="gridlike-form-row-align">'.wordwrap($name,52,"<br />\n",true).'</div>';
 											echo '<div class="gridlike-form-row-align">';
 											if(count($resultsTemp) == 1){
-												echo '<a href="../list.php?db[]=' . htmlspecialchars($collId, HTML_SPECIAL_CHARS_FLAGS) . '&reset=1&taxa=' . htmlspecialchars($name, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank">';
+												echo '<a href="../list.php?db[]=' . htmlspecialchars($collId, HTML_SPECIAL_CHARS_FLAGS) . '&reset=1&taxa=' . htmlspecialchars($name, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank" rel="noopener noreferrer">';
 											}
 											echo number_format($data['SpecimensPerFamily']);
 											if(count($resultsTemp) == 1){
 												echo '</a>';
 											}
 											echo '</div>';
-											echo '<div class="gridlike-form-row-align">'.($data['GeorefSpecimensPerFamily'] ? round(100*($data['GeorefSpecimensPerFamily']/$data['SpecimensPerFamily'])) : 0).'%</div>';
-											echo '<div class="gridlike-form-row-align">'.($data['IDSpecimensPerFamily'] ? round(100*($data['IDSpecimensPerFamily']/$data['SpecimensPerFamily'])) : 0).'%</div>';
-											echo '<div class="gridlike-form-row-align">'.($data['IDGeorefSpecimensPerFamily'] ? round(100*($data['IDGeorefSpecimensPerFamily']/$data['SpecimensPerFamily'])) : 0).'%</div>';
+											try {
+												echo '<div class="gridlike-form-row-align">'.($data['GeorefSpecimensPerFamily'] ? round(100*($data['GeorefSpecimensPerFamily']/$data['SpecimensPerFamily'])) : 0).'%</div>';
+												echo '<div class="gridlike-form-row-align">'.($data['IDSpecimensPerFamily'] ? round(100*($data['IDSpecimensPerFamily']/$data['SpecimensPerFamily'])) : 0).'%</div>';
+												echo '<div class="gridlike-form-row-align">'.($data['IDGeorefSpecimensPerFamily'] ? round(100*($data['IDGeorefSpecimensPerFamily']/$data['SpecimensPerFamily'])) : 0).'%</div>';
+											} catch (Exception $e) {
+												error_log('Exception: ' . $e->getMessage());
+											}
 											echo '</section>';
 											$total = $total + $data['SpecimensPerFamily'];
 										}
@@ -1008,16 +1028,20 @@ if($action != "Update Statistics"){
 											echo '<div class="gridlike-form-row-align">'.wordwrap($name,52,"<br />\n",true).'</div>';
 											echo '<div class="gridlike-form-row-align">';
 											if(count($resultsTemp) == 1){
-												echo '<a href="../list.php?db[]=' . htmlspecialchars($collId, HTML_SPECIAL_CHARS_FLAGS) . '&reset=1&country=' . htmlspecialchars($name, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank">';
+												echo '<a href="../list.php?db[]=' . htmlspecialchars($collId, HTML_SPECIAL_CHARS_FLAGS) . '&reset=1&country=' . htmlspecialchars($name, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank" rel="noopener noreferrer">';
 											}
 											echo number_format($data['CountryCount']);
 											if(count($resultsTemp) == 1){
 												echo '</a>';
 											}
 											echo '</div>';
-											echo '<div class="gridlike-form-row-align">'.($data['GeorefSpecimensPerCountry'] ? round(100*($data['GeorefSpecimensPerCountry']/$data['CountryCount'])) : 0).'%</div>';
-											echo '<div class="gridlike-form-row-align">'.($data['IDSpecimensPerCountry'] ? round(100*($data['IDSpecimensPerCountry']/$data['CountryCount'])) : 0).'%</div>';
-											echo '<div class="gridlike-form-row-align">'.($data['IDGeorefSpecimensPerCountry'] ? round(100*($data['IDGeorefSpecimensPerCountry']/$data['CountryCount'])) : 0).'%</div>';
+											try {
+												echo '<div class="gridlike-form-row-align">'.($data['GeorefSpecimensPerCountry'] ? round(100*($data['GeorefSpecimensPerCountry']/$data['CountryCount'])) : 0).'%</div>';
+												echo '<div class="gridlike-form-row-align">'.($data['IDSpecimensPerCountry'] ? round(100*($data['IDSpecimensPerCountry']/$data['CountryCount'])) : 0).'%</div>';
+												echo '<div class="gridlike-form-row-align">'.($data['IDGeorefSpecimensPerCountry'] ? round(100*($data['IDGeorefSpecimensPerCountry']/$data['CountryCount'])) : 0).'%</div>';
+											} catch (Exception $e) {
+												error_log('Exception: ' . $e->getMessage());
+											}
 											echo '</section>';
 											$total = $total + $data['CountryCount'];
 										}

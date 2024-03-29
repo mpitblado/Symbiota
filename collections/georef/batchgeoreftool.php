@@ -7,42 +7,42 @@ header("Content-Type: text/html; charset=".$CHARSET);
 
 if(!$SYMB_UID) header('Location: ../profile/index.php?refurl=../collections/georef/batchgeoreftool.php?'.htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
 
-$collid = array_key_exists('collid',$_REQUEST)?$_REQUEST['collid']:0;
-$submitAction = array_key_exists('submitaction',$_POST)?$_POST['submitaction']:'';
+$collid = array_key_exists('collid',$_REQUEST) ? $_REQUEST['collid' ] : 0;
+$submitAction = array_key_exists('submitaction',$_POST) ? htmlspecialchars($_POST['submitaction'], HTML_SPECIAL_CHARS_FLAGS) : '';
 
-$qCountry = array_key_exists('qcountry',$_POST)?$_POST['qcountry']:'';
-$qState = array_key_exists('qstate',$_POST)?$_POST['qstate']:'';
-$qCounty = array_key_exists('qcounty',$_POST)?$_POST['qcounty']:'';
-$qMunicipality = array_key_exists('qmunicipality',$_POST)?$_POST['qmunicipality']:'';
-$qLocality = array_key_exists('qlocality',$_POST)?$_POST['qlocality']:'';
-$qDisplayAll = array_key_exists('qdisplayall',$_POST)?$_POST['qdisplayall']:0;
-$qVStatus = array_key_exists('qvstatus',$_POST)?$_POST['qvstatus']:'';
-$qSciname = array_key_exists('qsciname',$_POST)?$_POST['qsciname']:'';
-$qProcessingStatus = array_key_exists('qprocessingstatus',$_POST)?$_POST['qprocessingstatus']:'';
+$qCountry = array_key_exists('qcountry',$_POST) ? htmlspecialchars($_POST['qcountry'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$qState = array_key_exists('qstate',$_POST) ? htmlspecialchars($_POST['qstate'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$qCounty = array_key_exists('qcounty',$_POST) ? htmlspecialchars($_POST['qcounty'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$qMunicipality = array_key_exists('qmunicipality',$_POST) ? htmlspecialchars($_POST['qmunicipality'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$qLocality = array_key_exists('qlocality',$_POST) ? htmlspecialchars($_POST['qlocality'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$qDisplayAll = array_key_exists('qdisplayall',$_POST) ? $_POST['qdisplayall' ] :0;
+$qVStatus = array_key_exists('qvstatus',$_POST) ? htmlspecialchars($_POST['qvstatus'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$qSciname = array_key_exists('qsciname',$_POST) ? htmlspecialchars($_POST['qsciname'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$qProcessingStatus = array_key_exists('qprocessingstatus',$_POST) ? htmlspecialchars($_POST['qprocessingstatus'], HTML_SPECIAL_CHARS_FLAGS) : '';
 
-//$latDeg = array_key_exists('latdeg',$_POST)?$_POST['latdeg']:'';
-//$latMin = array_key_exists('latmin',$_POST)?$_POST['latmin']:'';
-//$latSec = array_key_exists('latsec',$_POST)?$_POST['latsec']:'';
-//$decimalLatitude = array_key_exists('decimallatitude',$_POST)?$_POST['decimallatitude']:'';
-//$latNS = array_key_exists('latns',$_POST)?$_POST['latns']:'';
+//$latDeg = array_key_exists('latdeg',$_POST)? $_POST['latdeg'] : '';
+//$latMin = array_key_exists('latmin',$_POST)? $_POST['latmin'] : '';
+//$latSec = array_key_exists('latsec',$_POST)? $_POST['latsec'] : '';
+//$decimalLatitude = array_key_exists('decimallatitude',$_POST)? $_POST['decimallatitude'] : '';
+//$latNS = array_key_exists('latns',$_POST)? $_POST['latns'] : '';
 
-//$lngDeg = array_key_exists('lngdeg',$_POST)?$_POST['lngdeg']:'';
-//$lngMin = array_key_exists('lngmin',$_POST)?$_POST['lngmin']:'';
-//$lngSec = array_key_exists('lngsec',$_POST)?$_POST['lngsec']:'';
-//$decimalLongitude = array_key_exists('decimallongitude',$_POST)?$_POST['decimallongitude']:'';
-//$lngEW = array_key_exists('lngew',$_POST)?$_POST['lngew']:'';
+//$lngDeg = array_key_exists('lngdeg',$_POST)? $_POST['lngdeg'] : '';
+//$lngMin = array_key_exists('lngmin',$_POST)? $_POST['lngmin'] : '';
+//$lngSec = array_key_exists('lngsec',$_POST)? $_POST['lngsec'] : '';
+//$decimalLongitude = array_key_exists('decimallongitude',$_POST)? $_POST['decimallongitude'] : '';
+//$lngEW = array_key_exists('lngew',$_POST)? $_POST['lngew'] : '';
 
-//$coordinateUncertaintyInMeters = array_key_exists('coordinateuncertaintyinmeters',$_POST)?$_POST['coordinateuncertaintyinmeters']:'';
-//$geodeticDatum = array_key_exists('geodeticdatum',$_POST)?$_POST['geodeticdatum']:'';
-$georeferenceSources = array_key_exists('georeferencesources',$_POST)?$_POST['georeferencesources']:'';
-$georeferenceProtocol = array_key_exists('georeferenceprotocol',$_POST)?$_POST['georeferenceprotocol']:'';
-//$georeferenceRemarks = array_key_exists('georeferenceremarks',$_POST)?$_POST['georeferenceremarks']:'';
-//$footprintWKT = array_key_exists('footprintwkt',$_POST)?$_POST['footprintwkt']:'';
-$georeferenceVerificationStatus = array_key_exists('georeferenceverificationstatus',$_POST)?$_POST['georeferenceverificationstatus']:'';
-//$minimumElevationInMeters = array_key_exists('minimumelevationinmeters',$_POST)?$_POST['minimumelevationinmeters']:'';
-//$maximumElevationInMeters = array_key_exists('maximumelevationinmeters',$_POST)?$_POST['maximumelevationinmeters']:'';
-//$minimumElevationInFeet = array_key_exists('minimumelevationinfeet',$_POST)?$_POST['minimumelevationinfeet']:'';
-//$maximumElevationInFeet = array_key_exists('maximumelevationinfeet',$_POST)?$_POST['maximumelevationinfeet']:'';
+//$coordinateUncertaintyInMeters = array_key_exists('coordinateuncertaintyinmeters',$_POST)? $_POST['coordinateuncertaintyinmeters'] : '';
+//$geodeticDatum = array_key_exists('geodeticdatum',$_POST)? $_POST['geodeticdatum'] : '';
+$georeferenceSources = array_key_exists('georeferencesources',$_POST) ? htmlspecialchars($_POST['georeferencesources'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$georeferenceProtocol = array_key_exists('georeferenceprotocol',$_POST) ? htmlspecialchars($_POST['georeferenceprotocol'], HTML_SPECIAL_CHARS_FLAGS) : '';
+//$georeferenceRemarks = array_key_exists('georeferenceremarks',$_POST) ? htmlspecialchars($_POST['georeferenceremarks'], HTML_SPECIAL_CHARS_FLAGS) : '';
+//$footprintWKT = array_key_exists('footprintwkt',$_POST) ? htmlspecialchars($_POST['footprintwkt'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$georeferenceVerificationStatus = array_key_exists('georeferenceverificationstatus',$_POST) ? htmlspecialchars($_POST['georeferenceverificationstatus'], HTML_SPECIAL_CHARS_FLAGS) : '';
+//$minimumElevationInMeters = array_key_exists('minimumelevationinmeters',$_POST) ? htmlspecialchars($_POST['minimumelevationinmeters'], HTML_SPECIAL_CHARS_FLAGS) : '';
+//$maximumElevationInMeters = array_key_exists('maximumelevationinmeters',$_POST) ? htmlspecialchars($_POST['maximumelevationinmeters'], HTML_SPECIAL_CHARS_FLAGS) : '';
+//$minimumElevationInFeet = array_key_exists('minimumelevationinfeet',$_POST) ? htmlspecialchars($_POST['minimumelevationinfeet'], HTML_SPECIAL_CHARS_FLAGS) : '';
+//$maximumElevationInFeet = array_key_exists('maximumelevationinfeet',$_POST) ? htmlspecialchars($_POST['maximumelevationinfeet'], HTML_SPECIAL_CHARS_FLAGS) : '';
 
 if(is_array($collid)) $collid = implode(',',$collid);
 
