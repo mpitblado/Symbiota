@@ -20,7 +20,7 @@ class InstitutionManager extends Manager{
 			$sql = 'SELECT iid, institutioncode, institutionname, institutionname2, address1, address2, city, stateprovince, postalcode, country, phone, contact, email, url, notes
 				FROM institutions
 				WHERE iid = ?';
-			if($stmt = $this->prepare($sql)){
+			if($stmt = $this->conn->prepare($sql)){
 				$stmt->bind_param('i', $this->iid);
 				$stmt->execute();
 				$rs = $stmt->get_result();
@@ -55,7 +55,7 @@ class InstitutionManager extends Manager{
 			$sql = 'UPDATE institutions SET institutioncode = ?, institutionname = ?, institutionname2 = ?, address1 = ?, address2 = ?, city = ?, stateprovince = ?,
 				postalcode = ?, country = ?, phone = ?, contact = ?, email = ?, url = ?, notes = ?, modifiedUid = ?, modifiedTimeStamp = now()
 				WHERE iid = ?';
-			if($stmt = $this->prepare($sql)){
+			if($stmt = $this->conn->prepare($sql)){
 				$stmt->bind_param('ssssssssssssssii', $institutionCode, $institutionName, $institutionName2, $address1, $address2,
 					$city, $stateProvince, $postalCode, $country, $phone, $contact, $email, $url, $notes, $modifiedUid, $postData['iid']);
 				$stmt->execute();
@@ -90,7 +90,7 @@ class InstitutionManager extends Manager{
 		$modifiedUid = $GLOBALS['SYMB_UID'];
 		$sql = 'INSERT INTO institutions (institutioncode, institutionname, institutionname2, address1, address2, city, stateprovince, postalcode, country, phone, contact, email, url, notes, modifiedUid, modifiedTimeStamp)
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now())';
-		if($stmt = $this->prepare($sql)){
+		if($stmt = $this->conn->prepare($sql)){
 			$stmt->bind_param('ssssssssssssssi', $institutionCode, $institutionName, $institutionName2, $address1, $address2,
 				$city, $stateProvince, $postalCode, $country, $phone, $contact, $email, $url, $notes, $modifiedUid);
 			$stmt->execute();
@@ -114,7 +114,7 @@ class InstitutionManager extends Manager{
 		$status = true;
 		if($this->verifyInstitutionDeletion($delIid)){
 			$sql = 'DELETE FROM institutions WHERE iid = ?';
-			if($stmt = $this->prepare($sql)){
+			if($stmt = $this->conn->prepare($sql)){
 				$stmt->bind_param('i', $delIid);
 				$stmt->execute();
 				if($stmt->affected_rows || !$stmt->error) $status = true;
@@ -135,7 +135,7 @@ class InstitutionManager extends Manager{
 			FROM omcollections
 			WHERE iid = ?
 			ORDER BY collectionName, institutionCode, collectionCode';
-		if($stmt = $this->prepare($sql)){
+		if($stmt = $this->conn->prepare($sql)){
 			$stmt->bind_param('i', $iid);
 			$stmt->execute();
 			$collectionName = '';
@@ -153,7 +153,7 @@ class InstitutionManager extends Manager{
 
 		//Check outgoing and incoming loans
 		$sql = 'SELECT loanid FROM omoccurloans WHERE iidOwner = ? OR iidBorrower = ?';
-		if($stmt = $this->prepare($sql)){
+		if($stmt = $this->conn->prepare($sql)){
 			$stmt->bind_param('ii', $iid, $iid);
 			$stmt->execute();
 			$loanID = '';
@@ -175,7 +175,7 @@ class InstitutionManager extends Manager{
 	public function updateCollectionLink($collid, $iid){
 		$status = false;
 		$sql = 'UPDATE omcollections SET iid = ? WHERE collid = ?';
-		if($stmt = $this->prepare($sql)){
+		if($stmt = $this->conn->prepare($sql)){
 			$stmt->bind_param('ii', $iid, $collid);
 			$stmt->execute();
 			if($stmt->affected_rows || !$stmt->error) $status = true;

@@ -32,10 +32,10 @@ elseif(array_key_exists("CollAdmin",$USER_RIGHTS)){
 	}
 }
 if($editorCode){
-	if($formSubmit == "Add Institution"){
+	if($formSubmit == 'Add Institution'){
 		if($instManager->insertInstitution($_POST)){
-			$iid = $instManager->getInstitutionId()
-			$statusStr = 'SUCCESS! Institution added.';
+			$iid = $instManager->getInstitutionId();
+			$statusStr = 'SUCCESS, institution added!';
 			if($targetCollid) header('Location: ../misc/collprofiles.php?collid='.$targetCollid);
 		}
 		else{
@@ -44,7 +44,7 @@ if($editorCode){
 	}
 	else{
 		if($editorCode > 1){
-			if($formSubmit == "Update Institution Address"){
+			if($formSubmit == 'Update Institution Address'){
 				if($instManager->updateInstitution($_POST)){
 					if($targetCollid) header('Location: ../misc/collprofiles.php?collid='.$targetCollid);
 				}
@@ -152,9 +152,6 @@ include($SERVER_ROOT.'/includes/header.php');
 <div class='navpath'>
 	<a href='../../index.php'>Home</a> &gt;&gt;
 	<?php
-	if(!$targetCollid && count($collList) == 1){
-		$targetCollid = key($collList);
-	}
 	if($targetCollid){
 		echo '<a href="../misc/collprofiles.php?collid=' . htmlspecialchars($targetCollid, HTML_SPECIAL_CHARS_FLAGS) . '&emode=1">' . htmlspecialchars($collList[$targetCollid], HTML_SPECIAL_CHARS_FLAGS) . ' Management</a> &gt;&gt;';
 	}
