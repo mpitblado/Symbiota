@@ -26,13 +26,12 @@ if($collid) $loanManager->setCollId($collid);
 $statusStr = '';
 if($isEditor){
 	if($formSubmit){
-		$sanitizedData = array_map('htmlspecialchars', $_POST);
 		if($formSubmit == 'createExchange'){
-			$exchangeId = $loanManager->createNewExchange($sanitizedData);
+			$exchangeId = htmlspecialchars($loanManager->createNewExchange($_POST), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);
 			if(!$exchangeId) $statusStr = $loanManager->getErrorMessage();
 		}
 		elseif($formSubmit == 'Save Exchange'){
-			$statusStr = $loanManager->editExchange($sanitizedData);
+			$statusStr = htmlspecialchars($loanManager->editExchange($_POST), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);
 		}
 		elseif ($formSubmit == "delAttachment") {
 			// Delete correspondence attachment
