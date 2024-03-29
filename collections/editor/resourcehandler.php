@@ -3,10 +3,10 @@ include_once('../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceEditorResource.php');
 header("Content-Type: text/html; charset=".$CHARSET);
 
-$occid = $_POST['occid'];
-$collid = $_POST['collid'];
-$occIndex = $_POST['occindex'];
-$action = (isset($_POST['submitaction'])?$_POST['submitaction']:'');
+$occid = array_key_exists('occid', $_POST) ? filter_var($_POST['occid'], FILTER_SANITIZE_NUMBER_INT) : 0 ;
+$collid = array_key_exists('collid', $_POST) ? filter_var($_POST['collid'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$occIndex = array_key_exists('occindex', $_POST) ? filter_var($_POST['occindex'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$action = (isset($_POST['submitaction']) ? $_POST['submitaction'] : '');
 
 //Sanitation
 if(!is_numeric($occid)) $occid = 0;
