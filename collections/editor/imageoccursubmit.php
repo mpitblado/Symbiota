@@ -6,7 +6,7 @@ else include_once($SERVER_ROOT.'/content/lang/collections/editor/imageoccursubmi
 header("Content-Type: text/html; charset=".$CHARSET);
 if(!$SYMB_UID) header('Location: ../../profile/index.php?refurl=../collections/editor/imageoccursubmit.php?'.htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
 
-$collid  = $_REQUEST['collid'];
+$collid  = array_key_exists('collid', $_REQUEST) ? filter_var($_REQUEST['collid'], FILTER_SANITIZE_NUMBER_INT) : 0;
 $action = array_key_exists('action',$_POST)?$_POST['action']:'';
 
 $occurManager = new OccurrenceEditorImages();
@@ -30,7 +30,7 @@ if($isEditor){
 	if($action == 'Submit Occurrence'){
 		if($occurManager->addImageOccurrence($_POST)){
 			$occid = $occurManager->getOccid();
-			if($occid) $statusStr = $LANG['NEW_RECORD_CREATED'].': <a href="occurrenceeditor.php?occid=' . htmlspecialchars($occid, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank">' . htmlspecialchars($occid, HTML_SPECIAL_CHARS_FLAGS) . '</a>';
+			if($occid) $statusStr = $LANG['NEW_RECORD_CREATED'].': <a href="occurrenceeditor.php?occid=' . htmlspecialchars($occid, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank" rel="noopener">' . htmlspecialchars($occid, HTML_SPECIAL_CHARS_FLAGS) . '</a>';
 		}
 		else{
 			$statusStr = $occurManager->getErrorStr();
