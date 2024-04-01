@@ -4,10 +4,10 @@ include_once($SERVER_ROOT.'/classes/ChecklistVoucherReport.php');
 if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/checklists/vamissingtaxa.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT . '/content/lang/checklists/vamissingtaxa.' . $LANG_TAG . '.php');
 else include_once($SERVER_ROOT.'/content/lang/checklists/vamissingtaxa.en.php');
 
-$clid = array_key_exists("clid",$_REQUEST)?$_REQUEST["clid"]:0;
-$pid = array_key_exists("pid",$_REQUEST)?$_REQUEST["pid"]:"";
-$displayMode = (array_key_exists('displaymode',$_REQUEST)?$_REQUEST['displaymode']:0);
-$startIndex = array_key_exists("start",$_REQUEST)?$_REQUEST["start"]:0;
+$clid = array_key_exists('clid', $_REQUEST) ? filter_var($_REQUEST['clid'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$pid = array_key_exists('pid', $_REQUEST) ? htmlspecialchars($_REQUEST['pid'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : "";
+$displayMode = array_key_exists('displayMode', $_REQUEST) ? filter_var($_REQUEST['displayMode'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$startIndex = array_key_exists('start', $_REQUEST) ? filter_var($_REQUEST['start'], FILTER_SANITIZE_NUMBER_INT) : 0;
 
 $vManager = new ChecklistVoucherReport();
 $vManager->setClid($clid);
@@ -39,7 +39,7 @@ if($isEditor){
 				<a href="voucheradmin.php?clid=<?php echo htmlspecialchars($clid, HTML_SPECIAL_CHARS_FLAGS) . '&pid=' . htmlspecialchars($pid, HTML_SPECIAL_CHARS_FLAGS) . '&displaymode=' . htmlspecialchars($displayMode, HTML_SPECIAL_CHARS_FLAGS); ?>&tabindex=1"><img src="../images/refresh.png" style="width:1.2em;vertical-align: middle;" title="<?php echo htmlspecialchars($LANG['REFRESH'], HTML_SPECIAL_CHARS_FLAGS); ?>" /></a>
 			</span>
 			<span style="margin-left:5px;">
-				<a href="voucherreporthandler.php?rtype=<?php echo htmlspecialchars(($displayMode==2?'problemtaxacsv':'missingoccurcsv'), HTML_SPECIAL_CHARS_FLAGS) . '&clid=' . htmlspecialchars($clid, HTML_SPECIAL_CHARS_FLAGS); ?>" target="_blank" title="<?php echo htmlspecialchars($LANG['DOWNLOAD'], HTML_SPECIAL_CHARS_FLAGS); ?>">
+				<a href="voucherreporthandler.php?rtype=<?php echo htmlspecialchars(($displayMode==2?'problemtaxacsv':'missingoccurcsv'), HTML_SPECIAL_CHARS_FLAGS) . '&clid=' . htmlspecialchars($clid, HTML_SPECIAL_CHARS_FLAGS); ?>" target="_blank" rel="noopener" title="<?php echo htmlspecialchars($LANG['DOWNLOAD'], HTML_SPECIAL_CHARS_FLAGS); ?>">
 					<img src="<?php echo $CLIENT_ROOT; ?>/images/dl.png" style="width:1.3em;vertical-align: middle;" />
 				</a>
 			</span>
@@ -88,11 +88,11 @@ if($isEditor){
 									if(strtolower($sciname) != strtolower($oArr['o_sn'])) $sciStr .= ' (='.$sciname.')';
 									echo '<tr>';
 									echo '<td><input name="occids[]" type="checkbox" value="'.$occid.'-'.$oArr['tid'].'" /></td>';
-									echo '<td><a href="../taxa/index.php?taxon=' . htmlspecialchars($oArr['tid'], HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank">' . htmlspecialchars($sciStr, HTML_SPECIAL_CHARS_FLAGS) . '</a></td>';
+									echo '<td><a href="../taxa/index.php?taxon=' . htmlspecialchars($oArr['tid'], HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank" rel="noopener">' . htmlspecialchars($sciStr, HTML_SPECIAL_CHARS_FLAGS) . '</a></td>';
 									echo '<td>';
 									echo $oArr['recordedby'].' '.$oArr['recordnumber'].'<br/>';
 									if($oArr['eventdate']) echo $oArr['eventdate'].'<br/>';
-									echo '<a href="../collections/individual/index.php?occid=' . htmlspecialchars($occid, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank">';
+									echo '<a href="../collections/individual/index.php?occid=' . htmlspecialchars($occid, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank" rel="noopener">';
 									echo $oArr['collcode'];
 									echo '</a>';
 									echo '</td>';
@@ -150,7 +150,7 @@ if($isEditor){
 									echo '<td>';
 									echo $oArr['recordedby'].' '.$oArr['recordnumber'].'<br/>';
 									if($oArr['eventdate']) echo $oArr['eventdate'].'<br/>';
-									echo '<a href="../collections/individual/index.php?occid=' . htmlspecialchars($occid, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank">';
+									echo '<a href="../collections/individual/index.php?occid=' . htmlspecialchars($occid, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank" rel="noopener">';
 									echo $oArr['collcode'];
 									echo '</a>';
 									echo '</td>';
