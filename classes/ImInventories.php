@@ -663,7 +663,7 @@ class ImInventories extends Manager{
 			if($postField){
 				$value = trim($inputArr[$postField]);
 				if(!$value) $value = null;
-				$this->parameterArr[$field] = htmlspecialchars($value, HTML_SPECIAL_CHARS_FLAGS);
+				$this->parameterArr[$field] = htmlspecialchars($value, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);
 				$this->typeStr .= $type;
 			}
 		}

@@ -104,7 +104,7 @@ if($isEditor && array_key_exists('formsubmit',$_POST)){
 $taxaArray = $clManager->getTaxaList($pageNumber,($printMode?0:500));
 
 //Output variable sanitation
-$taxonFilter = htmlspecialchars($taxonFilter, HTML_SPECIAL_CHARS_FLAGS);
+$taxonFilter = htmlspecialchars($taxonFilter, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $LANG_TAG ?>">
@@ -769,7 +769,7 @@ $taxonFilter = htmlspecialchars($taxonFilter, HTML_SPECIAL_CHARS_FLAGS);
 											$voucStr .= '<a href="#" id="morevouch-' . $tid . '" onclick="return toggleVoucherDiv(' . $tid . ');">' . $LANG['MORE'] . '...</a>'.
 												'<span id="voucdiv-'.$tid.'" style="display:none;">';
 										}
-										$voucStr .= '<a href="#" onclick="return openIndividualPopup(' . $occid . ')">' . htmlspecialchars($collName, HTML_SPECIAL_CHARS_FLAGS) . '</a>, ';
+										$voucStr .= '<a href="#" onclick="return openIndividualPopup(' . $occid . ')">' . htmlspecialchars($collName, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a>, ';
 										$voucCnt++;
 									}
 									if($voucCnt > 4 && !$printMode) $voucStr .= '</span><a href="#" id="lessvouch-' . $tid . '" style="display:none;" onclick="return toggleVoucherDiv(' . $tid . ');">...' . $LANG['LESS'] . '</a>';

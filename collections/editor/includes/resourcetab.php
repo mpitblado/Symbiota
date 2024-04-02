@@ -438,10 +438,10 @@ $dupClusterArr = $dupManager->getClusterArr($occid);
 		if($checklistArr){
 			foreach($checklistArr as $vClid => $vClName){
 				echo '<div style="margin:3px">';
-				echo '<a href="../../checklists/checklist.php?showvouchers=1&clid=' . htmlspecialchars($vClid, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank">' . htmlspecialchars($vClName, HTML_SPECIAL_CHARS_FLAGS) . '</a> ';
+				echo '<a href="../../checklists/checklist.php?showvouchers=1&clid=' . htmlspecialchars($vClid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" target="_blank">' . htmlspecialchars($vClName, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a> ';
 				if(array_key_exists($vClid, $userChecklists)){
 					$href = 'occurrenceeditor.php?submitaction=deletevoucher&delclid='.$vClid.'&occid='.$occid.'&tabtarget=3';
-					echo '<a href="' . htmlspecialchars($href, HTML_SPECIAL_CHARS_FLAGS) .'" title="' . htmlspecialchars($LANG['DELETE_VOUCHER_LINK'], HTML_SPECIAL_CHARS_FLAGS) . '" onclick="return confirm(\'' . htmlspecialchars($LANG['SURE_REMOVE_VOUCHER'], HTML_SPECIAL_CHARS_FLAGS) . '\'">';
+					echo '<a href="' . htmlspecialchars($href, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) .'" title="' . htmlspecialchars($LANG['DELETE_VOUCHER_LINK'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" onclick="return confirm(\'' . htmlspecialchars($LANG['SURE_REMOVE_VOUCHER'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '\'">';
 					echo '<img src="../../images/drop.png" style="width:1em;" />';
 					echo '</a>';
 				}
@@ -583,7 +583,7 @@ $dupClusterArr = $dupManager->getClusterArr($occid);
 					<div style="margin-left:15px;"><b><?php echo $LANG['IDENTIFIER']; ?>:</b> <?php echo $gArr['id']; ?></div>
 					<div style="margin-left:15px;"><b><?php echo $LANG['LOCUS']; ?>:</b> <?php echo $gArr['locus']; ?></div>
 					<div style="margin-left:15px;">
-						<b><?php echo $LANG['URL']; ?>:</b> <a href="<?php echo htmlspecialchars($gArr['resourceurl'], HTML_SPECIAL_CHARS_FLAGS); ?>" target="_blank"><?php echo htmlspecialchars($gArr['resourceurl'], HTML_SPECIAL_CHARS_FLAGS); ?></a>
+						<b><?php echo $LANG['URL']; ?>:</b> <a href="<?php echo htmlspecialchars($gArr['resourceurl'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>" target="_blank"><?php echo htmlspecialchars($gArr['resourceurl'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a>
 					</div>
 					<div style="margin-left:15px;"><b><?php echo $LANG['NOTES']; ?>:</b> <?php echo $gArr['notes']; ?></div>
 				</div>

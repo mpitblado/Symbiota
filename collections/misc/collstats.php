@@ -233,8 +233,8 @@ if($action != "Update Statistics"){
 			<?php
 			include_once($SERVER_ROOT.'/includes/head.php');
 			?>
-			<link href="<?php echo htmlspecialchars($CSS_BASE_PATH, HTML_SPECIAL_CHARS_FLAGS); ?>/symbiota/collections/listdisplay.css" type="text/css" rel="stylesheet" />
-			<link href="<?php echo htmlspecialchars($CSS_BASE_PATH, HTML_SPECIAL_CHARS_FLAGS); ?>/symbiota/collections/sharedCollectionStyling.css" type="text/css" rel="stylesheet" />
+			<link href="<?php echo htmlspecialchars($CSS_BASE_PATH, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>/symbiota/collections/listdisplay.css" type="text/css" rel="stylesheet" />
+			<link href="<?php echo htmlspecialchars($CSS_BASE_PATH, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>/symbiota/collections/sharedCollectionStyling.css" type="text/css" rel="stylesheet" />
             <script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
 			<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-ui.min.js" type="text/javascript"></script>
 			<script src="../../js/symb/collections.index.js" type="text/javascript"></script>
@@ -399,8 +399,8 @@ if($action != "Update Statistics"){
 			else{
 				?>
 				<div class='navpath'>
-					<a href='../../index.php'><?php echo htmlspecialchars($LANG['HOME'], HTML_SPECIAL_CHARS_FLAGS); ?></a> &gt;&gt;
-					<a href='collprofiles.php'><?php echo htmlspecialchars($LANG['COLLECTIONS'], HTML_SPECIAL_CHARS_FLAGS); ?></a> &gt;&gt;
+					<a href='../../index.php'><?php echo htmlspecialchars($LANG['HOME'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> &gt;&gt;
+					<a href='collprofiles.php'><?php echo htmlspecialchars($LANG['COLLECTIONS'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> &gt;&gt;
 					<b><?php echo $LANG['COL_STATS']; ?></b>
 				</div>
 				<?php
@@ -411,10 +411,10 @@ if($action != "Update Statistics"){
 				<h1><?php echo $LANG['SELECT_COLS']; ?></h1>
 				<div id="tabs" class="tabby">
 					<ul class="full-tab">
-						<li><a href="#specobsdiv"><?php echo htmlspecialchars($LANG['COLLECTIONS'], HTML_SPECIAL_CHARS_FLAGS); ?></a></li>
+						<li><a href="#specobsdiv"><?php echo htmlspecialchars($LANG['COLLECTIONS'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a></li>
 						<?php
                         if($action == "Run Statistics"){
-							echo '<li><a href="#statsdiv">' . htmlspecialchars($LANG['STATISTICS'], HTML_SPECIAL_CHARS_FLAGS) . '</a></li>';
+							echo '<li><a href="#statsdiv">' . htmlspecialchars($LANG['STATISTICS'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a></li>';
 						}
 						?>
 					</ul>
@@ -448,7 +448,7 @@ if($action != "Update Statistics"){
 									</div>
 									<div>
 										<input id="dballcb" name="db[]" class="specobs" value='all' type="checkbox" onclick="selectAll(this);" />
-										<label for="dballcb"><?php echo $LANG['SEL_OR_DESEL']; ?> <a href="collprofiles.php"><?php echo htmlspecialchars($LANG['COLLECTIONS'], HTML_SPECIAL_CHARS_FLAGS); ?></a></label>
+										<label for="dballcb"><?php echo $LANG['SEL_OR_DESEL']; ?> <a href="collprofiles.php"><?php echo htmlspecialchars($LANG['COLLECTIONS'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a></label>
 									</div>
 									<?php
 									$collArrIndex = 0;
@@ -519,7 +519,7 @@ if($action != "Update Statistics"){
 																		<div class="gridlike-form-row bottom-breathing-room-rel">
 																				<input id="db-<?php echo $collid?>" name="db[]" value="<?php echo $collid; ?>" type="checkbox" class="cat-<?php echo $idStr; ?>" onclick="unselectCat('cat-<?php echo $idStr; ?>-Input')" <?php echo ($collIdArr&&in_array($collid,$collIdArr)?'checked':''); ?> />
 																				<label for="db-<?php echo $collid?>">
-																					<a href='collprofiles.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>'>
+																					<a href='collprofiles.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>'>
 																						<?php
 																						$codeStr = ' ('.$collName2['instcode'];
 																						if($collName2['collcode']) $codeStr .= '-'.$collName2['collcode'];
@@ -562,7 +562,7 @@ if($action != "Update Statistics"){
 															<label for="current-collid">Collection ID TODO</label>
 														</div>
 														<div>
-															<a href='collprofiles.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>'>
+															<a href='collprofiles.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>'>
 																<?php
 																$codeStr = ' ('.$cArr['instcode'];
 																if($cArr['collcode']) $codeStr .= '-'.$cArr['collcode'];
@@ -652,7 +652,7 @@ if($action != "Update Statistics"){
 																					<div>
 																						<input class="input-margin cat-<?php echo $idStr; ?>" id="db-<?php echo $collid ?>" name="db[]" value="<?php echo $collid; ?>" type="checkbox" onclick="unselectCat('cat-<?php echo $idStr; ?>-Input')" <?php echo ($collIdArr&&in_array($collid,$collIdArr)?'checked':''); ?> />
 																						<label for="db-<?php echo $collid ?>">
-																							<a class="rel-fontsize" href = 'collprofiles.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>'>
+																							<a class="rel-fontsize" href = 'collprofiles.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>'>
 																								<?php
 																								$codeStr = ' ('.$collName2['instcode'];
 																								if($collName2['collcode']) $codeStr .= '-'.$collName2['collcode'];
@@ -693,7 +693,7 @@ if($action != "Update Statistics"){
 															</div>
 															<div class="gridlike-form-row bottom-breathing-room-rel">
 																<div class="collectiontitle">
-																	<a href = 'collprofiles.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>'>
+																	<a href = 'collprofiles.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>'>
 																		<?php
 																		$codeStr = ' ('.$cArr['instcode'];
 																		if($cArr['collcode']) $codeStr .= '-'.$cArr['collcode'];
@@ -973,7 +973,7 @@ if($action != "Update Statistics"){
 											echo '<div class="gridlike-form-row-align">'.wordwrap($name,52,"<br />\n",true).'</div>';
 											echo '<div class="gridlike-form-row-align">';
 											if(count($resultsTemp) == 1){
-												echo '<a href="../list.php?db[]=' . htmlspecialchars($collId, HTML_SPECIAL_CHARS_FLAGS) . '&reset=1&taxa=' . htmlspecialchars($name, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank" rel="noopener noreferrer">';
+												echo '<a href="../list.php?db[]=' . htmlspecialchars($collId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&reset=1&taxa=' . htmlspecialchars($name, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" target="_blank" rel="noopener noreferrer">';
 											}
 											echo number_format($data['SpecimensPerFamily']);
 											if(count($resultsTemp) == 1){
@@ -1028,7 +1028,7 @@ if($action != "Update Statistics"){
 											echo '<div class="gridlike-form-row-align">'.wordwrap($name,52,"<br />\n",true).'</div>';
 											echo '<div class="gridlike-form-row-align">';
 											if(count($resultsTemp) == 1){
-												echo '<a href="../list.php?db[]=' . htmlspecialchars($collId, HTML_SPECIAL_CHARS_FLAGS) . '&reset=1&country=' . htmlspecialchars($name, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank" rel="noopener noreferrer">';
+												echo '<a href="../list.php?db[]=' . htmlspecialchars($collId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&reset=1&country=' . htmlspecialchars($name, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" target="_blank" rel="noopener noreferrer">';
 											}
 											echo number_format($data['CountryCount']);
 											if(count($resultsTemp) == 1){

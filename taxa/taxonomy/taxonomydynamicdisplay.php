@@ -110,8 +110,8 @@ reset($treePath);
 	include($SERVER_ROOT.'/includes/header.php');
 	?>
 	<div class="navpath">
-		<a href="../../index.php"><?php echo htmlspecialchars((isset($LANG['HOME'])?$LANG['HOME']:'Home'), HTML_SPECIAL_CHARS_FLAGS); ?></a> &gt;&gt;
-		<a href="taxonomydynamicdisplay.php"><b><?php echo htmlspecialchars((isset($LANG['TAX_EXPLORE'])?$LANG['TAX_EXPLORE']:'Taxonomy Explorer'), HTML_SPECIAL_CHARS_FLAGS); ?></b></a>
+		<a href="../../index.php"><?php echo htmlspecialchars((isset($LANG['HOME'])?$LANG['HOME']:'Home'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> &gt;&gt;
+		<a href="taxonomydynamicdisplay.php"><b><?php echo htmlspecialchars((isset($LANG['TAX_EXPLORE'])?$LANG['TAX_EXPLORE']:'Taxonomy Explorer'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></b></a>
 	</div>
 	<!-- This is inner text! -->
 	<div id="innertext">

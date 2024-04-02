@@ -62,8 +62,8 @@ if($isEditor){
 	include($SERVER_ROOT.'/includes/header.php');
 	?>
 	<div class="navpath">
-		<a href="../../index.php"><?php echo htmlspecialchars((isset($LANG['HOME']) ? $LANG['HOME'] : 'Home'), HTML_SPECIAL_CHARS_FLAGS); ?></a> &gt;&gt;
-		<a href="taxonomydisplay.php"><?php echo htmlspecialchars((isset($LANG['TAX_TREE_VIEW']) ? $LANG['TAX_TREE_VIEW'] : 'Taxonomy Tree Viewer'), HTML_SPECIAL_CHARS_FLAGS); ?></a> &gt;&gt;
+		<a href="../../index.php"><?php echo htmlspecialchars((isset($LANG['HOME']) ? $LANG['HOME'] : 'Home'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> &gt;&gt;
+		<a href="taxonomydisplay.php"><?php echo htmlspecialchars((isset($LANG['TAX_TREE_VIEW']) ? $LANG['TAX_TREE_VIEW'] : 'Taxonomy Tree Viewer'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> &gt;&gt;
 		<b><?php echo (isset($LANG['TAXONOMY_LOADER']) ? $LANG['TAXONOMY_LOADER'] : 'Taxonomy Loader'); ?></b>
 	</div>
 	<!-- This is inner text! -->
@@ -163,7 +163,7 @@ if($isEditor){
 						<input type="text" id="parentname" name="parentname" class='search-bar' />
 						<span id="addparentspan" style="display:none;">
 							<a id="addparentanchor" href="taxonomyloader.php?target=" target="_blank">
-								<?php echo htmlspecialchars((isset($LANG['ADD_PARENT']) ? $LANG['ADD_PARENT'] : 'Add Parent'), HTML_SPECIAL_CHARS_FLAGS); ?>
+								<?php echo htmlspecialchars((isset($LANG['ADD_PARENT']) ? $LANG['ADD_PARENT'] : 'Add Parent'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 							</a>
 						</span>
 						<input id="parenttid" name="parenttid" type="hidden" value="" />

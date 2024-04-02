@@ -113,8 +113,8 @@ if($isEditor){
 	else{
 		?>
 		<div class="navpath">
-			<a href="../../index.php"><?php echo htmlspecialchars((isset($LANG['HOME'])?$LANG['HOME']:'Home'), HTML_SPECIAL_CHARS_FLAGS); ?></a> &gt;&gt;
-			<a href="taxonomydisplay.php"><?php echo htmlspecialchars((isset($LANG['TAX_TREE_VIEW'])?$LANG['TAX_TREE_VIEW']:'Taxonomy Tree Viewer'), HTML_SPECIAL_CHARS_FLAGS); ?></a> &gt;&gt;
+			<a href="../../index.php"><?php echo htmlspecialchars((isset($LANG['HOME'])?$LANG['HOME']:'Home'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> &gt;&gt;
+			<a href="taxonomydisplay.php"><?php echo htmlspecialchars((isset($LANG['TAX_TREE_VIEW'])?$LANG['TAX_TREE_VIEW']:'Taxonomy Tree Viewer'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> &gt;&gt;
 			<b><?php echo (isset($LANG['TAXONOMY_EDITOR'])?$LANG['TAXONOMY_EDITOR']:'Taxonomy Editor'); ?></b>
 		</div>
 		<?php
@@ -136,7 +136,7 @@ if($isEditor){
 			$hierarchyArr = $taxonEditorObj->getHierarchyArr()
 			?>
 			<div style="float:right;" title="<?php echo (isset($LANG['GO_TAX_DISPLAY'])?$LANG['GO_TAX_DISPLAY']:'Go to taxonomy display'); ?>">
-				<a href="taxonomydisplay.php?target=<?php echo htmlspecialchars($taxonEditorObj->getUnitName1(), HTML_SPECIAL_CHARS_FLAGS);?>&showsynonyms=1">
+				<a href="taxonomydisplay.php?target=<?php echo htmlspecialchars($taxonEditorObj->getUnitName1(), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);?>&showsynonyms=1">
 					<img style='border:0px;width:1.3em;' src='../../images/toparent.png'/>
 				</a>
 			</div>
@@ -147,18 +147,18 @@ if($isEditor){
 			</div>
 			<h1>
 				<?php
-				echo "<a href='../profile/tpeditor.php?tid=" . htmlspecialchars($taxonEditorObj->getTid(), HTML_SPECIAL_CHARS_FLAGS) . "' style='color:inherit;text-decoration:none;'>";
+				echo "<a href='../profile/tpeditor.php?tid=" . htmlspecialchars($taxonEditorObj->getTid(), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . "' style='color:inherit;text-decoration:none;'>";
 				echo "<i>".$taxonEditorObj->getSciName()."</i> ".$taxonEditorObj->getAuthor()." [".$taxonEditorObj->getTid()."]";
 				echo "</a>"
 				?>
 			</h1>
 			<div id="tabs" class="taxondisplaydiv">
 				<ul>
-					<li><a href="#editorDiv"><?php echo htmlspecialchars((isset($LANG['EDITOR'])?$LANG['EDITOR']:'Editor'), HTML_SPECIAL_CHARS_FLAGS); ?></a></li>
-					<li><a href="#taxonstatusdiv"><?php echo htmlspecialchars((isset($LANG['TAX_STATUS'])?$LANG['TAX_STATUS']:'Taxonomic Status'), HTML_SPECIAL_CHARS_FLAGS); ?></a></li>
-					<li><a href="#hierarchydiv"><?php echo htmlspecialchars((isset($LANG['HIERARCHY'])?$LANG['HIERARCHY']:'Hierarchy'), HTML_SPECIAL_CHARS_FLAGS); ?></a></li>
-					<li><a href="taxonomychildren.php?tid=<?php echo htmlspecialchars($tid, HTML_SPECIAL_CHARS_FLAGS) . '&taxauthid=' . htmlspecialchars($taxAuthId, HTML_SPECIAL_CHARS_FLAGS); ?>"><?php echo htmlspecialchars((isset($LANG['CHILDREN_TAXA'])?$LANG['CHILDREN_TAXA']:'Children Taxa'), HTML_SPECIAL_CHARS_FLAGS); ?></a></li>
-					<li><a href="taxonomydelete.php?tid=<?php echo htmlspecialchars($tid, HTML_SPECIAL_CHARS_FLAGS); ?>&genusstr=<?php echo htmlspecialchars($taxonEditorObj->getUnitName1(), HTML_SPECIAL_CHARS_FLAGS); ?>"><?php echo htmlspecialchars((isset($LANG['DELETE'])?$LANG['DELETE']:'Delete'), HTML_SPECIAL_CHARS_FLAGS); ?></a></li>
+					<li><a href="#editorDiv"><?php echo htmlspecialchars((isset($LANG['EDITOR'])?$LANG['EDITOR']:'Editor'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a></li>
+					<li><a href="#taxonstatusdiv"><?php echo htmlspecialchars((isset($LANG['TAX_STATUS'])?$LANG['TAX_STATUS']:'Taxonomic Status'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a></li>
+					<li><a href="#hierarchydiv"><?php echo htmlspecialchars((isset($LANG['HIERARCHY'])?$LANG['HIERARCHY']:'Hierarchy'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a></li>
+					<li><a href="taxonomychildren.php?tid=<?php echo htmlspecialchars($tid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&taxauthid=' . htmlspecialchars($taxAuthId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>"><?php echo htmlspecialchars((isset($LANG['CHILDREN_TAXA'])?$LANG['CHILDREN_TAXA']:'Children Taxa'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a></li>
+					<li><a href="taxonomydelete.php?tid=<?php echo htmlspecialchars($tid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>&genusstr=<?php echo htmlspecialchars($taxonEditorObj->getUnitName1(), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>"><?php echo htmlspecialchars((isset($LANG['DELETE'])?$LANG['DELETE']:'Delete'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a></li>
 				</ul>
 				<div id="editorDiv" style="height:400px;">
 					<div style="float:right;cursor:pointer;" onclick="toggleEditFields()" title="Toggle Taxon Editing Functions">
@@ -363,7 +363,7 @@ if($isEditor){
 									<div class="editDiv">
 										<div class="editLabel"><?php echo (isset($LANG['PARENT_TAXON'])?$LANG['PARENT_TAXON']:'Parent Taxon'); ?>: </div>
 										<div class="tsedit">
-											<?php echo '<a href="taxoneditor.php?tid=' . htmlspecialchars($taxonEditorObj->getParentTid(), HTML_SPECIAL_CHARS_FLAGS) . '">' . htmlspecialchars($taxonEditorObj->getParentNameFull(), HTML_SPECIAL_CHARS_FLAGS) . '</a>';?>
+											<?php echo '<a href="taxoneditor.php?tid=' . htmlspecialchars($taxonEditorObj->getParentTid(), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">' . htmlspecialchars($taxonEditorObj->getParentNameFull(), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a>';?>
 										</div>
 										<div class="tsedit" style="display:none;margin:3px;">
 											<input id="parentstr" name="parentstr" type="text" value="<?php echo $taxonEditorObj->getParentName(); ?>" style="width:450px" />
@@ -399,9 +399,9 @@ if($isEditor){
 									echo "<ul>\n";
 									foreach($acceptedArr as $tidAccepted => $linkedTaxonArr){
 										echo "<li id='acclink-".$tidAccepted."'>\n";
-										echo "<a href='taxoneditor.php?tid=" . htmlspecialchars($tidAccepted, HTML_SPECIAL_CHARS_FLAGS) . "&taxauthid=" . htmlspecialchars($taxAuthId, HTML_SPECIAL_CHARS_FLAGS) . "'><i>" . htmlspecialchars($linkedTaxonArr["sciname"], HTML_SPECIAL_CHARS_FLAGS) . "</i></a> " . htmlspecialchars($linkedTaxonArr["author"], HTML_SPECIAL_CHARS_FLAGS) . "\n";
+										echo "<a href='taxoneditor.php?tid=" . htmlspecialchars($tidAccepted, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . "&taxauthid=" . htmlspecialchars($taxAuthId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . "'><i>" . htmlspecialchars($linkedTaxonArr["sciname"], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . "</i></a> " . htmlspecialchars($linkedTaxonArr["author"], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . "\n";
 										if(count($acceptedArr)>1){
-											echo '<span class="acceptedits" style="display:none;"><a href="taxoneditor.php?tabindex=1&tid=' . htmlspecialchars($tid, HTML_SPECIAL_CHARS_FLAGS) . '&deltidaccepted=' . htmlspecialchars($tidAccepted, HTML_SPECIAL_CHARS_FLAGS) . '&taxauthid=' . htmlspecialchars($taxAuthId, HTML_SPECIAL_CHARS_FLAGS) . '">';
+											echo '<span class="acceptedits" style="display:none;"><a href="taxoneditor.php?tabindex=1&tid=' . htmlspecialchars($tid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&deltidaccepted=' . htmlspecialchars($tidAccepted, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&taxauthid=' . htmlspecialchars($taxAuthId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">';
 											echo '<img style="border:0px;width:1.3em;" src="../../images/del.png" />';
 											echo '</a></span>';
 										}
@@ -482,7 +482,7 @@ if($isEditor){
 								if($synonymArr){
 									foreach($synonymArr as $tidSyn => $synArr){
 										echo '<li> ';
-										echo '<a href="taxoneditor.php?tid=' . htmlspecialchars($tidSyn, HTML_SPECIAL_CHARS_FLAGS) . '&taxauthid=' . htmlspecialchars($taxAuthId, HTML_SPECIAL_CHARS_FLAGS) . '"><i>' . htmlspecialchars($synArr['sciname'], HTML_SPECIAL_CHARS_FLAGS) . '</i></a> ' . htmlspecialchars($synArr['author'], HTML_SPECIAL_CHARS_FLAGS) . ' ';
+										echo '<a href="taxoneditor.php?tid=' . htmlspecialchars($tidSyn, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&taxauthid=' . htmlspecialchars($taxAuthId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '"><i>' . htmlspecialchars($synArr['sciname'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</i></a> ' . htmlspecialchars($synArr['author'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . ' ';
 										echo '<a href="#" onclick="toggle(\'syn-'.$tidSyn.'\');">';
 										echo '<img style="border:0px;width:1.3em;" src="../../images/edit.png" />';
 										echo '</a>';
@@ -588,12 +588,12 @@ if($isEditor){
 							$indent = 0;
 							foreach($hierarchyArr as $hierTid => $hierSciname){
 								echo '<div style="margin-left:'.$indent.'px;">';
-								echo '<a href="taxoneditor.php?tid=' . htmlspecialchars($hierTid, HTML_SPECIAL_CHARS_FLAGS) . '">' . htmlspecialchars($hierSciname, HTML_SPECIAL_CHARS_FLAGS) . '</a>';
+								echo '<a href="taxoneditor.php?tid=' . htmlspecialchars($hierTid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">' . htmlspecialchars($hierSciname, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a>';
 								echo "</div>\n";
 								$indent += 10;
 							}
 							echo '<div style="margin-left:'.$indent.'px;">';
-							echo '<a href="taxoneditor.php?tid=' . htmlspecialchars($taxonEditorObj->getTid(), HTML_SPECIAL_CHARS_FLAGS) . '">' . htmlspecialchars($taxonEditorObj->getSciName(), HTML_SPECIAL_CHARS_FLAGS) . '</a>';
+							echo '<a href="taxoneditor.php?tid=' . htmlspecialchars($taxonEditorObj->getTid(), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">' . htmlspecialchars($taxonEditorObj->getSciName(), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a>';
 							echo "</div>\n";
 						}
 						else{

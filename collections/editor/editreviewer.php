@@ -85,12 +85,12 @@ $navPageBase = 'editreviewer.php?collid='.$collid.'&display='.$displayMode.'&fas
 	'&startdate='.$startDate.'&enddate='.$endDate.'&editor='.$editor.'&reccnt='.$recCnt;
 
 $navStr = '<div class="navbarDiv" style="float:right;">';
-if($pageNum) $navStr .= '<a href="' . htmlspecialchars($navPageBase, HTML_SPECIAL_CHARS_FLAGS) . '&pagenum=' . htmlspecialchars(($pageNum-1), HTML_SPECIAL_CHARS_FLAGS) . '&limitcnt=' . htmlspecialchars($limitCnt, HTML_SPECIAL_CHARS_FLAGS) . '" title="' . htmlspecialchars($LANG['PREVIOUS'], HTML_SPECIAL_CHARS_FLAGS) . ' ' . htmlspecialchars($limitCnt, HTML_SPECIAL_CHARS_FLAGS) . ' ' . htmlspecialchars($LANG['RECORDS1'], HTML_SPECIAL_CHARS_FLAGS) . '">&lt;&lt;</a>';
+if($pageNum) $navStr .= '<a href="' . htmlspecialchars($navPageBase, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&pagenum=' . htmlspecialchars(($pageNum-1), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&limitcnt=' . htmlspecialchars($limitCnt, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" title="' . htmlspecialchars($LANG['PREVIOUS'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . ' ' . htmlspecialchars($limitCnt, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . ' ' . htmlspecialchars($LANG['RECORDS1'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">&lt;&lt;</a>';
 else $navStr .= '&lt;&lt;';
 $navStr .= ' | ';
 $navStr .= ($pageNum*$limitCnt).'-'.$subCnt.' of '.$recCnt.' '.$LANG['FIELDS_EDITED'];
 $navStr .= ' | ';
-if($subCnt < $recCnt) $navStr .= '<a href="' . htmlspecialchars($navPageBase, HTML_SPECIAL_CHARS_FLAGS) . '&pagenum=' . htmlspecialchars(($pageNum+1), HTML_SPECIAL_CHARS_FLAGS) . '&limitcnt=' . htmlspecialchars($limitCnt, HTML_SPECIAL_CHARS_FLAGS) . '" title="' . htmlspecialchars($LANG['NEXT'], HTML_SPECIAL_CHARS_FLAGS) . ' ' . htmlspecialchars($limitCnt, HTML_SPECIAL_CHARS_FLAGS) . ' ' . htmlspecialchars($LANG['RECORDS2'], HTML_SPECIAL_CHARS_FLAGS) . '">&gt;&gt;</a>';
+if($subCnt < $recCnt) $navStr .= '<a href="' . htmlspecialchars($navPageBase, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&pagenum=' . htmlspecialchars(($pageNum+1), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&limitcnt=' . htmlspecialchars($limitCnt, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" title="' . htmlspecialchars($LANG['NEXT'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . ' ' . htmlspecialchars($limitCnt, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . ' ' . htmlspecialchars($LANG['RECORDS2'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">&gt;&gt;</a>';
 else $navStr .= '&gt;&gt;';
 $navStr .= '</div>';
 ?>
@@ -191,12 +191,12 @@ $navStr .= '</div>';
 		$displayLeftMenu = false;
 		include($SERVER_ROOT.'/includes/header.php');
 		echo '<div class="navpath">';
-		echo '<a href="../../index.php">' . htmlspecialchars($LANG['HOME'], HTML_SPECIAL_CHARS_FLAGS) . '</a> &gt;&gt; ';
+		echo '<a href="../../index.php">' . htmlspecialchars($LANG['HOME'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a> &gt;&gt; ';
 		if($reviewManager->getObsUid()){
-			echo '<a href="../../profile/viewprofile.php?tabindex=1">' . htmlspecialchars($LANG['PERS_SPEC_MNG'], HTML_SPECIAL_CHARS_FLAGS) . '</a> &gt;&gt; ';
+			echo '<a href="../../profile/viewprofile.php?tabindex=1">' . htmlspecialchars($LANG['PERS_SPEC_MNG'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a> &gt;&gt; ';
 		}
 		else{
-			echo '<a href="../misc/collprofiles.php?collid=' . htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS) . '&emode=1">' . htmlspecialchars($LANG['COL_MAN_PAN'], HTML_SPECIAL_CHARS_FLAGS) . '</a> &gt;&gt; ';
+			echo '<a href="../misc/collprofiles.php?collid=' . htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&emode=1">' . htmlspecialchars($LANG['COL_MAN_PAN'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a> &gt;&gt; ';
 		}
 		echo '<b>'.$LANG['EDIT_REVIEWER'].'</b>';
 		echo '</div>';

@@ -30,7 +30,7 @@ if($isEditor){
 	if($action == 'Submit Occurrence'){
 		if($occurManager->addImageOccurrence($_POST)){
 			$occid = $occurManager->getOccid();
-			if($occid) $statusStr = $LANG['NEW_RECORD_CREATED'].': <a href="occurrenceeditor.php?occid=' . htmlspecialchars($occid, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank" rel="noopener">' . htmlspecialchars($occid, HTML_SPECIAL_CHARS_FLAGS) . '</a>';
+			if($occid) $statusStr = $LANG['NEW_RECORD_CREATED'].': <a href="occurrenceeditor.php?occid=' . htmlspecialchars($occid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" target="_blank" rel="noopener">' . htmlspecialchars($occid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a>';
 		}
 		else{
 			$statusStr = $occurManager->getErrorStr();
@@ -107,8 +107,8 @@ elseif(file_exists('includes/config/occurVarDefault.php')){
 	include($SERVER_ROOT.'/includes/header.php');
 	?>
 	<div class='navpath'>
-		<a href="../../index.php"><?php echo htmlspecialchars($LANG['HOME'], HTML_SPECIAL_CHARS_FLAGS)?></a> &gt;&gt;
-		<a href="../misc/collprofiles.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>&emode=1"><?php echo htmlspecialchars($LANG['COL_MNT'], HTML_SPECIAL_CHARS_FLAGS)?></a> &gt;&gt;
+		<a href="../../index.php"><?php echo htmlspecialchars($LANG['HOME'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE)?></a> &gt;&gt;
+		<a href="../misc/collprofiles.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>&emode=1"><?php echo htmlspecialchars($LANG['COL_MNT'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE)?></a> &gt;&gt;
 		<b><?php echo $LANG['OCC_IMAGE_SUBMIT']?></b>
 	</div>
 	<div id="innertext">

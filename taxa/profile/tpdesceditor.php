@@ -93,14 +93,14 @@ if($isEditor){
 							?>
 							<div style="margin:4px 0px;">
 								<b>Linked to synonym:</b> <?php echo $dArr['sciname']; ?>
-								(<a href="tpeditor.php?action=remap&tdbid=<?php echo htmlspecialchars($tdbid, HTML_SPECIAL_CHARS_FLAGS) . '&tid=' . htmlspecialchars($descEditor->getTid(), HTML_SPECIAL_CHARS_FLAGS); ?>">relink to accepted taxon</a>)
+								(<a href="tpeditor.php?action=remap&tdbid=<?php echo htmlspecialchars($tdbid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&tid=' . htmlspecialchars($descEditor->getTid(), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">relink to accepted taxon</a>)
 							</div>
 							<?php
 						}
 						?>
 						<div><b>Caption:</b> <?php echo $dArr["caption"]; ?></div>
 						<div><b>Source:</b> <?php echo $dArr["source"]; ?></div>
-						<div><b>Source URL:</b> <a href='<?php echo htmlspecialchars($dArr["sourceurl"], HTML_SPECIAL_CHARS_FLAGS); ?>'><?php echo htmlspecialchars($dArr["sourceurl"], HTML_SPECIAL_CHARS_FLAGS); ?></a></div>
+						<div><b>Source URL:</b> <a href='<?php echo htmlspecialchars($dArr["sourceurl"], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>'><?php echo htmlspecialchars($dArr["sourceurl"], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a></div>
 						<div><b>Notes:</b> <?php echo $dArr["notes"]; ?></div>
 						<div id="dblock-<?php echo $tdbid;?>" style="display:none;margin-top:10px;">
 							<fieldset>

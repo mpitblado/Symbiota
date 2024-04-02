@@ -14,16 +14,16 @@ $parentClid = array_key_exists('parentclid', $_REQUEST) ? filter_var($_REQUEST['
 $targetPid = array_key_exists('targetpid', $_REQUEST) ? filter_var($_REQUEST['targetpid'], FILTER_SANITIZE_NUMBER_INT) : '';
 $copyAttributes = array_key_exists('copyattributes', $_REQUEST) ? filter_var($_REQUEST['copyattributes'], FILTER_SANITIZE_NUMBER_INT) : 0;
 $tabIndex = array_key_exists('tabindex', $_REQUEST) ? filter_var($_REQUEST['tabindex'], FILTER_SANITIZE_NUMBER_INT) : 0;
-$action = array_key_exists('submitaction', $_REQUEST) ? htmlspecialchars($_REQUEST['submitaction'], HTML_SPECIAL_CHARS_FLAGS) : '';
-$delclid = array_key_exists('delclid', $_POST) ? htmlspecialchars($_POST['delclid'], HTML_SPECIAL_CHARS_FLAGS) : '';
-$editoruid = array_key_exists('editoruid', $_POST) ? htmlspecialchars($_POST['editoruid'], HTML_SPECIAL_CHARS_FLAGS) : '';
-$pointtid = array_key_exists('pointtid', $_POST) ? htmlspecialchars($_POST['pointtid'], HTML_SPECIAL_CHARS_FLAGS) : '';
-$pointlat = array_key_exists('pointlat', $_POST) ? htmlspecialchars($_POST['pointlat'], HTML_SPECIAL_CHARS_FLAGS) : '';
-$pointlng = array_key_exists('pointlng', $_POST) ? htmlspecialchars($_POST['pointlng'], HTML_SPECIAL_CHARS_FLAGS) : '';
-$notes = array_key_exists('notes', $_POST) ? htmlspecialchars($_POST['notes'], HTML_SPECIAL_CHARS_FLAGS) : '';
-$clidadd = array_key_exists('clidadd', $_POST) ? htmlspecialchars($_POST['clidadd'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$action = array_key_exists('submitaction', $_REQUEST) ? htmlspecialchars($_REQUEST['submitaction'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : '';
+$delclid = array_key_exists('delclid', $_POST) ? htmlspecialchars($_POST['delclid'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : '';
+$editoruid = array_key_exists('editoruid', $_POST) ? htmlspecialchars($_POST['editoruid'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : '';
+$pointtid = array_key_exists('pointtid', $_POST) ? htmlspecialchars($_POST['pointtid'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : '';
+$pointlat = array_key_exists('pointlat', $_POST) ? htmlspecialchars($_POST['pointlat'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : '';
+$pointlng = array_key_exists('pointlng', $_POST) ? htmlspecialchars($_POST['pointlng'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : '';
+$notes = array_key_exists('notes', $_POST) ? htmlspecialchars($_POST['notes'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : '';
+$clidadd = array_key_exists('clidadd', $_POST) ? htmlspecialchars($_POST['clidadd'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : '';
 $parsetid = array_key_exists('parsetid', $_POST) ? filter_var($_POST['parsetid'], FILTER_SANITIZE_NUMBER_INT) : 0;
-$taxon = array_key_exists('taxon', $_POST) ? htmlspecialchars($_POST['taxon'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$taxon = array_key_exists('taxon', $_POST) ? htmlspecialchars($_POST['taxon'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : '';
 
 
 $clManager = new ChecklistAdmin();
@@ -265,7 +265,7 @@ include($SERVER_ROOT.'/includes/header.php');
 							foreach($projArr as $pid => $pName){
 								?>
 								<li>
-									<a href="../projects/index.php?pid=<?= $pid ?>"><?= htmlspecialchars($pName, HTML_SPECIAL_CHARS_FLAGS); ?></a>
+									<a href="../projects/index.php?pid=<?= $pid ?>"><?= htmlspecialchars($pName, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a>
 									<?php
 									if(isset($USER_RIGHTS['ProjAdmin']) && in_array($pid, $USER_RIGHTS['ProjAdmin'])){
 										?>

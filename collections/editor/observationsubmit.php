@@ -104,7 +104,7 @@ $clArr = $obsManager->getChecklists();
 						<?php echo $LANG['SUCCESS_IMAGE']; ?>
 					</div>
 					<div style="font:weight;font-size:120%;margin-top:10px;">
-						<?php echo $LANG['OPEN']; ?> <a href="../individual/index.php?occid=<?php echo htmlspecialchars($occid, HTML_SPECIAL_CHARS_FLAGS); ?>" target="_blank" rel="noopener"><?php echo htmlspecialchars($LANG['OCC_DET_VIEW'], HTML_SPECIAL_CHARS_FLAGS); ?></a> <?php echo htmlspecialchars($LANG['TO_SEE_NEW'], HTML_SPECIAL_CHARS_FLAGS); ?>
+						<?php echo $LANG['OPEN']; ?> <a href="../individual/index.php?occid=<?php echo htmlspecialchars($occid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>" target="_blank" rel="noopener"><?php echo htmlspecialchars($LANG['OCC_DET_VIEW'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> <?php echo htmlspecialchars($LANG['TO_SEE_NEW'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 					</div>
 					<?php
 					if($clid){
@@ -112,7 +112,7 @@ $clArr = $obsManager->getChecklists();
 						if(isset($clArr[$clid])) $checklistName = $clArr[$clid];
 						?>
 						<div style="font:weight;font-size:120%;margin-top:10px;">
-							<?php echo $LANG['GO_TO']; ?> <a href="../../checklists/checklist.php?clid=<?php echo htmlspecialchars($clid, HTML_SPECIAL_CHARS_FLAGS); ?>" target="_blank" rel="noopener"><?php echo htmlspecialchars($checklistName, HTML_SPECIAL_CHARS_FLAGS); ?></a> <?php echo htmlspecialchars($LANG['CHECKLIST'], HTML_SPECIAL_CHARS_FLAGS); ?>
+							<?php echo $LANG['GO_TO']; ?> <a href="../../checklists/checklist.php?clid=<?php echo htmlspecialchars($clid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>" target="_blank" rel="noopener"><?php echo htmlspecialchars($checklistName, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> <?php echo htmlspecialchars($LANG['CHECKLIST'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 						</div>
 						<?php
 					}

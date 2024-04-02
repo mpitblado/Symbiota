@@ -9,7 +9,7 @@ $ometid = array_key_exists('ometid',$_REQUEST) ? filter_var($_REQUEST['ometid'],
 $collid = array_key_exists('collid',$_REQUEST) ? filter_var($_REQUEST['collid'], FILTER_SANITIZE_NUMBER_INT) : 0;
 $source1 = array_key_exists('source1',$_POST) ? filter_var($_POST['source1'], FILTER_SANITIZE_NUMBER_INT) : 0;
 $source2 = array_key_exists('source2',$_POST) ? filter_var($_POST['source2'], FILTER_SANITIZE_NUMBER_INT) : 0;
-$formSubmit = array_key_exists('formsubmit',$_POST) ? htmlspecialchars($_POST['formsubmit'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$formSubmit = array_key_exists('formsubmit',$_POST) ? htmlspecialchars($_POST['formsubmit'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : '';
 
 $statusStr = '';
 $isEditor = 0;

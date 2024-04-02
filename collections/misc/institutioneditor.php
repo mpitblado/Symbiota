@@ -186,7 +186,7 @@ include($SERVER_ROOT.'/includes/header.php');
 		<hr />
 		<div style="margin:20px;color:<?php echo (substr($statusStr,0,5)=='ERROR'?'red':'green'); ?>;">
 			<?php //$statusStr is only output from db engine, thus not a big threat, but Checkmarx won't know that, and better safe than sorry ?>
-			<?= htmlspecialchars($statusStr, HTML_SPECIAL_CHARS_FLAGS) ?>
+			<?= htmlspecialchars($statusStr, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) ?>
 		</div>
 		<hr />
 		<?php
@@ -469,7 +469,7 @@ include($SERVER_ROOT.'/includes/header.php');
 								Institution Code:
 							</div>
 							<div>
-								<input name="institutioncode" type="text" value="<?= htmlspecialchars($instCodeDefault, HTML_SPECIAL_CHARS_FLAGS) ?>" />
+								<input name="institutioncode" type="text" value="<?= htmlspecialchars($instCodeDefault, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) ?>" />
 								<input name="getgrscicoll" type="button" value="Get data from GrSciColl" onClick="grscicoll('instaddform')"/>
 							</div>
 						</div>
