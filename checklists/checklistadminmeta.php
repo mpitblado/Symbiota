@@ -13,6 +13,8 @@ $clManager->setClid($clid);
 
 $clArray = $clManager->getMetaData($pid);
 $clArray = $clManager->cleanOutArray($clArray);
+$footprint = $clManager->getFootprint();
+
 $defaultArr = array();
 if(isset($clArray['defaultsettings']) && $clArray['defaultsettings']){
 	$defaultArr = json_decode($clArray['defaultsettings'], true);
@@ -113,11 +115,18 @@ if(isset($clArray['dynamicProperties']) && $clArray['dynamicProperties']){
 		mapWindow=open("<?php echo $CLIENT_ROOT; ?>/checklists/tools/mappointaid.php?clid=<?php echo $clid; ?>&formname=editclmatadata&latname=latcentroid&longname=longcentroid","mapaid","resizable=0,width=1000,height=800,left=20,top=20");
 	    if(mapWindow.opener == null) mapWindow.opener = self;
 	}
-
+/*
 	function openMappingPolyAid() {
 		var latDec = document.getElementById("latdec").value;
 		var lngDec = document.getElementById("lngdec").value;
 		mapWindow=open("<?php echo $CLIENT_ROOT; ?>/checklists/tools/mappolyaid.php?clid=<?php echo $clid; ?>&formname=editclmatadata&latname=latcentroid&longname=longcentroid&latdef="+latDec+"&lngdef="+lngDec,"mapaid","resizable=0,width=1000,height=800,left=20,top=20");
+	    if(mapWindow.opener == null) mapWindow.opener = self;
+   }*/
+
+	function openMappingPolyAid(type = "wkt") {
+		var latDec = document.getElementById("latdec").value;
+		var lngDec = document.getElementById("lngdec").value;
+		mapWindow=open(`<?php echo $CLIENT_ROOT; ?>/collections/tools/mapcoordaid.php?clid=<?php echo $clid; ?>&mapmode=polygon&map_mode_strict=true&latdef=${latDec}&lngdef=${lngDec}${type === "geojson"? "&geoJson":""}`,"mapaid","resizable=0,width=1000,height=800,left=20,top=20");
 	    if(mapWindow.opener == null) mapWindow.opener = self;
 	}
 
@@ -261,8 +270,8 @@ if(!$clid){
 					<span id="polyNotDefDiv" style="display:<?php echo ($clArray && $clArray["hasfootprintwkt"]?'none':'inline'); ?>;">
 						<?php echo $LANG['POLYGON_NOT_DEFINED']; ?>
 					</span>
-					<span style="margin:10px;"><a href="#" onclick="openMappingPolyAid();return false;" title="<?php echo $LANG['CREATE_EDIT_POLYGON']; ?>"><img src="../images/world.png" style="width:1em;" /></a></span>
-					<input type="hidden" id="footprintwkt" name="footprintwkt" value="" />
+					<span style="margin:10px;"><a href="#" onclick="openMappingPolyAid(`<?=htmlspecialchars($footprint['type'])?>`);return false;" title="<?php echo $LANG['CREATE_EDIT_POLYGON']; ?>"><img src="../images/world.png" style="width:1em;" /></a></span>
+               <input type="hidden" id="footprintwkt" name="footprint<?=htmlspecialchars($footprint['type'])?>" value="<?=htmlspecialchars($footprint['footprint'])?>" />
 				</fieldset>
 			</div>
 			<div style="clear:both;margin-top:5px;">

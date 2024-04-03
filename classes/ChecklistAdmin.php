@@ -162,6 +162,34 @@ class ChecklistAdmin extends Manager{
 		return $retStr;
 	}
 
+	public function getFootprint(): array | bool {
+		if(!$this->clid) return false;
+
+		$footPrintArray = [];
+      $sql = <<<'SQL'
+      SELECT footprintWkt, footprintGeoJson FROM fmchecklists WHERE clid = ?;
+      SQL;
+
+      $rs = null;
+      try { 
+         $rs = $this->conn->execute_query($sql, [$this->clid]);
+         $row = $rs->fetch_object();
+
+         if($row->footprintGeoJson) {
+            return ["type" => "geojson", "footprint" => $row->footprintGeoJson];
+         } else {
+            return ["type" => "wkt", "footprint" => $row->footprintWkt];
+         }
+      } catch (Exception $e) {
+         error_log('ChecklistAdmin->getFootprint on clid ' . $this->clid . ' :' . $e->getMessage(), 0);
+         return false;
+      } finally {
+         if($rs instanceOf mysqli_result) {
+            $rs->free();
+         }
+      }
+	}
+
 	public function savePolygon($polygonStr){
 		$status = true;
 		if($this->clid){
