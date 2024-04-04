@@ -50,7 +50,8 @@ if(!$IS_ADMIN){
 	}
 }
 ?>
-<html>
+<!DOCTYPE html>
+<html lang="<?php echo $LANG_TAG ?>">
 	<head>
 		<title><?php echo $DEFAULT_TITLE; ?> - Duplicate Record Search</title>
 		<?php
@@ -228,7 +229,7 @@ if(!$IS_ADMIN){
 							?>
 							<div style="float:right;margin:10px;">
 								<a href="occurrenceeditor.php?occid=<?php echo htmlspecialchars($occId, HTML_SPECIAL_CHARS_FLAGS); ?>">
-									<img src="../../images/edit.png" />
+									<img src="../../images/edit.png" style="width:1.2em" />
 								</a>
 							</div>
 							<?php

@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <?php
 include_once('../config/symbini.php');
 
@@ -21,6 +20,7 @@ header("Content-Type: text/html; charset=".$CHARSET);
 
 $THIRD_PARTY_OID_AUTH_ENABLED = $THIRD_PARTY_OID_AUTH_ENABLED ?? false;
 $SYMBIOTA_LOGIN_ENABLED = $SYMBIOTA_LOGIN_ENABLED ?? true;
+$LOGIN_ACTION_PAGE = $LOGIN_ACTION_PAGE ?? 'profile/openIdAuth.php';
 
 $login = array_key_exists('login',$_REQUEST)?$_REQUEST['login']:'';
 $remMe = array_key_exists("remember",$_POST)?$_POST["remember"]:'';
@@ -127,13 +127,14 @@ if (array_key_exists('last_message', $_SESSION)){
 }
 
 ?>
+<!DOCTYPE html>
 <html lang="<?php echo $LANG_TAG ?>">
 <head>
 	<title><?php echo $DEFAULT_TITLE.' '.(isset($LANG['LOGIN_NAME'])?$LANG['LOGIN_NAME']:'Login'); ?></title>
 	<?php
 	include_once($SERVER_ROOT.'/includes/head.php');
 	?>
-	<script src="../js/jquery-3.2.1.min.js" type="text/javascript"></script>
+	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
 	<script type="text/javascript">
 		if(!navigator.cookieEnabled){
 			<?php
@@ -169,6 +170,27 @@ if (array_key_exists('last_message', $_SESSION)){
 		}
 	</script>
 	<script src="../js/symb/shared.js" type="text/javascript"></script>
+	<style>
+		.profile-fieldset {
+			padding: 20px;
+			background-color: #f9f9f9;
+			border: 2px outset #808080;
+		}
+		.profile-legend {
+			font-weight: bold;
+		}
+		.justify-center-full-screen {
+			display: flex;
+			justify-content: center;
+			width: 100vw;
+		}
+		.flex-item-login {
+			width: 100%;
+			max-width: 350px;
+			margin-left: auto;
+			margin-right: auto;
+		}
+	</style>
 </head>
 <body>
 <?php
@@ -191,7 +213,7 @@ include($SERVER_ROOT.'/includes/header.php');
 	}
 	?>
 	<div class="gridlike-form justify-center-full-screen" style="margin: 0;">
-		<div class="flex-item-login bottom-breathing-room-relative">
+		<div class="flex-item-login bottom-breathing-room-rel">
 			<form id="loginform" name="loginform" action="index.php" onsubmit="return checkCreds();" method="post">
 				<?php if($SYMBIOTA_LOGIN_ENABLED){ ?>
 					<fieldset class="profile-fieldset">
@@ -224,8 +246,8 @@ include($SERVER_ROOT.'/includes/header.php');
 				$_SESSION['refurl'] = array_key_exists('refurl', $_REQUEST) ? $_REQUEST['refurl'] : '';
 
 		?>
-			<div class="flex-item-login bottom-breathing-room-relative">
-				<form action='openIdAuth.php' onsubmit="">
+			<div class="flex-item-login bottom-breathing-room-rel">
+				<form action='<?= $LOGIN_ACTION_PAGE ?>' onsubmit="">
 					<fieldset  class="profile-fieldset">
 						<legend class="profile-legend"><?php echo (isset($LANG['THIRD_PARTY_LOGIN'])?$LANG['THIRD_PARTY_LOGIN']:'Login using third-party authentication'); ?></legend>
 						<div class="justify-center">

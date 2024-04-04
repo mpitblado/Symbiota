@@ -24,8 +24,32 @@ ALTER TABLE `fmchklstcoordinates`
   ADD CONSTRAINT `FK_checklistCoord_tid`  FOREIGN KEY (`tid`)  REFERENCES `taxa` (`tid`)  ON DELETE CASCADE  ON UPDATE CASCADE;
 
 
+ALTER TABLE `images` 
+  ADD COLUMN `pixelYDimension` INT NULL AFTER `mediaMD5`,
+  ADD COLUMN `pixelXDimension` INT NULL AFTER `pixelYDimension`,
+  CHANGE COLUMN `InitialTimeStamp` `initialTimestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ;  
+
+
+ALTER TABLE `ommaterialsample` 
+  ADD INDEX `IX_ommatsample_sampleType` (`sampleType` ASC);
+
+
 ALTER TABLE `omoccurassociations` 
   ADD COLUMN `associationType` VARCHAR(45) NOT NULL AFTER `occid`;
+
+ALTER TABLE `omoccurassociations` 
+  ADD COLUMN `objectID` VARCHAR(250) NULL DEFAULT NULL COMMENT 'dwc:relatedResourceID (object identifier)' AFTER `subType`,
+  ADD COLUMN `instanceID` VARCHAR(45) NULL DEFAULT NULL COMMENT 'dwc:resourceRelationshipID, if association was defined externally ' AFTER `accordingTo`,
+  CHANGE COLUMN `identifier` `identifier` VARCHAR(250) NULL DEFAULT NULL COMMENT 'Deprecated field' ,
+  CHANGE COLUMN `sourceIdentifier` `sourceIdentifier` VARCHAR(45) NULL DEFAULT NULL COMMENT 'deprecated field' ;
+  
+UPDATE omoccurassociations
+  SET objectID = identifier
+  WHERE objectID IS NULL AND identifier IS NOT NULL;
+
+UPDATE omoccurassociations
+  SET instanceID = sourceIdentifier
+  WHERE instanceID IS NULL AND sourceIdentifier IS NOT NULL;
 
 ALTER TABLE `omoccurassociations` 
   DROP INDEX `UQ_omoccurassoc_sciname` ,
@@ -65,11 +89,18 @@ SET associationType = "observational"
 WHERE associationType = "" AND occidAssociate IS NULL AND resourceUrl IS NULL AND verbatimSciname IS NOT NULL;
 
 
+ALTER TABLE `omoccurdeterminations` 
+  CHANGE COLUMN `identificationID` `sourceIdentifier` VARCHAR(45) NULL DEFAULT NULL ;
+
+
 # Needed to ensure basisOfRecord values are tagged correctly based on collection type (aka collType field)
 UPDATE omoccurrences o INNER JOIN omcollections c ON o.collid = c.collid
   SET o.basisofrecord = "PreservedSpecimen"
   WHERE (o.basisofrecord = "HumanObservation" OR o.basisofrecord IS NULL) AND c.colltype = 'Preserved Specimens'
   AND o.occid NOT IN(SELECT occid FROM omoccuredits WHERE fieldname = "basisofrecord");
+
+ALTER TABLE `omoccurrences` 
+  ADD COLUMN `vitality` VARCHAR(150) NULL DEFAULT NULL AFTER `behavior`;
 
 #Standardize naming of indexes within occurrence table 
 ALTER TABLE `omoccurrences` 
@@ -113,6 +144,27 @@ ALTER TABLE `omoccurrences`
 ALTER TABLE `omoccurresource` 
   RENAME TO  `deprecated_omoccurresource` ;
 
+ALTER TABLE `uploadspectemp` 
+  ADD COLUMN `vitality` VARCHAR(150) NULL DEFAULT NULL AFTER `behavior`;
+
+ALTER TABLE `uploadspectemp` 
+  DROP INDEX `Index_uploadspectemp_occid`,
+  DROP INDEX `Index_uploadspectemp_dbpk`,
+  DROP INDEX `Index_uploadspec_sciname`,
+  DROP INDEX `Index_uploadspec_catalognumber`,
+  DROP INDEX `Index_uploadspec_othercatalognumbers`;
+  
+ALTER TABLE `uploadspectemp` 
+  ADD INDEX `IX_uploadspectemp_occid` (`occid` ASC),
+  ADD INDEX `IX_uploadspectemp_dbpk` (`dbpk` ASC),
+  ADD INDEX `IX_uploadspec_sciname` (`sciname` ASC),
+  ADD INDEX `IX_uploadspec_catalognumber` (`catalogNumber` ASC),
+  ADD INDEX `IX_uploadspec_othercatalognumbers` (`otherCatalogNumbers` ASC);
+  
+ALTER TABLE `uploadspectemp` 
+  ADD INDEX `IX_uploadspectemp_occurrenceID` (`occurrenceID` ASC);
+
+# Following `uploadspectemp` index may need to be deleted within BioKIC hosted resources Index_uploadspec_occurid 
 
 
 ALTER TABLE `ctcontrolvocab` 
@@ -128,4 +180,45 @@ SELECT cvID, "fieldNotes", "Field Notes" FROM ctcontrolvocab WHERE tableName = "
 INSERT INTO ctcontrolvocabterm(cvID, term, termDisplay)
 SELECT cvID, "genericResource", "Generic Resource" FROM ctcontrolvocab WHERE tableName = "omoccurassociations" AND fieldName = "relationship" AND filterVariable = "associationType:resource";
 
+-- Ensure these older tables are innoDB
+ALTER TABLE geographicpolygon ENGINE = InnoDB;
+ALTER TABLE geographicthesaurus  ENGINE = InnoDB;
 
+ALTER TABLE geographicpolygon MODIFY COLUMN footprintPolygon geometry NOT NULL;
+
+DROP PROCEDURE IF EXISTS insertGeographicPolygon;
+DROP PROCEDURE IF EXISTS updateGeographicPolygon;
+
+DELIMITER |
+CREATE PROCEDURE insertGeographicPolygon(IN geo_id int, IN geo_json longtext)
+BEGIN
+INSERT INTO geographicpolygon (geoThesID, footprintPolygon, geoJSON) VALUES (geo_id, ST_GeomFromGeoJSON(geo_json), geo_json);
+END |
+CREATE PROCEDURE updateGeographicPolygon(IN geo_id int, IN geo_json longtext)
+BEGIN
+UPDATE geographicpolygon SET geoJSON = geo_json, footprintPolygon = ST_GeomFromGeoJSON(geo_json) WHERE geoThesID = geo_id;
+END | 
+DELIMITER ;
+# Establish a table to track third party auth
+
+CREATE TABLE `usersthirdpartyauth` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `uid` INT(10) UNSIGNED NOT NULL,
+  `subUuid` VARCHAR(100) NOT NULL,
+  `provider` VARCHAR(200) NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_users_uid`
+    FOREIGN KEY (`uid`)
+    REFERENCES `users` (`uid`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE);
+
+# Clean up localitySecurity for occurrences that are cultivated and have not explicitly had their localitySecurity edited to be 1 (and are missing a security reason) more recently than it has been edited to 0.
+
+UPDATE omoccurrences o INNER JOIN omoccuredits e ON o.occid = e.occid
+LEFT JOIN (SELECT occid, ocedid FROM omoccuredits WHERE fieldName = "localitySecurity" AND fieldValueNew = 0) e2 ON e.occid = e2.occid AND e.ocedid < e2.ocedid
+SET o.localitySecurity = 1, o.localitySecurityReason = "[Security Setting Explicitly Locked]"
+WHERE o.localitySecurityReason IS NULL AND e.fieldName = "localitySecurity" AND e.fieldValueNew = 1
+AND e2.occid IS NULL;
+
+UPDATE omoccurrences SET localitySecurity=0 WHERE cultivationStatus=1 AND localitySecurity=1 AND localitySecurityReason IS NULL;

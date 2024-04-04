@@ -31,7 +31,7 @@ if(!$recLimit || $recCnt < $recLimit){
 			<div style="float:left;">
 				<form name="downloadForm" action="../download/index.php" method="post" onsubmit="targetPopup(this)" style="float:left">
 					<button class="ui-button ui-widget ui-corner-all" style="margin:5px;padding:5px;cursor: pointer" title="<?php echo $LANG['DOWNLOAD_SPECIMEN_DATA']; ?>">
-						<img src="../../images/dl2.png" srcset="../../images/download.svg" class="svg-icon" style="width:15px" />
+						<img src="../../images/dl2.png" style="width:1.3em" />
 					</button>
 					<input name="reclimit" type="hidden" value="<?php echo $recLimit; ?>" />
 					<input name="sourcepage" type="hidden" value="map" />
@@ -43,11 +43,11 @@ if(!$recLimit || $recCnt < $recLimit){
 					<input name="sourcepage" type="hidden" value="map" />
 					<input name="searchvar" type="hidden" value="<?php echo $searchVar; ?>" />
 					<button name="submitaction" type="submit" class="ui-button ui-widget ui-corner-all" style="margin:5px;padding:5px;cursor: pointer" title="Download KML file">
-						<img src="../../images/dl2.png" srcset="../../images/download.svg" class="svg-icon" style="width:15px; padding-right: 5px; vertical-align:top" />KML
+						<img src="../../images/dl2.png" style="width:1.3em; vertical-align:top" />KML
 					</button>
 				</form>
-				<button class="ui-button ui-widget ui-corner-all" style="margin:5px;padding:5px;cursor: pointer;" onclick="copyUrl()" title="<?php echo (isset($LANG['COPY_TO_CLIPBOARD'])?$LANG['COPY_TO_CLIPBOARD']:'Copy URL to Clipboard'); ?>">
-					<img src="../../images/dl2.png" srcset="../../images/link.svg" class="svg-icon" style="width:15px" /></button>
+            <button class="ui-button ui-widget ui-corner-all" style="margin:5px;padding:5px;cursor: pointer;" onclick="copyUrl('<?=htmlspecialchars($SERVER_HOST)?>')" title="<?php echo (isset($LANG['COPY_TO_CLIPBOARD'])?$LANG['COPY_TO_CLIPBOARD']:'Copy URL to Clipboard'); ?>">
+					<img src="../../images/link.png" style="width:1.3em" /></button>
 			</div>
 		</div>
 	</div>
@@ -93,25 +93,24 @@ if(!$recLimit || $recCnt < $recLimit){
 							<input id="selectallcheck" type="checkbox" onclick="selectAll(this);" '.($allSelected==true?"checked":"").' />
 						</th>
 						 -->
-						<th>Catalog #</th>
-						<th>Collector</th>
-						<th>Date</th>
-						<th>Scientific Name</th>
+                  <th><?=$LANG['CATALOG_NUMBER']?></th>
+						<th><?=$LANG['COLLECTOR']?></th>
+						<th><?=$LANG['DATE']?></th>
+						<th><?=$LANG['SCIENTIFIC_NAME']?></th>
+						<th><?=$LANG['MAP_LINK']?></th>
 					</tr>
 					<?php
 					$trCnt = 0;
 					foreach($occArr as $occId => $recArr){
 						$trCnt++;
-						echo '<tr '.($trCnt%2?'class="alt"':'').' id="tr'.$occId.'" onclick="emit_occurrence('.$occId.')">';
-						//echo '<td style="width:10px;">';
-						//echo '<input type="checkbox" class="occcheck" id="ch'.$occId.'" name="occid[]" value="'.$occId.'" onchange="findSelections(this);" '.(in_array($occId,$selections)?"checked":"").' />';
-						//echo '</td>';
-						echo '<td id="cat'.$occId.'" >'.$recArr["cat"].'</td>';
-						echo '<td id="label'.$occId.'" >';
-						echo '<a href="#" onmouseover="openOccidInfoBox(\''.$recArr["c"].'\','.$recArr["lat"].','.$recArr["lon"].');" onmouseout="closeOccidInfoBox();" onclick="openRecord({occid:' . $occId . ($host?', host:\'' . $host. '\'' : '' ). '}); return false;">'.($recArr["c"]?$recArr["c"]:"Not available").'</a>';
+						echo '<tr '.($trCnt%2?'class="alt"':'').' id="tr'.$occId.'">';
+						echo '<td id="cat' . $occId . '" >' . $recArr["cat"] . '</td>';
+						echo '<td id="label' . $occId .'" >';
+						echo '<a href="#" onmouseover="openOccidInfoBox(\'' . $recArr["c"] . '\',' . $recArr["lat"] . ',' . $recArr["lon"] . ');" onmouseout="closeOccidInfoBox();" onclick="openRecord({occid:' . $occId . ($host?', host:\'' . $host . '\'' : '' ) . '}); return false;">' . ($recArr["c"]?$recArr["c"]:"Not available") .'</a>';
 						echo '</td>';
-						echo '<td id="e'.$occId.'" >'.$recArr["e"].'</td>';
-						echo '<td id="s'.$occId.'" >'.$recArr["s"].'</td>';
+						echo '<td id="e' . $occId .'" >' . $recArr["e"] . '</td>';
+						echo '<td id="s' . $occId .'" >'. $recArr["s"] . '</td>';
+						echo '<td id="li' . $occId . '" ><a href="#occid=' . $occId . '" onclick="emit_occurrence(' . $occId . ')">' . $LANG['SEE_MAP_POINT'] . '</a></td>';
 						echo '</tr>';
 					}
 					?>

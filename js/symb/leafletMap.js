@@ -25,8 +25,8 @@ xmlns="http://www.w3.org/2000/svg"
 class LeafletMap {
    //DEFAULTS
    DEFAULT_MAP_OPTIONS = {
-      center: [43.64701, -79.39425],
-      zoom: 15,
+      center: [0, 0],
+      zoom: 1,
    };
 
    DEFAULT_SHAPE_OPTIONS = {
@@ -69,20 +69,44 @@ class LeafletMap {
          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
          subdomains:['mt0','mt1','mt2','mt3'],
          maxZoom: 20, 
-         tileSize: 256,
+         worldCopyJump: true,
+         detectRetina:true,
       }).addTo(this.mapLayer);
 
       const satelliteLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
          subdomains:['mt1','mt2','mt3'],
          maxZoom: 20, 
+         noWrap:true,
+         displayRetina:true,
          tileSize: 256,
+      });
+      const basicLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+         displayRetina:true,
+         maxZoom: 20, 
+         noWrap:true,
+         tileSize: 256,
+         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      });
+
+      var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+         displayRetina:true,
+         attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+      });
+
+      const openTopoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+         maxZoom: 17,
+         displayRetina:true,
+         attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
       });
 
       if(map_options.layer_control !== false) {
          L.control.layers({
             "Terrain": terrainLayer,
-            "Satellite": satelliteLayer
+            "Basic": basicLayer,
+            "Topo": openTopoLayer,
+            "Satellite": Esri_WorldImagery,
+            //"Satellite": satelliteLayer,
          }).addTo(this.mapLayer);
       }
 
@@ -533,9 +557,20 @@ class LeafletMap {
 
    }
 
-   drawShape(shape) {
+   drawShape(shape, fitbounds=true) {
       const id = this.shapes.length;
       switch(shape.type) {
+         case "geoJSON":
+            const geoJSON = L.geoJSON(shape.geoJSON);
+
+            for(let layer_id of Object.keys(geoJSON._layers)) {
+               for(let polygon of geoJSON._layers[layer_id]._latlngs) {
+                  this.drawShape({type:"polygon", latlngs: polygon}, false)
+               }
+            }
+
+            this.mapLayer.fitBounds(geoJSON.getBounds());
+            return;
          case "polygon":
             const poly = L.polygon(shape.latlngs);
             this.activeShape = getShapeCoords(shape.type, poly);
@@ -561,7 +596,9 @@ class LeafletMap {
       this.activeShape.id = id;
       this.shapes.push(this.activeShape);
 
-      this.mapLayer.fitBounds(this.activeShape.layer.getBounds());
+      if(fitbounds) {
+         this.mapLayer.fitBounds(this.activeShape.layer.getBounds());
+      }
    }
 
 }
@@ -581,10 +618,8 @@ function getShapeCoords(layerType, layer) {
       case "polygon":
          let latlngs = layer._latlngs[0].map(coord=> [coord.lat, coord.lng]);
          latlngs.push(latlngs[0]);
-
          let polygon = latlngs.map(coord => 
             (`${coord[0].toFixed(SIG_FIGS)} ${coord[1].toFixed(SIG_FIGS)}`));
-
          shape.latlngs = latlngs;
          shape.wkt = "POLYGON ((" + polygon.join(',') + "))";
          shape.center = layer.getBounds().getCenter();

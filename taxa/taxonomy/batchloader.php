@@ -10,9 +10,9 @@ ini_set('max_execution_time', 3600);
 
 $action = array_key_exists('action', $_REQUEST) ? $_REQUEST['action'] : '';
 $taxAuthId = (array_key_exists('taxauthid', $_REQUEST) ? filter_var($_REQUEST['taxauthid'], FILTER_SANITIZE_NUMBER_INT) : 1);
-$kingdomName = (array_key_exists('kingdomname', $_REQUEST) ? filter_var($_REQUEST['kingdomname'], FILTER_SANITIZE_STRING) : '');
-$sciname = (array_key_exists('sciname', $_REQUEST) ? filter_var($_REQUEST['sciname'], FILTER_SANITIZE_STRING) : '');
-$targetApi = (array_key_exists('targetapi',$_REQUEST) ? filter_var($_REQUEST['targetapi'], FILTER_SANITIZE_STRING) : '');
+$kingdomName = (array_key_exists('kingdomname', $_REQUEST) ? htmlspecialchars($_REQUEST['kingdomname'], HTML_SPECIAL_CHARS_FLAGS) : '');
+$sciname = (array_key_exists('sciname', $_REQUEST) ? htmlspecialchars($_REQUEST['sciname'], HTML_SPECIAL_CHARS_FLAGS) : '');
+$targetApi = $_REQUEST['targetapi'] ?? '';
 $rankLimit = (array_key_exists('ranklimit', $_REQUEST) ? filter_var($_REQUEST['ranklimit'], FILTER_SANITIZE_NUMBER_INT):'');
 
 $isEditor = false;
@@ -50,16 +50,17 @@ if($isEditor){
 	}
 }
 ?>
-<html>
+<!DOCTYPE html>
+<html lang="<?php echo $LANG_TAG ?>">
 <head>
 	<title><?php echo $DEFAULT_TITLE.' '.(isset($LANG['TAXA_LOADER'])?$LANG['TAXA_LOADER']:'Taxa Loader'); ?></title>
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET;?>" />
 	<?php
 	include_once($SERVER_ROOT.'/includes/head.php');
 	?>
-	<script src="../../js/jquery-3.2.1.min.js?ver=3" type="text/javascript"></script>
-	<script src="../../js/jquery-ui/jquery-ui.min.js?ver=3" type="text/javascript"></script>
-	<link href="../../js/jquery-ui/jquery-ui.min.css" type="text/css" rel="Stylesheet" />
+	<link href="<?php echo $CSS_BASE_PATH; ?>/jquery-ui.css" type="text/css" rel="stylesheet">
+	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
+	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-ui.min.js" type="text/javascript"></script>
 	<script type="text/javascript">
 		var clientRoot = "<?php echo $CLIENT_ROOT; ?>";
 
@@ -212,7 +213,10 @@ if($isEditor){
 							</tr>
 							<?php
 							$translationMap = array('phylum'=>'division', 'division'=>'phylum', 'subphylum'=>'subdivision', 'subdivision'=>'subphylum', 'sciname'=>'scinameinput',
-								'scientificname'=>'scinameinput', 'scientificnameauthorship'=>'author', 'acceptedname'=>'acceptedstr', 'vernacularname'=>'vernacular');
+								'scientificname'=>'scinameinput', 'scientificnameauthorship'=>'author', 'vernacularname'=>'vernacular',
+								'taxonid'=>'sourceid', 'parenttaxonid'=>'sourceparentid', 'parentscientificname'=>'parentstr',
+								'acceptedtaxonid'=>'sourceacceptedid', 'acceptedscientificname'=>'acceptedstr', 'acceptedname'=>'acceptedstr'
+							);
 							$sArr = $loaderManager->getSourceArr();
 							$tArr = $loaderManager->getTargetArr();
 							asort($tArr);
@@ -220,37 +224,43 @@ if($isEditor){
 								?>
 								<tr>
 									<td style='padding:2px;'>
-										<?php echo $sField; ?>
+										<?php
+										echo $sField;
+										$sField = strtolower($sField);
+										$sTestField = str_replace(array(' ', '_'), '', $sField);
+										if(isset($translationMap[$sTestField])) $sTestField = $translationMap[$sTestField];
+										?>
 										<input type="hidden" name="sf[]" value="<?php echo $sField; ?>" />
 									</td>
 									<td>
-										<select name="tf[]" style="background:<?php echo (array_key_exists($sField,$fieldMap)?"":"yellow");?>">
+										<?php
+										$selStr = '';
+										$mappedTarget = (array_key_exists($sField,$fieldMap)?$fieldMap[$sField]:"");
+										if($mappedTarget=='unmapped') $selStr = 'SELECTED';
+										$optionStr = '<option value="unmapped" '.$selStr.'>'.(isset($LANG['LEAVE_UNMAPPED'])?$LANG['LEAVE_UNMAPPED']:'Leave Field Unmapped').'</option>';
+										if($selStr) $selStr = 0;
+										foreach($tArr as $k => $tField){
+											if($selStr !== 0){
+												$tTestField = strtolower($tField);
+												if($mappedTarget && $mappedTarget == $k){
+													$selStr = 'SELECTED';
+												}
+												elseif($tTestField == $sTestField && $tTestField != 'sciname'){
+													$selStr = 'SELECTED';
+												}
+												elseif($sTestField == $k){
+													$selStr = 'SELECTED';
+												}
+											}
+											$optionStr .= '<option value="'.$k.'" '.($selStr?$selStr:'').'>'.$tField."</option>\n";
+											if($selStr) $selStr = 0;
+										}
+										?>
+										<select name="tf[]" style="background:<?php echo ($selStr !== '' ? '' : 'yellow'); ?>">
 											<option value=""><?php echo (isset($LANG['FIELD_UNMAPPED'])?$LANG['FIELD_UNMAPPED']:'Field Unmapped'); ?></option>
 											<option value="">-------------------------</option>
 											<?php
-											$selStr = '';
-											$mappedTarget = (array_key_exists($sField,$fieldMap)?$fieldMap[$sField]:"");
-											if($mappedTarget=='unmapped') $selStr = 'SELECTED';
-											echo '<option value="unmapped" '.$selStr.'>'.(isset($LANG['LEAVE_UNMAPPED'])?$LANG['LEAVE_UNMAPPED']:'Leave Field Unmapped').'</option>';
-											if($selStr) $selStr = 0;
-											foreach($tArr as $k => $tField){
-												if($selStr !== 0){
-													$sTestField = str_replace(array(' ','_'), '', $sField);
-													if($mappedTarget && $mappedTarget == $k){
-														$selStr = 'SELECTED';
-													}
-													elseif($tField==$sTestField && $tField != 'sciname'){
-														$selStr = 'SELECTED';
-													}
-													elseif(isset($translationMap[strtolower($sTestField)]) && $translationMap[strtolower($sTestField)] == $tField){
-														$selStr = 'SELECTED';
-													}
-												}
-												echo '<option value="'.$k.'" '.($selStr?$selStr:'').'>'.$tField."</option>\n";
-												if($selStr){
-													$selStr = 0;
-												}
-											}
+											echo $optionStr;
 											?>
 										</select>
 									</td>

@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-
 <?php
 include_once('../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceEditorDeterminations.php');
@@ -9,7 +7,7 @@ header('Content-Type: text/html; charset=' . $CHARSET);
 
 if(!$SYMB_UID) header('Location: ../../profile/index.php?refurl=../collections/editor/batchdeterminations.php?'.htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
 
-$collid = filter_var($_REQUEST['collid'], FILTER_SANITIZE_NUMBER_INT);
+$collid = filter_var(($_REQUEST['collid'] ?? 0), FILTER_SANITIZE_NUMBER_INT);
 $formSubmit = array_key_exists('formsubmit',$_POST)?$_POST['formsubmit']:'';
 
 $occManager = new OccurrenceEditorDeterminations();
@@ -42,17 +40,17 @@ if($isEditor){
 	}
 }
 ?>
-
+<!DOCTYPE html>
 <html lang="<?php echo $LANG_TAG ?>">
 	<head>
 	    <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET;?>">
 		<title><?php echo $DEFAULT_TITLE.' '.$LANG['BATCH_DETERS']; ?></title>
-		<link href="<?php echo htmlspecialchars($CSS_BASE_PATH, HTML_SPECIAL_CHARS_FLAGS); ?>/jquery-ui.css" type="text/css" rel="stylesheet">
+		<link href="<?php echo $CSS_BASE_PATH; ?>/jquery-ui.css" type="text/css" rel="stylesheet">
 		<?php
 		include_once($SERVER_ROOT.'/includes/head.php');
 		?>
-		<script src="../../js/jquery.js" type="text/javascript"></script>
-		<script src="../../js/jquery-ui.js" type="text/javascript"></script>
+		<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
+		<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-ui.min.js" type="text/javascript"></script>
 		<script type="text/javascript">
 			function initScinameAutocomplete(f){
 				$( f.sciname ).autocomplete({
@@ -283,6 +281,14 @@ if($isEditor){
 				return false;
 			}
 		</script>
+		<style>
+			.top-breathing-room-sm-px {
+				margin-top: 5px;
+			}
+			.left-breathing-room-rel-lg {
+				margin-left: 2em;
+			}
+		</style>
 	</head>
 	<body>
 	<?php
@@ -322,11 +328,11 @@ if($isEditor){
 								<input type="text" id="nomsciname" name="sciname" style="width:260px;" onfocus="initScinameAutocomplete(this.form)" />
 							</div>
 							<section class="flex-form">
-								<div class="top-tiny-breathing-room">
+								<div class="top-breathing-room-sm-px">
 									<button name="addrecord" type="submit"><?php echo $LANG['ADD_RECORDS']; ?></button>
 									<img id="workingcircle" src="../../images/workingcircle.gif" style="display:none;" alt="progress is being made" />
 								</div>
-								<div class="top-tiny-breathing-room">
+								<div class="top-breathing-room-sm-px">
 									<button name="clearaccform" type="button" onclick='clearAccForm(this.form)'><?php echo $LANG['CLEAR_LIST']; ?></button>
 									<input name="collid" type="hidden" value="<?php echo $collid; ?>" />
 								</div>
@@ -418,7 +424,7 @@ if($isEditor){
 								</div>
 								<div style='margin:3px;'>
 									<input type="checkbox" name="printqueue" value="1" checked /> <?php echo $LANG['ADD_PRINT_QUEUE']; ?>
-									<a href="../reports/annotationmanager.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>" target="_blank"><img src="../../images/list.png" style="width:13px" title="<?php echo htmlspecialchars($LANG['DISPLAY_QUEUE'], HTML_SPECIAL_CHARS_FLAGS); ?>" /></a>
+									<a href="../reports/annotationmanager.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>" target="_blank"><img src="../../images/list.png" style="width:1.2em" title="<?php echo htmlspecialchars($LANG['DISPLAY_QUEUE'], HTML_SPECIAL_CHARS_FLAGS); ?>" /></a>
 								</div>
 								<div style='margin:15px;'>
 									<div style="float:left;">
