@@ -1118,7 +1118,7 @@ function detDateChanged(f){
 			isNew = true;
 		}
 	}
-	f.makecurrent.checked = isNew;
+	f.iscurrent.checked = isNew;
 }
 
 function verifyDetForm(f){

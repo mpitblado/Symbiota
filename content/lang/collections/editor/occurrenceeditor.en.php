@@ -142,6 +142,24 @@ $LANG['RETURN_TO_CROWDSOURCING'] = 'Return to Crowdsource Central';
 $LANG['ERROR_NOT_AUTHORIZED'] = '<b>ERROR:</b> Sorry, you are not authorized to edit occurrences within this collection. Contact collection administrator if you think this is incorrect';
 $LANG['ERROR_CANT_ADD'] = '<b>ERROR:</b> you are not authorized to add occurrence records';
 
+//Determination translations
+$LANG['DET_INSERT_SUCCESS'] = 'Determination submitted successfully!';
+$LANG['DET_INSERT_PENDING'] = 'Determination has been added successfully, but is pending approval before being activated';
+$LANG['ERROR_DETS_NOT_CURRENT'] = 'ERROR resetting dets to not current';
+$LANG['ERROR_INSERT_FAILED'] = 'ERROR - failed to add determination';
+$LANG['DET_EDIT_SUCCESS'] = 'Determination updated successfully';
+$LANG['ERROR_EDIT_FAILED'] = 'ERROR - failed to edit determination';
+$LANG['DET_DELETE_SUCCESS'] = 'Determination deleted successfully!';
+$LANG['DET_DELETE_FAILED'] = 'ERROR - failed to delete determination';
+
+$LANG['DET_APPLIED'] = 'Determination has been applied';
+$LANG['ERROR_ATTEMPT_DET'] = 'ERROR attempting to apply determination';
+$LANG['DET_NOW_CURRENT'] = 'Determination is now current!';
+$LANG['ERROR_SETTING_CURRENT'] = 'ERROR setting target det to current';
+$LANG['ERROR_TAX_THESAURUS'] = 'ERROR: Annotation made current but failed to remap image because taxon name not linked to taxonomic thesaurus.';
+
+$LANG['ERROR_ADDED_FAILED_IMAGES'] = 'ERROR: Annotation added but failed to remap images to new name';
+
 //Error and output messages from within OccurrenceEditorManager.php
 $LANG['SUCCESS_EDITS_SUBMITTED'] = 'SUCCESS: edits submitted and activated';
 $LANG['ERROR_TAGGING_USER'] = 'ERROR tagging user as the crowdsourcer';

@@ -1,22 +1,23 @@
 <?php
 include_once('../../../config/symbini.php');
-include_once($SERVER_ROOT.'/classes/OccurrenceEditorDeterminations.php');
-if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/editor/includes/determinationtab.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/determinationtab.'.$LANG_TAG.'.php');
-else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/determinationtab.en.php');
-header("Content-Type: text/html; charset=".$CHARSET);
+include_once($SERVER_ROOT . '/classes/OccurrenceEditorDeterminations.php');
+if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/editor/includes/determinationtab.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT . '/content/lang/collections/editor/includes/determinationtab.' . $LANG_TAG . '.php');
+else include_once($SERVER_ROOT . '/content/lang/collections/editor/includes/determinationtab.en.php');
+header('Content-Type: text/html; charset=' . $CHARSET);
 
-$occId = $_GET['occid'];
-$occIndex = $_GET['occindex'];
+$occId = array_key_exists('occid', $_REQUEST) ? filter_var($_REQUEST['occid'], FILTER_SANITIZE_NUMBER_INT) : '';
+$occIndex = array_key_exists('occindex', $_REQUEST) ? filter_var($_REQUEST['occindex'], FILTER_SANITIZE_NUMBER_INT) : false;
+$crowdSourceMode = array_key_exists('csmode', $_REQUEST) ? filter_var($_REQUEST['csmode'], FILTER_SANITIZE_NUMBER_INT) : 0;
+
+$editMode = array_key_exists('em', $_REQUEST) ? filter_var($_REQUEST['em'], FILTER_SANITIZE_NUMBER_INT) : 0;
+
+$action = array_key_exists('submitaction', $_REQUEST) ? $_REQUEST['submitaction'] : '';
+if(!$action && array_key_exists('carryover', $_REQUEST)) $goToMode = 2;
+
+
 $identBy = $_GET['identby'];
 $dateIdent = $_GET['dateident'];
 $sciName = $_GET['sciname'];
-$crowdSourceMode = $_GET['csmode'];
-$editMode = $_GET['em'];
-
-$annotatorname = $_GET['annotatorname'];
-$annotatoremail = $_GET['annotatoremail'];
-$catalognumber = $_GET['catalognumber'];
-$institutioncode = $_GET['institutioncode'];
 
 $occManager = new OccurrenceEditorDeterminations();
 
@@ -193,7 +194,7 @@ $specImgArr = $occManager->getImageMap();  // find out if there are images in or
 							<input type="text" name="identificationremarks" style="width:350px;" />
 						</div>
 						<div style='margin:3px;'>
-							<input type="checkbox" name="makecurrent" value="1" /> <?php echo $LANG['MAKE_THIS_CURRENT']; ?>
+							<input type="checkbox" name="iscurrent" value="1" /> <?php echo $LANG['MAKE_THIS_CURRENT']; ?>
 						</div>
 						<div style='margin:3px;'>
 							<input type="checkbox" name="printqueue" value="1" /> <?php echo $LANG['ADD_TO_PRINT']; ?>
@@ -201,10 +202,6 @@ $specImgArr = $occManager->getImageMap();  // find out if there are images in or
 						<div style='margin:15px;'>
 							<input type="hidden" name="occid" value="<?php echo $occId; ?>" />
 							<input type="hidden" name="occindex" value="<?php echo $occIndex; ?>" />
-							<input type="hidden" name="annotatorname" value="<?php echo $annotatorname; ?>" />
-							<input type="hidden" name="annotatoremail" value="<?php echo $annotatoremail; ?>" />
-							<input type="hidden" name="catalognumber" value="<?php echo $catalognumber; ?>" />
-							<input type="hidden" name="institutioncode" value="<?php echo $institutioncode; ?>" />
 							<input type="hidden" name="csmode" value="<?php echo $crowdSourceMode; ?>" />
 							<div style="float:left;">
 								<button type="submit" name="submitaction" value="submitDetermination" ><?php echo $LANG['SUBMIT_DET']; ?></button>
@@ -342,7 +339,7 @@ $specImgArr = $occManager->getImageMap();  // find out if there are images in or
 										else{
 											?>
 											<input type="submit" name="submitaction" value="Apply Determination" /><br/>
-											<input type="checkbox" name="makecurrent" value="1" <?php echo ($detRec['iscurrent']?'checked':''); ?> /> <?php echo $LANG['MAKE_CURRENT']; ?>
+											<input type="checkbox" name="iscurrent" value="1" <?php echo ($detRec['iscurrent']?'checked':''); ?> /> <?php echo $LANG['MAKE_CURRENT']; ?>
 											<?php
 										}
 										?>

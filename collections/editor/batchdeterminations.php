@@ -27,7 +27,7 @@ if($isEditor){
 		$occidArr = $_REQUEST['occid'];
 		foreach($occidArr as $k){
 			$occManager->setOccId(filter_var($k, FILTER_SANITIZE_NUMBER_INT));
-			$occManager->addDetermination($_REQUEST,$isEditor);
+			$occManager->addDetermination($_REQUEST);
 		}
 		$statusStr = 'SUCCESS: ' . count($occidArr) . ' annotations submitted';
 	}
@@ -35,7 +35,7 @@ if($isEditor){
 		$occidArr = $_REQUEST['occid'];
 		foreach($occidArr as $k){
 			$occManager->setOccId(filter_var($k, FILTER_SANITIZE_NUMBER_INT));
-			$occManager->addNomAdjustment($_REQUEST,$isEditor);
+			$occManager->addNomAdjustment($_REQUEST);
 		}
 	}
 }
@@ -222,7 +222,7 @@ if($isEditor){
 					$("#codDiv").hide();
 					f.identifiedby.value = "Nomenclatural Adjustment";
 					f.identifiedby.readonly = true;
-					f.makecurrent.checked = true;
+					f.iscurrent.checked = true;
 
 					var today = new Date();
 					var month = (today.getMonth() + 1);
@@ -239,7 +239,7 @@ if($isEditor){
 					f.identifiedby.value = "";
 					f.identifiedby.readonly = true;
 					f.dateidentified.value = "";
-					f.makecurrent.checked = false;
+					f.iscurrent.checked = false;
 				}
 			}
 
@@ -420,7 +420,7 @@ if($isEditor){
 									<input type="text" name="identificationremarks" style="width:350px;" />
 								</div>
 								<div id="makeCurrentDiv" style='margin:3px;'>
-									<input type="checkbox" name="makecurrent" value="1" checked /> <?php echo $LANG['MAKE_CURRENT']; ?>
+									<input type="checkbox" name="iscurrent" value="1" checked /> <?php echo $LANG['MAKE_CURRENT']; ?>
 								</div>
 								<div style='margin:3px;'>
 									<input type="checkbox" name="printqueue" value="1" checked /> <?php echo $LANG['ADD_PRINT_QUEUE']; ?>

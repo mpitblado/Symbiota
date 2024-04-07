@@ -89,7 +89,9 @@ SET associationType = "observational"
 WHERE associationType = "" AND occidAssociate IS NULL AND resourceUrl IS NULL AND verbatimSciname IS NOT NULL;
 
 
-ALTER TABLE `omoccurdeterminations` 
+ALTER TABLE `omoccurdeterminations`
+  ADD COLUMN `verificationStatus` INT(2) NULL DEFAULT 0 AFTER `appliedStatus`,
+  ADD COLUMN `publishOverride` INT(2) NULL DEFAULT 0 AFTER `verificationStatus`,
   CHANGE COLUMN `identificationID` `sourceIdentifier` VARCHAR(45) NULL DEFAULT NULL ;
 
 

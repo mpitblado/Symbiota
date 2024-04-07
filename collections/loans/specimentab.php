@@ -374,7 +374,7 @@ $specList = $loanManager->getSpecimenList($loanId, $sortTag);
 						<input type="text" name="identificationremarks" style="width:350px;" />
 					</div>
 					<div style='margin:3px;'>
-						<input type="checkbox" name="makecurrent" value="1" /> <?php echo $LANG['MAKE_THIS_CURRENT']; ?>
+						<input type="checkbox" name="iscurrent" value="1" /> <?php echo $LANG['MAKE_THIS_CURRENT']; ?>
 					</div>
 					<div style='margin:3px;'>
 						<input type="checkbox" name="printqueue" value="1" /> <?php echo $LANG['ADD_TO_PRINT']; ?>

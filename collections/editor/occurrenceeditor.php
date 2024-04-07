@@ -158,16 +158,33 @@ if($SYMB_UID){
 	if($isEditor){
 		//Available to full editors and taxon editors
 		if($action == 'submitDetermination'){
-			//Adding a new determination
-			$statusStr = $occManager->addDetermination($_POST,$isEditor);
+			$detArr = $_POST;
+			if($isEditor == 3) $detArr['appliedstatus'] = 0;
+			if($occManager->addDetermination($detArr)){
+				$statusStr = $LANG['DET_INSERT_SUCCESS'];
+				if($isEditor == 3) $statusStr = '<br>' . 'DET_INSERT_PENDING';
+			}
+			else{
+				$statusStr = $LANG['ERROR_INSERT_FAILED'] . ': ' . $occManager->getErrorStr();
+			}
 			$tabTarget = 1;
 		}
 		elseif($action == 'submitDeterminationEdit'){
-			$statusStr = $occManager->editDetermination($_POST);
+			if($occManager->editDetermination($_POST)){
+				$statusStr = $LANG['DET_EDIT_SUCCESS'];
+			}
+			else{
+				$statusStr = $LANG['ERROR_EDIT_FAILED'] . ': ' . $occManager->getErrorStr();
+			}
 			$tabTarget = 1;
 		}
 		elseif($action == 'Delete Determination'){
-			$statusStr = $occManager->deleteDetermination($_POST['detid']);
+			if($occManager->deleteDetermination($_POST['detid'])){
+				$statusStr = $LANG['DET_DELETE_SUCCESS'];
+			}
+			else{
+				$statusStr = $LANG['DET_DELETE_FAILED'] . ': ' . $occManager->getErrorStr();
+			}
 			$tabTarget = 1;
 		}
 		//Only full editors can perform following actions
@@ -289,9 +306,9 @@ if($SYMB_UID){
 
 			}
 			elseif($action == "Apply Determination"){
-				$makeCurrent = 0;
-				if(array_key_exists('makecurrent',$_POST)) $makeCurrent = 1;
-				$statusStr = $occManager->applyDetermination($_POST['detid'],$makeCurrent);
+				$isCurrent = 0;
+				if(array_key_exists('iscurrent', $_POST)) $isCurrent = 1;
+				$statusStr = $occManager->applyDetermination($_POST['detid'], $isCurrent);
 				$tabTarget = 1;
 			}
 			elseif($action == "Make Determination Current"){
@@ -506,7 +523,7 @@ else{
 	<script src="../../js/symb/collections.coordinateValidation.js?ver=2" type="text/javascript"></script>
 	<script src="../../js/symb/wktpolygontools.js?ver=2" type="text/javascript"></script>
 	<script src="../../js/symb/collections.georef.js?ver=2" type="text/javascript"></script>
-	<script src="../../js/symb/collections.editor.main.js?ver=9" type="text/javascript"></script>
+	<script src="../../js/symb/collections.editor.main.js?ver=10" type="text/javascript"></script>
 	<script src="../../js/symb/collections.editor.tools.js?ver=4" type="text/javascript"></script>
 	<script src="../../js/symb/collections.editor.imgtools.js?ver=3" type="text/javascript"></script>
 	<script src="../../js/jquery.imagetool-1.7.js?ver=140310" type="text/javascript"></script>

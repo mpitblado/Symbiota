@@ -142,6 +142,24 @@ $LANG['RETURN_TO_CROWDSOURCING'] = 'Return to Crowdsource Central';
 $LANG['ERROR_NOT_AUTHORIZED'] = 'ERROR:</b> Disculpe, no está autorizado para editar ocurrencias dentro de esta colección. Contactacte al administrador de la colección si piensa que esto es incorrecto';
 $LANG['ERROR_CANT_ADD'] = 'ERROR:</b> no está autorizado para añadir registros de ocurrencia';
 
+//Determination translations
+$LANG['DET_INSERT_SUCCESS'] = '¡Determinación enviada exitosamente!';
+$LANG['DET_INSERT_PENDING'] = 'Determinación ha sido añadida exitosamente, pero está pendiente de aprobación antes de ser activada';
+$LANG['ERROR_DETS_NOT_CURRENT'] = 'ERROR restableciendo determinaciones a no actuales';
+$LANG['ERROR_INSERT_FAILED'] = 'ERROR - no se agregó la determinación';
+$LANG['DET_EDIT_SUCCESS'] = 'Determinación actualizada exitosamente';
+$LANG['ERROR_EDIT_FAILED'] = 'ERROR - no se editó la determinación';
+$LANG['DET_DELETE_SUCCESS'] = '¡Determinación eliminada exitosamente!';
+$LANG['DET_DELETE_FAILED'] = 'ERROR - no se eliminó la determinación';
+
+$LANG['DET_APPLIED'] = 'Determinación ha sido aplicada';
+$LANG['ERROR_ATTEMPT_DET'] = 'ERROR intentando aplicar determinación';
+$LANG['DET_NOW_CURRENT'] = '¡La determinación ahora está actualizada!';
+$LANG['ERROR_SETTING_CURRENT'] = 'ERROR estableciendo determinación como actual';
+$LANG['ERROR_TAX_THESAURUS'] = 'ERROR: Anotación convertida en actual, pero no se remapeó la imagen porque el nombre del taxón no está vinculado al tesauro taxonómico.';
+
+$LANG['ERROR_ADDED_FAILED_IMAGES'] = 'ERROR: Anotación añadida pero falló el remapeo de las imágenes al nuevo nombre';
+
 //Error and output messages from within OccurrenceEditorManager.php
 $LANG['SUCCESS_EDITS_SUBMITTED'] = 'SUCCESS: edits submitted and activated';
 $LANG['ERROR_TAGGING_USER'] = 'ERROR tagging user as the crowdsourcer';

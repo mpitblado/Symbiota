@@ -142,6 +142,24 @@ $LANG['RETURN_TO_CROWDSOURCING'] = 'Return to Crowdsource Central';
 $LANG['ERROR_NOT_AUTHORIZED'] = "ERREUR:</b> Désolé, vous n'êtes pas autorisé à modifier occurrences dans cette collection. Contactez administrateur de collection si vous pensez que cela est incorrect";
 $LANG['ERROR_CANT_ADD'] = "ERREUR:</b> ne sont pas autorisés à ajouter des enregistrements d'occurrence";
 
+//Determination translations
+$LANG['DET_INSERT_SUCCESS'] = 'Détermination soumise avec succès!';
+$LANG['DET_INSERT_PENDING'] = "La détermination a été ajoutée avec succès, mais est en attente d'approbation avant d'être activée";
+$LANG['ERROR_DETS_NOT_CURRENT'] = 'ERREUR réinitialisant les dets à pas actuel';
+$LANG['ERROR_INSERT_FAILED'] = "ERREUR - échec de l'ajout de la détermination";
+$LANG['DET_EDIT_SUCCESS'] = 'Détermination mise à jour avec succès';
+$LANG['ERROR_EDIT_FAILED'] = 'ERREUR - échec de la modification de la détermination';
+$LANG['DET_DELETE_SUCCESS'] = 'Détermination supprimée avec succès !';
+$LANG['DET_DELETE_FAILED'] = 'ERREUR - échec de suppression de la détermination';
+
+$LANG['DET_APPLIED'] = 'La détermination a été appliquée';
+$LANG['ERROR_ATTEMPT_DET'] = "ERREUR lors de la tentative d'application de la détermination";
+$LANG['DET_NOW_CURRENT'] = "La détermination est maintenant d'actualité!";
+$LANG['ERROR_SETTING_CURRENT'] = 'ERREUR en définissant la dét de la cible sur le courant';
+$LANG['ERROR_TAX_THESAURUS'] = "ERREUR: l'annotation est devenue courante mais n'a pas réussi à remapper l'image car le nom du taxon n'est pas lié au thésaurus taxonomique.";
+
+$LANG['ERROR_ADDED_FAILED_IMAGES'] = "ERREUR: l'annotation a été ajoutée mais n'a pas réussi à remapper les images vers un nouveau nom";
+
 //Error and output messages from within OccurrenceEditorManager.php
 $LANG['SUCCESS_EDITS_SUBMITTED'] = 'SUCCÈS: modifications soumises et activées';
 $LANG['ERROR_TAGGING_USER'] = "ERREUR marquant l'utilisateur en tant que crowdsourcer";

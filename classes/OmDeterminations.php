@@ -23,14 +23,16 @@ class OmDeterminations extends Manager{
 		parent::__destruct();
 	}
 
-	public function getDeterminationArr($filterArr = null){
+	public function getDeterminationArr($conditions = null){
 		$retArr = array();
 		$uidArr = array();
 		$sql = 'SELECT detID, occid, '.implode(', ', array_keys($this->schemaMap)).', initialTimestamp FROM omoccurdeterminations WHERE ';
-		if($this->detID) $sql .= '(detID = '.$this->detID.') ';
+		if($this->detID && !$conditions) $sql .= '(detID = '.$this->detID.') ';
 		elseif($this->occid) $sql .= '(occid = '.$this->occid.') ';
-		foreach($filterArr as $field => $cond){
-			$sql .= 'AND '.$field.' = "'.$this->cleanInStr($cond).'" ';
+		if(is_array($conditions)){
+			foreach($conditions as $field => $cond){
+				$sql .= 'AND '.$field.' = "'.$this->cleanInStr($cond).'" ';
+			}
 		}
 		if($rs = $this->conn->query($sql)){
 			while($r = $rs->fetch_assoc()){
@@ -60,13 +62,30 @@ class OmDeterminations extends Manager{
 	public function insertDetermination($inputArr){
 		$status = false;
 		if($this->occid){
-			if(!isset($inputArr['createdUid'])) $inputArr['createdUid'] = $GLOBALS['SYMB_UID'];
+			$this->typeStr = 'is';
+			$this->setParameterArr($inputArr);
+			if(!isset($this->parameterArr['createdUid'])) $this->parameterArr['createdUid'] = $GLOBALS['SYMB_UID'];
+			if(!empty($this->parameterArr['isCurrent']) && (!isset($this->parameterArr['appliedStatus']) || !$this->parameterArr['appliedStatus'])){
+				//Set all other sister determination to not current; later we might rework this to allow multiple identifications to be current
+				$setArr = ['isCurrent' => 0];
+				$condArr = ['appliedStatus' => ['value' => 1, 'type' => 'i']];
+				if(!$this->updateDetermination($setArr, $condArr)){
+					$this->warningArr[] = 'ERROR_DETS_NOT_CURRENT|' . $this->conn->error;
+				}
+			}
+			if(!isset($this->parameterArr['sortSequence'])){
+				//Set a default sort sequence
+				$sortSeq = 1;
+				if(preg_match('/([1,2]{1}\d{3})/', $this->parameterArr['dateidentified'], $matches)){
+					$sortSeq = date('Y') + 1 - $matches[1];
+				}
+				$this->parameterArr['sortSequence'] = $sortSeq;
+			}
+			//Insert determination
 			$sql = 'INSERT INTO omoccurdeterminations(occid, recordID';
 			$sqlValues = '?, ?, ';
 			$paramArr = array($this->occid);
 			$paramArr[] = UuidFactory::getUuidV4();
-			$this->typeStr = 'is';
-			$this->setParameterArr($inputArr);
 			foreach($this->parameterArr as $fieldName => $value){
 				$sql .= ', '.$fieldName;
 				$sqlValues .= '?, ';
@@ -78,6 +97,7 @@ class OmDeterminations extends Manager{
 				if($stmt->execute()){
 					if($stmt->affected_rows || !$stmt->error){
 						$this->detID = $stmt->insert_id;
+						//TODO: If inserted determination isCurrent, we need to reset all other sister determinations to 0
 						$status = true;
 					}
 					else $this->errorMessage = 'ERROR inserting omoccurdeterminations record (2): '.$stmt->error;
@@ -90,9 +110,9 @@ class OmDeterminations extends Manager{
 		return $status;
 	}
 
-	public function updateDetermination($inputArr){
+	public function updateDetermination($inputArr, $conditions = null){
 		$status = false;
-		if($this->detID && $this->conn){
+		if(($this->detID || $this->occid) && $this->conn){
 			$this->setParameterArr($inputArr);
 			$paramArr = array();
 			$sqlFrag = '';
@@ -100,13 +120,30 @@ class OmDeterminations extends Manager{
 				$sqlFrag .= $fieldName . ' = ?, ';
 				$paramArr[] = $value;
 			}
-			$paramArr[] = $this->detID;
+			$sql = 'UPDATE omoccurdeterminations SET ' . trim($sqlFrag, ', ') . ' ';
+			if($this->detID){
+				$sql .= 'WHERE (detID = ?)';
+				$paramArr[] = $this->detID;
+			}
+			else{
+				$sql .= 'WHERE (occid = ?)';
+				$paramArr[] = $this->occid;
+			}
 			$this->typeStr .= 'i';
-			$sql = 'UPDATE omoccurdeterminations SET '.trim($sqlFrag, ', ').' WHERE (detID = ?)';
+			if($conditions){
+				foreach($conditions as $condField => $condValueArr){
+					$sql .= 'WHERE (' . $condField . ' = ?)';
+					$this->typeStr .= $condValueArr['type'];
+					$paramArr[] = $condValueArr['value'];
+				}
+			}
 			if($stmt = $this->conn->prepare($sql)) {
 				$stmt->bind_param($this->typeStr, ...$paramArr);
 				$stmt->execute();
-				if($stmt->affected_rows || !$stmt->error) $status = true;
+				if($stmt->affected_rows || !$stmt->error){
+					//TODO: If updated determination isCurrent value is changed, we need to adjust other determinations appropriately, and update tid of linked images
+					$status = true;
+				}
 				else $this->errorMessage = 'ERROR updating omoccurdeterminations record: '.$stmt->error;
 				$stmt->close();
 			}
@@ -148,8 +185,43 @@ class OmDeterminations extends Manager{
 
 	public function deleteDetermination(){
 		if($this->detID){
-			$sql = 'DELETE FROM omoccurdeterminations WHERE detID = '.$this->detID;
+			$targetID = $this->detID;
+			//If target determination isCurrent, need to reset a new isCurrent determination
+			$detArr = $this->getDeterminationArr('all');
+			if($detArr[$this->detID]['isCurrent']){
+				//Set a new default isCurrent
+				$newIsCurrentID = 0;
+				$rank = 0;
+				foreach($detArr as $id => $recordArr){
+					if($recordArr['appliedStatus'] == 0 || $recordArr['securityStatus'] == 1){
+						continue;
+					}
+					if($recordArr['isCurrent']){
+						//Abort, since another isCurrent already exists
+						$newIsCurrentID = 0;
+						break;
+					}
+					if($recordArr['sortSequence'] > $rank){
+						$rank = $recordArr['sortSequence'];
+						$newIsCurrentID = $id;
+					}
+				}
+				if($newIsCurrentID){
+					$this->detID = $newIsCurrentID;
+					$this->updateDetermination(array('isCurrent' => 1));
+				}
+			}
+			//Delete target determinations
+			$sql = 'DELETE FROM omoccurdeterminations WHERE detID = ?';
+			if($stmt = $this->conn->prepare($sql)){
+				$stmt->bind_param('i', $targetID);
+				$stmt->execute();
+				$stmt->close();
+			}
+
+			delete following
 			if($this->conn->query($sql)){
+				//TODO: If determination target isCurrent, we need to reset current determination, and remap linked image TIDs
 				return true;
 			}
 			else{
@@ -161,7 +233,7 @@ class OmDeterminations extends Manager{
 
 	//Setters and getters
 	public function setDetID($id){
-		if(is_numeric($id)) $this->detID = $id;
+		$this->detID = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
 	}
 
 	public function getDetID(){
@@ -169,7 +241,7 @@ class OmDeterminations extends Manager{
 	}
 
 	public function setOccid($id){
-		if(is_numeric($id)) $this->occid = $id;
+		$this->occid = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
 	}
 
 	public function getSchemaMap(){

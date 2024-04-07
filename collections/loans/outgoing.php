@@ -51,7 +51,7 @@ if($isEditor){
 			$occidArr = $_REQUEST['occid'];
 			foreach($occidArr as $k){
 				$occManager->setOccId($k);
-				$occManager->addDetermination($_REQUEST,$isEditor);
+				$occManager->addDetermination($_REQUEST);
 			}
 		}
 		elseif($formSubmit == 'batchProcessSpecimens'){
