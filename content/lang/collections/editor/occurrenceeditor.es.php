@@ -151,12 +151,10 @@ $LANG['DET_EDIT_SUCCESS'] = 'Determinación actualizada exitosamente';
 $LANG['ERROR_EDIT_FAILED'] = 'ERROR - no se editó la determinación';
 $LANG['DET_DELETE_SUCCESS'] = '¡Determinación eliminada exitosamente!';
 $LANG['DET_DELETE_FAILED'] = 'ERROR - no se eliminó la determinación';
-
 $LANG['DET_APPLIED'] = 'Determinación ha sido aplicada';
-$LANG['ERROR_ATTEMPT_DET'] = 'ERROR intentando aplicar determinación';
+$LANG['ERROR_APPLYING_DET'] = 'ERROR intentando aplicar determinación';
 $LANG['DET_NOW_CURRENT'] = '¡La determinación ahora está actualizada!';
 $LANG['ERROR_SETTING_CURRENT'] = 'ERROR estableciendo determinación como actual';
-$LANG['ERROR_TAX_THESAURUS'] = 'ERROR: Anotación convertida en actual, pero no se remapeó la imagen porque el nombre del taxón no está vinculado al tesauro taxonómico.';
 
 $LANG['ERROR_ADDED_FAILED_IMAGES'] = 'ERROR: Anotación añadida pero falló el remapeo de las imágenes al nuevo nombre';
 

@@ -345,18 +345,8 @@ class OccurrenceDataset {
 		return $retArr;
 	}
 
-	public function getCollName($collId){
-		$collName = '';
-		if($collId){
-			if(!$this->collArr) $this->setCollMetadata($collId);
-			$collName = $this->collArr['collname'].' ('.$this->collArr['instcode'].($this->collArr['collcode']?':'.$this->collArr['collcode']:'').')';
-		}
-		return $collName;
-	}
-
 	private function setCollMetadata($collId){
-		$sql = 'SELECT institutioncode, collectioncode, collectionname, colltype '.
-			'FROM omcollections WHERE collid = '.$collId;
+		$sql = 'SELECT institutioncode, collectioncode, collectionname, colltype FROM omcollections WHERE collid = '.$collId;
 		if($rs = $this->conn->query($sql)){
 			while($r = $rs->fetch_object()){
 				$this->collArr['instcode'] = $r->institutioncode;

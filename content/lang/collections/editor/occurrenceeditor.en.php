@@ -151,12 +151,10 @@ $LANG['DET_EDIT_SUCCESS'] = 'Determination updated successfully';
 $LANG['ERROR_EDIT_FAILED'] = 'ERROR - failed to edit determination';
 $LANG['DET_DELETE_SUCCESS'] = 'Determination deleted successfully!';
 $LANG['DET_DELETE_FAILED'] = 'ERROR - failed to delete determination';
-
 $LANG['DET_APPLIED'] = 'Determination has been applied';
-$LANG['ERROR_ATTEMPT_DET'] = 'ERROR attempting to apply determination';
+$LANG['ERROR_APPLYING_DET'] = 'ERROR attempting to apply determination';
 $LANG['DET_NOW_CURRENT'] = 'Determination is now current!';
 $LANG['ERROR_SETTING_CURRENT'] = 'ERROR setting target det to current';
-$LANG['ERROR_TAX_THESAURUS'] = 'ERROR: Annotation made current but failed to remap image because taxon name not linked to taxonomic thesaurus.';
 
 $LANG['ERROR_ADDED_FAILED_IMAGES'] = 'ERROR: Annotation added but failed to remap images to new name';
 

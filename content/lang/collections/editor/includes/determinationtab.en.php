@@ -43,6 +43,7 @@ $LANG['ADDED_TO_QUEUE'] = 'Added to Print Queue';
 $LANG['SORT_SEQUENCE'] = 'Sort Sequence';
 $LANG['SUBMIT_DET_EDITS'] = 'Submit Determination Edits';
 $LANG['MAKE_DET_CURRENT'] = 'Make Determination Current';
+$LANG['APPLY_DETERMINATION'] = 'Apply Determination';
 $LANG['MAKE_CURRENT'] = 'Make Current';
 $LANG['SURE_DELETE'] = 'Are you sure you want to delete this specimen determination?';
 $LANG['DELETE_DET'] = 'Delete Determination';

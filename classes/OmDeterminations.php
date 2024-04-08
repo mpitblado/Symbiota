@@ -100,12 +100,12 @@ class OmDeterminations extends Manager{
 						//TODO: If inserted determination isCurrent, we need to reset all other sister determinations to 0
 						$status = true;
 					}
-					else $this->errorMessage = 'ERROR inserting omoccurdeterminations record (2): '.$stmt->error;
+					else $this->errorMessage = $stmt->error;
 				}
-				else $this->errorMessage = 'ERROR inserting omoccurdeterminations record (1): '.$stmt->error;
+				else $this->errorMessage = $stmt->error;
 				$stmt->close();
 			}
-			else $this->errorMessage = 'ERROR preparing statement for omoccurdeterminations insert: '.$this->conn->error;
+			else $this->errorMessage = $this->conn->error;
 		}
 		return $status;
 	}
@@ -144,10 +144,10 @@ class OmDeterminations extends Manager{
 					//TODO: If updated determination isCurrent value is changed, we need to adjust other determinations appropriately, and update tid of linked images
 					$status = true;
 				}
-				else $this->errorMessage = 'ERROR updating omoccurdeterminations record: '.$stmt->error;
+				else $this->errorMessage = $stmt->error;
 				$stmt->close();
 			}
-			else $this->errorMessage = 'ERROR preparing statement for updating omoccurdeterminations: '.$this->conn->error;
+			else $this->errorMessage = $this->conn->error;
 		}
 		return $status;
 	}
@@ -184,6 +184,7 @@ class OmDeterminations extends Manager{
 	}
 
 	public function deleteDetermination(){
+		$status = false;
 		if($this->detID){
 			$targetID = $this->detID;
 			//If target determination isCurrent, need to reset a new isCurrent determination
@@ -209,26 +210,23 @@ class OmDeterminations extends Manager{
 				if($newIsCurrentID){
 					$this->detID = $newIsCurrentID;
 					$this->updateDetermination(array('isCurrent' => 1));
+					//TODO: Need to adjust TIDs of linked images
 				}
 			}
-			//Delete target determinations
+			//Delete target determination
 			$sql = 'DELETE FROM omoccurdeterminations WHERE detID = ?';
 			if($stmt = $this->conn->prepare($sql)){
 				$stmt->bind_param('i', $targetID);
 				$stmt->execute();
+				if($stmt->affected_rows || !$stmt->error){
+					//TODO: If updated determination isCurrent value is changed, we need to adjust other determinations appropriately, and update tid of linked images
+					$status = true;
+				}
+				else $this->errorMessage = $stmt->error;
 				$stmt->close();
 			}
-
-			delete following
-			if($this->conn->query($sql)){
-				//TODO: If determination target isCurrent, we need to reset current determination, and remap linked image TIDs
-				return true;
-			}
-			else{
-				$this->errorMessage = 'ERROR deleting omoccurdeterminations record: '.$this->conn->error;
-				return false;
-			}
 		}
+		return $status;
 	}
 
 	//Setters and getters

@@ -333,13 +333,13 @@ $specImgArr = $occManager->getImageMap();  // find out if there are images in or
 										<?php
 										if($detRec['appliedstatus']){
 											?>
-											<button type="submit" name="submitaction" value="Make Determination Current" ><?php echo $LANG['MAKE_DET_CURRENT']; ?></button>
+											<button type="submit" name="submitaction" value="makeDeterminationCurrent" ><?= $LANG['MAKE_DET_CURRENT'] ?></button>
 											<?php
 										}
 										else{
 											?>
-											<input type="submit" name="submitaction" value="Apply Determination" /><br/>
-											<input type="checkbox" name="iscurrent" value="1" <?php echo ($detRec['iscurrent']?'checked':''); ?> /> <?php echo $LANG['MAKE_CURRENT']; ?>
+											<button type="submit" name="submitaction" value="applyDetermination"><?= $LANG['APPLY_DETERMINATION'] ?></button><br>
+											<input type="checkbox" name="iscurrent" value="1" <?= ($detRec['iscurrent'] ? 'checked' : '') ?> /> <?= $LANG['MAKE_CURRENT'] ?>
 											<?php
 										}
 										?>

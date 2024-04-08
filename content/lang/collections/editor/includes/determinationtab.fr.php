@@ -24,7 +24,7 @@ $LANG['SET_BY'] = 'Défini par';
 $LANG['DET_HISTORY'] = 'Historique de Détermination';
 $LANG['ADD_NEW_DET'] = 'Ajouter une Nouvelle Détermination';
 $LANG['NO_HIST_ANNOTATIONS'] = "Il n'y a pas d'annotations historiques pour ce spécimen";
-$LANG['NO_RIGHTS'] = "Bien que vous soyez un éditeur de taxonomie pour ce taxon, vous n'avez pas reçu de droits d'édition explicites pour cette collection. 
+$LANG['NO_RIGHTS'] = "Bien que vous soyez un éditeur de taxonomie pour ce taxon, vous n'avez pas reçu de droits d'édition explicites pour cette collection.
 						Vous pouvez soumettre de nouvelles déterminations, mais elles devront être approuvées par le responsable de la collecte avant d'être appliquées.";
 $LANG['ID_QUALIFIER'] = "Qualificatif d'Identification";
 $LANG['SCI_NAME'] = 'Nom Scientifique';
@@ -43,6 +43,7 @@ $LANG['ADDED_TO_QUEUE'] = "Ajouté à File d'Attente d'Impression";
 $LANG['SORT_SEQUENCE'] = 'Séquence de Tri';
 $LANG['SUBMIT_DET_EDITS'] = 'Soumettre Modifications de Détermination';
 $LANG['MAKE_DET_CURRENT'] = 'Rendre Détermination Actuelle';
+$LANG['APPLY_DETERMINATION'] = 'Appliquer la détermination';
 $LANG['MAKE_CURRENT'] = 'Rendre Courant';
 $LANG['SURE_DELETE'] = "Êtes-vous sûr de vouloir supprimer cette détermination d'échantillon?";
 $LANG['DELETE_DET'] = "Supprimer Détermination";

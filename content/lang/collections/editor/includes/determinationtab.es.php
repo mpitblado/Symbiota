@@ -7,7 +7,6 @@ Language: Español
 
 $LANG['ID_CONFIDENCE'] = 'Categoría de Confianza de Identificación';
 $LANG['MODIFY_CURRENT_RANKING'] = 'Modificar categoría de identificación actual';
-$LANG['CONFIDENCE_IN_DET'] = 'Confianza de Determinación';
 $LANG['ABSOLUTE'] = 'Absoluta';
 $LANG['HIGH'] = 'Alta';
 $LANG['MEDIUM'] = 'Media';
@@ -44,6 +43,7 @@ $LANG['ADDED_TO_QUEUE'] = 'Añadido a la Cola de Anotaciones';
 $LANG['SORT_SEQUENCE'] = 'Ordenar Secuencia';
 $LANG['SUBMIT_DET_EDITS'] = 'Enviar Ediciones de Determinación';
 $LANG['MAKE_DET_CURRENT'] = 'Hacer Determinación Actual';
+$LANG['APPLY_DETERMINATION'] = 'Aplicar determinación';
 $LANG['MAKE_CURRENT'] = 'Hacer Actual';
 $LANG['SURE_DELETE'] = '¿Está seguro de querer eliminar esta determinación del espécimen?';
 $LANG['DELETE_DET'] = 'Eliminar Determinación';

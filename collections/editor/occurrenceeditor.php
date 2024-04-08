@@ -305,14 +305,24 @@ if($SYMB_UID){
 				}
 
 			}
-			elseif($action == "Apply Determination"){
+			elseif($action == 'applyDetermination'){
 				$isCurrent = 0;
 				if(array_key_exists('iscurrent', $_POST)) $isCurrent = 1;
-				$statusStr = $occManager->applyDetermination($_POST['detid'], $isCurrent);
+				if($occManager->applyDetermination($_POST['detid'], $isCurrent)){
+					$statusStr = $LANG['DET_APPLIED'];
+				}
+				else{
+					$statusStr = $LANG['ERROR_APPLYING_DET'];
+				}
 				$tabTarget = 1;
 			}
-			elseif($action == "Make Determination Current"){
-				$statusStr = $occManager->makeDeterminationCurrent($_POST['detid']);
+			elseif($action == 'makeDeterminationCurrent'){
+				if($occManager->makeDeterminationCurrent($_POST['detid'])){
+					$statusStr = $LANG['DET_NOW_CURRENT'];
+				}
+				else{
+					$statusStr = $LANG['ERROR_SETTING_CURRENT'];
+				}
 				$tabTarget = 1;
 			}
 			elseif($action == "Submit Verification Edits"){
