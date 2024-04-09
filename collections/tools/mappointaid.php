@@ -24,7 +24,9 @@ $errMode = array_key_exists("errmode",$_REQUEST)?$_REQUEST["errmode"]:1;
 		include_once($SERVER_ROOT.'/includes/leafletMap.php');
 		include_once($SERVER_ROOT.'/includes/googleMap.php');
 		?>
-
+		<style>
+			html, body, #map_canvas { width:100%; height: 100%; padding:0; margin:0}
+		</style>
 		<script type="text/javascript">
 		var map;
 
@@ -127,7 +129,7 @@ $errMode = array_key_exists("errmode",$_REQUEST)?$_REQUEST["errmode"]:1;
 
 				if(errRadius && errRadius > 0) {
 					marker.addTo(map.mapLayer);
-					L.circle([lat, lng], errRadius)
+					L.circle([lat, lng], parseFloat(errRadius))
 						.on('drag', e=> {
 							const pos = e.target.getLatLng()
 
@@ -199,7 +201,6 @@ $errMode = array_key_exists("errmode",$_REQUEST)?$_REQUEST["errmode"]:1;
 					const lat = e.layer._latlng.lat;
 					const lng = e.layer._latlng.lng;
 					createMarker(lat, lng)
-
 				} 
 
 				if(markerControl) { 
@@ -291,7 +292,7 @@ $errMode = array_key_exists("errmode",$_REQUEST)?$_REQUEST["errmode"]:1;
 			lngInput.addEventListener("change", onFormChange);
 
 			//Draw marker if one exists
-		if(latlng) {
+         if(latlng) {
 				createMarker(latlng[0], latlng[1]);
 				map.mapLayer.setCenter(marker.getPosition());
 			}
@@ -309,10 +310,7 @@ $errMode = array_key_exists("errmode",$_REQUEST)?$_REQUEST["errmode"]:1;
 			let lat = opener.document.getElementById("decimallatitude").value;
 			let lng = opener.document.getElementById("decimallongitude").value;
 
-			const data = document.getElementById('service-container');
-			latCenter = parseFloat(data.getAttribute('data-lat'));
-			lngCenter = parseFloat(data.getAttribute('data-lng'));
-
+         const data = document.getElementById('service-container');
 			radiusInput = document.getElementById("errRadius");
 			latInput = document.getElementById("latbox");
 			lngInput = document.getElementById("lngbox");
@@ -325,12 +323,18 @@ $errMode = array_key_exists("errmode",$_REQUEST)?$_REQUEST["errmode"]:1;
 				} else {
 					alert(`Error: Not Coordinates lat: ${lat}, lng: ${lng}`);
 				}
-			} 
-			<?php if(empty($GOOGLE_MAP_KEY)) { ?> 
+            latCenter = parseFloat(lat);
+            lngCenter = parseFloat(lng);
+         } else {
+            latCenter = parseFloat(data.getAttribute('data-lat'));
+            lngCenter = parseFloat(data.getAttribute('data-lng'));
+         } 
+
+			<?php if(empty($GOOGLE_MAP_KEY)): ?> 
 			leafletInit();
-		<?php } else { ?> 
+		   <?php else:?> 
 			googleInit();
-	<?php } ?>
+	      <?php endif?>
 		}
 
 		function updateParentForm(f) {
@@ -359,38 +363,36 @@ $errMode = array_key_exists("errmode",$_REQUEST)?$_REQUEST["errmode"]:1;
 		}
 		</script>
 	</head>
-	<body style="background-color:#ffffff;" onload="initialize()">
+	<body style="display:flex; flex-direction:column; background-color:#ffffff;" onload="initialize()">
 		<div
 			id="service-container" 
 			class="service-container" 
 			data-lat="<?= htmlspecialchars($latCenter)?>"
 			data-lng="<?= htmlspecialchars($lngCenter)?>"
-			>
-			<div style="">
-				<form name="coordform" action="" method="post" onsubmit="return false">
-					<div style="float:right;margin:5px 20px">
-                  <button name="addcoords" type="button" onclick="updateParentForm(this.form);">
-                     <b><?php echo isset($LANG['SUBMIT'])? $LANG['SUBMIT']: 'Submit' ?></b> 
-                  </button><br/>
-					</div>
-					<div style="margin:3px 20px 3px 0px;">
-                  <?php echo isset($LANG['MPR_INSTRUCTIONS']) ?$LANG['MPR_INSTRUCTIONS']: 'Click once to capture coordinates. Click on the submit coordinate button to transfer coordinates.' ?>
-                  <?php if($errMode) echo isset($LANG['MPR_UNCERTAINTY_INSTRUCTIONS']) ?$LANG['MPR_UNCERTAINTY_INSTRUCTIONS']: 'Enter uncertainty to create an error radius circle around the marker. '?>
-					</div>
-					<div style="margin-right:10px;">
-                  <b><?php echo isset($LANG['MPR_LAT'])? $LANG['MPR_LAT']: 'Latitude' ?>:</b> 
-                  <input type="text" id="latbox" name="lat" style="width:100px" />
-                  <b><?php echo isset($LANG['MPR_LNG'])? $LANG['MPR_LNG']: 'Longitude' ?>:</b> 
-                  <input type="text" id="lngbox" name="lon" style="width:100px" />
-						<?php if($errMode):?>
-                  <b>
-                  <?php echo isset($LANG['UNCERTAINTY_METERS']) ?$LANG['UNCERTAINTY_METERS']: 'Uncertainty in Meters'?>:
-                  </b>
-                  <input type="text" id="errRadius" name="errRadius" size="13" />
-						<?php endif?>
-					</div>
-				</form>
-				<div id='map_canvas' style='width:100%; height:88%; clear:both;'></div>
-			</div>
+			></div>
+         <form style="padding:0.5rem" name="coordform" action="" method="post" onsubmit="return false">
+            <div style="float:right;margin:5px 20px">
+               <button name="addcoords" type="button" onclick="updateParentForm(this.form);">
+                  <b><?php echo isset($LANG['SUBMIT'])? $LANG['SUBMIT']: 'Submit' ?></b> 
+               </button><br/>
+            </div>
+            <div style="margin:3px 20px 3px 0px;">
+               <?php echo isset($LANG['MPR_INSTRUCTIONS']) ?$LANG['MPR_INSTRUCTIONS']: 'Click once to capture coordinates. Click on the submit coordinate button to transfer coordinates.' ?>
+               <?php if($errMode) echo isset($LANG['MPR_UNCERTAINTY_INSTRUCTIONS']) ?$LANG['MPR_UNCERTAINTY_INSTRUCTIONS']: 'Enter uncertainty to create an error radius circle around the marker. '?>
+            </div>
+            <div style="margin-right:10px;">
+               <b><?php echo isset($LANG['MPR_LAT'])? $LANG['MPR_LAT']: 'Latitude' ?>:</b> 
+               <input type="text" id="latbox" name="lat" style="width:100px" />
+               <b><?php echo isset($LANG['MPR_LNG'])? $LANG['MPR_LNG']: 'Longitude' ?>:</b> 
+               <input type="text" id="lngbox" name="lon" style="width:100px" />
+               <?php if($errMode):?>
+               <b>
+               <?php echo isset($LANG['UNCERTAINTY_METERS']) ?$LANG['UNCERTAINTY_METERS']: 'Uncertainty in Meters'?>:
+               </b>
+               <input type="text" id="errRadius" name="errRadius" size="13" />
+               <?php endif?>
+            </div>
+         </form>
+         <div id='map_canvas'></div>
 	</body>
 </html>

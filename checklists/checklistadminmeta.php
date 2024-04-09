@@ -111,11 +111,8 @@ if(isset($clArray['dynamicProperties']) && $clArray['dynamicProperties']){
 		f.activatekey.checked = false;
 	}
 
-	function openMappingAid() {
-		mapWindow=open("<?php echo $CLIENT_ROOT; ?>/checklists/tools/mappointaid.php?clid=<?php echo $clid; ?>&formname=editclmatadata&latname=latcentroid&longname=longcentroid","mapaid","resizable=0,width=1000,height=800,left=20,top=20");
-	    if(mapWindow.opener == null) mapWindow.opener = self;
-	}
 /*
+ *
 	function openMappingPolyAid() {
 		var latDec = document.getElementById("latdec").value;
 		var lngDec = document.getElementById("lngdec").value;
@@ -123,10 +120,15 @@ if(isset($clArray['dynamicProperties']) && $clArray['dynamicProperties']){
 	    if(mapWindow.opener == null) mapWindow.opener = self;
    }*/
 
-	function openMappingPolyAid(type = "wkt") {
-		var latDec = document.getElementById("latdec").value;
-		var lngDec = document.getElementById("lngdec").value;
-		mapWindow=open(`<?php echo $CLIENT_ROOT; ?>/collections/tools/mapcoordaid.php?clid=<?php echo $clid; ?>&mapmode=polygon&map_mode_strict=true&latdef=${latDec}&lngdef=${lngDec}${type === "geojson"? "&geoJson":""}`,"mapaid","resizable=0,width=1000,height=800,left=20,top=20");
+	function openMappingPointAid() {
+		mapWindow=open("<?php echo $CLIENT_ROOT; ?>/collections/tools/mappointaid.php","mapaid","resizable=0,width=1000,height=800,left=20,top=20");
+	    if(mapWindow.opener == null) mapWindow.opener = self;
+	}
+
+	function openMappingShapeAid(mode, type) {
+		var latDec = document.getElementById("decimallatitude").value;
+		var lngDec = document.getElementById("decimallongitude").value;
+		mapWindow=open(`<?php echo $CLIENT_ROOT; ?>/collections/tools/mapcoordaid.php?clid=<?php echo $clid; ?>&mapmode=${mode}&map_mode_strict=true&latdef=${latDec}&lngdef=${lngDec}&${type? type: "wkt"}`,"mapaid","resizable=0,width=1000,height=800,left=20,top=20");
 	    if(mapWindow.opener == null) mapWindow.opener = self;
 	}
 
@@ -247,18 +249,18 @@ if(!$clid){
 			<div id="geoDiv" style="width:100%;margin-top:5px">
 				<div style="float:left;">
 					<b><?php echo $LANG['LATCENT']; ?></b><br/>
-					<input id="latdec" type="text" name="latcentroid" style="width:110px;" value="<?php echo ($clArray?$clArray["latcentroid"]:''); ?>" />
+					<input id="decimallatitude" type="text" name="latcentroid" style="width:110px;" value="<?php echo ($clArray?$clArray["latcentroid"]:''); ?>" />
 				</div>
 				<div style="float:left;margin-left:15px;">
 					<b><?php echo $LANG['LONGCENT']; ?></b><br/>
-					<input id="lngdec" type="text" name="longcentroid" style="width:110px;" value="<?php echo ($clArray?$clArray["longcentroid"]:''); ?>" />
+					<input id="decimallongitude" type="text" name="longcentroid" style="width:110px;" value="<?php echo ($clArray?$clArray["longcentroid"]:''); ?>" />
 				</div>
 				<div style="float:left;margin:25px 3px;">
-					<a href="#" onclick="openMappingAid();return false;"><img src="../images/world.png" style="width:1em;" /></a>
+					<a href="#" onclick="openMappingPointAid();return false;"><img src="../images/world.png" style="width:1em;" /></a>
 				</div>
 				<div style="float:left;margin-left:15px;">
 					<b><?php echo $LANG['POINTRAD']; ?></b><br/>
-					<input type="number" name="pointradiusmeters" style="width:110px;" value="<?php echo ($clArray?$clArray["pointradiusmeters"]:''); ?>" />
+					<input type="number" id="coordinateuncertaintyinmeters" name="pointradiusmeters" style="width:110px;" value="<?php echo ($clArray?$clArray["pointradiusmeters"]:''); ?>" />
 				</div>
 			</div>
 			<div style="clear:both;margin-top:5px;">
@@ -270,7 +272,7 @@ if(!$clid){
 					<span id="polyNotDefDiv" style="display:<?php echo ($clArray && $clArray["hasfootprintwkt"]?'none':'inline'); ?>;">
 						<?php echo $LANG['POLYGON_NOT_DEFINED']; ?>
 					</span>
-					<span style="margin:10px;"><a href="#" onclick="openMappingPolyAid(`<?=htmlspecialchars($footprint['type'])?>`);return false;" title="<?php echo $LANG['CREATE_EDIT_POLYGON']; ?>"><img src="../images/world.png" style="width:1em;" /></a></span>
+					<span style="margin:10px;"><a href="#" onclick="openMappingShapeAid('polygon',`<?=htmlspecialchars($footprint['type'])?>`);return false;" title="<?php echo $LANG['CREATE_EDIT_POLYGON']; ?>"><img src="../images/world.png" style="width:1em;" /></a></span>
                <input type="hidden" id="footprintwkt" name="footprint<?=htmlspecialchars($footprint['type'])?>" value="<?=htmlspecialchars($footprint['footprint'])?>" />
 				</fieldset>
 			</div>

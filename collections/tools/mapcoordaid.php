@@ -63,10 +63,8 @@ else{
 			html, body, #map { width:100%; height: 100%; }
 		</style>
 	</head>
-	<body style="background-color:#ffffff;image-rendering: auto;
-	image-rendering: crisp-edges;
-	image-rendering: pixelated;">
-		<div style="float:right;margin-top:5px;margin-right:15px;">
+	<body style="background-color:#ffffff; display:flex; flex-direction:column;">
+		<div style="padding: 0.75rem">
 			<button name="closebutton" type="button" onclick="commitFieldBuffer(fieldBuffer);self.close()">
 				<?php echo isset($LANG['SAVE_N_CLOSE'])? $LANG['SAVE_N_CLOSE'] :'Save and Close'?>
 			</button>
@@ -84,7 +82,6 @@ else{
 			data-footprint-type="<?= htmlspecialchars($outputType) ?>"
 			data-footprint-id="<?= htmlspecialchars($wktInputId) ?>"
 		></div>
-		<div id=""></div>
 		<script type="text/javascript">
 
 		/* Type Definitions
@@ -243,7 +240,7 @@ else{
 		function loadShape(mapMode) {
 			switch(mapMode) {
 				case "polygon":
-					if(footprintType === "geoJson") {
+					if(footprintType && footprintType.toLowerCase() === "geojson") {
 						const geoJsonStr = getField(footprintId);
 						try {
 							const geoJson = JSON.parse(geoJsonStr);
@@ -344,7 +341,7 @@ else{
 			map.enableDrawing({
 				mode: mapMode,
 				map_mode_strict: mapModeStrict
-				}, setShapeToSearchForm);
+			}, setShapeToSearchForm);
 
 			if(formShape)  {
 				map.drawShape(formShape, setShapeToSearchForm)

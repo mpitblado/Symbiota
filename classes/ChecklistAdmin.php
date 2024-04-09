@@ -176,7 +176,7 @@ class ChecklistAdmin extends Manager{
          $row = $rs->fetch_object();
 
          if($row->footprintGeoJson) {
-            return ["type" => "geojson", "footprint" => $row->footprintGeoJson];
+            return ["type" => "geoJson", "footprint" => $row->footprintGeoJson];
          } else {
             return ["type" => "wkt", "footprint" => $row->footprintWkt];
          }
