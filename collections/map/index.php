@@ -489,7 +489,15 @@ value="${color}"
 			} else if(shape.type === 'rectangle') {
 				setRectangleCoords(shape.upperLat, shape.lowerLat, shape.leftLng, shape.rightLng);
 			} else if (shape.type === 'polygon') {
-				setPolyCoords(shape.wkt);
+            //Doesn't support multiple polygons
+            setPolyCoords(JSON.stringify({
+               "type": "Feature",
+               "properties": {},
+               "geometry": {
+                  "type": "Polygon",
+                  "coordinates": [shape.latlngs.map(([lat, lng]) => [lng, lat])]
+               },
+            }));
 			}
 		}
 

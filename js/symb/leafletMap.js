@@ -655,10 +655,3 @@ function getShapeCoords(layerType, layer) {
 
    return shape;
 }
-
-
-/*
- * marker -> easy
- * circle -> easy
- * marker + circle breaks our thing
- */

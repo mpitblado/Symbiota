@@ -208,7 +208,7 @@ else{
 			switch(activeShape.type) {
 				case "polygon":
 					if(footprintType === "geoJson") {
-						setPolygon( JSON.stringify({
+						setPolygon(JSON.stringify({
 							"type": "Feature",
 							"properties": {},
 							"geometry": {

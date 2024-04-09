@@ -222,7 +222,8 @@ class OccurrenceMapManager extends OccurrenceManager {
 				}
 			}
 			elseif(array_key_exists("polycoords",$this->searchTermArr)){
-				$sqlWhere .= "AND (ST_Within(p.point,GeomFromText('".$this->searchTermArr["polycoords"]." '))) ";
+				//$sqlWhere .= "AND (ST_Within(p.point,GeomFromText('".$this->searchTermArr["polycoords"]." '))) ";
+				$sqlWhere .= "AND (ST_Within(p.point,ST_GeomFromGeoJSON('" . $this->searchTermArr["polycoords"] . "'))) ";
 			}
 			//Check and exclude records with sensitive species protections
 			if(array_key_exists('SuperAdmin',$USER_RIGHTS) || array_key_exists('CollAdmin',$USER_RIGHTS) || array_key_exists('RareSppAdmin',$USER_RIGHTS) || array_key_exists('RareSppReadAll',$USER_RIGHTS)){
