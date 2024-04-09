@@ -493,6 +493,29 @@ $traitArr = $indManager->getTraitArr();
 								echo '<div id="idqualifier-div" class="bottom-breathing-room-rel-sm"><label>'.$LANG['ID_QUALIFIER'].':</label> '.$occArr['identificationqualifier'].'</div>';
 							}
 						}
+						if($occArr['cultivarname']){
+							?>
+							<div id="cultivarname-div" class="cultivarname-div bottom-breathing-room-rel-sm">
+								<?php
+								echo '<label>'.$LANG['CULTIVAR_NAME'].':</label> ';
+								echo $occArr['cultivarname'];
+								?>
+							</div>
+							<?php
+						}
+						if($occArr['tradename']){
+							?>
+							<div id="tradename-div" class="tradename-div bottom-breathing-room-rel-sm">
+								<?php
+								echo '<label>'.$LANG['TRADE_NAME'].':</label> ';
+								echo $occArr['tradename'];
+								?>
+							</div>
+							<?php
+							if($occArr['identificationqualifier']){
+								echo '<div id="idqualifier-div" class="bottom-breathing-room-rel-sm"><label>'.$LANG['ID_QUALIFIER'].':</label> '.$occArr['identificationqualifier'].'</div>';
+							}
+						}
 						if($occArr['family']) echo '<div id="family-div" class="bottom-breathing-room-rel-sm"><label>'.$LANG['FAMILY'].':</label> ' . $occArr['family'] . '</div>';
 						if($occArr['identifiedby']){
 							?>
@@ -1531,7 +1554,7 @@ $traitArr = $indManager->getTraitArr();
 	</div>
 	<script type="text/javascript">
 		document.addEventListener('DOMContentLoaded', ()=>{
-			reorderElements("occur-div", ["cat-div", "br", "preparations-div", "disposition-div", "sampleprotocol-div", "assoccatnum-parent-div" , "othercatalognumbers", "assoccatnum-div", "br", "sciname-div", "idqualifier-div", "family-div","br", "taxonremarks-div", "idqualifier-div","identref-div","identremarks-div", "determination-div", "br", "identby-div", "identdate-div", "br", "recordedby-div", "recordnumber-div","br", "eventdate-div", "verbeventid-div", "br", "cultivation-status-div", "locality-div", "latlng-div", "verbcoord-div", "elev-div", "habitat-div", "assoctaxa-div", "substrate-div", "sex-div", "lifestage-div", "reproductive-div", "attr-div", "indcnt-div", "notes-div", "br", "rights-div", "contact-div", "openeditor-div", "br", "record-id-div"], ["occurrenceid-div", "disposition-div"]);
+			reorderElements("occur-div", ["cat-div", "br", "preparations-div", "disposition-div", "sampleprotocol-div", "assoccatnum-parent-div" , "othercatalognumbers", "assoccatnum-div", "br", "sciname-div", "idqualifier-div", "family-div","cultivarname-div","tradename-div", "br", "taxonremarks-div", "idqualifier-div","identref-div","identremarks-div", "determination-div", "br", "identby-div", "identdate-div", "br", "recordedby-div", "recordnumber-div","br", "eventdate-div", "verbeventid-div", "br", "cultivation-status-div", "locality-div", "latlng-div", "verbcoord-div", "elev-div", "habitat-div", "assoctaxa-div", "substrate-div", "sex-div", "lifestage-div", "reproductive-div", "attr-div", "indcnt-div", "notes-div", "br", "rights-div", "contact-div", "openeditor-div", "br", "record-id-div"], ["occurrenceid-div", "disposition-div"]);
 
 		});
 	</script>
