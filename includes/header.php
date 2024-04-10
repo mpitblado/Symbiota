@@ -129,7 +129,7 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
           </svg>
           <div class="site-branding__text">
             <div class="site-branding__site-name"><a href="https://ars.usda.gov" title="Home" rel="home">Agricultural Research Service</a></div>
-              <div class="site-branding__usda"><a href="https://www.usda.gov">U.S. Department of Agriculture</a></div>
+              <div class="site-branding__usda" style="margin-top: 0.3rem;"><a href="https://www.usda.gov">U.S. Department of Agriculture</a></div>
               </div>
             </div>
             <div class="col-md-6">
