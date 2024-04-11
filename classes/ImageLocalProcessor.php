@@ -554,7 +554,7 @@ class ImageLocalProcessor {
 				if($occid){
 					//Check to see if database record already exists, and if so skip import
 					$recExists = 0;
-					$sql = 'SELECT url FROM images WHERE (occid = '.$occid.') ';
+					$sql = 'SELECT url FROM media WHERE (occid = '.$occid.') ';
 					$rs = $this->conn->query($sql);
 					while($r = $rs->fetch_object()){
 						if(stripos($r->url,$fileName) || stripos($r->url,str_replace('%20', '_', $fileName)) || stripos($r->url,str_replace('%20', ' ', $fileName))){
@@ -1038,7 +1038,7 @@ class ImageLocalProcessor {
 			if(isset($imgArr['occid'])) $occid = $imgArr['occid'];
 			if($occid){
 				//Check to see if image url already exists for that occid
-				$sql = 'SELECT imgid, url, thumbnailUrl, originalUrl, sourceIdentifier, mediaMD5 FROM images WHERE (occid = '.$occid.') ';
+				$sql = 'SELECT imgid, url, thumbnailUrl, originalUrl, sourceIdentifier, mediaMD5 FROM media WHERE (occid = '.$occid.') ';
 				$rs = $this->conn->query($sql);
 				while($r = $rs->fetch_object()){
 					$isExactMatch = false;
@@ -1049,7 +1049,7 @@ class ImageLocalProcessor {
 						if(!$this->conn->query('DELETE FROM specprocessorrawlabels WHERE imgid = '.$r->imgid)){
 							$this->logOrEcho('ERROR deleting OCR for image record #'.$r->imgid.' (equal URLs): '.$this->conn->error,1);
 						}
-						if(!$this->conn->query('DELETE FROM images WHERE imgid = '.$r->imgid)){
+						if(!$this->conn->query('DELETE FROM media WHERE imgid = '.$r->imgid)){
 							$this->logOrEcho('ERROR deleting image record #'.$r->imgid.' (equal URLs): '.$this->conn->error,1);
 						}
 					}
@@ -1058,7 +1058,7 @@ class ImageLocalProcessor {
 						if(!$this->conn->query('DELETE FROM specprocessorrawlabels WHERE imgid = '.$r->imgid)){
 							$this->logOrEcho('ERROR deleting OCR for image record #'.$r->imgid.' (equal basename): '.$this->conn->error,1);
 						}
-						if($this->conn->query('DELETE FROM images WHERE imgid = '.$r->imgid)){
+						if($this->conn->query('DELETE FROM media WHERE imgid = '.$r->imgid)){
 							//Remove images
 							$urlPath = current(parse_url($r->url, PHP_URL_PATH));
 							if($urlPath && strpos($urlPath, $this->imgUrlBase) === 0){

@@ -220,7 +220,7 @@ class ImageLibrarySearch extends OccurrenceTaxaManager{
 	}
 
 	private function getSqlBase(){
-		$sql = 'FROM images i ';
+		$sql = 'FROM media i ';
 		if($this->taxaArr){
 			$sql .= 'INNER JOIN taxa t ON i.tid = t.tid ';
 		}
@@ -304,7 +304,7 @@ class ImageLibrarySearch extends OccurrenceTaxaManager{
 	//Listing functions
 	public function getPhotographerUidArr(){
 		$retArr = array();
-		$sql1 = 'SELECT DISTINCT photographeruid FROM images WHERE photographeruid IS NOT NULL';
+		$sql1 = 'SELECT DISTINCT photographeruid FROM media WHERE photographeruid IS NOT NULL';
 		$rs1 = $this->conn->query($sql1);
 		while ($r1 = $rs1->fetch_object()) {
 			$retArr[$r1->photographeruid] = '';

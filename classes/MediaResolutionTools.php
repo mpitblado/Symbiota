@@ -63,11 +63,11 @@ class MediaResolutionTools extends Manager {
 		//Remove images
 		$imgidFinal = $imgidStart;
 		$cnt = 0;
-		$sql = 'SELECT i.* FROM images i ';
-		if($this->collid) $sql .= 'INNER JOIN omoccurrences o ON i.occid = o.occid ';
-		$sql .= 'WHERE (i.imgid IN('.trim(implode(',',$this->imgidArr),', ').')) AND (i.imgid > '.$imgidStart.') ';
+		$sql = 'SELECT m.* FROM media m ';
+		if($this->collid) $sql .= 'INNER JOIN omoccurrences o ON m.occid = o.occid ';
+		$sql .= 'WHERE (m.imgid IN('.trim(implode(',',$this->imgidArr),', ').')) AND (m.imgid > '.$imgidStart.') ';
 		if($this->collid) $sql .= 'AND (o.collid = '.$this->collid.') ';
-		$sql .= 'ORDER BY i.imgid LIMIT '.$limit;
+		$sql .= 'ORDER BY m.imgid LIMIT '.$limit;
 		//echo $sql;
 		$rs = $this->conn->query($sql);
 		echo '<ul>';
@@ -106,7 +106,7 @@ class MediaResolutionTools extends Manager {
 				if($v) $insertStr .= ', "'.$v.'"';
 				else $insertStr .= ', NULL';
 			}
-			$insSql = 'INSERT INTO images('.implode(',', array_keys($insertArr)).') VALUES('.substr($insertStr,1).');';
+			$insSql = 'INSERT INTO media ('.implode(',', array_keys($insertArr)).') VALUES('.substr($insertStr,1).');';
 			fputcsv($csvReportFH,array($imgId,'record deleted',$insSql));
 			//Adjust database record
 			$sqlImg = '';
@@ -114,10 +114,10 @@ class MediaResolutionTools extends Manager {
 				if(isset($delArr['tn'])) $sqlImg .= ', thumbnailurl = NULL';
 				if(isset($delArr['web'])) $sqlImg .= ', url = "empty"';
 				if(isset($delArr['lg'])) $sqlImg .= ', originalurl = NULL';
-				if($sqlImg) $sqlImg = 'UPDATE images SET '.substr($sqlImg,1).' WHERE imgid = '.$imgId;
+				if($sqlImg) $sqlImg = 'UPDATE media SET '.substr($sqlImg,1).' WHERE imgid = '.$imgId;
 			}
 			else{
-				$sqlImg = 'DELETE FROM images WHERE imgid = '.$imgId;
+				$sqlImg = 'DELETE FROM media WHERE imgid = '.$imgId;
 			}
 			if($sqlImg){
 				if(!$this->conn->query($sqlImg)){
@@ -126,7 +126,7 @@ class MediaResolutionTools extends Manager {
 				}
 			}
 			if($cnt && $cnt%100 == 0){
-				$this->logOrEcho($cnt.' images checked');
+				$this->logOrEcho($cnt.' media checked');
 				ob_flush();
 				flush();
 			}
@@ -136,7 +136,7 @@ class MediaResolutionTools extends Manager {
 		echo '</ul>';
 		$rs->free();
 		fclose($csvReportFH);
-		$this->logOrEcho('Done! '.$cnt.' images handled');
+		$this->logOrEcho('Done! '.$cnt.' media handled');
 		return $imgidFinal;
 	}
 
@@ -186,8 +186,8 @@ class MediaResolutionTools extends Manager {
 						}
 						$pathFrag .= '/'.$subDir;
 						$dirCnt ++;
-						$sql = 'SELECT imgid, thumbnailurl, url, originalurl FROM images WHERE occid IS NULL ';
-						if($this->collid) $sql = 'SELECT i.thumbnailurl, i.url, i.originalurl FROM images i INNER JOIN omoccurrences o ON i.occid = o.occid WHERE o.collid = '.$this->collid;
+						$sql = 'SELECT imgid, thumbnailurl, url, originalurl FROM media WHERE occid IS NULL ';
+						if($this->collid) $sql = 'SELECT m.thumbnailurl, m.url, m.originalurl FROM media m INNER JOIN omoccurrences o ON m.occid = o.occid WHERE o.collid = '.$this->collid;
 						if($this->matchTermThumbnail) $sql .= ' AND thumbnailurl LIKE "'.$this->matchTermThumbnail.'%" ';
 						if($this->matchTermWeb) $sql .= ' AND url LIKE "'.$this->matchTermWeb.'%" ';
 						if($this->matchTermLarge) $sql .= ' AND originalurl LIKE "'.$this->matchTermLarge.'%" ';
@@ -256,22 +256,22 @@ class MediaResolutionTools extends Manager {
 					echo '<ul>';
 					$this->setTargetPaths();
 					$processingCnt = 0;
-					$sqlBase = 'FROM images i INNER JOIN omoccurrences o ON i.occid = o.occid WHERE o.collid = '.$this->collid.' ';
+					$sqlBase = 'FROM media m INNER JOIN omoccurrences o ON m.occid = o.occid WHERE o.collid = '.$this->collid.' ';
 					if($this->matchTermThumbnail) $sqlBase .= 'AND thumbnailurl LIKE "'.$this->matchTermThumbnail.'%" ';
 					if($this->matchTermWeb) $sqlBase .= 'AND url LIKE "'.$this->matchTermWeb.'%" ';
 					if($this->matchTermLarge) $sqlBase .= 'AND originalurl LIKE "'.$this->matchTermLarge.'%" ';
 					$targetCount = 0;
-					$sqlCount = 'SELECT COUNT(i.imgid) as cnt '.$sqlBase.' ';
+					$sqlCount = 'SELECT COUNT(m.imgid) as cnt '.$sqlBase.' ';
 					if($imgIdStart && is_numeric($imgIdStart)) $sqlCount .= 'AND imgid > '.$imgIdStart.' ';
 					$rsCount = $this->conn->query($sqlCount);
 					while($rCount = $rsCount->fetch_object()){
 						$targetCount = $rCount->cnt;
 					}
 					$rsCount->free();
-					$this->logOrEcho('Starting remapping of '.$limit.' out of '.$targetCount.' possible target images');
+					$this->logOrEcho('Starting remapping of '.$limit.' out of '.$targetCount.' possible target media ');
 					do{
 						$imgArr = array();
-						$sql = 'SELECT i.imgid, i.thumbnailurl, i.url, i.originalurl, o.catalognumber, o.occid '.$sqlBase;
+						$sql = 'SELECT m.imgid, m.thumbnailurl, m.url, m.originalurl, o.catalognumber, o.occid '.$sqlBase;
 						if($imgIdStart && is_numeric($imgIdStart)) $sql .= 'AND imgid > '.$imgIdStart.' ';
 						$sql .= 'ORDER BY imgid LIMIT 100';
 						//$this->logOrEcho('sql used: '. $sql);
@@ -387,7 +387,7 @@ class MediaResolutionTools extends Manager {
 			if(isset($iArr['web'])) $sqlFrag .= ',url = "'.$iArr['web'].'"';
 			if(isset($iArr['lg'])) $sqlFrag .= ',originalurl = "'.$iArr['lg'].'"';
 			if($sqlFrag){
-				$sql = 'UPDATE images SET '.trim($sqlFrag,' ,').' WHERE imgid = '.$imgID;
+				$sql = 'UPDATE media SET '.trim($sqlFrag,' ,').' WHERE imgid = '.$imgID;
 				if($this->debugMode) $this->logOrEcho($sql);
 				if(!$this->conn->query($sql)) $this->logOrEcho('ERROR saving new paths: '.$this->conn->error,1);
 			}
@@ -412,18 +412,18 @@ class MediaResolutionTools extends Manager {
 	public function checkImageLinks($imgidStart, $limit, $collid){
 		$imgidFinal = $imgidStart;
 		$cnt = 1;
-		$sql = 'SELECT i.imgid, i.originalurl FROM images i ';
-		if($collid) $sql .= 'INNER JOIN omoccurrences o ON i.occid = o.occid ';
-		$sql .= 'WHERE (i.originalurl LIKE "https://api.idigbio.org/v2/media/%size=fullsize") AND (i.imgid > '.$imgidStart.') ';
+		$sql = 'SELECT m.imgid, m.originalurl FROM media m ';
+		if($collid) $sql .= 'INNER JOIN omoccurrences o ON m.occid = o.occid ';
+		$sql .= 'WHERE (m.originalurl LIKE "https://apm.idigbio.org/v2/media/%size=fullsize") AND (m.imgid > '.$imgidStart.') ';
 		if($collid) $sql .= 'AND (o.collid = '.$collid.') ';
-		$sql .= 'ORDER BY i.imgid LIMIT '.$limit;
+		$sql .= 'ORDER BY m.imgid LIMIT '.$limit;
 		$rs = $this->conn->query($sql);
 		while($r = $rs->fetch_object()){
 			$url = $r->originalurl;
 			if($this->isBrokenUrl($url)){
 				if($newUrl = substr($url,0,-14)){
 					if(!$this->isBrokenUrl($newUrl)){
-						$sql2 = 'UPDATE images SET originalurl = "'.$newUrl.'" WHERE imgid = '.$r->imgid;
+						$sql2 = 'UPDATE media SET originalurl = "'.$newUrl.'" WHERE imgid = '.$r->imgid;
 						$this->conn->query($sql2);
 						echo '<li>'.$cnt.': Remapping image #'.$r->imgid.' to: '.$newUrl.'</li>';
 						ob_flush();

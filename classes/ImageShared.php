@@ -546,7 +546,7 @@ class ImageShared{
 
 			//Save currently loaded record
 			$guid = UuidFactory::getUuidV4();
-			$sql = 'INSERT INTO images (tid, url, thumbnailurl, originalurl, archiveUrl, sourceurl, referenceUrl, photographer, photographeruid, format, caption, owner,
+			$sql = 'INSERT INTO media (tid, url, thumbnailurl, originalurl, archiveUrl, sourceurl, referenceUrl, creator, creatorUid, format, caption, owner,
 				locality, occid, anatomy, notes, username, sortsequence, sortoccurrence, sourceIdentifier, rights, accessrights, copyright, hashFunction, hashValue, mediaMD5, recordID)
 				VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
 			if($stmt = $this->conn->prepare($sql)) {
@@ -581,7 +581,7 @@ class ImageShared{
 	public function deleteImage($imgIdDel, $removeImg){
 		if(is_numeric($imgIdDel)){
 			$imgUrl = ''; $imgThumbnailUrl = ''; $imgOriginalUrl = ''; $occid = 0;
-			$sqlQuery = 'SELECT url, thumbnailUrl, originalUrl, tid, occid FROM images WHERE (imgid = '.$imgIdDel.')';
+			$sqlQuery = 'SELECT url, thumbnailUrl, originalUrl, tid, occid FROM media WHERE (imgid = '.$imgIdDel.')';
 			$rs = $this->conn->query($sqlQuery);
 			if($r = $rs->fetch_object()){
 				$imgUrl = $r->url;
@@ -599,7 +599,7 @@ class ImageShared{
 			//Remove image tags
 			$this->conn->query('DELETE FROM imagetag WHERE (imgid = '.$imgIdDel.')');
 
-			$sql = "DELETE FROM images WHERE (imgid = ".$imgIdDel.')';
+			$sql = "DELETE FROM media WHERE (imgid = ".$imgIdDel.')';
 			//echo $sql;
 			if($this->conn->query($sql)){
 				if($removeImg){

@@ -181,7 +181,7 @@ class SpecProcessorOcr extends Manager{
 	private function getImageUrl($imgid){
 		$retUrl = false;
 		if(is_numeric($imgid)){
-			$sql = 'SELECT url, originalurl FROM images WHERE imgid = ?';
+			$sql = 'SELECT url, originalurl FROM media WHERE imgid = ?';
 			if($stmt = $this->conn->prepare($sql)){
 				$stmt->bind_param('i', $imgid);
 				$stmt->execute();
@@ -260,9 +260,9 @@ class SpecProcessorOcr extends Manager{
 			//Batch OCR
 			foreach($collArr as $collid => $instCode){
 				$this->logOrEcho('Starting batch processing for '.$instCode);
-				$sql = 'SELECT i.imgid, IFNULL(i.originalurl, i.url) AS url, o.sciName, i.occid '.
-					'FROM omoccurrences o INNER JOIN images i ON o.occid = i.occid '.
-					'LEFT JOIN specprocessorrawlabels r ON i.imgid = r.imgid '.
+				$sql = 'SELECT m.imgid, IFNULL(m.originalurl, m.url) AS url, o.sciName, m.occid '.
+					'FROM omoccurrences o INNER JOIN media m ON o.occid = m.occid '.
+					'LEFT JOIN specprocessorrawlabels r ON m.imgid = r.imgid '.
 					'WHERE (o.collid = '.$collid.') AND r.prlid IS NULL ';
 				if($procStatus) $sql .= 'AND o.processingstatus = "unprocessed" ';
 				if($limit) $sql .= 'LIMIT '.$limit;
@@ -467,8 +467,8 @@ class SpecProcessorOcr extends Manager{
 			if($catNumber){
 				//Grab image primary key (imgid)
 				$imgArr = array();
-				$sql = 'SELECT i.imgid, IFNULL(i.originalurl,i.url) AS url '.
-					'FROM images i INNER JOIN omoccurrences o ON i.occid = o.occid '.
+				$sql = 'SELECT m.imgid, IFNULL(m.originalurl,m.url) AS url '.
+					'FROM media m INNER JOIN omoccurrences o ON m.occid = o.occid '.
 					'WHERE (o.collid = '.$this->collid.') AND (o.catalognumber = "'.$this->cleanInStr($catNumber).'")';
 				$rs = $this->conn->query($sql);
 				while($r = $rs->fetch_object()){
@@ -478,9 +478,9 @@ class SpecProcessorOcr extends Manager{
 				if(!$imgArr){
 					$fileBaseName = basename($sourcePath.$fileName, ".txt");
 					if(strlen($fileBaseName)>4){
-						$sql = 'SELECT i.imgid, IFNULL(i.originalurl,i.url) AS url '.
-							'FROM images i INNER JOIN omoccurrences o ON i.occid = o.occid '.
-							'WHERE (o.collid = '.$this->collid.') AND ((i.originalurl LIKE "%/'.$this->cleanInStr($fileBaseName).'.jpg") OR (i.url LIKE "%/'.$this->cleanInStr($fileBaseName).'.jpg"))';
+						$sql = 'SELECT m.imgid, IFNULL(m.originalurl,m.url) AS url '.
+							'FROM media m INNER JOIN omoccurrences o ON m.occid = o.occid '.
+							'WHERE (o.collid = '.$this->collid.') AND ((m.originalurl LIKE "%/'.$this->cleanInStr($fileBaseName).'.jpg") OR (m.url LIKE "%/'.$this->cleanInStr($fileBaseName).'.jpg"))';
 						$rs = $this->conn->query($sql);
 						while($r = $rs->fetch_object()){
 							$imgArr[$r->imgid] = $r->url;

@@ -523,9 +523,9 @@ class OCCURRENCE {
     *
     * return: an empty string on success, otherwise a string containing an error message.
     */
-   private function updateImageRecord($imgid,$imgWebUrl,$imgTnUrl,$imgLgUrl,$tid,$caption,$photographer,$photographerUid,$sourceUrl,$copyright,$owner,$locality,$occid,$notes,$sortSequence,$imagetype,$anatomy, $sourceIdentifier, $rights, $accessRights){
+   private function updateImageRecord($imgid,$imgWebUrl,$imgTnUrl,$imgLgUrl,$tid,$caption,$creator,$creatorUid,$sourceUrl,$copyright,$owner,$locality,$occid,$notes,$sortSequence,$imagetype,$anatomy, $sourceIdentifier, $rights, $accessRights){
    	$status = "";
-   	$sql = 'update images set tid=?, url=?, thumbnailurl=?, originalurl=?, photographer=?, photographeruid=?, caption=?, '.
+   	$sql = 'update media set tid=?, url=?, thumbnailurl=?, originalurl=?, creator=?, creatorUid=?, caption=?, '.
      	'owner=?, sourceurl=?, copyright=?, locality=?, occid=?, notes=?, username=?, sortsequence=?, imagetype=?, anatomy=?, '.
      	'sourceIdentifier=?, rights=?, accessrights=? '.
      	'where imgid = ? ';
@@ -545,7 +545,7 @@ class OCCURRENCE {
    			}
    		}
 
-   		$statement->bind_param("issssisssssississsssi",$tid,$imgWebUrl,$imgTnUrl,$imgLgUrl,$photographer,$photographerUid,$caption,$owner,$sourceUrl,$copyright,$locality,$occid,$notes,$username,$sortSequence,$imagetype,$anatomy, $sourceIdentifier, $rights, $accessRights, $imgid);
+   		$statement->bind_param("issssisssssississsssi",$tid,$imgWebUrl,$imgTnUrl,$imgLgUrl,$creator,$creatorUid,$caption,$owner,$sourceUrl,$copyright,$locality,$occid,$notes,$username,$sortSequence,$imagetype,$anatomy, $sourceIdentifier, $rights, $accessRights, $imgid);
 
    		$statement->execute();
    		$rows = $statement->affected_rows;
@@ -571,9 +571,9 @@ class OCCURRENCE {
     *
     * return: an empty string on success, otherwise a string containing an error message.
     */
-   private function databaseImageRecord($imgWebUrl,$imgTnUrl,$imgLgUrl,$tid,$caption,$phototrapher,$photographerUid,$sourceUrl,$copyright,$owner,$locality,$occid,$notes,$sortSequence,$imagetype,$anatomy,$sourceIdentifier,$rights,$accessRights){
+   private function databaseImageRecord($imgWebUrl,$imgTnUrl,$imgLgUrl,$tid,$caption,$phototrapher,$creatorUid,$sourceUrl,$copyright,$owner,$locality,$occid,$notes,$sortSequence,$imagetype,$anatomy,$sourceIdentifier,$rights,$accessRights){
    	$status = "";
-   	$sql = 'INSERT INTO images (tid, url, thumbnailurl, originalurl, photographer, photographeruid, caption, '.
+   	$sql = 'INSERT INTO images (tid, url, thumbnailurl, originalurl, creator, creatorUid, caption, '.
      	'owner, sourceurl, copyright, locality, occid, notes, username, sortsequence, imagetype, anatomy, '.
      	'sourceIdentifier, rights, accessrights ) '.
      	'VALUES (?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?)';
@@ -592,7 +592,7 @@ class OCCURRENCE {
    				$imgLgUrl = $urlPrefix.$imgLgUrl;
    			}
    		}
-   		$statement->bind_param("issssisssssississsss",$tid,$imgWebUrl,$imgTnUrl,$imgLgUrl,$photographer,$photographerUid,$caption,$owner,$sourceUrl,$copyright,$locality,$occid,$notes,$username,$sortSequence,$imagetype,$anatomy, $sourceIdentifier, $rights, $accessRights);
+   		$statement->bind_param("issssisssssississsss",$tid,$imgWebUrl,$imgTnUrl,$imgLgUrl,$creator,$creatorUid,$caption,$owner,$sourceUrl,$copyright,$locality,$occid,$notes,$username,$sortSequence,$imagetype,$anatomy, $sourceIdentifier, $rights, $accessRights);
 
    		$statement->execute();
    		$rows = $statement->affected_rows;
@@ -622,7 +622,7 @@ class OCCURRENCE {
     */
    private function getImgIDForSourceURL($sourceUrl) {
    	$result = "";
-   	$sql = "select imgid from images where sourceurl = ? order by imgid limit 1 ";
+   	$sql = "select imgid from media where sourceurl = ? order by imgid limit 1 ";
    	if ($statement = $this->conn->prepare($sql)) {
    		$statement->bind_param("s",$sourceUrl);
    		$statement->execute();

@@ -73,7 +73,7 @@ class ImageLibraryBrowser extends OccurrenceTaxaManager{
 	}
 
 	private function getListSql(){
-		$sql = 'FROM images i INNER JOIN taxstatus ts ON i.tid = ts.tid INNER JOIN taxa t ON ts.tidaccepted = t.tid ';
+		$sql = 'FROM media i INNER JOIN taxstatus ts ON i.tid = ts.tid INNER JOIN taxa t ON ts.tidaccepted = t.tid ';
 		if($this->tidFocus) $sql .= 'INNER JOIN taxaenumtree e ON i.tid = e.tid ';
 		$sql .= 'WHERE (ts.taxauthid = 1) AND (t.RankId > 219) ';
 		if($this->tidFocus) $sql .= 'AND (e.parenttid IN('.$this->tidFocus.')) AND (e.taxauthid = 1) ';
@@ -94,7 +94,7 @@ class ImageLibraryBrowser extends OccurrenceTaxaManager{
 			}
 			$rs->free();
 			//Get image counts
-			$sql = 'SELECT o.collid, COUNT(i.imgid) AS imgcnt FROM images i INNER JOIN omoccurrences o ON i.occid = o.occid ';
+			$sql = 'SELECT o.collid, COUNT(i.imgid) AS imgcnt FROM media i INNER JOIN omoccurrences o ON i.occid = o.occid ';
 			if($this->tidFocus) $sql .= 'INNER JOIN taxaenumtree e ON i.tid = e.tid WHERE (e.parenttid IN('.$this->tidFocus.')) AND (e.taxauthid = 1) ';
 			$sql .= 'GROUP BY o.collid ';
 			$result = $this->conn->query($sql);
@@ -133,7 +133,7 @@ class ImageLibraryBrowser extends OccurrenceTaxaManager{
 	public function getPhotographerList(){
 		$retArr = array();
 		$sql = 'SELECT u.uid, CONCAT_WS(", ", u.lastname, u.firstname) as pname, CONCAT_WS(", ", u.firstname, u.lastname) as fullname, u.email, Count(ti.imgid) AS imgcnt '.
-			'FROM users u INNER JOIN images ti ON u.uid = ti.photographeruid ';
+			'FROM users u INNER JOIN media ti ON u.uid = ti.creatorUid ';
 		if($this->tidFocus) $sql .= 'INNER JOIN taxaenumtree e ON ti.tid = e.tid WHERE (e.parenttid IN('.$this->tidFocus.')) AND (e.taxauthid = 1) ';
 		$sql .= 'GROUP BY u.uid ORDER BY u.lastname, u.firstname';
 		$result = $this->conn->query($sql);

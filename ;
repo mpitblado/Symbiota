@@ -17,7 +17,7 @@ class ImageExplorer{
 	/*
 	 * Input: JSON array
 	 * Input criteria: taxon (INT: tid), country (string), state (string), tag (string),
-	 *     idNeeded (INT: 0,1), collid (INT), creator (INT: creatorUid),
+	 *     idNeeded (INT: 0,1), collid (INT), photographer (INT: photographerUid),
 	 *     cntPerCategory (INT: 0-2), start (INT), limit (INT)
 	 *     e.g. {"state": {"Arizona", "New Mexico"},"taxa":{"Pinus"}}
 	 * Output: Array of images
@@ -56,7 +56,7 @@ class ImageExplorer{
 				}
 
 				//Set image count
-				$cntSql = 'SELECT count(DISTINCT m.imgid) AS cnt '.substr($sql,strpos($sql,' FROM '));
+				$cntSql = 'SELECT count(DISTINCT i.imgid) AS cnt '.substr($sql,strpos($sql,' FROM '));
 				$cntSql = substr($cntSql,0,strpos($cntSql,' LIMIT '));
 				//echo '<br/>'.$cntSql.'<br/>';
 				$cntRs = $this->conn->query($cntSql);
@@ -80,7 +80,7 @@ class ImageExplorer{
 	/*
 	 * Input: array of criteria (e.g. array("state" => array("Arizona", "New Mexico"))
 	 * Input criteria: taxa (INT: tid), country (string), state (string), tag (string),
-	 *     idNeeded (INT: 0,1), collid (INT), creator (INT: creatorUid),
+	 *     idNeeded (INT: 0,1), collid (INT), photographer (INT: photographerUid),
 	 *     cntPerCategory (INT: 0-2), start (INT), limit (INT)
 	 *     e.g. {"state": ["Arizona", "New Mexico"],"taxa":["Pinus"}}
 	 * Output: String, SQL to be used to query database
@@ -95,12 +95,12 @@ class ImageExplorer{
 				$targetTid = array_shift($accArr);
 				//$sqlFrag = $this->getChildSql($targetTid);
                 $sqlFrag = $this->getChildTids($targetTid);
-				$sqlWhere .= 'AND (m.tid IN('.$sqlFrag.')) ';
+				$sqlWhere .= 'AND (i.tid IN('.$sqlFrag.')) ';
 			}
 			elseif(count($accArr) > 1){
 				$tidArr = array_merge($this->getTaxaChildren($accArr),$accArr);
 				$tidArr = $this->getTaxaSynonyms($tidArr);
-				$sqlWhere .= 'AND (m.tid IN('.implode(',',$this->cleanInArray($tidArr)).')) ';
+				$sqlWhere .= 'AND (i.tid IN('.implode(',',$this->cleanInArray($tidArr)).')) ';
 			}
 		}
 
@@ -139,7 +139,7 @@ class ImageExplorer{
 			 * this is old system for limiting certain media to specimen details page only,
 			 * will replace with tag system in near future
 			*/
-			$sqlWhere .= 'AND m.sortsequence < 500 ';
+			$sqlWhere .= 'AND i.sortsequence < 500 ';
 		}
 
 		//Set collection
@@ -147,9 +147,9 @@ class ImageExplorer{
 			$sqlWhere .= 'AND o.collid IN('.implode(',',$this->cleanInArray($searchCriteria['collection'])).') ';
 		}
 
-		//Set creators
-		if(isset($searchCriteria['creator']) && $searchCriteria['creator']){
-			$sqlWhere .= 'AND m.creatorUid IN('.implode(',',$this->cleanInArray($searchCriteria['creator'])).') ';
+		//Set photographers
+		if(isset($searchCriteria['photographer']) && $searchCriteria['photographer']){
+			$sqlWhere .= 'AND i.photographerUid IN('.implode(',',$this->cleanInArray($searchCriteria['photographer'])).') ';
 		}
 
 		if (isset($searchCriteria['idToSpecies']) && $searchCriteria['idToSpecies']
@@ -190,20 +190,20 @@ class ImageExplorer{
 		    }
 		}
 
-		$sqlStr = 'SELECT DISTINCT m.imgid, ts.tidaccepted, m.url, m.thumbnailurl, m.originalurl, '.
-			'u.uid, CONCAT_WS(", ",u.lastname,u.firstname) as creator, m.caption, '.
+		$sqlStr = 'SELECT DISTINCT i.imgid, ts.tidaccepted, i.url, i.thumbnailurl, i.originalurl, '.
+			'u.uid, CONCAT_WS(", ",u.lastname,u.firstname) as photographer, i.caption, '.
 			'o.occid, o.stateprovince, o.catalognumber, CONCAT_WS("-",c.institutioncode, c.collectioncode) as instcode, '.
-			'm.initialtimestamp '.
-			'FROM media m LEFT JOIN taxa t ON m.tid = t.tid '.
+			'i.initialtimestamp '.
+			'FROM media i LEFT JOIN taxa t ON i.tid = t.tid '.
 			'LEFT JOIN taxstatus ts ON t.tid = ts.tid '.
-			'LEFT JOIN users u ON m.creatorUid = u.uid '.
-			'LEFT JOIN omoccurrences o ON m.occid = o.occid '.
+			'LEFT JOIN users u ON i.photographeruid = u.uid '.
+			'LEFT JOIN omoccurrences o ON i.occid = o.occid '.
 			'LEFT JOIN omcollections c ON o.collid = c.collid ';
 		if($includeVerification){
 			$sqlStr .= 'LEFT JOIN omoccurverification v ON o.occid = v.occid ';
 		}
 		if(isset($searchCriteria['tags']) && $searchCriteria['tags']){
-			$sqlStr .= 'LEFT JOIN imagetag it ON m.imgid = it.imgid ';
+			$sqlStr .= 'LEFT JOIN imagetag it ON i.imgid = it.imgid ';
 		}
 		if(isset($searchCriteria['countPerCategory'])){
 			$countPerCategory = (int)$searchCriteria['countPerCategory'];
@@ -232,7 +232,7 @@ class ImageExplorer{
 			}
 		}
 
-		//$sqlStr .= 'ORDER BY m.sortsequence ';
+		//$sqlStr .= 'ORDER BY i.sortsequence ';
 		//Set start and limit
 		$start = (isset($searchCriteria['start'])?$searchCriteria['start']:0);
 		$limit = (isset($searchCriteria['limit'])?$searchCriteria['limit']:100);

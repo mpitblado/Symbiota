@@ -169,7 +169,7 @@ class TaxonProfile extends Manager {
 			*/
 			echo '</a></div>';
 			echo '<div class="photographer">';
-			if($imgObj['photographer']) echo $imgObj['photographer'];
+			if($imgObj['creator']) echo $imgObj['creator'];
 			echo '</div>';
 			echo '</div>';
 			$status = true;
@@ -191,16 +191,16 @@ class TaxonProfile extends Manager {
 			$rs1->free();
 
 			$tidStr = implode(",",$tidArr);
-			$sql = 'SELECT t.sciname, i.imgid, i.url, i.thumbnailurl, i.originalurl, i.caption, i.occid, i.photographer, CONCAT_WS(" ",u.firstname,u.lastname) AS photographerLinked '.
-				'FROM images i LEFT JOIN users u ON i.photographeruid = u.uid '.
+			$sql = 'SELECT t.sciname, i.imgid, i.url, i.thumbnailurl, i.originalurl, i.caption, i.occid, i.creator, CONCAT_WS(" ",u.firstname,u.lastname) AS creatorLinked '.
+				'FROM media i LEFT JOIN users u ON i.creatorUid = u.uid '.
 				'INNER JOIN taxstatus ts ON i.tid = ts.tid '.
 				'INNER JOIN taxa t ON i.tid = t.tid '.
 				'WHERE (ts.taxauthid = 1 AND ts.tidaccepted IN ('.$tidStr.')) AND i.SortSequence < 500 AND i.thumbnailurl IS NOT NULL ';
 			if(!$this->displayLocality) $sql .= 'AND i.occid IS NULL ';
 			$sql .= 'ORDER BY i.sortsequence, i.sortOccurrence LIMIT 100';
 			/*
-			$sql = 'SELECT t.sciname, i.imgid, i.url, i.thumbnailurl, i.originalurl, i.caption, i.occid, IFNULL(i.photographer,CONCAT_WS(" ",u.firstname,u.lastname)) AS photographer '.
-				'FROM images i LEFT JOIN users u ON i.photographeruid = u.uid '.
+			$sql = 'SELECT t.sciname, i.imgid, i.url, i.thumbnailurl, i.originalurl, i.caption, i.occid, IFNULL(i.creator,CONCAT_WS(" ",u.firstname,u.lastname)) AS creator '.
+				'FROM media i LEFT JOIN users u ON i.creatorUid = u.uid '.
 				'INNER JOIN taxa t ON i.tid = t.tid '.
 				'INNER JOIN taxstatus ts ON i.tid = ts.tid '.
 				'INNER JOIN taxstatus ts2 ON ts.tidaccepted = ts2.tid '.
@@ -218,8 +218,8 @@ class TaxonProfile extends Manager {
 				if(!$imgUrl) continue;
 				$this->imageArr[$row->imgid]['url'] = $imgUrl;
 				$this->imageArr[$row->imgid]['thumbnailurl'] = $row->thumbnailurl;
-				if($row->photographerLinked) $this->imageArr[$row->imgid]['photographer'] = $row->photographerLinked;
-				else $this->imageArr[$row->imgid]['photographer'] = $row->photographer;
+				if($row->creatorLinked) $this->imageArr[$row->imgid]['creator'] = $row->creatorLinked;
+				else $this->imageArr[$row->imgid]['creator'] = $row->creator;
 				$this->imageArr[$row->imgid]['caption'] = $row->caption;
 				$this->imageArr[$row->imgid]['occid'] = $row->occid;
 				$this->imageArr[$row->imgid]['sciname'] = $row->sciname;
@@ -562,14 +562,14 @@ class TaxonProfile extends Manager {
 
 			if($tids){
 				//Get Images
-				$sql = 'SELECT t.sciname, t.tid, i.imgid, i.url, i.thumbnailurl, i.caption, i.photographer, CONCAT_WS(" ",u.firstname,u.lastname) AS photographerLinked '.
-					'FROM images i INNER JOIN (SELECT ts1.tid, SUBSTR(MIN(CONCAT(LPAD(i.sortsequence,6,"0"),i.imgid)),7) AS imgid '.
+				$sql = 'SELECT t.sciname, t.tid, i.imgid, i.url, i.thumbnailurl, i.caption, i.creator, CONCAT_WS(" ",u.firstname,u.lastname) AS creatorLinked '.
+					'FROM media i INNER JOIN (SELECT ts1.tid, SUBSTR(MIN(CONCAT(LPAD(i.sortsequence,6,"0"),i.imgid)),7) AS imgid '.
 					'FROM taxstatus ts1 INNER JOIN taxstatus ts2 ON ts1.tidaccepted = ts2.tidaccepted '.
-					'INNER JOIN images i ON ts2.tid = i.tid '.
+					'INNER JOIN media i ON ts2.tid = i.tid '.
 					'WHERE ts1.taxauthid = 1 AND ts2.taxauthid = 1 AND (ts1.tid IN('.implode(',',$tids).')) AND (i.thumbnailurl IS NOT NULL) AND (i.url != "empty") '.
 					'GROUP BY ts1.tid) i2 ON i.imgid = i2.imgid '.
 					'INNER JOIN taxa t ON i2.tid = t.tid '.
-					'LEFT JOIN users u ON i.photographeruid = u.uid ';
+					'LEFT JOIN users u ON i.creatorUid = u.uid ';
 				//echo $sql;
 				$rs = $this->conn->query($sql);
 				while($r = $rs->fetch_object()){
@@ -581,8 +581,8 @@ class TaxonProfile extends Manager {
 					$this->sppArray[$sciName]['imgid'] = $r->imgid;
 					$this->sppArray[$sciName]['url'] = $r->url;
 					$this->sppArray[$sciName]['thumbnailurl'] = $r->thumbnailurl;
-					if($r->photographerLinked) $this->sppArray[$sciName]['photographer'] = $r->photographerLinked;
-					else $this->sppArray[$sciName]['photographer'] = $r->photographer;
+					if($r->creatorLinked) $this->sppArray[$sciName]['creator'] = $r->creatorLinked;
+					else $this->sppArray[$sciName]['creator'] = $r->creator;
 					$this->sppArray[$sciName]['caption'] = $r->caption;
 				}
 				$rs->free();

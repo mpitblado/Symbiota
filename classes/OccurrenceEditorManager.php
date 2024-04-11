@@ -458,7 +458,7 @@ class OccurrenceEditorManager {
 		}
 		//Without images
 		if(array_key_exists('woi',$this->qryArr)){
-			$sqlWhere .= 'AND (i.imgid IS NULL) ';
+			$sqlWhere .= 'AND (m.imgid IS NULL) ';
 		}
 		//OCR
 		if(array_key_exists('ocr',$this->qryArr)){
@@ -731,20 +731,20 @@ class OccurrenceEditorManager {
 
 		if(strpos($this->sqlWhere,'ocr.rawstr')){
 			if(strpos($this->sqlWhere,'ocr.rawstr IS NULL') && array_key_exists('io',$this->qryArr)){
-				$sql .= 'INNER JOIN images i ON o.occid = i.occid LEFT JOIN specprocessorrawlabels ocr ON i.imgid = ocr.imgid ';
+				$sql .= 'INNER JOIN media m ON o.occid = m.occid LEFT JOIN specprocessorrawlabels ocr ON m.imgid = ocr.imgid ';
 			}
 			elseif(strpos($this->sqlWhere,'ocr.rawstr IS NULL')){
-				$sql .= 'LEFT JOIN images i ON o.occid = i.occid LEFT JOIN specprocessorrawlabels ocr ON i.imgid = ocr.imgid ';
+				$sql .= 'LEFT JOIN media m ON o.occid = m.occid LEFT JOIN specprocessorrawlabels ocr ON m.imgid = ocr.imgid ';
 			}
 			else{
-				$sql .= 'INNER JOIN images i ON o.occid = i.occid INNER JOIN specprocessorrawlabels ocr ON i.imgid = ocr.imgid ';
+				$sql .= 'INNER JOIN media m ON o.occid = m.occid INNER JOIN specprocessorrawlabels ocr ON m.imgid = ocr.imgid ';
 			}
 		}
 		elseif(array_key_exists('io',$this->qryArr)){
-			$sql .= 'INNER JOIN images i ON o.occid = i.occid ';
+			$sql .= 'INNER JOIN media m ON o.occid = m.occid ';
 		}
 		elseif(array_key_exists('woi',$this->qryArr)){
-			$sql .= 'LEFT JOIN images i ON o.occid = i.occid ';
+			$sql .= 'LEFT JOIN media m ON o.occid = m.occid ';
 		}
 		if(strpos($this->sqlWhere,'id.identifierValue')){
 			$sql .= 'LEFT JOIN omoccuridentifiers id ON o.occid = id.occid ';
@@ -996,7 +996,7 @@ class OccurrenceEditorManager {
 					//If sciname was changed, update image tid link
 					if(in_array('tidinterpreted',$editArr)){
 						//Remap images
-						$sqlImgTid = 'UPDATE images SET tid = '.(is_numeric($postArr['tidinterpreted'])?$postArr['tidinterpreted']:'NULL').' WHERE occid = ('.$this->occid.')';
+						$sqlImgTid = 'UPDATE media SET tid = '.(is_numeric($postArr['tidinterpreted'])?$postArr['tidinterpreted']:'NULL').' WHERE occid = ('.$this->occid.')';
 						$this->conn->query($sqlImgTid);
 					}
 					//If host was entered in quickhost field, update record
@@ -1318,7 +1318,7 @@ class OccurrenceEditorManager {
 				$rs->free();
 
 				//Archive image history
-				$sql = 'SELECT * FROM images WHERE occid = '.$delOccid;
+				$sql = 'SELECT * FROM media WHERE occid = '.$delOccid;
 				if($rs = $this->conn->query($sql)){
 					$imgidStr = '';
 					while($r = $rs->fetch_assoc()){
@@ -1341,7 +1341,7 @@ class OccurrenceEditorManager {
 							$this->errorArr[] = $LANG['ERROR_REMOVING_IMAGETAGS'].': '.$this->conn->error;
 						}
 						//Remove images
-						if(!$this->conn->query('DELETE FROM images WHERE (imgid IN('.$imgidStr.'))')){
+						if(!$this->conn->query('DELETE FROM media WHERE (imgid IN('.$imgidStr.'))')){
 							$this->errorArr[] = $LANG['ERROR_REMOVING_LINKS'].': '.$this->conn->error;
 						}
 					}
@@ -1458,12 +1458,12 @@ class OccurrenceEditorManager {
 						}
 					}
 					if(isset($postArr['carryoverimages']) && $postArr['carryoverimages']){
-						$sql = 'INSERT INTO images(occid, tid, url, thumbnailurl, originalurl, archiveurl, photographer, photographeruid, imagetype, format, caption, owner,
+						$sql = 'INSERT INTO media (occid, tid, url, thumbnailurl, originalurl, archiveurl, creator, creatorUid, imagetype, format, caption, owner,
 							sourceurl, referenceUrl, copyright, rights, accessrights, locality, notes, anatomy, username, sourceIdentifier, mediaMD5, dynamicProperties,
 							defaultDisplay, sortsequence, sortOccurrence)
-							SELECT '.$this->occid.', tid, url, thumbnailurl, originalurl, archiveurl, photographer, photographeruid, imagetype, format, caption, owner, sourceurl, referenceUrl,
+							SELECT '.$this->occid.', tid, url, thumbnailurl, originalurl, archiveurl, creator, creatorUid, imagetype, format, caption, owner, sourceurl, referenceUrl,
 							copyright, rights, accessrights, locality, notes, anatomy, username, sourceIdentifier, mediaMD5, dynamicProperties, defaultDisplay, sortsequence, sortOccurrence
-							FROM images WHERE occid = '.$sourceOccid;
+							FROM media WHERE occid = '.$sourceOccid;
 						if(!$this->conn->query($sql)){
 							$this->errorArr[] = $LANG['ERROR_ADDING_IMAGES'].': '.$this->conn->error;
 						}
@@ -1528,7 +1528,7 @@ class OccurrenceEditorManager {
 		}
 
 		//Remap images
-		$sql = 'UPDATE images SET occid = '.$targetOccid.' WHERE occid = '.$sourceOccid;
+		$sql = 'UPDATE media SET occid = '.$targetOccid.' WHERE occid = '.$sourceOccid;
 		if(!$this->conn->query($sql)){
 			$this->errorArr[] .= '; '.$LANG['ERROR_REMAPPING_IMAGES'].': '.$this->conn->error;
 			$status = false;
@@ -2014,8 +2014,8 @@ class OccurrenceEditorManager {
 		$retArr = array();
 		if($this->occid){
 			$sql = 'SELECT r.prlid, r.imgid, r.rawstr, r.notes, r.source '.
-				'FROM specprocessorrawlabels r INNER JOIN images i ON r.imgid = i.imgid '.
-				'WHERE i.occid = '.$this->occid;
+				'FROM specprocessorrawlabels r INNER JOIN media m ON r.imgid = m.imgid '.
+				'WHERE m.occid = '.$this->occid;
 			$rs = $this->conn->query($sql);
 			while($r = $rs->fetch_object()){
 				$retArr[$r->imgid][$r->prlid]['raw'] = $this->cleanOutStr($r->rawstr);
@@ -2081,8 +2081,7 @@ class OccurrenceEditorManager {
 	public function getImageMap($imgId = 0){
 		$imageMap = Array();
 		if($this->occid){
-			$sql = 'SELECT imgid, url, thumbnailurl, originalurl, caption, photographer, photographeruid, sourceurl, copyright, notes, occid, username, sortoccurrence, initialtimestamp FROM images ';
-			if($imgId) $sql .= 'WHERE (imgid = '.$imgId.') ';
+			$sql = 'SELECT imgid, url, thumbnailurl, originalurl, caption, creator, creatorUid, sourceurl, copyright, notes, occid, username, sortoccurrence, initialtimestamp FROM media '; if($imgId) $sql .= 'WHERE (imgid = '.$imgId.') ';
 			else $sql .= 'WHERE (occid = '.$this->occid.') ';
 			$sql .= 'ORDER BY sortoccurrence';
 			//echo $sql;
@@ -2092,8 +2091,8 @@ class OccurrenceEditorManager {
 				$imageMap[$row->imgid]['tnurl'] = $row->thumbnailurl;
 				$imageMap[$row->imgid]['origurl'] = $row->originalurl;
 				$imageMap[$row->imgid]['caption'] = $row->caption;
-				$imageMap[$row->imgid]['photographer'] = $row->photographer;
-				$imageMap[$row->imgid]['photographeruid'] = $row->photographeruid;
+				$imageMap[$row->imgid]['creator'] = $row->creator;
+				$imageMap[$row->imgid]['creatorUid'] = $row->creatorUid;
 				$imageMap[$row->imgid]['sourceurl'] = $row->sourceurl;
 				$imageMap[$row->imgid]['copyright'] = $row->copyright;
 				$imageMap[$row->imgid]['notes'] = $row->notes;

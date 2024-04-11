@@ -1,0 +1,77 @@
+### Table replace but "image" is in file name and or function/class names
+ImagesShared
+ImageCleaner
+PluginsManager
+   - photographerName -> creatorName
+ImageDetailManager
+   - photographerDisplay -> creatorDisplay
+   - Error messages still have images
+OccurrenceIndividual
+taxonprofile
+   - function names
+Imagelibrarybroswer
+   - function names
+imageexplorer
+   - class name
+   - function names
+occurrenceExsicatte
+   - function names
+specProcessorManager
+   - function names
+SpecUploadBase
+   - function names
+ChecklistManager
+   - function names
+OccurrenceEditorManager
+   - function names
+OccurrenceAttributes
+   - comments
+SpecProccessorOcr
+   - comments
+   - function names
+gamesManager
+   - comments
+MediaResolutionTools
+   - function names
+SpecProccessorNEVP
+   - comments
+   - function names
+imageProcessor
+   - comments
+   - function names
+imageLocalProcessor
+   - function names
+imageImport
+   - function names
+EOLManager
+   - function names
+   - comments
+taxonomyEditorManager
+   - comments
+   - function names
+uuidFactory
+   - comments
+   - function names
+
+OccurrenceEditorImages
+   - postArray photographeruid and photographer
+TPImageEditor
+   - postArray photographeruid and photographer
+DwcArchiverImage
+   - comments
+   - function names
+DwcArchiverCore
+   - comments
+   - function names
+ImageLibrarySearch
+   - alias of i still present 
+   - function names
+RpcOccurrenceEditor
+   - function names
+verifypaths
+   - alias of ti
+
+### photographer changes maybe needed
+occurrenceImport
+ImagesShared
+ImagesForbid?

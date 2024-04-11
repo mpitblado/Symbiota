@@ -78,7 +78,7 @@ class OccurrenceEditorImages extends OccurrenceEditorManager {
 		$status = false;
 		$imgId = $imgArr['imgid'];
 		if(!$imgId) return false;
-		$sql = 'UPDATE images SET ';
+		$sql = 'UPDATE media SET ';
 		$fieldArr = array();
 		$types = '';
 
@@ -156,7 +156,7 @@ class OccurrenceEditorImages extends OccurrenceEditorManager {
 			if($stmt->execute()){
 				$imgUpdateStatus = true;
 				if(array_key_exists('occid', $imgArr) || array_key_exists('tidinterpreted', $imgArr)){
-					$imgSql = 'UPDATE images i INNER JOIN omoccurrences o ON i.occid = o.occid SET i.tid = o.tidinterpreted WHERE (i.imgid = '.$imgId.')';
+					$imgSql = 'UPDATE media m INNER JOIN omoccurrences o ON m.occid = o.occid SET m.tid = o.tidinterpreted WHERE (m.imgid = '.$imgId.')';
 					$this->conn->query($imgSql);
 				}
 				$status = true;
@@ -351,7 +351,7 @@ class OccurrenceEditorImages extends OccurrenceEditorManager {
 			}
 		}
 		else{
-			$sql = 'UPDATE images SET occid = NULL WHERE (imgid = '.$imgId.')';
+			$sql = 'UPDATE media SET occid = NULL WHERE (imgid = '.$imgId.')';
 			if(!$this->conn->query($sql)){
 				$this->errorArr[] = $LANG['UNABLE_DISSOCIATE'].': '.$this->conn->error;
 				return false;

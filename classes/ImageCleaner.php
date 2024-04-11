@@ -27,7 +27,7 @@ class ImageCleaner extends Manager{
 	public function getReportArr(){
 		$retArr = array();
 		$sql = 'SELECT c.collid, CONCAT_WS("-",c.institutioncode,c.collectioncode) as collcode, c.collectionname, count(DISTINCT i.imgid) AS cnt '.
-			'FROM images i LEFT JOIN omoccurrences o ON i.occid = o.occid '.
+			'FROM media i LEFT JOIN omoccurrences o ON i.occid = o.occid '.
 			'LEFT JOIN omcollections c ON o.collid = c.collid ';
 		if($this->tidArr) $sql .= 'INNER JOIN taxaenumtree e ON i.tid = e.tid ';
 		$sql .= $this->getSqlWhere().'GROUP BY c.collid ORDER BY c.collectionname';
@@ -56,8 +56,8 @@ class ImageCleaner extends Manager{
 		$this->imgManager->setTestOrientation($this->testOrientation);
 		//Get image recordset to be processed
 		$sql = 'SELECT DISTINCT i.imgid, i.url, i.originalurl, i.thumbnailurl, i.format ';
-		if($this->collid) $sql .= ', o.catalognumber FROM images i INNER JOIN omoccurrences o ON i.occid = o.occid ';
-		else $sql .= 'FROM images i ';
+		if($this->collid) $sql .= ', o.catalognumber FROM media i INNER JOIN omoccurrences o ON i.occid = o.occid ';
+		else $sql .= 'FROM media i ';
 		if($this->tidArr) $sql .= 'INNER JOIN taxaenumtree e ON i.tid = e.tid ';
 		$sql .= $this->getSqlWhere() . 'ORDER BY RAND()';
 		if($limit) $sql .= 'LIMIT ' . $limit;
@@ -71,11 +71,11 @@ class ImageCleaner extends Manager{
 			$this->logOrEcho($cnt.': Building thumbnail: <a href="../imgdetails.php?imgid=' . htmlspecialchars($imgId, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank">' . htmlspecialchars($imgId, HTML_SPECIAL_CHARS_FLAGS) . '</a>...');
 			$this->conn->autocommit(false);
 			//Tag for updating; needed to ensure two parallel processes are not processing the same image
-			$testSql = 'SELECT thumbnailurl, url FROM images WHERE (imgid = '.$imgId.') FOR UPDATE ';
+			$testSql = 'SELECT thumbnailurl, url FROM media WHERE (imgid = '.$imgId.') FOR UPDATE ';
 			$textRS = $this->conn->query($testSql);
 			if($testR = $textRS->fetch_object()){
 				if(!$testR->thumbnailurl || (substr($testR->thumbnailurl,0,10) == 'processing' && $testR->thumbnailurl != 'processing '.date('Y-m-d'))){
-					$tagSql = 'UPDATE images SET thumbnailurl = "processing '.date('Y-m-d').'" WHERE (imgid = '.$imgId.')';
+					$tagSql = 'UPDATE media SET thumbnailurl = "processing '.date('Y-m-d').'" WHERE (imgid = '.$imgId.')';
 					$this->conn->query($tagSql);
 				}
 				else{
@@ -96,7 +96,7 @@ class ImageCleaner extends Manager{
 			if(isset($row->catalognumber)) $catNum = $row->catalognumber;
 			if(!$this->buildImageDerivatives($imgId, $catNum, $row->url, $row->thumbnailurl, $row->originalurl, $setFormat)){
 				$this->logOrEcho($this->errorMessage, 1);
-				//$tagSql = 'UPDATE images SET thumbnailurl = "" WHERE (imgid = '.$imgId.') AND thumbnailurl LIKE "processing %"';
+				//$tagSql = 'UPDATE media SET thumbnailurl = "" WHERE (imgid = '.$imgId.') AND thumbnailurl LIKE "processing %"';
 				//$this->conn->query($tagSql);
 			}
 			if(!$status) $this->logOrEcho($this->errorMessage,1);
@@ -181,7 +181,7 @@ class ImageCleaner extends Manager{
 				}
 				else{
 					$this->errorMessage = 'ERROR building thumbnail: '.$this->imgManager->getErrStr();
-					$errSql = 'UPDATE images SET thumbnailurl = "bad url" WHERE thumbnailurl IS NULL AND imgid = '.$imgId;
+					$errSql = 'UPDATE media SET thumbnailurl = "bad url" WHERE thumbnailurl IS NULL AND imgid = '.$imgId;
 					$this->conn->query($errSql);
 					$status = false;
 				}
@@ -221,7 +221,7 @@ class ImageCleaner extends Manager{
 				}
 				if(!$webFullUrl && !$recUrlOrig) $webFullUrl = $recUrlWeb;
 
-				$sql = 'UPDATE images ti SET ti.thumbnailurl = "'.$imgTnUrl.'" ,url = '.($webFullUrl?'"'.$webFullUrl.'"':'NULL').' ';
+				$sql = 'UPDATE media ti SET ti.thumbnailurl = "'.$imgTnUrl.'" ,url = '.($webFullUrl?'"'.$webFullUrl.'"':'NULL').' ';
 				if($lgFullUrl) $sql .= ',originalurl = "'.$lgFullUrl.'" ';
 				if($setFormat){
 					if($this->imgManager->getFormat()){
@@ -251,16 +251,16 @@ class ImageCleaner extends Manager{
 	}
 
 	public function resetProcessing(){
-		$sqlTN = 'UPDATE images SET thumbnailurl = NULL WHERE ((thumbnailurl = "") OR (thumbnailurl = "bad url") OR (thumbnailurl LIKE "processing %")) ';
+		$sqlTN = 'UPDATE media SET thumbnailurl = NULL WHERE ((thumbnailurl = "") OR (thumbnailurl = "bad url") OR (thumbnailurl LIKE "processing %")) ';
 		if($this->collid){
-			$sqlTN = 'UPDATE images i INNER JOIN omoccurrences o ON i.occid = o.occid '.
+			$sqlTN = 'UPDATE media i INNER JOIN omoccurrences o ON i.occid = o.occid '.
 				'SET thumbnailurl = NULL '.
 				'WHERE ((thumbnailurl = "") OR (thumbnailurl = "bad url") OR (thumbnailurl LIKE "processing %")) AND collid = '.$this->collid;
 		}
 		$this->conn->query($sqlTN);
-		$sqlWeb = 'UPDATE images SET url = "" WHERE ((url = "") OR (url LIKE "processing %")) ';
+		$sqlWeb = 'UPDATE media SET url = "" WHERE ((url = "") OR (url LIKE "processing %")) ';
 		if($this->collid){
-			$sqlWeb = 'UPDATE images i INNER JOIN omoccurrences o ON i.occid = o.occid SET url = "" WHERE ((url = "") OR (url LIKE "processing %")) AND collid = '.$this->collid;
+			$sqlWeb = 'UPDATE media i INNER JOIN omoccurrences o ON i.occid = o.occid SET url = "" WHERE ((url = "") OR (url LIKE "processing %")) AND collid = '.$this->collid;
 		}
 		$this->conn->query($sqlWeb);
 	}
@@ -350,7 +350,7 @@ class ImageCleaner extends Manager{
 		$retCnt = 0;
 		$domain = $_SERVER['HTTP_HOST'];
 		$sql = 'SELECT COUNT(i.imgid) AS cnt '.
-			'FROM images i INNER JOIN omoccurrences o ON i.occid = o.occid '.
+			'FROM media i INNER JOIN omoccurrences o ON i.occid = o.occid '.
 			'WHERE (o.collid = '.$this->collid.') AND (i.thumbnailurl LIKE "%'.$domain.'/%" OR i.thumbnailurl LIKE "/%") '.
 			'AND IFNULL(i.originalurl, i.url) LIKE "http%" AND (IFNULL(i.originalurl, i.url) NOT LIKE "%'.$domain.'/%") ';
 		//echo $sql;
@@ -430,7 +430,7 @@ class ImageCleaner extends Manager{
 
 	private function getRemoteImageSql($postArr){
 		$domain = $this->getDomain();
-		$sql = 'FROM images i INNER JOIN omoccurrences o ON i.occid = o.occid '.
+		$sql = 'FROM media i INNER JOIN omoccurrences o ON i.occid = o.occid '.
 			'WHERE (o.collid = '.$this->collid.') AND (i.thumbnailurl LIKE "%'.$domain.'/%" OR i.thumbnailurl LIKE "/%") '.
 			'AND IFNULL(i.originalurl,url) LIKE "http%" AND IFNULL(i.originalurl,url) NOT LIKE "%'.$domain.'/%" ';
 		$catNumLow = '';
@@ -589,7 +589,7 @@ class ImageCleaner extends Manager{
 					}
 				}
 				if($delRec){
-					$this->conn->query('DELETE FROM images WHERE (imgid = '.$imgID.')');
+					$this->conn->query('DELETE FROM media WHERE (imgid = '.$imgID.')');
 				}
 			}
 			$rs->free();

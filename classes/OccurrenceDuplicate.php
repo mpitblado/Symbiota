@@ -39,10 +39,10 @@ class OccurrenceDuplicate {
 		if($retArr){
 			$sql = 'SELECT d.duplicateid, d.occid, c.institutioncode, c.collectioncode, c.collectionname, o.catalognumber, '.
 				'o.occurrenceid, o.sciname, o.scientificnameauthorship, o.identifiedby, o.dateidentified, '.
-				'o.recordedby, o.recordnumber, o.eventdate, d.notes, i.url, i.thumbnailurl '.
+				'o.recordedby, o.recordnumber, o.eventdate, d.notes, m.url, m.thumbnailurl '.
 				'FROM omoccurduplicatelink d INNER JOIN omoccurrences o ON d.occid = o.occid '.
 				'INNER JOIN omcollections c ON o.collid = c.collid '.
-			 	'LEFT JOIN images i ON o.occid = i.occid '.
+			 	'LEFT JOIN media i ON o.occid = m.occid '.
 				'WHERE (d.duplicateid IN('.implode(',',array_keys($retArr)).'))';
 			if($rs = $this->conn->query($sql)){
 				while($r = $rs->fetch_object()){
