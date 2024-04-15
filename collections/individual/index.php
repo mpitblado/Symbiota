@@ -312,9 +312,9 @@ $traitArr = $indManager->getTraitArr();
 <body>
 	<script src="<?php echo htmlspecialchars($CLIENT_ROOT, HTML_SPECIAL_CHARS_FLAGS); ?>/collections/individual/domManipulationUtils.js" type="text/javascript"></script>
 	<header style="background-image: none;">
-		<a class="skip-link" href="#end-nav"><?php echo $LANG['SKIP_NAV'] ?></a>
-		<h1 class="smaller-header">
-			<?php echo (isset($LANG['FULL_RECORD_DETAILS']) ? $LANG['FULL_RECORD_DETAILS'] : 'Full Record Details'); ?>
+		<a class="screen-reader-only" href="#end-nav"><?php echo $LANG['SKIP_NAV'] ?></a>
+		<h1 class="page-heading">
+			<?php echo $LANG['FULL_RECORD_DETAILS']; ?>
 		</h1>
 		<div id="end-nav"></div>
 	</header>
