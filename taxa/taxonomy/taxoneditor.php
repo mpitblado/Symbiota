@@ -172,6 +172,26 @@ if($isEditor){
 					</div>
 					<form id="taxoneditform" name="taxoneditform" action="taxoneditor.php" method="post" onsubmit="return validateTaxonEditForm(this)">
 						<div class="editDiv">
+							<div class="editLabel"><?php echo (isset($LANG['RANK_NAME'])?$LANG['RANK_NAME']:'Rank Name'); ?>: </div>
+							<div class="editfield">
+								<?php echo ($taxonEditorObj->getRankName()?$taxonEditorObj->getRankName():'Non-Ranked Node'); ?>
+							</div>
+							<div class="editfield" style="display:none;">
+								<select id="rankid" name="rankid">
+									<option value="0"><?php echo (isset($LANG['NON_RANKED_NODE'])?$LANG['NON_RANKED_NODE']:'Non-Ranked Node'); ?></option>
+									<option value="">---------------------------------</option>
+									<?php
+									$rankArr = $taxonEditorObj->getRankArr();
+									foreach($rankArr as $rankId => $nameArr){
+										foreach($nameArr as $rName){
+											echo '<option value="'.$rankId.'" '.($taxonEditorObj->getRankId()==$rankId?'SELECTED':'').'>'.$rName.'</option>';
+										}
+									}
+									?>
+								</select>
+							</div>
+						</div>
+						<div class="editDiv">
 							<div class="editLabel"><?php echo (isset($LANG['UNITNAME1'])?$LANG['UNITNAME1']:'UnitName1'); ?>: </div>
 							<div class="editfield">
 								<?php
@@ -199,7 +219,7 @@ if($isEditor){
 							<div class="editfield" style="display:none;">
 								<select name="unitind2">
 									<option value=""></option>
-									<option value="&#215;" <?php echo (ord($unitInd2)==195 || strtolower($unitInd2) == 'x'?'selected':''); ?>>&#215;</option>
+									<option value="&#215;" <?php echo (ord($unitInd2 ?? 0)==195 || strtolower($unitInd2 ?? '') == 'x' ? 'selected' : ''); ?>>&#215;</option>
 								</select>
 								<input type="text" id="unitname2" name="unitname2" style="width:300px;border-style:inset;" value="<?php echo $taxonEditorObj->getUnitName2(); ?>" />
 							</div>
@@ -212,6 +232,15 @@ if($isEditor){
 							<div class="editfield" style="display:none;">
 								<input type="text" id="unitind3" name="unitind3" style="width:50px;border-style:inset;" value="<?php echo $taxonEditorObj->getUnitInd3(); ?>" />
 								<input type="text" id="unitname3" name="unitname3" style="width:300px;border-style:inset;" value="<?php echo $taxonEditorObj->getUnitName3(); ?>" />
+							</div>
+						</div>
+						<div class="editDiv">
+							<div class="editLabel"><?php echo $LANG['UNITNAME4']; ?>: </div>
+							<div class="editfield">
+								<?php echo $taxonEditorObj->getCultivatedName();?>
+							</div>
+							<div class="editfield" style="display:none;">
+								<input type="text" id="cultivatedname" name="cultivatedname" style="width:300px;border-style:inset;" value="<?php echo $taxonEditorObj->getCultivatedName(); ?>" />
 							</div>
 						</div>
 						<div class="editDiv">
@@ -231,26 +260,7 @@ if($isEditor){
 								?>
 							</div>
 						</div>
-						<div class="editDiv">
-							<div class="editLabel"><?php echo (isset($LANG['RANK_NAME'])?$LANG['RANK_NAME']:'Rank Name'); ?>: </div>
-							<div class="editfield">
-								<?php echo ($taxonEditorObj->getRankName()?$taxonEditorObj->getRankName():'Non-Ranked Node'); ?>
-							</div>
-							<div class="editfield" style="display:none;">
-								<select id="rankid" name="rankid">
-									<option value="0"><?php echo (isset($LANG['NON_RANKED_NODE'])?$LANG['NON_RANKED_NODE']:'Non-Ranked Node'); ?></option>
-									<option value="">---------------------------------</option>
-									<?php
-									$rankArr = $taxonEditorObj->getRankArr();
-									foreach($rankArr as $rankId => $nameArr){
-										foreach($nameArr as $rName){
-											echo '<option value="'.$rankId.'" '.($taxonEditorObj->getRankId()==$rankId?'SELECTED':'').'>'.$rName.'</option>';
-										}
-									}
-									?>
-								</select>
-							</div>
-						</div>
+						
 						<div class="editDiv">
 							<div class="editLabel"><?php echo (isset($LANG['NOTES'])?$LANG['NOTES']:'Notes'); ?>: </div>
 							<div class="editfield">

@@ -77,6 +77,7 @@ if($isEditor){
 			?>
 			<form id="loaderform" name="loaderform" action="taxonomyloader.php" method="post" onsubmit="return verifyLoadForm(this)">
 				<fieldset>
+					<!-- TODO add button for autoparsing with accessibility in mind -->
 					<legend><b><?php echo (isset($LANG['ADD_NEW_TAXON']) ? $LANG['ADD_NEW_TAXON'] : 'Add a New Taxon'); ?></b></legend>
 					<div style="clear:both;">
 						<div class="left-column"> 
