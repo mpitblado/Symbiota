@@ -162,8 +162,17 @@ if($isEditor){
 									<!-- TODO add description -->
 									<!-- TODO make dependant on cultivated selection -->
 								</div>
-								<!-- <input type='text' id='unitind4' name='unitind4' onchange="updateFullname(this.form)" class='search-bar-extraShort' aria-label='<?php echo $LANG['UNITNAME4']; ?>:' title='<?php echo $LANG['RANK_FIELD']; ?>'/> -->
-								<input type='text' id='cultivatedname' name='cultivatedname' onchange="updateFullname(this.form)" class='search-bar' aria-label="<?php echo $LANG['UNITNAME4']; ?>" title="<?php echo $LANG['UNITNAME4']; ?>" />
+								<input type='text' id='cultivarEpithet' name='cultivarEpithet' onchange="updateFullname(this.form)" class='search-bar' aria-label="<?php echo $LANG['UNITNAME4']; ?>" title="<?php echo $LANG['UNITNAME4']; ?>" />
+							</div>
+							<div id="div3hide" style="clear:both;">
+								<div class="left-column">
+									<label for="unitind5">
+										<?php echo $LANG['UNITNAME5']; ?>:
+									</label>
+									<!-- TODO add description -->
+									<!-- TODO make dependant on cultivated selection -->
+								</div>
+								<input type='text' id='tradeName' name='tradeName' onchange="updateFullname(this.form)" class='search-bar' aria-label="<?php echo $LANG['UNITNAME5']; ?>" title="<?php echo $LANG['UNITNAME5']; ?>" />
 							</div>
 					<?php
 					}?>

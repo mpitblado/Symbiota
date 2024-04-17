@@ -17,7 +17,8 @@ class TaxonomyEditorManager extends Manager{
 	private $unitName2;
 	private $unitInd3;
 	private $unitName3;
-	private $cultivatedName;
+	private $cultivarEpithet;
+	private $tradeName;
 	private $author;
 	private $parentTid = 0;
 	private $parentName;
@@ -42,7 +43,7 @@ class TaxonomyEditorManager extends Manager{
 
 	public function setTaxon(){
 		$sqlTaxon = 'SELECT tid, rankid, sciname, unitind1, unitname1, '.
-			'unitind2, unitname2, unitind3, unitname3, cultivatedname, author, source, notes, securitystatus, initialtimestamp '.
+			'unitind2, unitname2, unitind3, unitname3, cultivarEpithet, tradeName, author, source, notes, securitystatus, initialtimestamp '.
 			'FROM taxa '.
 			'WHERE (tid = '.$this->tid.')';
 		//echo $sqlTaxon;
@@ -56,7 +57,8 @@ class TaxonomyEditorManager extends Manager{
 			$this->unitName2 = $r->unitname2;
 			$this->unitInd3 = $r->unitind3;
 			$this->unitName3 = $r->unitname3;
-			$this->cultivatedName = $r->cultivatedname;
+			$this->cultivarEpithet = $r->cultivarEpithet;
+			$this->tradeName = $r->tradeName;
 			$this->author = $r->author;
 			$this->source = $r->source;
 			$this->notes = $r->notes;
@@ -223,7 +225,8 @@ class TaxonomyEditorManager extends Manager{
 			'unitname2 = '.($postArr['unitname2']?'"'.$this->cleanInStr($postArr['unitname2']).'"':'NULL').', '.
 			'unitind3 = '.($postArr['unitind3']?'"'.$this->cleanInStr($postArr['unitind3']).'"':'NULL').', '.
 			'unitname3 = '.($postArr['unitname3']?'"'.$this->cleanInStr($postArr['unitname3']).'"':'NULL').', '.
-			'cultivatedname = '.($postArr['cultivatedname'] ? '"' . $this->cleanInStr($postArr['cultivatedname']) . '"' : 'NULL') . ', ' .
+			'cultivarEpithet = '.($postArr['cultivarEpithet'] ? '"' . $this->cleanInStr($postArr['cultivarEpithet']) . '"' : 'NULL') . ', ' .
+			'tradeName = '.($postArr['tradeName'] ? '"' . $this->cleanInStr($postArr['tradeName']) . '"' : 'NULL') . ', ' .
 			'author = "'.($postArr['author']?$this->cleanInStr($postArr['author']):'').'", '.
 			'rankid = '.(is_numeric($postArr['rankid'])?$postArr['rankid']:'NULL').', '.
 			'source = '.($postArr['source']?'"'.$this->cleanInStr($postArr['source']).'"':'NULL').', '.
@@ -538,7 +541,7 @@ class TaxonomyEditorManager extends Manager{
 	public function loadNewName($dataArr){
 		//Load new name into taxa table
 		$tid = 0;
-		$sqlTaxa = 'INSERT INTO taxa(sciname, author, rankid, unitind1, unitname1, unitind2, unitname2, unitind3, unitname3, cultivatedname,  '.
+		$sqlTaxa = 'INSERT INTO taxa(sciname, author, rankid, unitind1, unitname1, unitind2, unitname2, unitind3, unitname3, cultivarEpithet, tradeName,  '.
 			'source, notes, securitystatus, modifiedUid, modifiedTimeStamp) '.
 			'VALUES ("'.$this->cleanInStr($dataArr['sciname']).'","'.
 			($dataArr['author']?$this->cleanInStr($dataArr['author']):'').'",'.
@@ -549,7 +552,8 @@ class TaxonomyEditorManager extends Manager{
 			($dataArr['unitname2']?'"'.$this->cleanInStr($dataArr['unitname2']).'"':'NULL').','.
 			($dataArr['unitind3']?'"'.$this->cleanInStr($dataArr['unitind3']).'"':'NULL').','.
 			($dataArr['unitname3']?'"'.$this->cleanInStr($dataArr['unitname3']).'"':'NULL').','.
-			($dataArr['cultivatedname'] ? '"' . $this->cleanInStr($dataArr['cultivatedname']) . '"' : 'NULL') . ',' .
+			($dataArr['cultivarEpithet'] ? '"' . $this->cleanInStr($dataArr['cultivarEpithet']) . '"' : 'NULL') . ',' .
+			($dataArr['tradeName'] ? '"' . $this->cleanInStr($dataArr['tradeName']) . '"' : 'NULL') . ',' .
 			($dataArr['source']?'"'.$this->cleanInStr($dataArr['source']).'"':'NULL').','.
 			($dataArr['notes']?'"'.$this->cleanInStr($dataArr['notes']).'"':'NULL').','.
 			$this->cleanInStr($dataArr['securitystatus']).','.
@@ -962,8 +966,12 @@ class TaxonomyEditorManager extends Manager{
 		return $this->unitName3;
 	}
 
-	public function getCultivatedName(){
-		return $this->cultivatedName;
+	public function getCultivarEpithet(){
+		return $this->cultivarEpithet;
+	}
+
+	public function getTradeName(){
+		return $this->tradeName;
 	}
 
 	public function getAuthor(){

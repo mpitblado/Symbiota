@@ -237,10 +237,19 @@ if($isEditor){
 						<div class="editDiv">
 							<div class="editLabel"><?php echo $LANG['UNITNAME4']; ?>: </div>
 							<div class="editfield">
-								<?php echo $taxonEditorObj->getCultivatedName();?>
+								<?php echo $taxonEditorObj->getCultivarEpithet();?>
 							</div>
 							<div class="editfield" style="display:none;">
-								<input type="text" id="cultivatedname" name="cultivatedname" style="width:300px;border-style:inset;" value="<?php echo $taxonEditorObj->getCultivatedName(); ?>" />
+								<input type="text" id="cultivarEpithet" name="cultivarEpithet" style="width:300px;border-style:inset;" value="<?php echo $taxonEditorObj->getCultivarEpithet(); ?>" />
+							</div>
+						</div>
+						<div class="editDiv">
+							<div class="editLabel"><?php echo $LANG['UNITNAME5']; ?>: </div>
+							<div class="editfield">
+								<?php echo $taxonEditorObj->getTradeName();?>
+							</div>
+							<div class="editfield" style="display:none;">
+								<input type="text" id="tradeName" name="tradeName" style="width:300px;border-style:inset;" value="<?php echo $taxonEditorObj->getTradeName(); ?>" />
 							</div>
 						</div>
 						<div class="editDiv">
