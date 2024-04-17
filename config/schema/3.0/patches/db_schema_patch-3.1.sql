@@ -253,3 +253,7 @@ AND e2.occid IS NULL;
 
 UPDATE omoccurrences SET localitySecurity=0 WHERE cultivationStatus=1 AND localitySecurity=1 AND localitySecurityReason IS NULL;
 
+# Add cultivatedname column to taxa table
+
+ALTER TABLE `taxa` ADD COLUMN `cultivatedname` VARCHAR(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NULL DEFAULT NULL AFTER unitName3;
+

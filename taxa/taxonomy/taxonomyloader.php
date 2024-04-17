@@ -78,22 +78,6 @@ if($isEditor){
 			<form id="loaderform" name="loaderform" action="taxonomyloader.php" method="post" onsubmit="return verifyLoadForm(this)">
 				<fieldset>
 					<legend><b><?php echo (isset($LANG['ADD_NEW_TAXON']) ? $LANG['ADD_NEW_TAXON'] : 'Add a New Taxon'); ?></b></legend>
-					<div>
-						<div class="left-column">
-							<label for="sciname"> 
-								<?php echo (isset($LANG['TAXON_NAME']) ? $LANG['TAXON_NAME'] : 'Taxon Name'); ?>: 
-							</label>
-						</div>
-						<input type="text" id="sciname" name="sciname" class="search-bar-long" value="" onchange="parseName(this.form)"/>
-					</div>
-					<div>
-						<div class="left-column">
-							<label for="author">
-								<?php echo (isset($LANG['AUTHOR']) ? $LANG['AUTHOR'] : 'Author'); ?>:
-							</label>
-						</div>
-						<input type='text' id='author' name='author' class='search-bar-long' />
-					</div>
 					<div style="clear:both;">
 						<div class="left-column"> 
 							<label for="rankid">
@@ -115,6 +99,23 @@ if($isEditor){
 						</select>
 						<script src="../../js/symb/taxa.taxonomyloader.js"> </script>
 					</div>
+					<div>
+						<div class="left-column">
+							<label for="sciname"> 
+								<?php echo (isset($LANG['TAXON_NAME']) ? $LANG['TAXON_NAME'] : 'Taxon Name'); ?>: 
+							</label>
+						</div>
+						<input type="text" id="sciname" name="sciname" class="search-bar-long" value="" onchange="parseName(this.form)"/>
+					</div>
+					<div>
+						<div class="left-column">
+							<label for="author">
+								<?php echo (isset($LANG['AUTHOR']) ? $LANG['AUTHOR'] : 'Author'); ?>:
+							</label>
+						</div>
+						<input type='text' id='author' name='author' class='search-bar-long' />
+					</div>
+					
 					<div style="clear:both;">
 						<div class="left-column">
 							<label id="unitind1label" for="unitind1">
@@ -158,6 +159,7 @@ if($isEditor){
 										<?php echo $LANG['UNITNAME4']; ?>:
 									</label>
 									<!-- TODO add description -->
+									<!-- TODO make dependant on cultivated selection -->
 								</div>
 								<!-- <input type='text' id='unitind4' name='unitind4' onchange="updateFullname(this.form)" class='search-bar-extraShort' aria-label='<?php echo $LANG['UNITNAME4']; ?>:' title='<?php echo $LANG['RANK_FIELD']; ?>'/> -->
 								<input type='text' id='cultivatedname' name='cultivatedname' onchange="updateFullname(this.form)" class='search-bar' aria-label="<?php echo $LANG['UNITNAME4']; ?>" title="<?php echo $LANG['UNITNAME4']; ?>" />
