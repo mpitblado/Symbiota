@@ -188,8 +188,7 @@ class RpcOccurrenceEditor extends RpcBase{
 			$str3 = $strArr[2];
 		}
 
-		// Construct the SQL query
-		$sql = 'SELECT DISTINCT tid, sciname FROM taxa WHERE unitname1 LIKE "'.$str1.'%" ';
+		$sql = 'SELECT DISTINCT tid, IF(scinameDisplay IS NULL, sciname, scinameDisplay) AS sciname FROM taxa WHERE unitname1 LIKE "' . $str1 . '%" ';
 		if($str2){
 			$sql .= 'AND unitname2 LIKE "'.$str2.'%" ';
 		}

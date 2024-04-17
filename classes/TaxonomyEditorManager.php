@@ -217,7 +217,8 @@ class TaxonomyEditorManager extends Manager{
 	//Edit Functions
 	public function submitTaxonEdits($postArr){
 		$statusStr = '';
-		$sciname = trim($postArr['unitind1'].$postArr['unitname1'].' '.$postArr['unitind2'].$postArr['unitname2'].' '.trim($postArr['unitind3'].' '.$postArr['unitname3']));
+		$sciname = trim($postArr['unitind1'] . $postArr['unitname1'] . ' ' . $postArr['unitind2'] . $postArr['unitname2'] . ' ' . trim($postArr['unitind3'] . ' ' . $postArr['unitname3']) . ' ' . $postArr['cultivarEpithet'] );
+		// @TODO have toupper implement on tradeName intake
 		$sql = 'UPDATE taxa SET '.
 			'unitind1 = '.($postArr['unitind1']?'"'.$this->cleanInStr($postArr['unitind1']).'"':'NULL').', '.
 			'unitname1 = "'.$this->cleanInStr($postArr['unitname1']).'",'.
@@ -234,8 +235,15 @@ class TaxonomyEditorManager extends Manager{
 			'securitystatus = '.(is_numeric($postArr['securitystatus'])?$postArr['securitystatus']:'0').', '.
 			'modifiedUid = '.$GLOBALS['SYMB_UID'].', '.
 			'modifiedTimeStamp = "'.date('Y-m-d H:i:s').'",'.
-			'sciname = "'.$this->cleanInStr($sciname).'" '.
-			'WHERE (tid = '.$this->tid.')';
+			'sciname = "'.$this->cleanInStr($sciname).'" ';
+
+			if(array_key_exists('tradeName', $postArr) && $postArr['tradeName']){
+				$scinameDisplay = trim($sciname . ' ' .  $postArr['tradeName']);
+				$sql .= ', scinameDisplay = "' . $this->cleanInStr($scinameDisplay) . '" '; 
+			}
+			// 'sciname = "'.$this->cleanInStr($sciname).'", '.
+			// 'scinameDisplay = "' . $this->cleanInStr($scinameDisplay) . '" ' .
+			$sql .= 'WHERE (tid = '.$this->tid.')';
 		//echo $sql;
 		if(!$this->conn->query($sql)){
 			$statusStr = (isset($this->langArr['ERROR_EDITING_TAXON'])?$this->langArr['ERROR_EDITING_TAXON']:'ERROR editing taxon').': '.$this->conn->error;
