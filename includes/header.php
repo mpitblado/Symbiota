@@ -110,7 +110,7 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
     <div class="container">
       <div class="row">                  
         <div class="col-md-6 site-branding clearfix">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 147.04 100.58" class="site-branding__usda-logo">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 147.04 100.58" class="site-branding__usda-logo" style="height: 3.2rem;">
             <defs>
               <style>.usda-logo-1{fill:#004785;}.usda-logo-2{fill:#005941;}</style>
             </defs>
@@ -128,8 +128,8 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
             </g>
           </svg>
           <div class="site-branding__text">
-            <div class="site-branding__site-name"><a href="https://ars.usda.gov" title="Home" rel="home">Agricultural Research Service</a></div>
-              <div class="site-branding__usda" style="margin-top: 0.3rem;"><a href="https://www.usda.gov">U.S. Department of Agriculture</a></div>
+            <div class="site-branding__site-name"><a href="https://ars.usda.gov" title="ARS Homepage" rel="home">Agricultural Research Service</a></div>
+              <div class="site-branding__usda" style="margin-top: 0.3rem; padding-top:0.1rem;"><a href="https://www.usda.gov">U.S. Department of Agriculture</a></div>
               </div>
             </div>
             <div class="col-md-6">
