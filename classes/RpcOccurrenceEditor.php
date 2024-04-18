@@ -188,7 +188,7 @@ class RpcOccurrenceEditor extends RpcBase{
 			$str3 = $strArr[2];
 		}
 
-		$sql = 'SELECT DISTINCT tid, IF(scinameDisplay IS NULL, sciname, scinameDisplay) AS sciname FROM taxa WHERE unitname1 LIKE "' . $str1 . '%" ';
+		$sql = 'SELECT DISTINCT tid, sciname, tradeName FROM taxa WHERE unitname1 LIKE "' . $str1 . '%" ';
 		if($str2){
 			$sql .= 'AND unitname2 LIKE "'.$str2.'%" ';
 		}
@@ -198,11 +198,11 @@ class RpcOccurrenceEditor extends RpcBase{
 		$sql .= 'ORDER BY sciname';
 
 		// If the search term has an infraspecific separator, use the old version of the SQL, otherwise, no matches will be returned
-		if(array_intersect($strArr, array("var.", "ssp.", "nothossp.", "f.", "×", "x", "†"))) $sql = 'SELECT DISTINCT tid, sciname FROM taxa WHERE sciname LIKE "'.$term.'%" ';
+		if(array_intersect($strArr, array("var.", "ssp.", "nothossp.", "f.", "×", "x", "†"))) $sql = 'SELECT DISTINCT tid, sciname, tradeName FROM taxa WHERE sciname LIKE "'.$term.'%" ';
 
 		$rs = $this->conn->query($sql);
 		while ($r = $rs->fetch_object()){
-			$retArr[] = array('id' => $r->tid, 'value' => $r->sciname);
+			$retArr[] = array('id' => $r->tid, 'value' => $r->sciname, 'tradename' => $r->tradeName);
 		}
 		$rs->free();
 		return $retArr;
@@ -211,18 +211,22 @@ class RpcOccurrenceEditor extends RpcBase{
 	public function getTaxonArr($term){
 		$retArr = array();
 		if($term){
-			$sql = 'SELECT DISTINCT t.tid, t.author, ts.family, t.securitystatus FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid WHERE t.sciname = ? AND ts.taxauthid = 1 ';
+			$sql = 'SELECT DISTINCT t.tid, t.author, t.sciname, t.tradeName, ts.family, t.securitystatus FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid WHERE t.sciname = ? AND ts.taxauthid = 1 ';
 			if($stmt = $this->conn->prepare($sql)){
 				if($stmt->bind_param('s', $term)){
 					$stmt->execute();
 					$tid = 0;
 					$family = null;
+					$sciname = null;
+					$tradename = null;
 					$author = null;
 					$status = null;
-					$stmt->bind_result($tid, $author, $family, $status);
+					$stmt->bind_result($tid, $author, $sciname, $tradename, $family, $status);
 					while($stmt->fetch()){
 						$retArr['tid'] = $tid;
 						$retArr['family'] = $family;
+						$retArr['sciname'] = $sciname;
+						$retArr['tradename'] = $tradename;
 						$retArr['author'] = $author;
 						$retArr['status'] = $status;
 					}

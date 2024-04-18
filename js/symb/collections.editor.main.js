@@ -247,6 +247,7 @@ function verifyFullFormSciName(){
 		if(data){
 			$( "#tidinterpreted" ).val(data.tid);
 			$( 'input[name=family]' ).val(data.family);
+			$( 'input[name=tradeName]' ).val(data.tradename);
 			$( 'input[name=scientificnameauthorship]' ).val(data.author);
 			/*
 			if(data.rankid < 220){

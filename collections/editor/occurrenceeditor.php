@@ -915,6 +915,10 @@ else{
 													<a href="#" onclick="return dwcDoc('family')" tabindex="-1"><img class="docimg" src="../../images/qmark.png" /></a>
 													<input type="text" name="family" maxlength="50" tabindex="0" value="<?php echo array_key_exists('family',$occArr)?$occArr['family']:''; ?>" onchange="fieldChanged('family');" />
 												</div>
+												<div  id="tradeNameDiv">
+													<?php echo $LANG['TRADE_NAME']; ?>
+													<input type="text" name="tradeName" maxlength="50" tabindex="0" value="<?php echo array_key_exists('tradeName',$occArr)?$occArr['tradeName']:''; ?>" onchange="fieldChanged('tradeName');" />
+												</div>
 											</div>
 											<div style="clear:both;padding:3px 0px 0px 10px;">
 												<div id="identifiedByDiv" class="field-div">
