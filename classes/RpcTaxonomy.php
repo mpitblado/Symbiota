@@ -40,6 +40,7 @@ class RpcTaxonomy extends RpcBase{
 			$sql .= 'ORDER BY sciname';
 			$rs = $this->conn->query($sql);
 			var_dump($rs);
+			//LEFT OFF HERE
 			while($r = $rs->fetch_object()) {
 				$sciname = $r->sciname.' '.$r->author;
 				$retArr[] = array('id' => $r->tid,'label' => $sciname);
