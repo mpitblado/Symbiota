@@ -43,7 +43,7 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
           <div style="display: flex; justify-content: start;">
             <img style="max-height: 13.5px;" src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/us_flag_small.png" alt="" aria-hidden="true" />
             <p tabindex="0" style="font-size: 1rem; margin: 0;">An official website of the United States government.</p>
-            <button class="official-website-banner__trigger content-collapsed" style="margin-left: 0.5rem; max-width: 155px; width: 180px; font-size: 0.9rem; padding: 0;">Here&apos;s how you know.</button>
+            <button class="official-website-banner__trigger content-collapsed" style="margin-left: 0.5rem; max-width: 155px; width: 180px; font-size: 0.9rem; padding: 0 0.8rem 0 0;">Here&apos;s how you know.</button>
           </div>
           <div class="official-website-banner__content">
             <div class="content-region content-region__first col-sm-6">
