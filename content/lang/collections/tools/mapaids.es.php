@@ -18,6 +18,7 @@ $LANG['MBB_SOUTHERN'] = 'Latitud Sur';
 $LANG['MBB_WESTERN'] = 'Longitud Oeste';
 
 //Following used in mappointaid.php
+$LANG['MAP_POINT_HELPER'] = 'Ayudante de puntos del mapa';
 $LANG['MPR_TITLE'] = 'Mapeador de Coordenadas';
 $LANG['MPR_INSTRUCTIONS'] = 'Click para capturar coordenadas. Click en el bot&oacute;n Enviar para transferir Coordenadas.';
 $LANG['MPR_UNCERTAINTY_INSTRUCTIONS'] = "Ingrese la incertidumbre para crear un círculo de radio de error alrededor del marcador.";
@@ -27,6 +28,7 @@ $LANG['SUBMIT'] = 'Enviar';
 $LANG['UNCERTAINTY_METERS'] = 'Incertidumbre en Metros';
 
 //Following used in mappolyaid.php
+$LANG['MAP_POLYGON_HELPER'] = 'Ayudante de polígono de mapa';
 $LANG['POLYGON_FORMATTING'] = 'Formato de polígono';
 $LANG['REDRAW'] = 'Redibujar';
 $LANG['TRIM_DIGITS'] = 'Recortar a 6 dígitos significativos';

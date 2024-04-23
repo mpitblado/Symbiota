@@ -169,7 +169,7 @@ else{
 		</script>
 	</head>
 	<body style="display:flex; flex-direction: column; background-color:#ffffff;" onload="initialize()">
-		<h1 class="page-heading screen-reader-only">Map Point Helper</h1>
+		<h1 class="page-heading screen-reader-only"><?php echo $LANG['MAP_POINT_HELPER']; ?></h1>
 		<div style="padding:0.5rem; width: fit-content; height:fit-content">
 			<div>
 				<?php echo isset($LANG['MPR_INSTRUCTIONS']) ?$LANG['MPR_INSTRUCTIONS']: 'Click once to capture coordinates. Click on the submit button to transfer coordinates.' ?>

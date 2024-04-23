@@ -129,7 +129,7 @@ $clManager->setProj($pid);
 		</style>
 	</head>
 	<body style="background-color:#ffffff;" onload="initialize()">
-      <h1 class="page-heading screen-reader-only">Checklist Map</h1>
+      <h1 class="page-heading screen-reader-only"><?php echo $LANG['CHECKLIST_MAP_TITLE']; ?></h1>
 		<div id="map_canvas"></div>
       <div 
         id="service-container" 

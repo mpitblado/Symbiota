@@ -19,6 +19,7 @@ $LANG['MBB_SOUTHERN'] = 'Southern Lat';
 $LANG['MBB_WESTERN'] = 'Western Long';
 
 //Following used in mappointaid.php
+$LANG['MAP_POINT_HELPER'] = 'Aide aux points de carte';
 $LANG['MPR_TITLE'] = 'Mappeur de coordonnées';
 $LANG['MPR_INSTRUCTIONS'] = 'Cliquez une fois pour capturer les coordonnées. Cliquez sur le bouton Soumettre pour transférer les coordonnées.';
 $LANG['MPR_UNCERTAINTY_INSTRUCTIONS'] = "Entrez l'incertitude pour créer un cercle de rayon d'erreur autour du marqueur.";
@@ -29,6 +30,7 @@ $LANG['SUBMIT'] = 'Soumettre';
 $LANG['UNCERTAINTY_METERS'] = 'Incertitude en Mètres';
 
 //Following used in mappolyaid.php
+$LANG['MAP_POLYGON_HELPER'] = 'Aide à la cartographie des polygones';
 $LANG['POLYGON_FORMATTING'] = 'Formatage des polygones';
 $LANG['REDRAW'] = 'Redessiner';
 $LANG['TRIM_DIGITS'] = 'Couper à 6 chiffres significatifs';
