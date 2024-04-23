@@ -11,7 +11,7 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
 <!DOCTYPE html>
 <html lang="<?php echo $LANG_TAG ?>">
 	<head>
-		<title><?php echo $DEFAULT_TITLE; ?> Home</title>
+		<title>ARS Biocollections Landing Page</title>
 		<?php
 		include_once($SERVER_ROOT . '/includes/head.php');
 		include_once($SERVER_ROOT . '/includes/googleanalytics.php');
