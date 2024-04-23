@@ -46,9 +46,6 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
 				<div class="content">
 					<div class="layout layout--100">
 						<div class="layout--bg layout layout--33-34-33">
-							<!-- <div class="layout__header">
-								<h2 id="section--staff-picks" class="layout__header__title">Collections</h2>
-							</div> -->
 							<div class="layout__container">
 								<div class="layout__region layout__region--content">
 									<section class="block block-title-block block-nal-page-title-block clearfix path-frontpage">
