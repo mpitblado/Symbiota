@@ -37,7 +37,7 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
 </script>
 <div id="header-wrapper" style="display:none;" class="footer-wrapper dialog-off-canvas-main-canvas" data-off-canvas-main-canvas>
   <header>
-    <div class="official-website-banner" role="banner">
+    <div class="official-website-banner">
       <div class="container">    
         <div class="official-website-banner__message">
           <div style="display: flex; justify-content: start;">
