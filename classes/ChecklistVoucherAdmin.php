@@ -1,5 +1,6 @@
 <?php
-include_once($SERVER_ROOT.'/classes/Manager.php');
+include_once('Manager.php');
+include_once('ImInventories.php');
 
 class ChecklistVoucherAdmin extends Manager {
 
@@ -24,13 +25,13 @@ class ChecklistVoucherAdmin extends Manager {
 			$this->clid = $clid;
 			$this->setMetaData();
 			//Get children checklists
-			$sqlBase = 'SELECT ch.clidchild, cl2.name '.
-				'FROM fmchecklists cl INNER JOIN fmchklstchildren ch ON cl.clid = ch.clid '.
-				'INNER JOIN fmchecklists cl2 ON ch.clidchild = cl2.clid '.
-				'WHERE (cl2.type != "excludespp") AND cl.clid IN(';
+			$sqlBase = 'SELECT ch.clidchild, cl2.name
+				FROM fmchecklists cl INNER JOIN fmchklstchildren ch ON cl.clid = ch.clid
+				INNER JOIN fmchecklists cl2 ON ch.clidchild = cl2.clid
+				WHERE (cl2.type != "excludespp") AND (ch.clid != ch.clidchild) AND cl.clid IN(';
 			$sql = $sqlBase.$this->clid.')';
 			do{
-				$childStr = "";
+				$childStr = '';
 				$rsChild = $this->conn->query($sql);
 				while($r = $rsChild->fetch_object()){
 					$this->childClidArr[] = $r->clidchild;
@@ -44,7 +45,7 @@ class ChecklistVoucherAdmin extends Manager {
 	private function setMetaData(){
 		if($this->clid){
 			$sql = 'SELECT clid, name, locality, publication, abstract, authors, parentclid, notes, latcentroid, longcentroid, pointradiusmeters, '.
-				'footprintwkt, access, defaultSettings, dynamicsql, datelastmodified, uid, type, initialtimestamp '.
+				'footprintwkt, access, defaultSettings, dynamicsql, datelastmodified, dynamicProperties, uid, type, initialtimestamp '.
 				'FROM fmchecklists WHERE (clid = '.$this->clid.')';
 		 	$rs = $this->conn->query($sql);
 			if($rs){
@@ -66,6 +67,7 @@ class ChecklistVoucherAdmin extends Manager {
 					$this->clMetadata["defaultSettings"] = $row->defaultSettings;
 					$this->clMetadata["dynamicsql"] = $row->dynamicsql;
 					$this->clMetadata["datelastmodified"] = $row->datelastmodified;
+					$this->clMetadata['dynamicProperties'] = $row->dynamicProperties;
 				}
 				$rs->free();
 			}
@@ -108,6 +110,17 @@ class ChecklistVoucherAdmin extends Manager {
 		return $retArr;
 	}
 
+	public function getAssociatedExternalService(){
+		$resp = false;
+ 		if($this->clMetadata['dynamicProperties']){
+			$dynpropArr = json_decode($this->clMetadata['dynamicProperties'], true);
+			if(array_key_exists('externalservice', $dynpropArr)) {
+				$resp = $dynpropArr['externalservice'];
+			}
+		}
+		return $resp;
+	}
+
 	//Dynamic query variable functions
 	public function setCollectionVariables(){
 		if($this->clid){
@@ -116,8 +129,8 @@ class ChecklistVoucherAdmin extends Manager {
 			if($row = $result->fetch_object()){
 				$this->clName = $this->cleanOutStr($row->name);
 				$this->footprintWkt = $row->footprintwkt;
-				$sqlFrag = $row->dynamicsql;
-				$varArr = json_decode($sqlFrag,true);
+				$sqlFrag = $row->dynamicsql ?? '';
+				$varArr = json_decode($sqlFrag, true);
 				if(json_last_error() != JSON_ERROR_NONE){
 					$varArr = $this->parseSqlFrag($sqlFrag);
 					$this->saveQueryVariables($varArr);
@@ -129,7 +142,7 @@ class ChecklistVoucherAdmin extends Manager {
 			}
 			$result->free();
 			//Get children checklists
-			$sqlChildBase = 'SELECT clidchild FROM fmchklstchildren WHERE clid IN(';
+			$sqlChildBase = 'SELECT clidchild FROM fmchklstchildren WHERE clid != clidchild AND clid IN(';
 			$sqlChild = $sqlChildBase.$this->clid.')';
 			do{
 				$childStr = "";
@@ -417,9 +430,9 @@ class ChecklistVoucherAdmin extends Manager {
 				$tidTarget = $this->getTidInterpreted($occid);
 				if($oldClTaxaID && $tidTarget){
 					//Make sure target name is already linked to checklist
-					$sql2 = 'INSERT IGNORE INTO fmchklsttaxalink(tid, clid, morphospecies, familyoverride, habitat, abundance, notes, explicitExclude, source, internalnotes, dynamicProperties) '.
-						'SELECT '.$tidTarget.' as tid, c.clid, c.morphospecies, c.familyoverride, c.habitat, c.abundance, c.notes, c.explicitExclude, c.source, c.internalnotes, c.dynamicProperties '.
-						'FROM fmchklsttaxalink WHERE (cltaxaid = ?)';
+					$sql2 = 'INSERT IGNORE INTO fmchklsttaxalink(tid, clid, morphospecies, familyoverride, habitat, abundance, notes, explicitExclude, source, internalnotes, dynamicProperties)
+						SELECT '.$tidTarget.' as tid, clid, morphospecies, familyoverride, habitat, abundance, notes, explicitExclude, source, internalnotes, dynamicProperties
+						FROM fmchklsttaxalink WHERE (cltaxaid = ?)';
 					if($stmt2 = $this->conn->prepare($sql2)) {
 						$stmt2->bind_param('i', $oldClTaxaID);
 						$stmt2->execute();
@@ -447,6 +460,40 @@ class ChecklistVoucherAdmin extends Manager {
 				}
 			}
 		}
+	}
+
+	//Checklist Coordinate functions
+	public function addExternalVouchers($tid, $dataAsJson){
+		// EG suggested storing external (e.g., iNaturalist) voucher records in the `fmchklstcoordinates` table as this table
+		//   was un- or under-used as of schema 3.0. The `notes` column serves as a flag for these vouchers. --CDT 2023-08-21
+		$status = false;
+		$inputData = json_decode($dataAsJson, true);
+		// for single vouchers, add ll, for multiple use zero :(.
+		// we could try averaging ll for multiples, but then the software would be introducing non-real data, which is bad.
+		// not that zero/zero is real data either... CDT 8/2023
+		$lat = (count($inputData) == 1 ? $inputData[0]['lat'] : 0);
+		$lng = (count($inputData) == 1 ? $inputData[0]['lng'] : 0);
+		$sourceIdentifier = $inputData[0]['id'];
+		$referenceUrl = null;
+		if($sourceIdentifier) $referenceUrl = 'https://www.inaturalist.org/observations/'.$sourceIdentifier;
+		if(is_numeric($tid) && $lat && $lng){
+			unset($inputData[0]['lat']);
+			unset($inputData[0]['lng']);
+			unset($inputData[0]['taxon']);
+			$inputArr = array('tid' => $tid, 'decimalLatitude' => $lat, 'decimalLongitude' => $lng, 'sourceName' => 'EXTERNAL_VOUCHER',
+				'sourceIdentifier' => $sourceIdentifier, 'referenceUrl' => $referenceUrl, 'dynamicProperties' => json_encode($inputData));
+			$inventoryManager = new ImInventories();
+			$inventoryManager->setClid($this->clid);
+			if($inventoryManager->insertChecklistCoordinates($inputArr)){
+				$status = true;
+			}
+			else{
+				$errStr = $inventoryManager->getErrorMessage();
+				if(strpos($errStr, 'Duplicate') !== false) $errStr = 'Voucher already linked!';
+				$this->errorMessage = $errStr;
+			}
+		}
+		return $status;
 	}
 
 	//Data mod functions
@@ -774,17 +821,14 @@ class ChecklistVoucherAdmin extends Manager {
 		$charSetOut = 'ISO-8859-1';
 		$retStr = $inStr;
 		if($inStr && $charSetSource){
-			if($charSetOut == 'UTF-8' && $charSetSource == 'ISO-8859-1'){
-				if(mb_detect_encoding($inStr,'UTF-8,ISO-8859-1',true) == 'ISO-8859-1'){
-					$retStr = utf8_encode($inStr);
-					//$retStr = iconv("ISO-8859-1//TRANSLIT","UTF-8",$inStr);
-				}
+			if($charSetOut == 'UTF-8'){
+				$retStr = mb_convert_encoding($inStr, 'UTF-8', mb_detect_encoding($inStr));
 			}
-			elseif($charSetOut == "ISO-8859-1" && $charSetSource == 'UTF-8'){
-				if(mb_detect_encoding($inStr,'UTF-8,ISO-8859-1') == 'UTF-8'){
-					$retStr = utf8_decode($inStr);
-					//$retStr = iconv("UTF-8","ISO-8859-1//TRANSLIT",$inStr);
-				}
+			elseif($charSetOut == 'ISO-8859-1'){
+				$retStr = mb_convert_encoding($inStr, 'ISO-8859-1', mb_detect_encoding($inStr));
+			}
+			else{
+				$retStr = mb_convert_encoding($inStr, $charSetOut, mb_detect_encoding($inStr));
 			}
 		}
 		return $retStr;

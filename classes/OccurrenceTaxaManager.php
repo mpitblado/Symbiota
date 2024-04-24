@@ -35,6 +35,7 @@ class OccurrenceTaxaManager {
 	protected $conn	= null;
 	protected $taxaArr = array();
 	protected $taxAuthId = 1;
+	private $exactMatchOnly = false;
 	private $taxaSearchTerms = array();
 
 	public function __construct($type='readonly'){
@@ -47,7 +48,8 @@ class OccurrenceTaxaManager {
 		}
 	}
 
-	public function setTaxonRequestVariable($inputArr = null){
+	public function setTaxonRequestVariable($inputArr = null, $exactMatchOnly = false){
+		if($exactMatchOnly) $this->exactMatchOnly = true;
 		//Set taxa search terms
 		if(isset($inputArr['taxa']) && $inputArr['taxa']){
 			$taxaStr = $this->cleanInputStr($inputArr['taxa']);
@@ -97,6 +99,7 @@ class OccurrenceTaxaManager {
 				$this->setSciNamesByVerns($searchTerm);
 				$sql = 'SELECT t.sciname, t.tid, t.rankid FROM taxa t ';
 				if(is_numeric($searchTerm)){
+					$searchTerm = filter_var($searchTerm, FILTER_SANITIZE_NUMBER_INT);
 					if($this->taxaArr['usethes']){
 						$sql .= 'INNER JOIN taxstatus ts ON t.tid = ts.tidaccepted WHERE (ts.taxauthid = '.$this->taxAuthId.') AND (ts.tid = '.$searchTerm.')';
 					}
@@ -114,26 +117,27 @@ class OccurrenceTaxaManager {
 						$sql .= 'WHERE t.sciname IN("'.$this->cleanInStr($searchTerm).'")';
 					}
 				}
-				$rs = $this->conn->query($sql);
-				if($rs->num_rows){
-					while($r = $rs->fetch_object()){
-						$this->taxaArr['taxa'][$r->sciname]['tid'][$r->tid] = $r->rankid;
-						if($r->rankid == 140){
-							$taxaType = TaxaSearchType::FAMILY_ONLY;
+				if($rs = $this->conn->query($sql)){
+					if($rs->num_rows){
+						while($r = $rs->fetch_object()){
+							$this->taxaArr['taxa'][$r->sciname]['tid'][$r->tid] = $r->rankid;
+							if($r->rankid == 140){
+								$taxaType = TaxaSearchType::FAMILY_ONLY;
+							}
+							elseif($r->rankid < 180){
+								$taxaType = TaxaSearchType::TAXONOMIC_GROUP;
+							}
+							else{
+								$taxaType = TaxaSearchType::SCIENTIFIC_NAME;
+							}
+							$this->taxaArr['taxa'][$r->sciname]['taxontype'] = $taxaType;
 						}
-						elseif($r->rankid < 180){
-							$taxaType = TaxaSearchType::TAXONOMIC_GROUP;
-						}
-						else{
-							$taxaType = TaxaSearchType::SCIENTIFIC_NAME;
-						}
-						$this->taxaArr['taxa'][$r->sciname]['taxontype'] = $taxaType;
 					}
+					else{
+						$this->taxaArr['taxa'][$searchTerm]['taxontype'] = $taxaType;
+					}
+					$rs->free();
 				}
-				else{
-					$this->taxaArr['taxa'][$searchTerm]['taxontype'] = $taxaType;
-				}
-				$rs->free();
 			}
 			if($this->taxaArr['usethes']){
 				$this->setSynonyms();
@@ -268,7 +272,10 @@ class OccurrenceTaxaManager {
 							//$sqlWhereTaxa .= "OR (o.tidinterpreted IN(".implode(',',$tidArr).")) ";
 							$tidInArr = array_merge($tidInArr, $tidArr);
 							//Return matches that are not linked to thesaurus
-							if($rankid > 179) $sqlWhereTaxa .= 'OR (o.sciname LIKE "'.$term.'%") ';
+							if($rankid > 179){
+								if($this->exactMatchOnly) $sqlWhereTaxa .= 'OR (o.sciname = "' . $term . '") ';
+								else $sqlWhereTaxa .= 'OR (o.sciname LIKE "' . $term . '%") ';
+							}
 						}
 						else{
 							//Protect against someone trying to download big pieces of the occurrence table through the user interface
@@ -276,16 +283,22 @@ class OccurrenceTaxaManager {
 							/*
 							if(strpos($term, ' ') || strpos($term, '%')){
 								//Return matches for "Pinus a"
-								$sqlWhereTaxa .= "OR (o.sciname LIKE '".$term."%') ";
+								$sqlWhereTaxa .= "OR (o.sciname LIKE '" . $term . "%') ";
 							}
 							else{
-								$sqlWhereTaxa .= "OR (o.sciname LIKE '".$term." %') ";
+								$sqlWhereTaxa .= "OR (o.sciname LIKE '" . $term . " %') ";
 							}
 							*/
-							$sqlWhereTaxa .= 'OR (o.sciname LIKE "'.$term.'%") ';
-							if(!strpos($term,' _ ')){
-								$term2 = preg_replace('/^([^\s]+\s{1})/', '$1 _ ', $term);
-								$sqlWhereTaxa .= 'OR (o.sciname LIKE "'.$term2.'%") ';
+							if($this->exactMatchOnly){
+								$sqlWhereTaxa .= 'OR (o.sciname = "' . $term . '") ';
+							}
+							else{
+								$sqlWhereTaxa .= 'OR (o.sciname LIKE "' . $term . '%") ';
+								if(!strpos($term,' _ ')){
+									//Accommodate for formats of hybrid designations within input and target data (e.g. x, multiplication sign, etc)
+									$term2 = preg_replace('/^([^\s]+\s{1})/', '$1 _ ', $term);
+									$sqlWhereTaxa .= 'OR (o.sciname LIKE "' . $term2 . '%") ';
+								}
 							}
 						}
 					}
@@ -295,7 +308,7 @@ class OccurrenceTaxaManager {
 							if($taxonType == TaxaSearchType::SCIENTIFIC_NAME || $taxonType == TaxaSearchType::COMMON_NAME){
 								foreach($synArr as $synTid => $sciName){
 									if(strpos($sciName,'aceae') || strpos($sciName,'idae')){
-										$sqlWhereTaxa .= 'OR (o.family = "'.$sciName.'") ';
+										$sqlWhereTaxa .= 'OR (o.family = "' . $sciName . '") ';
 									}
 								}
 							}
@@ -329,7 +342,7 @@ class OccurrenceTaxaManager {
 				$tidStr = implode(',', $tidArr);
 				$sql = 'SELECT DISTINCT t.sciname '.
 					'FROM taxa t INNER JOIN taxaenumtree e ON t.tid = e.tid '.
-					'WHERE (t.rankid = 140) AND (t.tid IN('.$tidStr.')) OR ((e.taxauthid = '.$this->taxAuthId.') AND (e.parenttid IN('.$tidStr.')))';
+					'WHERE (t.rankid = 140) AND (t.tid IN(' . $tidStr . ')) OR ((e.taxauthid = ' . $this->taxAuthId . ') AND (e.parenttid IN(' . $tidStr . ')))';
 				$rs = $this->conn->query($sql);
 				while($r = $rs->fetch_object()){
 					$famArr[] = $r->sciname;
@@ -370,15 +383,28 @@ class OccurrenceTaxaManager {
 		return '';
 	}
 
+	public function cleanOutArray($inputArray){
+		if(is_array($inputArray)){
+			foreach($inputArray as $key => $value){
+				if(is_array($value)){
+					$inputArray[$key] = $this->cleanOutArray($value);
+				}
+				else{
+					$inputArray[$key] = $this->cleanOutStr($value);
+				}
+			}
+		}
+		return $inputArray;
+	}
+
 	public function cleanOutStr($str){
 		if(!is_string($str) && !is_numeric($str) && !is_bool($str)) $str = '';
-		if(strpos($str, '=') !== false) $str = '';
-		return htmlspecialchars($str);
+		return htmlspecialchars($str, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);
 	}
 
 	protected function cleanInputStr($str){
+		if(!is_string($str) && !is_numeric($str) && !is_bool($str)) return '';
 		if(stripos($str, 'sleep(') !== false) return '';
-		if(strpos($str, '=') !== false) return '';
 		$str = preg_replace('/%%+/', '%',$str);
 		$str = preg_replace('/^[\s%]+/', '',$str);
 		$str = trim($str,' ,;');
