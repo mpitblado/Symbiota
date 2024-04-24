@@ -1,11 +1,11 @@
 <?php
 include_once('../../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceAttributes.php');
-header("Content-Type: text/html; charset=".$CHARSET);
+header('Content-Type: text/html; charset=' . $CHARSET);
 
-$occid = $_REQUEST['occid'];
-$collid = $_REQUEST['collid'];
-$action = array_key_exists('submitAction',$_REQUEST)?$_REQUEST['submitAction']:'';
+$occid = filter_var($_POST['occid'], FILTER_SANITIZE_NUMBER_INT);
+$collid = filter_var($_POST['collid'], FILTER_SANITIZE_NUMBER_INT);
+$action = array_key_exists('submitAction', $_POST) ? $_POST['submitAction'] : '';
 
 $status = 0;
 
@@ -18,10 +18,10 @@ if($SYMB_UID){
 		$isEditor = true;
 	}
 	elseif($collid){
-		if(array_key_exists("CollAdmin",$USER_RIGHTS) && in_array($collid,$USER_RIGHTS["CollAdmin"])){
+		if(array_key_exists('CollAdmin', $USER_RIGHTS) && in_array($collid, $USER_RIGHTS['CollAdmin'])){
 			$isEditor = true;
 		}
-		elseif(array_key_exists("CollEditor",$USER_RIGHTS) && in_array($collid,$USER_RIGHTS["CollEditor"])){
+		elseif(array_key_exists('CollEditor', $USER_RIGHTS) && in_array($collid, $USER_RIGHTS['CollEditor'])){
 			$isEditor = true;
 		}
 	}
@@ -29,10 +29,10 @@ if($SYMB_UID){
 
 if($isEditor){
 	$postArr = array('occid' => $occid, 'traitid' => $_REQUEST['traitID'], 'setstatus' => $_REQUEST['setStatus'], 'source' => $_REQUEST['source'], 'notes' => $_REQUEST['notes']);
-	$stateArr = json_decode($_REQUEST['stateData'],true);
+	$stateArr = json_decode($_REQUEST['stateData'], true);
 	$postArr = array_merge($postArr,$stateArr);
 	if($action == 'addTraitCoding'){
-		if($attrManager->addAttributes($postArr,$SYMB_UID)){
+		if($attrManager->addAttributes($postArr)){
 			$status = 1;
 		}
 	}

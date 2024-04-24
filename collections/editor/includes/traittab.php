@@ -3,11 +3,11 @@ include_once('../../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceAttributes.php');
 if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/editor/includes/traittab.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/traittab.'.$LANG_TAG.'.php');
 else include_once($SERVER_ROOT.'/content/lang/collections/editor/includes/traittab.en.php');
-header("Content-Type: text/html; charset=".$CHARSET);
+header('Content-Type: text/html; charset=' . $CHARSET);
 
-$occid = $_GET['occid'];
-$occIndex = $_GET['occindex'];
-$collid = isset($_GET['collid'])?$_GET['collid']:'';
+$occid = filter_var($_GET['occid'], FILTER_SANITIZE_NUMBER_INT);
+$occIndex = filter_var($_GET['occindex'], FILTER_SANITIZE_NUMBER_INT);
+$collid = isset($_GET['collid']) ? filter_var($_GET['collid'], FILTER_SANITIZE_NUMBER_INT) : '';
 
 $attrManager = new OccurrenceAttributes();
 $attrManager->setOccid($occid);
@@ -45,7 +45,7 @@ if($isEditor){
 		var stateJson = {};
 
 		$("form[name='"+f.name+"'] input[name^='traitid']").each(function(index,data) {
-			if($(this).prop('checked')){
+			if($(this).prop('checked') || $(this).prop('type') == "text"){
 				if($(this).attr('name') in stateJson){
 					stateJson[$(this).attr('name')].push($(this).val());
 				}
@@ -65,7 +65,7 @@ if($isEditor){
 		var traitIdStr = f.traitid.value;
 		$("#msgDiv-"+traitIdStr).text("<?php echo $LANG['APP_ACTION']; ?>...");
 		$("#msgDiv-"+traitIdStr).css('color', 'orange');
-		//alert("collid"+f.collid.value+"&occid="+f.occid.value+"&traitID="+traitIdStr+"&submitAction="+action+"&source="+f.source.value+"&notes="+f.notes.value+"&setStatus="+f.setstatus.value+"&stateData="+JSON.stringify(stateJson));
+		alert("collid"+f.collid.value+"&occid="+f.occid.value+"&traitID="+traitIdStr+"&submitAction="+action+"&source="+f.source.value+"&notes="+f.notes.value+"&setStatus="+f.setstatus.value+"&stateData="+JSON.stringify(stateJson));
 		$.ajax({
 			type: "POST",
 			url: "rpc/editorTraitHandler.php",
@@ -115,7 +115,7 @@ if($isEditor){
 					if(isset($stArr['source']) && $stArr['source']) $source = $stArr['source'];
 				}
 				?>
-				<fieldset style="margin-top:20px">
+				<fieldset style="clear:both;margin-top:20px">
 					<legend><b><?php echo $LANG['TRAIT'].': '.$traitData['name']; ?></b></legend>
 					<div style="float:right">
 						<div style="margin:0px 3px;float:right" title="<?php echo $LANG['HARD_REFRESH'];?>">
