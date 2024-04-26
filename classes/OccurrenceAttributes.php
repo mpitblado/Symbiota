@@ -1,6 +1,6 @@
 <?php
 include_once('Manager.php');
-include_once('TmTraits');
+include_once('TmTraits.php');
 
 class OccurrenceAttributes extends Manager {
 
@@ -71,7 +71,7 @@ class OccurrenceAttributes extends Manager {
 		foreach($postArr as $postKey => $postValue){
 			if(substr($postKey,0,8) == 'traitid-'){
 				if(is_array($postValue)){
-					$stateArr = array_merge($stateArr,$postValue);
+					$stateArr = array_merge($stateArr, $postValue);
 				}
 				else{
 					$stateArr[] = $postValue;
@@ -95,8 +95,8 @@ class OccurrenceAttributes extends Manager {
 			$this->setTraitArr($traitID);
 			//$this->setTraitStates();
 			$attrArr = $this->setCodedAttribute();
-			$addArr = array_diff_key($stateCleanArr,$attrArr);
-			$delArr = array_diff_key($attrArr,$stateCleanArr);
+			$addArr = array_diff_key($stateCleanArr, $attrArr);
+			$delArr = array_diff_key($attrArr, $stateCleanArr);
 			if($addArr){
 				foreach($addArr as $stateIdAdd => $addValue){
 					if(is_numeric($stateIdAdd)){

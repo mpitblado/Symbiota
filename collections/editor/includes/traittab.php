@@ -65,7 +65,7 @@ if($isEditor){
 		var traitIdStr = f.traitid.value;
 		$("#msgDiv-"+traitIdStr).text("<?php echo $LANG['APP_ACTION']; ?>...");
 		$("#msgDiv-"+traitIdStr).css('color', 'orange');
-		alert("collid"+f.collid.value+"&occid="+f.occid.value+"&traitID="+traitIdStr+"&submitAction="+action+"&source="+f.source.value+"&notes="+f.notes.value+"&setStatus="+f.setstatus.value+"&stateData="+JSON.stringify(stateJson));
+		console.log("collid="+f.collid.value+"&occid="+f.occid.value+"&traitID="+traitIdStr+"&submitAction="+action+"&source="+f.source.value+"&notes="+f.notes.value+"&setStatus="+f.setstatus.value+"&stateData="+JSON.stringify(stateJson));
 		$.ajax({
 			type: "POST",
 			url: "rpc/editorTraitHandler.php",

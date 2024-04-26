@@ -3,9 +3,9 @@ include_once('../../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceAttributes.php');
 header('Content-Type: text/html; charset=' . $CHARSET);
 
-$occid = filter_var($_POST['occid'], FILTER_SANITIZE_NUMBER_INT);
-$collid = filter_var($_POST['collid'], FILTER_SANITIZE_NUMBER_INT);
-$action = array_key_exists('submitAction', $_POST) ? $_POST['submitAction'] : '';
+$occid = filter_var($_REQUEST['occid'] ?? '', FILTER_SANITIZE_NUMBER_INT);
+$collid = filter_var($_REQUEST['collid'] ?? '', FILTER_SANITIZE_NUMBER_INT);
+$action = array_key_exists('submitAction', $_REQUEST) ? $_REQUEST['submitAction'] : '';
 
 $status = 0;
 
@@ -26,11 +26,10 @@ if($SYMB_UID){
 		}
 	}
 }
-
-if($isEditor){
+if($occid && $isEditor){
 	$postArr = array('occid' => $occid, 'traitid' => $_REQUEST['traitID'], 'setstatus' => $_REQUEST['setStatus'], 'source' => $_REQUEST['source'], 'notes' => $_REQUEST['notes']);
 	$stateArr = json_decode($_REQUEST['stateData'], true);
-	$postArr = array_merge($postArr,$stateArr);
+	$postArr = array_merge($postArr, $stateArr);
 	if($action == 'addTraitCoding'){
 		if($attrManager->addAttributes($postArr)){
 			$status = 1;
