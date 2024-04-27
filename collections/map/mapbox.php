@@ -1,6 +1,8 @@
 <?php
 include_once('../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceMapManager.php');
+if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/map/simplemap.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT.'/content/lang/collections/map/simplemap.' . $LANG_TAG . '.php');
+else include_once($SERVER_ROOT . '/content/lang/collections/map/simplemap.en.php');
 header("Content-Type: text/html; charset=".$CHARSET);
 
 $clid = array_key_exists('clid',$_REQUEST)?$_REQUEST['clid']:0;
@@ -121,7 +123,7 @@ if(array_key_exists('taxa', $taxaArr)){
 	</script>
 </head>
 <body style="background-color:#ffffff;width:100%">
-	<h1 class="page-heading">Taxon Map</h1>
+	<h1 class="page-heading"><?php echo $LANG['TAXON_MAP']; ?></h1>
 	<?php
 	if(!$coordArr){
 		?>

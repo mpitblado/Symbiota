@@ -1,7 +1,8 @@
 <?php
 include_once('../../config/symbini.php');
 if($LANG_TAG == 'en' || !file_exists($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/header.en.php');
-include_once($SERVER_ROOT.'/content/lang/collections/map/index.'.$LANG_TAG.'.php');
+if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/map/index.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT.'/content/lang/collections/map/index.' . $LANG_TAG . '.php');
+else include_once($SERVER_ROOT . '/content/lang/collections/map/index.en.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceMapManager.php');
 
 header('Content-Type: text/html; charset='.$CHARSET);
@@ -1736,7 +1737,7 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 		<script src="../../js/symb/api.taxonomy.taxasuggest.js?ver=4" type="text/javascript"></script>
 	</head>
 	<body style='width:100%;max-width:100%;min-width:500px;' <?php echo (!$activateGeolocation?'onload="initialize();"':''); ?>>
-	  	<h1 class="page-heading screen-reader-only">Map Interface</h1>
+	  	<h1 class="page-heading screen-reader-only"><?php echo $LANG['MAP_INTERFACE']; ?></h1>
 		<div
 			id="service-container"
 			data-search-var="<?=htmlspecialchars($searchVar)?>"
