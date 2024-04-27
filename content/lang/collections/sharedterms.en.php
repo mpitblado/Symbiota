@@ -26,4 +26,5 @@ $LANG['COPY_TO_CLIPBOARD'] = 'Copy URL to Clipboard';
 
 $LANG['BUTTON_RESET'] = 'Reset Form';
 $LANG['SEARCH'] = 'Search';
+$LANG['COLLECTION_LIST'] = 'Collections List';
 ?>
