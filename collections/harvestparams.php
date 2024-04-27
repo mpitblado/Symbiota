@@ -72,7 +72,7 @@ $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT = $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT ??
 	}
 	?>
 	<div id="innertext">
-		<h1 class="page-heading"><?php echo $LANG['SEARCH']; ?></h1>
+		<h1 class=" $LANG['SEARCH']; ?></h1>
 		<form name="harvestparams" id="harvestparams" action="list.php" method="post" onsubmit="return checkHarvestParamsForm(this)">
 			<hr/>
 			<div>

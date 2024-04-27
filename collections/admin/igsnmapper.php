@@ -181,7 +181,7 @@ include($SERVER_ROOT.'/includes/header.php');
 </div>
 <!-- This is inner text! -->
 <div id="innertext">
-	<h1 class="page-heading"><?= $LANG['IGSN_GUID_MAPPER']; ?></h1>
+	<h1 class=""><?= $LANG['IGSN_GUID_MAPPER']; ?></h1>
 	<?php
 	if($isEditor && $collid){
 		echo '<h3>'.$guidManager->getCollectionName().'</h3>';
