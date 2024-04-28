@@ -403,7 +403,8 @@ if($collMetadata['colltype'] == 'General Observations') $isGenObs = 1;
 					?>
 				</section>
 				<?php
-
+// TODO: Identification Editor features need to be reviewed and refactored
+/*
 			//Identification Editors
 			$taxonEditorArr = $permManager->getTaxonEditorArr($collId,1);
 			$taxonSelectArr = $permManager->getTaxonEditorArr($collId,0);
@@ -515,6 +516,7 @@ if($collMetadata['colltype'] == 'General Observations') $isGenObs = 1;
 				</form>
 				<?php
 			}
+*/
 		}
 		else{
 			echo '<div style="font-weight:bold;font-size:120%;">';
