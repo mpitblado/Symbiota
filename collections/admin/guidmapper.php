@@ -77,7 +77,7 @@ include($SERVER_ROOT.'/includes/header.php');
 <!-- This is inner text! -->
 <div id="innertext">
 	<div style="margin:10px;">
-		<h1 class=""><?php echo $LANG['GUID_CP']; ?></h1>
+		<h1 class="page-heading"><?php echo $LANG['GUID_CP']; ?></h1>
 	</div>
 	<?php
 	if($isEditor){

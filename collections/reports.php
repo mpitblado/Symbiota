@@ -17,7 +17,7 @@ $rm = new ReportsManager();
     </style>
 </head>
 <body>
-    <h1 class=" $LANG['REPORTS']; ?></h1>
+    <h1 class="page-heading"><?php echo $LANG['REPORTS']; ?></h1>
 <h3>New identifications to the species level (by determiner)</h3>
 <table>
     <thead><tr><th>Full Name</th><th>Number of Determinations</th></tr></thead>

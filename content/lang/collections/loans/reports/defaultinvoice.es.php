@@ -4,5 +4,5 @@
 Language: Spanish 
 ------------------
 */
-$LANG['FACTURA'] = 'Factura';
+$LANG['INVOICE'] = 'Factura';
 ?>

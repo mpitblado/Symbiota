@@ -134,7 +134,7 @@ include($SERVER_ROOT.'/includes/header.php');
 	<b><?php echo $LANG['IGSN_MANAGE'] ?></b>
 </div>
 <div id="innertext">
-	<h1 class=""><?= $LANG['IGSN_MANAGE']; ?></h1>
+	<h1 class="page-heading"><?= $LANG['IGSN_MANAGE']; ?></h1>
 	<?php
 	if($isEditor && $collid){
 		echo '<h3>' . $LANG['IGSN_MANAGE'] . ': '.$guidManager->getCollectionName().'</h3>';

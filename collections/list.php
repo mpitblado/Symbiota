@@ -143,7 +143,7 @@ $_SESSION['citationvar'] = $searchVar;
 	?>
 	<!-- This is inner text! -->
 	<div id="innertext">
-		<h1 class=" $LANG['SEARCH_RESULTS_LIST']; ?></h1>
+		<h1 class="page-heading"><?php echo $LANG['SEARCH_RESULTS_LIST']; ?></h1>
 		<div id="tabs" style="width:95%;">
 			<ul>
 				<li>

@@ -74,7 +74,7 @@ $otherCatArr = $collManager->getOccurVoucherProjects();
 	?>
 	<!-- This is inner text! -->
 	<div id="innertext" class="inntertext-tab pin-things-here">
-		<h1 class=" screen-reader-only"><?php echo $LANG['COLLECTION_LIST']; ?></h1>
+		<h1 class="page-heading screen-reader-only"><?php echo $LANG['COLLECTION_LIST']; ?></h1>
         <div id="tabs">
 			<ul>
 				<?php
