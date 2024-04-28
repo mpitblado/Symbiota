@@ -4,5 +4,6 @@
 Language: Español (Spanish)
 ------------------
 */
-$LANG['FORBIDDEN'] = 'Prohibido';
+$LANG['ACTION_REQUEST'] = 'Solicitudes de Acción';
+
 ?>

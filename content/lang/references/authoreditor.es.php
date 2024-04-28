@@ -4,5 +4,5 @@
 Language: Español (Spanish)
 ------------------
 */
-$LANG['FORBIDDEN'] = 'Prohibido';
+$LANG['AUTHOR_MANAGEMENT'] = 'Gestión de Autores';
 ?>

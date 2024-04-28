@@ -4,5 +4,5 @@
 Language: Español (Spanish)
 ------------------
 */
-$LANG['FORBIDDEN'] = 'Prohibido';
+$LANG['OPEN_ID_CONNECT_CLIENT'] = 'Cliente OpenID Connect';
 ?>

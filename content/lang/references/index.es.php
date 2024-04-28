@@ -4,5 +4,5 @@
 Language: Español (Spanish)
 ------------------
 */
-$LANG['FORBIDDEN'] = 'Prohibido';
+$LANG['REFERENCE_MANAGEMENT'] = 'Gestión de Referencias';
 ?>

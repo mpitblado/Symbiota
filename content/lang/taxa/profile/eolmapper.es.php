@@ -4,5 +4,5 @@
 Language: Español (Spanish)
 ------------------
 */
-$LANG['FORBIDDEN'] = 'Prohibido';
+$LANG['ENCYCLOPEDIA_OF_LIFE_LINKAGE'] = 'Enciclopedia de Life Linkage Manager';
 ?>

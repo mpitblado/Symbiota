@@ -4,5 +4,6 @@
 Language: Español (Spanish)
 ------------------
 */
-$LANG['FORBIDDEN'] = 'Prohibido';
+$LANG['TAXON_LOADER'] = 'Cargador de Taxones';
+
 ?>
