@@ -6,6 +6,7 @@ Language: English
 */
 
 //Following used in mapcoordaid.php
+$LANG['TAXON_MAP'] = 'Taxon Map';
 $LANG['SAVE_N_CLOSE'] = 'Save and Close';
 $LANG['COORD_AID_HELP_TEXT'] = 'Click map to start drawing or select from the shape controls to draw bounds of that shape';
 $LANG['MBB_TITLE'] = 'Coordinate Mapper';
@@ -16,6 +17,7 @@ $LANG['MBB_SOUTHERN'] = 'Southern Lat';
 $LANG['MBB_WESTERN'] = 'Western Long';
 
 //Following used in mappointaid.php
+$LANG['POINT_RADIUS_AID'] = 'Point-Radius Aid';
 $LANG['MAP_POINT_HELPER'] = 'Map Point Helper';
 $LANG['MPR_TITLE'] = 'Coordinate Mapper';
 $LANG['MPR_INSTRUCTIONS'] = 'Click once to capture coordinates. Click on the Submit button to transfer Coordinates.';
@@ -26,6 +28,7 @@ $LANG['SUBMIT'] = 'Submit';
 $LANG['UNCERTAINTY_METERS'] = 'Uncertainty in Meters';
 
 //Following used in mappolyaid.php
+$LANG['COOR_POLYGON_AID'] = 'Coordinate Polygon Aid';
 $LANG['MAP_POLYGON_HELPER'] = 'Map Polygon Helper';
 $LANG['POLYGON_FORMATTING'] = 'Polygon Formatting';
 $LANG['REDRAW'] = 'Redraw';

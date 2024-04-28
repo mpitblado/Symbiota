@@ -1,6 +1,9 @@
 <?php
 include_once('../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceSupport.php');
+if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/misc/occurrencesssearch.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/collections/misc/occurrencesssearch.'.$LANG_TAG.'.php');
+else include_once($SERVER_ROOT.'/content/lang/collections/misc/occurrencesssearch.en.php');
+
 header('Content-Type: text/html; charset='.$CHARSET);
 
 $targetId = filter_var($_REQUEST['targetid'], FILTER_SANITIZE_NUMBER_INT);
@@ -98,7 +101,7 @@ $occManager = new OccurrenceSupport();
 </head>
 <body>
 	<div id="innertext">
-		<h1 class="page-heading">Search Occurrences</h1>
+		<h1 class="page-heading"><?php echo $LANG['SEARCH_OCCUR']; ?></h1>
 		<?php
 		if($collEditorArr){
 			$collArr = $occManager->getCollectionArr($IS_ADMIN?null:$collEditorArr);

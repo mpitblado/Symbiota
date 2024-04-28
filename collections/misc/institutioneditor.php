@@ -1,6 +1,8 @@
 <?php
 include_once('../../config/symbini.php');
 include_once($SERVER_ROOT . '/classes/InstitutionManager.php');
+if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/misc/institutioneditor.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/collections/misc/institutioneditor.'.$LANG_TAG.'.php');
+else include_once($SERVER_ROOT.'/content/lang/collections/misc/institutioneditor.en.php');
 
 if(!$SYMB_UID) header('Location: ../../profile/index.php?refurl=../collections/admin/institutioneditor.php?' . htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
 
@@ -171,11 +173,11 @@ include($SERVER_ROOT.'/includes/header.php');
 		echo '<a href="institutioneditor.php">Full Address List</a> &gt;&gt;';
 	}
 	?>
-	<b>Institution Editor</b>
+	<b><?php echo $LANG['INSTITUTION_EDITOR']; ?></b>
 </div>
 <!-- This is inner text! -->
 <div id="innertext">
-	<h1 class="page-heading">Institution Editor</h1>
+	<h1 class="page-heading"><?php echo $LANG['INSTITUTION_EDITOR']; ?></h1>
 	<div id="dialog" title="" style="display: none;">
 		<div id="dialogmsg"></div>
 		<select id="getresult">
