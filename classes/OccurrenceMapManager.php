@@ -215,15 +215,14 @@ class OccurrenceMapManager extends OccurrenceManager {
 			$sqlWhere .= ($sqlWhere?'AND ':'WHERE ').'(o.DecimalLatitude IS NOT NULL AND o.DecimalLongitude IS NOT NULL) ';
 			if(array_key_exists('clid',$this->searchTermArr) && $this->searchTermArr['clid']){
 				if(isset($this->searchTermArr['cltype']) && $this->searchTermArr['cltype'] == 'all'){
-					$sqlWhere .= "AND (ST_Within(p.point,GeomFromText('".$this->getClFootprintWkt()." '))) ";
+					$sqlWhere .= "AND (ST_Within(p.lngLatPoint,GeomFromText('". $this->getClFootprintWkt()." '))) ";
 				}
 				else{
 					//$sqlWhere .= "AND (v.clid IN(".$this->searchTermArr['clid'].")) ";
 				}
 			}
 			elseif(array_key_exists("polycoords",$this->searchTermArr)){
-				//$sqlWhere .= "AND (ST_Within(p.point,GeomFromText('".$this->searchTermArr["polycoords"]." '))) ";
-				$sqlWhere .= "AND (ST_Within(p.point,ST_GeomFromGeoJSON('" . $this->searchTermArr["polycoords"] . "'))) ";
+				$sqlWhere .= "AND (ST_Within(p.lngLatPoint,ST_GeomFromGeoJSON('" . $this->searchTermArr["polycoords"] . "'))) ";
 			}
 			//Check and exclude records with sensitive species protections
 			if(array_key_exists('SuperAdmin',$USER_RIGHTS) || array_key_exists('CollAdmin',$USER_RIGHTS) || array_key_exists('RareSppAdmin',$USER_RIGHTS) || array_key_exists('RareSppReadAll',$USER_RIGHTS)){
@@ -239,91 +238,10 @@ class OccurrenceMapManager extends OccurrenceManager {
 				$sqlWhere .= ' AND (o.LocalitySecurity = 0 OR o.LocalitySecurity IS NULL) ';
 			}
 			$this->sqlWhere = $sqlWhere;
-			//echo '<div style="margin-left:10px">sql: '.$this->sqlWhere.'</div>'; exit;
 		}
 	}
 
 	//Shape functions
-	public function createShape(){
-		$queryShape = '';
-		$properties = 'strokeWeight: 0,';
-		$properties .= 'fillOpacity: 0.45,';
-		$properties .= 'editable: true,';
-		//$properties .= 'draggable: true,';
-		$properties .= 'map: map});';
-
-		if($this->getSearchTerm('upperlat')){
-			$queryShape = 'var queryRectangle = new google.maps.Rectangle({';
-			$queryShape .= 'bounds: new google.maps.LatLngBounds(';
-			$queryShape .= 'new google.maps.LatLng('.$this->getSearchTerm('bottomlat').', '.$this->getSearchTerm('leftlong').'),';
-			$queryShape .= 'new google.maps.LatLng('.$this->getSearchTerm('upperlat').', '.$this->getSearchTerm('rightlong').')),';
-			$queryShape .= $properties;
-			$queryShape .= "queryRectangle.type = 'rectangle';";
-			$queryShape .= "google.maps.event.addListener(queryRectangle, 'click', function() {";
-			$queryShape .= 'setSelection(queryRectangle);});';
-			$queryShape .= "google.maps.event.addListener(queryRectangle, 'dragend', function() {";
-			$queryShape .= 'setSelection(queryRectangle);});';
-			$queryShape .= "google.maps.event.addListener(queryRectangle, 'bounds_changed', function() {";
-			$queryShape .= 'setSelection(queryRectangle);});';
-			$queryShape .= 'setSelection(queryRectangle);';
-			$queryShape .= 'var queryShapeBounds = new google.maps.LatLngBounds();';
-			$queryShape .= 'queryShapeBounds.extend(new google.maps.LatLng('.$this->getSearchTerm('bottomlat').', '.$this->getSearchTerm('leftlong').'));';
-			$queryShape .= 'queryShapeBounds.extend(new google.maps.LatLng('.$this->getSearchTerm('upperlat').', '.$this->getSearchTerm('rightlong').'));';
-			$queryShape .= 'map.fitBounds(queryShapeBounds);';
-			$queryShape .= 'map.panToBounds(queryShapeBounds);';
-		}
-		if($this->getSearchTerm('pointlat')){
-			$radius = (($this->getSearchTerm('radius')/0.6214)*1000);
-			$queryShape = 'var queryCircle = new google.maps.Circle({';
-			$queryShape .= 'center: new google.maps.LatLng('.$this->getSearchTerm('pointlat').', '.$this->getSearchTerm('pointlong').'),';
-			$queryShape .= 'radius: '.$radius.',';
-			$queryShape .= $properties;
-			$queryShape .= "queryCircle.type = 'circle';";
-			$queryShape .= "google.maps.event.addListener(queryCircle, 'click', function() {";
-			$queryShape .= 'setSelection(queryCircle);});';
-			$queryShape .= "google.maps.event.addListener(queryCircle, 'dragend', function() {";
-			$queryShape .= 'setSelection(queryCircle);});';
-			$queryShape .= "google.maps.event.addListener(queryCircle, 'radius_changed', function() {";
-			$queryShape .= 'setSelection(queryCircle);});';
-			$queryShape .= "google.maps.event.addListener(queryCircle, 'center_changed', function() {";
-			$queryShape .= 'setSelection(queryCircle);});';
-			$queryShape .= 'setSelection(queryCircle);';
-			$queryShape .= 'var queryShapeBounds = queryCircle.getBounds();';
-			$queryShape .= 'map.fitBounds(queryShapeBounds);';
-			$queryShape .= 'map.panToBounds(queryShapeBounds);';
-		}
-		if($this->getSearchTerm('polycoords')){
-			$wkt = $this->getSearchTerm('polycoords');
-			if(substr($wkt,0,7) == 'POLYGON') $wkt = substr($wkt,7);
-			else if(substr($wkt,0,12) == 'MULTIPOLYGON') $wkt = substr($wkt,12);
-			$coordArr = explode('),(', $wkt);
-			$shapeBounds = 'var queryShapeBounds = new google.maps.LatLngBounds();'."\n";
-			foreach($coordArr as $k => $polyFrag){
-				if($pointArr = explode(',', trim($polyFrag,' (),'))){
-					$queryShape .= 'var queryPolygon'.$k.' = new google.maps.Polygon({';
-					$points = '';
-					foreach($pointArr as $ptStr){
-						$ptArr = explode(' ',$ptStr);
-						$points .= ',new google.maps.LatLng('.$ptArr[0].', '.$ptArr[1].')';
-						$shapeBounds .= 'queryShapeBounds.extend(new google.maps.LatLng('.$ptArr[0].', '.$ptArr[1].'));'."\n";
-					}
-					$queryShape .= 'paths: ['.substr($points,1).'],';
-					$queryShape .= $properties;
-					$queryShape .= 'queryPolygon'.$k.'.type = "polygon";';
-					$queryShape .= 'google.maps.event.addListener(queryPolygon'.$k.', "click", function() { setSelection(queryPolygon'.$k.');});';
-					$queryShape .= 'google.maps.event.addListener(queryPolygon'.$k.', "dragend", function() { setSelection(queryPolygon'.$k.');});';
-					$queryShape .= 'google.maps.event.addListener(queryPolygon'.$k.'.getPath(), "insert_at", function() { setSelection(queryPolygon'.$k.');});';
-					$queryShape .= 'google.maps.event.addListener(queryPolygon'.$k.'.getPath(), "remove_at", function() { setSelection(queryPolygon'.$k.');});';
-					$queryShape .= 'google.maps.event.addListener(queryPolygon'.$k.'.getPath(), "set_at", function() { setSelection(queryPolygon'.$k.');});';
-					$queryShape .= 'setSelection(queryPolygon'.$k.');';
-				}
-			}
-			$queryShape .= $shapeBounds;
-			$queryShape .= 'map.fitBounds(queryShapeBounds);';
-			$queryShape .= 'map.panToBounds(queryShapeBounds);'."\n";
-		}
-		return $queryShape;
-	}
 
 	public function writeKMLFile($recLimit, $extraFieldArr = null){
 		//Output data
