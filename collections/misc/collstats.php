@@ -557,11 +557,12 @@ if($action != "Update Statistics"){
 											<section class="gridlike-form-row">
 												<?php
 												foreach($collArr as $collid => $cArr){
+													// var_dump($cArr);
 													?>
 													<div class="gridlike-form-row bottom-breathing-room-rel">
 														<div>
-															<input id="current-collid" name="current-collid" value="<?php echo $collid; ?>" type="checkbox" onclick="uncheckAll();" <?php echo ($collIdArr&&in_array($collid,$collIdArr)?'checked':''); ?> />
-															<label for="current-collid">Collection ID TODO</label>
+															<input id="current-collid-<?= $collid; ?>" name="current-collid" value="<?php echo $collid; ?>" type="checkbox" onclick="uncheckAll();" <?php echo ($collIdArr&&in_array($collid,$collIdArr)?'checked':''); ?> />
+															<label for="current-collid-<?= $collid; ?>">Collection <?= $cArr['instcode']; ?></label>
 														</div>
 														<div>
 															<a href='collprofiles.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>'>
@@ -579,6 +580,7 @@ if($action != "Update Statistics"){
 													$collCnt++;
 												}
 												?>
+											</section>
 											<div>
 												<div>
 													<button type="submit" name="submitaction" value="Run Statistics"><?php echo $LANG['VIEW_STATS']; ?></button>
