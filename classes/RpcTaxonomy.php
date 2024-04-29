@@ -26,10 +26,10 @@ class RpcTaxonomy extends RpcBase{
 			foreach($termArr as $k => $v){
 				if(mb_strlen($v) == 1) unset($termArr[$k]);
 			}
-			$sql = 'SELECT DISTINCT t.tid, CONCAT(t.sciname, " ", t.tradeName) as sciname, t.author FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid WHERE ts.taxauthid = '.$this->taxAuthID.' AND (t.sciname LIKE "'.$term.'%" ';
+			$sql = 'SELECT DISTINCT t.tid, t.sciname, t.author FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid WHERE ts.taxauthid = '.$this->taxAuthID.' AND (t.sciname LIKE "'.$term.'%" ';
 			$sqlFrag = '';
-			if($unit1 = array_shift($termArr)) $sqlFrag =  't.unitname1 LIKE "'.$unit1.'%" ';
-			if($unit2 = array_shift($termArr)) $sqlFrag .=  'AND t.unitname2 LIKE "'.$unit2.'%" ';
+			if($unit1 = array_shift($termArr)) $sqlFrag =  't.unitname1 LIKE "' . $unit1 . '%" ';
+			if($unit2 = array_shift($termArr)) $sqlFrag .=  'AND t.unitname2 LIKE "' . $unit2 . '%" ';
 			if($sqlFrag) $sql .= 'OR ('.$sqlFrag.')';
 			$sql .= ') ';
 			if($rankLimit) $sql .= 'AND (t.rankid = '.$rankLimit.') ';
@@ -37,10 +37,9 @@ class RpcTaxonomy extends RpcBase{
 				if($rankLow) $sql .= 'AND (t.rankid > '.$rankLow.' OR t.rankid IS NULL) ';
 				if($rankHigh) $sql .= 'AND (t.rankid < '.$rankHigh.' OR t.rankid IS NULL) ';
 			}
-			$sql .= 'ORDER BY sciname';
+			$sql .= 'ORDER BY t.sciname';
 			$rs = $this->conn->query($sql);
-			var_dump($rs);
-			//LEFT OFF HERE
+			var_dump($rs); // deleteMe
 			while($r = $rs->fetch_object()) {
 				$sciname = $r->sciname.' '.$r->author;
 				$retArr[] = array('id' => $r->tid,'label' => $sciname);
