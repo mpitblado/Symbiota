@@ -1,13 +1,21 @@
 collections/specprocessor/standalone_scripts/custom_voucher_linker.php:		if($this->footprintWKT) $sql .= ',ST_Within(p.point,GeomFromText("'.$this->footprintWKT.'")) as inzone ';
+
 classes/ChecklistVoucherReport.php:		if(strpos($sqlFrag,'p.point')){
+
 classes/OccurrenceDownload.php:		if(strpos($sqlWhere,'p.point')) $sqlJoin .= 'INNER JOIN omoccurpoints p ON o.occid = p.occid ';
+
 classes/OccurrenceMapManager.php:					$sqlWhere .= "AND (ST_Within(p.point,GeomFromText('".$this->getClFootprintWkt()." '))) ";
 classes/OccurrenceMapManager.php:				$sqlWhere .= "AND (ST_Within(p.point,ST_GeomFromGeoJSON('" . $this->searchTermArr["polycoords"] . "'))) ";
+
 classes/DwcArchiverImage.php:			if(strpos($conditionSql,'p.point')){
+
 classes/ChecklistManager.php:					$sql .= 'INNER JOIN omoccurpoints p ON o.occid = p.occid WHERE (ST_Within(p.point,GeomFromText("'.$this->clMetadata['footprintwkt'].'"))) ';
+
 classes/OccurrenceManager.php:				$sqlWhere .= 'AND (ST_Within(p.point,GeomFromText("POLYGON(('.$uLat.' '.$rLng.','.$bLat.' '.$rLng.','.$bLat.' '.$lLng.','.$uLat.' '.$lLng.','.$uLat.' '.$rLng.'))"))) ';
 classes/OccurrenceManager.php:			$sqlWhere .= 'AND (ST_Within(p.point,GeomFromText("'.$this->searchTermArr['footprintwkt'].'"))) ';
 classes/OccurrenceManager.php:			if(array_key_exists('polycoords',$this->searchTermArr) || strpos($sqlWhere,'p.point')){
+
 classes/DwcArchiverCore.php:			if (stripos($this->conditionSql, 'p.point')) {
+
 classes/ChecklistVoucherAdmin.php:					$sql .= 'INNER JOIN omoccurpoints p ON o.occid = p.occid WHERE (ST_Within(p.point,GeomFromText("'.$this->clMetadata['footprintwkt'].'"))) ';
 classes/ChecklistVoucherAdmin.php:			$sqlFrag .= 'AND (ST_Within(p.point,GeomFromText("'.$this->footprintWkt.'"))) ';
