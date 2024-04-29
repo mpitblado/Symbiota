@@ -9,6 +9,7 @@ class ChecklistVoucherAdmin extends Manager {
 	protected $clMetadata;
 	private $childClidArr = array();
 	private $footprintWkt;
+	private $footprintGeoJson;
 	private $queryVariablesArr = array();
 
 	function __construct($con=null) {
@@ -45,7 +46,7 @@ class ChecklistVoucherAdmin extends Manager {
 	private function setMetaData(){
 		if($this->clid){
 			$sql = 'SELECT clid, name, locality, publication, abstract, authors, parentclid, notes, latcentroid, longcentroid, pointradiusmeters, '.
-				'footprintwkt, access, defaultSettings, dynamicsql, datelastmodified, dynamicProperties, uid, type, initialtimestamp '.
+				'footprintwkt, footprintGeoJson, access, defaultSettings, dynamicsql, datelastmodified, dynamicProperties, uid, type, initialtimestamp '.
 				'FROM fmchecklists WHERE (clid = '.$this->clid.')';
 		 	$rs = $this->conn->query($sql);
 			if($rs){
@@ -63,6 +64,7 @@ class ChecklistVoucherAdmin extends Manager {
 					$this->clMetadata["longcentroid"] = $row->longcentroid;
 					$this->clMetadata["pointradiusmeters"] = $row->pointradiusmeters;
 					$this->clMetadata['footprintwkt'] = $row->footprintwkt;
+					$this->clMetadata['footprintGeoJson'] = $row->footprintGeoJson;
 					$this->clMetadata["access"] = $row->access;
 					$this->clMetadata["defaultSettings"] = $row->defaultSettings;
 					$this->clMetadata["dynamicsql"] = $row->dynamicsql;
@@ -803,6 +805,10 @@ class ChecklistVoucherAdmin extends Manager {
 
 	public function getClFootprintWkt(){
 		return $this->footprintWkt;
+	}
+
+	public function getClFootprint(){
+		return $this->footprintGeoJson ?? $this->footprintWkt;
 	}
 
 	//Misc functions
