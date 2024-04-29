@@ -217,7 +217,7 @@ class TaxonomyEditorManager extends Manager{
 	//Edit Functions
 	public function submitTaxonEdits($postArr){
 		$statusStr = '';
-		$sciname = trim($postArr['unitind1'] . $postArr['unitname1'] . ' ' . $postArr['unitind2'] . $postArr['unitname2'] . ' ' . trim($postArr['unitind3'] . ' ' . $postArr['unitname3']) . ' ' . $postArr['cultivarEpithet'] );
+		$sciname = trim($postArr['unitind1'] . $postArr['unitname1'] . ' ' . $postArr['unitind2'] . $postArr['unitname2'] . ' ' . trim($postArr['unitind3'] . ' ' . $postArr['unitname3']));
 		// @TODO have toupper implement on tradeName intake
 		$sql = 'UPDATE taxa SET '.
 			'unitind1 = '.($postArr['unitind1']?'"'.$this->cleanInStr($postArr['unitind1']).'"':'NULL').', '.
@@ -234,15 +234,22 @@ class TaxonomyEditorManager extends Manager{
 			'notes = '.($postArr['notes']?'"'.$this->cleanInStr($postArr['notes']).'"':'NULL').', '.
 			'securitystatus = '.(is_numeric($postArr['securitystatus'])?$postArr['securitystatus']:'0').', '.
 			'modifiedUid = '.$GLOBALS['SYMB_UID'].', '.
-			'modifiedTimeStamp = "'.date('Y-m-d H:i:s').'",'.
-			'sciname = "'.$this->cleanInStr($sciname).'" ';
+			'modifiedTimeStamp = "'.date('Y-m-d H:i:s').'", ' ;
+			// 'sciname = "'.$this->cleanInStr($sciname) . '" ';
 
-			if(array_key_exists('tradeName', $postArr) && $postArr['tradeName']){
-				$scinameDisplay = trim($sciname . ' ' .  $postArr['tradeName']);
-				$sql .= ', scinameDisplay = "' . $this->cleanInStr($scinameDisplay) . '" '; 
+			if(array_key_exists('cultivarEpithet', $postArr) && $postArr['cultivarEpithet']){
+				// $scinameDisplay = trim($sciname . ' ' .  $postArr['cultivarEpithet']);
+				$sciname .= ' '. $postArr['cultivarEpithet'];
+				// $sql .= ', scinameDisplay = "' . $this->cleanInStr($scinameDisplay) . '" '; 
 			}
-			// 'sciname = "'.$this->cleanInStr($sciname).'", '.
+			if(array_key_exists('tradeName', $postArr) && $postArr['tradeName']){
+				// $scinameDisplay = trim($sciname . ' ' .  $postArr['tradeName']);
+				$sciname .= ' ' . $postArr['tradeName'];
+				// $sql .= ', scinameDisplay = "' . $this->cleanInStr($scinameDisplay) . '" '; 
+			}
+			$sql .= 'sciname = "' . $this->cleanInStr($sciname) . '" ';  // '", '.
 			// 'scinameDisplay = "' . $this->cleanInStr($scinameDisplay) . '" ' .
+			// 'sciname = "'.$this->cleanInStr($sciname) . '" ';
 			$sql .= 'WHERE (tid = '.$this->tid.')';
 		//echo $sql;
 		if(!$this->conn->query($sql)){

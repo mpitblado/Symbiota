@@ -26,7 +26,7 @@ class RpcTaxonomy extends RpcBase{
 			foreach($termArr as $k => $v){
 				if(mb_strlen($v) == 1) unset($termArr[$k]);
 			}
-			$sql = 'SELECT DISTINCT t.tid, t.sciname, t.author FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid WHERE ts.taxauthid = '.$this->taxAuthID.' AND (t.sciname LIKE "'.$term.'%" ';
+			$sql = 'SELECT DISTINCT t.tid, t.sciname, t.cultivarEpithet, t.tradeName, t.author FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid WHERE ts.taxauthid = '.$this->taxAuthID.' AND (t.sciname LIKE "'.$term.'%" ';
 			$sqlFrag = '';
 			if($unit1 = array_shift($termArr)) $sqlFrag =  't.unitname1 LIKE "' . $unit1 . '%" ';
 			if($unit2 = array_shift($termArr)) $sqlFrag .=  'AND t.unitname2 LIKE "' . $unit2 . '%" ';
@@ -39,9 +39,25 @@ class RpcTaxonomy extends RpcBase{
 			}
 			$sql .= 'ORDER BY t.sciname';
 			$rs = $this->conn->query($sql);
-			var_dump($rs); // deleteMe
+			$sciname = null;
 			while($r = $rs->fetch_object()) {
-				$sciname = $r->sciname.' '.$r->author;
+				$sciname = $r->sciname;
+
+				if(!empty($r->tradeName)){
+					$sciname = str_replace($r->tradeName, '', $sciname);
+				}
+
+				if(!empty($r->cultivarEpithet)){
+					$sciname = str_replace($r->cultivarEpithet, '', trim($sciname)); // @TODO could possibly replace off-target if cultivarEpithet matches some parent taxon exactly.
+				}
+
+				$sciname = trim($sciname) . ' ' . $r->author;
+				if(!empty($r->cultivarEpithet)){
+					$sciname .= ' ' . $r->cultivarEpithet;
+				}
+				if(!empty($r->tradeName)){
+					$sciname .= ' ' . $r->tradeName;
+				}
 				$retArr[] = array('id' => $r->tid,'label' => $sciname);
 			}
 			$rs->free();
