@@ -188,7 +188,12 @@ if($isEditor && $action){
 		?>
 	</div>
 	<div id="innertext">
-		<h1 class="page-heading"><?php echo $LANG['TAXON_EDITOR'] .': ' . $tEditor->getSciName(); ?></h1>
+		<h1 class="page-heading"><?php
+		 $splitSciname = $tEditor->splitSciname();
+		 $nonItalicizedScinameComponent = trim((!empty($splitSciname['author']) ? ($splitSciname['author'] . ' ') : '') . (!empty($splitSciname['cultivarEpithet']) ? ("'" . $splitSciname['cultivarEpithet'] . "' ") : '') . (!empty($splitSciname['tradeName']) ? ($splitSciname['tradeName'] . ' ') : ''));
+
+		 echo $LANG['TAXON_EDITOR'] . ': <i>' . $splitSciname['base'] . '</i> ' . $nonItalicizedScinameComponent; 
+		 ?></h1>
 		<?php
 		if($tEditor->getTid()){
 			if($isEditor){

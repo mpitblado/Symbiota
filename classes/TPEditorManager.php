@@ -1,15 +1,19 @@
 <?php
 include_once('Manager.php');
+include_once($SERVER_ROOT.'/traits/TaxonomyTrait.php');
 
 class TPEditorManager extends Manager {
+	use TaxonomyTrait;
 
 	protected $tid;
 	protected $rankid;
 	private $parentTid;
 	protected $taxAuthId = 1;
-	private $sciname;
+	private $sciName;
 	private $author;
 	protected $family;
+	private $cultivarEpithet;
+	private $tradeName;
 	protected $acceptance = true;
 	private $forwarded = false;
 
@@ -38,7 +42,7 @@ class TPEditorManager extends Manager {
 				$this->submittedArr['sciname'] = $r->sciname;
 				$this->submittedArr['author'] = $r->author;
 				$this->submittedArr['rankid'] = $r->rankid;
-				$this->sciname = $r->sciname;
+				$this->sciName = $r->sciname;
 				$this->author = $r->author;
 				$this->rankid = $r->rankid;
 			}
@@ -65,7 +69,7 @@ class TPEditorManager extends Manager {
 				if(count($this->acceptedArr) == 1){
 					$this->forwarded = true;
 					$this->tid = key($this->acceptedArr);
-					$this->sciname = $this->acceptedArr[$this->tid]['sciname'];
+					$this->sciName = $this->acceptedArr[$this->tid]['sciname'];
 					$this->author = $this->acceptedArr[$this->tid]['author'];
 					$this->rankid = $this->acceptedArr[$this->tid]['rankid'];
 					$this->family = $this->acceptedArr[$this->tid]['family'];
@@ -84,7 +88,7 @@ class TPEditorManager extends Manager {
 	}
 
 	public function getSciName(){
-		return $this->sciname;
+		return $this->sciName;
 	}
 
 	public function getSubmittedValue($k=0){

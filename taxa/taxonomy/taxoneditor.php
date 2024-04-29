@@ -126,7 +126,11 @@ if($isEditor){
 	<!-- This is inner text! -->
 	<div id="innertext">
 		<h1 class="page-heading">
-			<?php echo $LANG['TAX_EDITOR'] . ": <i>" . $taxonEditorObj->getSciName() . "</i> " . $taxonEditorObj->getAuthor() . " [" . $taxonEditorObj->getTid() . "]"; ?>
+			<?php 
+			$splitSciname = $taxonEditorObj->splitSciname();
+			$nonItalicizedScinameComponent = trim((!empty($splitSciname['author']) ? ($splitSciname['author'] . ' ') : '') . (!empty($splitSciname['cultivarEpithet']) ? ("'" . $splitSciname['cultivarEpithet'] . "' ") : '') . (!empty($splitSciname['tradeName']) ? ($splitSciname['tradeName'] . ' ') : ''));
+			echo $LANG['TAX_EDITOR'] . ': <i>' . $splitSciname['base'] . '</i> ' . $nonItalicizedScinameComponent . ' [' . $taxonEditorObj->getTid() . ']'; 
+			?>
 		</h1>
 		<?php
 		if($statusStr){

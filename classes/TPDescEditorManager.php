@@ -1,7 +1,9 @@
 <?php
 include_once('TPEditorManager.php');
+include_once($SERVER_ROOT.'/traits/TaxonomyTrait.php');
 
 class TPDescEditorManager extends TPEditorManager{
+	use TaxonomyTrait;
 
  	public function __construct(){
  		parent::__construct();

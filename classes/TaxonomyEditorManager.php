@@ -1,8 +1,14 @@
 <?php
+
+use PHPUnit\Util\Json;
+
 include_once($SERVER_ROOT.'/classes/Manager.php');
 include_once($SERVER_ROOT.'/content/lang/classes/TaxonomyEditorManager.'.$LANG_TAG.'.php');
+include_once($SERVER_ROOT.'/traits/TaxonomyTrait.php');
 
 class TaxonomyEditorManager extends Manager{
+
+	use TaxonomyTrait;
 
 	private $taxAuthId = 1;
 	private $tid = 0;
@@ -943,6 +949,44 @@ class TaxonomyEditorManager extends Manager{
 
 	public function getSciName(){
 		return $this->sciName;
+	}
+
+	// public function splitSciname(){
+	// 	$scinameBase = $this->sciName;
+	// 	$returnObj = [];
+	// 	if(!empty($this->tradeName)){
+	// 		$scinameBase = str_replace($this->tradeName, '', $scinameBase);
+	// 	}
+
+	// 	if(!empty($this->cultivarEpithet)){
+	// 		$scinameBase = str_replace($this->cultivarEpithet, '', trim($scinameBase)); // @TODO could possibly replace off-target if cultivarEpithet matches some parent taxon exactly.
+	// 	}
+	// 	$returnObj['base'] = trim($scinameBase);
+	// 	$returnObj['cultivarEpithet'] = $this->cultivarEpithet; // assumes quotes not stored in db
+	// 	$returnObj['tradeName'] = $this->tradeName;
+	// 	$returnObj['author'] = $this->author;
+
+	// 	return $returnObj;
+	// }
+
+	public function renderSciNameForDisplay(){
+		$scinameDisplay = $this->sciName;
+		if(!empty($this->tradeName)){
+			$scinameDisplay = str_replace($this->tradeName, '', $scinameDisplay);
+		}
+
+		if(!empty($this->cultivarEpithet)){
+			$scinameDisplay = str_replace($this->cultivarEpithet, '', trim($scinameDisplay)); // @TODO could possibly replace off-target if cultivarEpithet matches some parent taxon exactly.
+		}
+
+		$scinameDisplay = trim($scinameDisplay) . ' ' . $this->author;
+		if(!empty($this->cultivarEpithet)){
+			$scinameDisplay .= ' ' . $this->cultivarEpithet;
+		}
+		if(!empty($this->tradeName)){
+			$scinameDisplay .= ' ' . $this->tradeName;
+		}
+		return $scinameDisplay;
 	}
 
 	public function getKingdomName(){

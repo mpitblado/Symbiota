@@ -1,8 +1,11 @@
 <?php
 include_once('TPEditorManager.php');
 include_once('ImageShared.php');
+include_once($SERVER_ROOT.'/traits/TaxonomyTrait.php');
 
 class TPImageEditorManager extends TPEditorManager{
+
+	use TaxonomyTrait;
 
  	public function __construct(){
  		parent::__construct();
