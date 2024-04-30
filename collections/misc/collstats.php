@@ -549,19 +549,16 @@ if($action != "Update Statistics"){
 											<?php
 										}
 										if(isset($specArr['coll'])){
-											if(!isset($specArr['cat'])){
-												echo '<section class="gridlike-form">';
-											}
 											$collArr = $specArr['coll'];
 											?>
-											<section class="gridlike-form-row">
+											<section class="gridlike-form">
 												<?php
 												foreach($collArr as $collid => $cArr){
 													?>
 													<div class="gridlike-form-row bottom-breathing-room-rel">
 														<div>
-															<input id="current-collid" name="current-collid" value="<?php echo $collid; ?>" type="checkbox" onclick="uncheckAll();" <?php echo ($collIdArr&&in_array($collid,$collIdArr)?'checked':''); ?> />
-															<label for="current-collid">Collection ID TODO</label>
+															<input id="current-collid-<?= $collid; ?>" name="db[]" value="<?php echo $collid; ?>" type="checkbox" onclick="uncheckAll();" <?php echo ($collIdArr&&in_array($collid,$collIdArr)?'checked':''); ?> />
+															<label class="screen-reader-only" for="current-collid-<?= $collid; ?>"><?= $LANG['COLLECTION'] . '-' . $cArr['instcode']; ?></label>
 														</div>
 														<div>
 															<a href='collprofiles.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>'>
