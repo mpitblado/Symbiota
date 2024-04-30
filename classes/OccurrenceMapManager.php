@@ -213,10 +213,9 @@ class OccurrenceMapManager extends OccurrenceManager {
 		if($this->searchTermArr){
 			$sqlWhere = $this->getSqlWhere();
 			$sqlWhere .= ($sqlWhere?'AND ':'WHERE ').'(o.DecimalLatitude IS NOT NULL AND o.DecimalLongitude IS NOT NULL) ';
-			if(array_key_exists('clid',$this->searchTermArr) && $this->searchTermArr['clid']){
-				if(isset($this->searchTermArr['cltype']) && $this->searchTermArr['cltype'] == 'all'){
-               error_log($this->searchTermArr['cltype']);
-					$sqlWhere .= "AND (ST_Within(p.lngLatPoint,GeomFromText('". $this->getClFootprint()." '))) ";
+			if(array_key_exists('clid',$this->searchTermArr) && $this->searchTermArr['clid']) {
+				if(isset($this->searchTermArr['cltype']) && $this->searchTermArr['cltype'] == 'all') {
+					$sqlWhere .= "AND (ST_Within(p.lngLatPoint,ST_GeomFromGeoJSON('". $this->getClFootprint()." '))) ";
 				}
 				else{
 					//$sqlWhere .= "AND (v.clid IN(".$this->searchTermArr['clid'].")) ";
