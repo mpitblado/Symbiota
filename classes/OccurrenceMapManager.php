@@ -217,9 +217,6 @@ class OccurrenceMapManager extends OccurrenceManager {
 				if(isset($this->searchTermArr['cltype']) && $this->searchTermArr['cltype'] == 'all') {
 					$sqlWhere .= "AND (ST_Within(p.lngLatPoint,ST_GeomFromGeoJSON('". $this->getClFootprint()." '))) ";
 				}
-				else{
-					//$sqlWhere .= "AND (v.clid IN(".$this->searchTermArr['clid'].")) ";
-				}
 			}
 			elseif(array_key_exists("polycoords",$this->searchTermArr)){
 				$sqlWhere .= "AND (ST_Within(p.lngLatPoint,ST_GeomFromGeoJSON('" . $this->searchTermArr["polycoords"] . "'))) ";
