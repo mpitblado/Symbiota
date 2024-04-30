@@ -90,21 +90,6 @@ function closeModal(elementid) {
 }
 
 /**
- * Opens map helper
- * @param {String} mapMode Option from select in form
- * Function from `../../js/symb/collections.harvestparams.js`
- */
-function openCoordAid(mapMode) {
-  mapWindow = open(
-    "../tools/mapcoordaid.php?mapmode=" + mapMode,
-    "polygon",
-    "resizable=0,width=900,height=630,left=20,top=20"
-  );
-  if (mapWindow.opener == null) mapWindow.opener = self;
-  mapWindow.focus();
-}
-
-/**
  * Chips
  */
 

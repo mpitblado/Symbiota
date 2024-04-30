@@ -9,10 +9,10 @@ $formSubmit = array_key_exists("formsubmit",$_POST)?$_POST["formsubmit"]:0;
 $latDef = array_key_exists("latdef",$_REQUEST)?$_REQUEST["latdef"]:'';
 $lngDef = array_key_exists("lngdef",$_REQUEST)?$_REQUEST["lngdef"]:'';
 $zoom = array_key_exists("zoom",$_REQUEST)&&is_numeric($_REQUEST["zoom"])?$_REQUEST["zoom"]:5;
-$mapMode = array_key_exists("mapmode",$_REQUEST)? htmlspecialchars($_REQUEST["mapmode"]):'';
+$mapMode = array_key_exists("map_mode",$_REQUEST)? htmlspecialchars($_REQUEST["map_mode"]):'';
 $mapModeStrict = array_key_exists("map_mode_strict",$_REQUEST) && is_bool(boolval($_REQUEST["map_mode_strict"]))? boolval($_REQUEST["map_mode_strict"]):false;
-$wktInputId = array_key_exists("wkt_input_id", $_REQUEST)? htmlspecialchars($_REQUEST["wkt_input_id"]):"footprintwkt";
-$outputType= array_key_exists("geoJson", $_REQUEST)?"geoJson":"wkt";
+$polygonInputId = array_key_exists("polygon_input_id", $_REQUEST)? htmlspecialchars($_REQUEST["polygon_input_id"]):"footprintwkt";
+$outputType= array_key_exists("polygon_text_type", $_REQUEST)? htmlspecialchars($_REQUEST["polygon_text_type"]):"wkt";
 
 $clManager = new ChecklistAdmin();
 $clManager->setClid($clid);
@@ -80,7 +80,7 @@ else{
 			data-map-mode="<?= htmlspecialchars($mapMode) ?>" 
 			data-map-mode-strict="<?= htmlspecialchars($mapModeStrict) ?>"
 			data-footprint-type="<?= htmlspecialchars($outputType) ?>"
-			data-footprint-id="<?= htmlspecialchars($wktInputId) ?>"
+			data-footprint-id="<?= htmlspecialchars($polygonInputId) ?>"
 		></div>
 		<script type="text/javascript">
 
@@ -240,8 +240,8 @@ else{
 		function loadShape(mapMode) {
 			switch(mapMode) {
 				case "polygon":
-					if(footprintType && footprintType.toLowerCase() === "geojson") {
-						const geoJsonStr = getField(footprintId);
+					const geoJsonStr = getField(footprintId);
+					if(footprintType && footprintType.toLowerCase() === "geojson" && geoJsonStr) {
 						try {
 							const geoJson = JSON.parse(geoJsonStr);
 							return { 
