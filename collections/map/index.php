@@ -801,6 +801,8 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 			function fitMap() {
 				if(shape && !map.activeShape) {
 					map.drawShape(shape);
+				} else if(map.activeShape) {
+					map.mapLayer.fitBounds(map.activeShape.layer.getBounds());
 				} else if(markers && markers.length > 0) {
 					const group = new L.FeatureGroup(markers);
 					map.mapLayer.fitBounds(group.getBounds());
@@ -809,8 +811,8 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 				}
 			}
 
-         document.addEventListener('resetMap', async e => {
-			   setPanels(false);
+			document.addEventListener('resetMap', async e => {
+				setPanels(false);
 				mapGroups.forEach(group => {
 					group.taxonMapGroup.resetGroup();
 					group.collectionMapGroup.resetGroup();
@@ -820,8 +822,8 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 				markers = [];
 				recordArr = [];
 
-            if(heatmapLayer) map.mapLayer.removeLayer(heatmapLayer);
-         })
+				if(heatmapLayer) map.mapLayer.removeLayer(heatmapLayer);
+			})
 
 			document.getElementById("mapsearchform").addEventListener('submit', async e => {
 				e.preventDefault();
