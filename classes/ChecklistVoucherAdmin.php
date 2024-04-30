@@ -126,11 +126,12 @@ class ChecklistVoucherAdmin extends Manager {
 	//Dynamic query variable functions
 	public function setCollectionVariables(){
 		if($this->clid){
-			$sql = 'SELECT name, dynamicsql, footprintwkt FROM fmchecklists WHERE (clid = '.$this->clid.')';
+			$sql = 'SELECT name, dynamicsql, footprintwkt, footprintGeoJson FROM fmchecklists WHERE (clid = '.$this->clid.')';
 			$result = $this->conn->query($sql);
 			if($row = $result->fetch_object()){
 				$this->clName = $this->cleanOutStr($row->name);
 				$this->footprintWkt = $row->footprintwkt;
+				$this->footprintGeoJson = $row->footprintGeoJson;
 				$sqlFrag = $row->dynamicsql ?? '';
 				$varArr = json_decode($sqlFrag, true);
 				if(json_last_error() != JSON_ERROR_NONE){
