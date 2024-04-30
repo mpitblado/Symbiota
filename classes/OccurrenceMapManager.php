@@ -63,7 +63,7 @@ class OccurrenceMapManager extends OccurrenceManager {
 			if(is_numeric($start) && $limit){
 				$sql .= "LIMIT ".$start.",".$limit;
 			}
-			//echo "<div>SQL: ".$sql."</div>"; exit;
+
 			$result = $this->conn->query($sql);
 			$color = 'e69e67';
 			$occidArr = array();
@@ -75,17 +75,10 @@ class OccurrenceMapManager extends OccurrenceManager {
 					$latLngStr = $row->DecimalLatitude.",".$row->DecimalLongitude;
 					$coordArr[$collName][$row->occid]["llStr"] = $latLngStr;
 					$coordArr[$collName][$row->occid]["collid"] = $this->htmlEntities($row->collid);
-					//$tidcode = strtolower(str_replace(" ", "",$tidInterpreted.$row->sciname));
-					//$tidcode = preg_replace( "/[^A-Za-z0-9 ]/","",$tidcode);
-					//$coordArr[$collName][$occId]["ns"] = $this->htmlEntities($tidcode);
 					$coordArr[$collName][$row->occid]["tid"] = $tidInterpreted;
 					$coordArr[$collName][$row->occid]["fam"] = ($row->family?strtoupper($row->family):'undefined');
 					$coordArr[$collName][$row->occid]["sn"] = $row->sciname;
 					$coordArr[$collName][$row->occid]["id"] = $this->htmlEntities($row->identifier);
-					//$coordArr[$collName][$occId]["icode"] = $this->htmlEntities($row->institutioncode);
-					//$coordArr[$collName][$occId]["ccode"] = $this->htmlEntities($row->collectioncode);
-					//$coordArr[$collName][$occId]["cn"] = $this->htmlEntities($row->catalognumber);
-					//$coordArr[$collName][$occId]["ocn"] = $this->htmlEntities($row->othercatalognumbers);
 					$coordArr[$collName]["c"] = $color;
 				}
 			}
@@ -116,8 +109,9 @@ class OccurrenceMapManager extends OccurrenceManager {
 			$sql .= $this->getTableJoins($this->sqlWhere);
 			$sql .= $this->sqlWhere;
 			$sql .= 'AND (o.decimallatitude BETWEEN -90 AND 90) AND (o.decimallongitude BETWEEN -180 AND 180) ';
+
 			if(is_numeric($start) && $recLimit && is_numeric($recLimit)) $sql .= "LIMIT ".$start.",".$recLimit;
-			//echo "<div>SQL: ".$sql."</div>";
+
 			$rs = $this->conn->query($sql);
 			$occidArr = array();
 			while($r = $rs->fetch_assoc()){
@@ -192,7 +186,6 @@ class OccurrenceMapManager extends OccurrenceManager {
 	private function setRecordCnt(){
 		if($this->sqlWhere){
 			$sql = "SELECT COUNT(DISTINCT o.occid) AS cnt FROM omoccurrences o ".$this->getTableJoins($this->sqlWhere).$this->sqlWhere;
-			//echo "<div>Count sql: ".$sql."</div>";
 			$result = $this->conn->query($sql);
 			if($result){
 				if($row = $result->fetch_object()){
