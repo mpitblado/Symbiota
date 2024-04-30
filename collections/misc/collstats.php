@@ -551,11 +551,11 @@ if($action != "Update Statistics"){
 										if(isset($specArr['coll'])){
 											$collArr = $specArr['coll'];
 											?>
-											<section class="gridlike-form" style="display: flex;">
+											<section class="gridlike-form">
 												<?php
 												foreach($collArr as $collid => $cArr){
 													?>
-													<div class="gridlike-form-row bottom-breathing-room-rel" style="flex-grow: 1; flex-basis: 0;">
+													<div class="gridlike-form-row bottom-breathing-room-rel">
 														<div>
 															<input id="current-collid-<?= $collid; ?>" name="db[]" value="<?php echo $collid; ?>" type="checkbox" onclick="uncheckAll();" <?php echo ($collIdArr&&in_array($collid,$collIdArr)?'checked':''); ?> />
 															<label class="screen-reader-only" for="current-collid-<?= $collid; ?>">Collection <?= $cArr['instcode']; ?></label>
