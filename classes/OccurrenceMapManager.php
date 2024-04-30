@@ -30,7 +30,7 @@ class OccurrenceMapManager extends OccurrenceManager {
 		}
 		if(array_key_exists('cltype',$_REQUEST) && $_REQUEST['cltype']){
 			if($_REQUEST['cltype'] == 'all') $this->searchTermArr['cltype'] = 'all';
-			$this->searchTermArr['cltype'] = 'vouchers';
+			else $this->searchTermArr['cltype'] = 'vouchers';
 		}
 		if(array_key_exists('poly_array',$_REQUEST) && $_REQUEST['poly_array']){
 			$this->searchTermArr['polycoords'] = $_REQUEST['poly_array'];
