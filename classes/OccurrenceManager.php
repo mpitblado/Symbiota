@@ -68,7 +68,9 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 				if(isset($voucherVariableArr['recordedby'])) $this->searchTermArr['collector'] = $voucherVariableArr['recordedby'];
 				if(isset($voucherVariableArr['taxon']) && !$this->taxaArr) $this->setTaxonRequestVariable(array('taxa'=>$voucherVariableArr['taxon'],'usethes'=>1));
 				if(isset($voucherVariableArr['latsouth'])) $this->searchTermArr['llbound'] = $voucherVariableArr['latnorth'].';'.$voucherVariableArr['latsouth'].';'.$voucherVariableArr['lngwest'].';'.$voucherVariableArr['lngeast'];
-				if(isset($voucherVariableArr['includewkt'])) $this->searchTermArr['footprintwkt'] = $this->voucherManager->getClFootprintWkt();
+				//if(isset($voucherVariableArr['includewkt'])) $this->searchTermArr['footprintwkt'] = $this->voucherManager->getClFootprintWkt();
+				if(isset($voucherVariableArr['includewkt'])) $this->searchTermArr['footprintGeoJson'] = $this->voucherManager->getClFootprint();
+
 				if(!isset($voucherVariableArr['excludecult'])) $this->searchTermArr['includecult'] = 1;
 				if(isset($voucherVariableArr['onlycoord'])){
 					//Include details to limit to coordinates
@@ -250,7 +252,7 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 			$this->displaySearchArr[] = $pointArr[0] . ' ' . $pointArr[1] . ' +- ' . $pointArr[2] . $pointArr[3];
 		}
 		elseif(array_key_exists('footprintwkt',$this->searchTermArr)){
-			$sqlWhere .= 'AND (ST_Within(p.point,GeomFromText("'.$this->searchTermArr['footprintwkt'].'"))) ';
+			$sqlWhere .= 'AND (ST_Within(p.point,GeomFromGeoJson("'.$this->searchTermArr['footprintwkt'].'"))) ';
 			$this->displaySearchArr[] = $this->LANG['POLYGON_SEARCH'];
 		}
 		if(array_key_exists('collector',$this->searchTermArr)){
@@ -941,7 +943,8 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 			$this->searchTermArr['llpoint'] = $this->cleanInputStr($_REQUEST['llpoint']);
 		}
 		if(array_key_exists('footprintwkt',$_REQUEST) && $_REQUEST['footprintwkt']){
-			$this->searchTermArr['footprintwkt'] = $this->cleanInputStr($_REQUEST['footprintwkt']);
+			//$this->searchTermArr['footprintwkt'] = $this->cleanInputStr($_REQUEST['footprintwkt']);
+			$this->searchTermArr['footprintGeoJson'] = $this->cleanInputStr($_REQUEST['footprintwkt']);
 		}
 	}
 
