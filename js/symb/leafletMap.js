@@ -562,7 +562,7 @@ class LeafletMap {
    drawShape(shape, fitbounds=true) {
       const id = this.shapes.length;
 
-      function fitShape() {
+      const fitShape = () => {
          this.mapLayer.fitBounds(this.activeShape.layer.getBounds());
       }
 
