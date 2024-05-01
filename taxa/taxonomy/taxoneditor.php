@@ -246,7 +246,7 @@ if($isEditor){
 								<?php echo $taxonEditorObj->getCultivarEpithet();?>
 							</div>
 							<div class="editfield" style="display:none;">
-								<input type="text" id="cultivarEpithet" name="cultivarEpithet" style="width:300px;border-style:inset;" value="<?php echo $taxonEditorObj->getCultivarEpithet(); ?>" />
+								<input placeholder="e.g., cultivar epithet (no quotes)" aria-placeholder="Cultivar epithet. Do not include quotations." type="text" id="cultivarEpithet" name="cultivarEpithet" style="width:300px;border-style:inset;" value="<?php echo $taxonEditorObj->getCultivarEpithet(); ?>" />
 							</div>
 						</div>
 						<div class="editDiv">
@@ -255,7 +255,7 @@ if($isEditor){
 								<?php echo $taxonEditorObj->getTradeName();?>
 							</div>
 							<div class="editfield" style="display:none;">
-								<input type="text" id="tradeName" name="tradeName" style="width:300px;border-style:inset;" value="<?php echo $taxonEditorObj->getTradeName(); ?>" />
+								<input placeholder="e.g., TRADENAME" aria-placeholder="Entry will be converted to uppercase letters per trade name convention" type="text" id="tradeName" name="tradeName" style="width:300px;border-style:inset;" value="<?php echo $taxonEditorObj->getTradeName(); ?>" />
 							</div>
 						</div>
 						<div class="editDiv">

@@ -233,7 +233,7 @@ class TaxonomyEditorManager extends Manager{
 			'unitind3 = '.($postArr['unitind3']?'"'.$this->cleanInStr($postArr['unitind3']).'"':'NULL').', '.
 			'unitname3 = '.($postArr['unitname3']?'"'.$this->cleanInStr($postArr['unitname3']).'"':'NULL').', '.
 			'cultivarEpithet = '.($postArr['cultivarEpithet'] ? '"' . $this->cleanInStr($postArr['cultivarEpithet']) . '"' : 'NULL') . ', ' .
-			'tradeName = '.($postArr['tradeName'] ? '"' . $this->cleanInStr($postArr['tradeName']) . '"' : 'NULL') . ', ' .
+			'tradeName = '.($postArr['tradeName'] ? '"' . strtoupper($this->cleanInStr($postArr['tradeName'])) . '"' : 'NULL') . ', ' .
 			'author = "'.($postArr['author']?$this->cleanInStr($postArr['author']):'').'", '.
 			'rankid = '.(is_numeric($postArr['rankid'])?$postArr['rankid']:'NULL').', '.
 			'source = '.($postArr['source']?'"'.$this->cleanInStr($postArr['source']).'"':'NULL').', '.
