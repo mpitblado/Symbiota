@@ -226,7 +226,6 @@ class TaxonomyEditorManager extends Manager{
 		$sciname = trim($postArr['unitind1'] . $postArr['unitname1'] . ' ' . $postArr['unitind2'] . $postArr['unitname2'] . ' ' . trim($postArr['unitind3'] . ' ' . $postArr['unitname3']));
 		$processedCultivarEpithet = $postArr['cultivarEpithet'] ? trim($postArr['cultivarEpithet'],"'\`\"") : NULL;
 		$processedTradeName = $postArr['tradeName'] ? strtoupper($postArr['tradeName']) : 'NULL';
-		// @TODO have toupper implement on tradeName intake
 		$sql = 'UPDATE taxa SET '.
 			'unitind1 = '.($postArr['unitind1']?'"'.$this->cleanInStr($postArr['unitind1']).'"':'NULL').', '.
 			'unitname1 = "'.$this->cleanInStr($postArr['unitname1']).'",'.
@@ -235,9 +234,7 @@ class TaxonomyEditorManager extends Manager{
 			'unitind3 = '.($postArr['unitind3']?'"'.$this->cleanInStr($postArr['unitind3']).'"':'NULL').', '.
 			'unitname3 = '.($postArr['unitname3']?'"'.$this->cleanInStr($postArr['unitname3']).'"':'NULL').', '.
 			'cultivarEpithet = '.($postArr['cultivarEpithet'] ? '"' . $this->cleanInStr($processedCultivarEpithet) . '"' : 'NULL') . ', ' .
-			// 'cultivarEpithet = ' . $processedCultivarEpithet . ', ' .
 			'tradeName = "' . ($postArr['tradeName'] ? $this->cleanInStr($processedTradeName) : 'NULL') . '", ' .
-			// 'tradeName = ' . $processedTradeName . ', ' .
 			'author = "'.($postArr['author']?$this->cleanInStr($postArr['author']):'').'", '.
 			'rankid = '.(is_numeric($postArr['rankid'])?$postArr['rankid']:'NULL').', '.
 			'source = '.($postArr['source']?'"'.$this->cleanInStr($postArr['source']).'"':'NULL').', '.
@@ -245,23 +242,15 @@ class TaxonomyEditorManager extends Manager{
 			'securitystatus = '.(is_numeric($postArr['securitystatus'])?$postArr['securitystatus']:'0').', '.
 			'modifiedUid = '.$GLOBALS['SYMB_UID'].', '.
 			'modifiedTimeStamp = "'.date('Y-m-d H:i:s').'", ' ;
-			// 'sciname = "'.$this->cleanInStr($sciname) . '" ';
 
 			if(array_key_exists('cultivarEpithet', $postArr) && $postArr['cultivarEpithet']){
-				// $scinameDisplay = trim($sciname . ' ' .  $postArr['cultivarEpithet']);
 				$sciname .= ' '. $processedCultivarEpithet;
-				// $sql .= ', scinameDisplay = "' . $this->cleanInStr($scinameDisplay) . '" '; 
 			}
 			if(array_key_exists('tradeName', $postArr) && $postArr['tradeName']){
-				// $scinameDisplay = trim($sciname . ' ' .  $postArr['tradeName']);
 				$sciname .= ' ' . $processedTradeName;
-				// $sql .= ', scinameDisplay = "' . $this->cleanInStr($scinameDisplay) . '" '; 
 			}
-			$sql .= 'sciname = "' . $this->cleanInStr($sciname) . '" ';  // '", '.
-			// 'scinameDisplay = "' . $this->cleanInStr($scinameDisplay) . '" ' .
-			// 'sciname = "'.$this->cleanInStr($sciname) . '" ';
+			$sql .= 'sciname = "' . $this->cleanInStr($sciname) . '" ';
 			$sql .= 'WHERE (tid = '.$this->tid.')';
-		//echo $sql;
 		if(!$this->conn->query($sql)){
 			$statusStr = (isset($this->langArr['ERROR_EDITING_TAXON'])?$this->langArr['ERROR_EDITING_TAXON']:'ERROR editing taxon').': '.$this->conn->error;
 		}
