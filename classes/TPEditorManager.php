@@ -3,7 +3,7 @@ include_once('Manager.php');
 include_once($SERVER_ROOT.'/traits/TaxonomyTrait.php');
 
 class TPEditorManager extends Manager {
-	use TaxonomyTrait;
+	use TaxonomyTrait; // @TODO if this is the only instance of the trait when the dust settles, consider moving the trait contents to this class
 
 	protected $tid;
 	protected $rankid;
