@@ -8,7 +8,6 @@ trait TaxonomyTrait {
 		}
 
 		if(!empty($this->cultivarEpithet)){
-			// $scinameBase = str_replace($this->cultivarEpithet, '', trim($scinameBase)); // @TODO could possibly replace off-target if cultivarEpithet matches some parent taxon exactly.
 			$scinameBase = str_replace("'". $this->cultivarEpithet . "'", '', trim($scinameBase)); // @TODO could possibly replace off-target if cultivarEpithet matches some parent taxon exactly.
 		}
 		$returnObj['base'] = trim($scinameBase ?? '');
