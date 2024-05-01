@@ -243,19 +243,19 @@ if($isEditor){
 						<div class="editDiv">
 							<div class="editLabel"><?php echo $LANG['UNITNAME4']; ?>: </div>
 							<div class="editfield">
-								<?php echo htmlspecialchars($taxonEditorObj->getCultivarEpithet(), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);?>
+								<?php echo htmlspecialchars($taxonEditorObj->getCultivarEpithet() ?? '', ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);?>
 							</div>
 							<div class="editfield" style="display:none;">
-								<input placeholder="e.g., cultivar epithet (no quotes)" aria-placeholder="Cultivar epithet. Do not include quotations." type="text" id="cultivarEpithet" name="cultivarEpithet" style="width:300px;border-style:inset;" value="<?php echo htmlspecialchars($taxonEditorObj->getCultivarEpithet(), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>" />
+								<input placeholder="e.g., cultivar epithet (no quotes)" aria-placeholder="Cultivar epithet. Do not include quotations." type="text" id="cultivarEpithet" name="cultivarEpithet" style="width:300px;border-style:inset;" value="<?php echo htmlspecialchars($taxonEditorObj->getCultivarEpithet() ?? '', ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>" />
 							</div>
 						</div>
 						<div class="editDiv">
 							<div class="editLabel"><?php echo $LANG['UNITNAME5']; ?>: </div>
 							<div class="editfield">
-								<?php echo htmlspecialchars($taxonEditorObj->getTradeName(), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);?>
+								<?php echo htmlspecialchars($taxonEditorObj->getTradeName() ?? '', ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);?>
 							</div>
 							<div class="editfield" style="display:none;">
-								<input placeholder="e.g., TRADENAME" aria-placeholder="Entry will be converted to uppercase letters per trade name convention" type="text" id="tradeName" name="tradeName" style="width:300px;border-style:inset;" value="<?php echo htmlspecialchars($taxonEditorObj->getTradeName(), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>" />
+								<input placeholder="e.g., TRADENAME" aria-placeholder="Entry will be converted to uppercase letters per trade name convention" type="text" id="tradeName" name="tradeName" style="width:300px;border-style:inset;" value="<?php echo htmlspecialchars($taxonEditorObj->getTradeName() ?? '', ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>" />
 							</div>
 						</div>
 						<div class="editDiv">

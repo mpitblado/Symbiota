@@ -566,9 +566,18 @@ class TaxonomyEditorManager extends Manager{
 	public function loadNewName($dataArr){
 		//Load new name into taxa table
 		$tid = 0;
+		$processedSciname = trim($dataArr['unitind1'] . $dataArr['unitname1'] . ' ' . $dataArr['unitind2'] . $dataArr['unitname2'] . ' ' . trim($dataArr['unitind3'] . ' ' . $dataArr['unitname3']));
+		$processedCultivarEpithet = $dataArr['cultivarEpithet'] ? trim($dataArr['cultivarEpithet'],"'\`\"") : NULL;
+		$processedTradeName = $dataArr['tradeName'] ? strtoupper($dataArr['tradeName']) : 'NULL';
+		if(array_key_exists('cultivarEpithet', $dataArr) && $dataArr['cultivarEpithet']){
+			$processedSciname .= ' '. $processedCultivarEpithet;
+		}
+		if(array_key_exists('tradeName', $dataArr) && $dataArr['tradeName']){
+			$processedSciname .= ' ' . $processedTradeName;
+		}
 		$sqlTaxa = 'INSERT INTO taxa(sciname, author, rankid, unitind1, unitname1, unitind2, unitname2, unitind3, unitname3, cultivarEpithet, tradeName,  '.
 			'source, notes, securitystatus, modifiedUid, modifiedTimeStamp) '.
-			'VALUES ("'.$this->cleanInStr($dataArr['sciname']).'","'.
+			'VALUES ("'.$this->cleanInStr($processedSciname).'","'.
 			($dataArr['author']?$this->cleanInStr($dataArr['author']):'').'",'.
 			(isset($dataArr['rankid'])?$dataArr['rankid']:0).','.
 			($dataArr['unitind1']?'"'.$this->cleanInStr($dataArr['unitind1']).'"':'NULL').',"'.
@@ -577,8 +586,8 @@ class TaxonomyEditorManager extends Manager{
 			($dataArr['unitname2']?'"'.$this->cleanInStr($dataArr['unitname2']).'"':'NULL').','.
 			($dataArr['unitind3']?'"'.$this->cleanInStr($dataArr['unitind3']).'"':'NULL').','.
 			($dataArr['unitname3']?'"'.$this->cleanInStr($dataArr['unitname3']).'"':'NULL').','.
-			($dataArr['cultivarEpithet'] ? '"' . $this->cleanInStr($dataArr['cultivarEpithet']) . '"' : 'NULL') . ',' .
-			($dataArr['tradeName'] ? '"' . $this->cleanInStr($dataArr['tradeName']) . '"' : 'NULL') . ',' .
+			($dataArr['cultivarEpithet'] ? '"' . $this->cleanInStr($processedCultivarEpithet) . '"' : 'NULL') . ',' .
+			($dataArr['tradeName'] ? '"' . $this->cleanInStr($processedTradeName) . '"' : 'NULL') . ',' .
 			($dataArr['source']?'"'.$this->cleanInStr($dataArr['source']).'"':'NULL').','.
 			($dataArr['notes']?'"'.$this->cleanInStr($dataArr['notes']).'"':'NULL').','.
 			$this->cleanInStr($dataArr['securitystatus']).','.
