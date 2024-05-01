@@ -5,8 +5,6 @@ include_once($SERVER_ROOT.'/traits/TaxonomyTrait.php');
 
 class TPImageEditorManager extends TPEditorManager{
 
-	use TaxonomyTrait;
-
  	public function __construct(){
  		parent::__construct();
 		set_time_limit(120);
