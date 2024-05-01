@@ -226,7 +226,7 @@ class TaxonomyEditorManager extends Manager{
 		$sciname = trim($postArr['unitind1'] . $postArr['unitname1'] . ' ' . $postArr['unitind2'] . $postArr['unitname2'] . ' ' . trim($postArr['unitind3'] . ' ' . $postArr['unitname3']));
 		$processedCultivarEpithet = $postArr['cultivarEpithet'] ? trim($postArr['cultivarEpithet'],"'\`\"") : NULL;
 		$processedTradeName = $postArr['tradeName'] ? strtoupper($postArr['tradeName']) : 'NULL';
-		$sql = 'UPDATE taxa SET '.
+		$sql = 'UPDATE taxa SET '. // @TODO make this a prepared statement
 			'unitind1 = '.($postArr['unitind1']?'"'.$this->cleanInStr($postArr['unitind1']).'"':'NULL').', '.
 			'unitname1 = "'.$this->cleanInStr($postArr['unitname1']).'",'.
 			'unitind2 = '.($postArr['unitind2']?'"'.$this->cleanInStr($postArr['unitind2']).'"':'NULL').', '.
@@ -244,12 +244,12 @@ class TaxonomyEditorManager extends Manager{
 			'modifiedTimeStamp = "'.date('Y-m-d H:i:s').'", ' ;
 
 			if(array_key_exists('cultivarEpithet', $postArr) && $postArr['cultivarEpithet']){
-				$sciname .= ' '. $processedCultivarEpithet;
+				$sciname .= " '". $processedCultivarEpithet . "'";
 			}
 			if(array_key_exists('tradeName', $postArr) && $postArr['tradeName']){
 				$sciname .= ' ' . $processedTradeName;
 			}
-			$sql .= 'sciname = "' . $this->cleanInStr($sciname) . '" ';
+			$sql .= 'sciname = "' . $this->cleanInStr($sciname) . '" '; 
 			$sql .= 'WHERE (tid = '.$this->tid.')';
 		if(!$this->conn->query($sql)){
 			$statusStr = (isset($this->langArr['ERROR_EDITING_TAXON'])?$this->langArr['ERROR_EDITING_TAXON']:'ERROR editing taxon').': '.$this->conn->error;
@@ -559,7 +559,7 @@ class TaxonomyEditorManager extends Manager{
 		$processedCultivarEpithet = $dataArr['cultivarEpithet'] ? trim($dataArr['cultivarEpithet'],"'\`\"") : NULL;
 		$processedTradeName = $dataArr['tradeName'] ? strtoupper($dataArr['tradeName']) : 'NULL';
 		if(array_key_exists('cultivarEpithet', $dataArr) && $dataArr['cultivarEpithet']){
-			$processedSciname .= ' '. $processedCultivarEpithet;
+			$processedSciname .= " '". $processedCultivarEpithet . "'";
 		}
 		if(array_key_exists('tradeName', $dataArr) && $dataArr['tradeName']){
 			$processedSciname .= ' ' . $processedTradeName;
