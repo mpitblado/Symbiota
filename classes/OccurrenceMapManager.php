@@ -18,7 +18,7 @@ class OccurrenceMapManager extends OccurrenceManager {
 		parent::__destruct();
 	}
 
-	private function readGeoRequestVariables(){
+	private function readGeoRequestVariables() {
 		if(array_key_exists('gridSizeSetting',$_REQUEST)){
 			$this->searchTermArr['gridSizeSetting'] = $this->cleanInStr($_REQUEST['gridSizeSetting']);
 		}
@@ -32,19 +32,11 @@ class OccurrenceMapManager extends OccurrenceManager {
 			if($_REQUEST['cltype'] == 'all') $this->searchTermArr['cltype'] = 'all';
 			else $this->searchTermArr['cltype'] = 'vouchers';
 		}
-		if(array_key_exists('poly_array',$_REQUEST) && $_REQUEST['poly_array']){
-			$this->searchTermArr['polycoords'] = $_REQUEST['poly_array'];
-		}
-		elseif(array_key_exists('polycoords',$_REQUEST) && $_REQUEST['polycoords']){
+		if(array_key_exists('polycoords',$_REQUEST) && $_REQUEST['polycoords']) {
 			$this->searchTermArr['polycoords'] = $_REQUEST['polycoords'];
 		}
-		elseif($this->getClFootprintWkt()){
-			$this->searchTermArr['polycoords'] = $this->getClFootprintWkt();
-		}
-		if(!$this->getSearchTerm('polycoords')){
-			if($this->getSearchTerm('clid') && $this->getClFootprintWkt()){
-				$this->searchTermArr['poly_array'] = $this->getClFootprintWkt();
-			}
+		elseif($this->voucherManager && $this->voucherManager->getClFootprint()) {
+			$this->searchTermArr['polycoords'] = $this->voucherManager->getClFootprint();
 		}
 	}
 
@@ -208,7 +200,7 @@ class OccurrenceMapManager extends OccurrenceManager {
 			$sqlWhere .= ($sqlWhere?'AND ':'WHERE ').'(o.DecimalLatitude IS NOT NULL AND o.DecimalLongitude IS NOT NULL) ';
 			if(array_key_exists('clid',$this->searchTermArr) && $this->searchTermArr['clid']) {
 				if(isset($this->searchTermArr['cltype']) && $this->searchTermArr['cltype'] == 'all') {
-					$sqlWhere .= "AND (ST_Within(p.lngLatPoint,ST_GeomFromGeoJSON('". $this->getClFootprint()." '))) ";
+					$sqlWhere .= "AND (ST_Within(p.lngLatPoint,ST_GeomFromGeoJSON('". $this->voucherManager.getClFootprint()." '))) ";
 				}
 			}
 			elseif(array_key_exists("polycoords",$this->searchTermArr)){

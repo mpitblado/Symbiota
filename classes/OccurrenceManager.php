@@ -10,7 +10,7 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 	protected $sqlWhere;
 	protected $displaySearchArr = Array();
 	protected $reset = 0;
-	private $voucherManager;
+	protected $voucherManager;
 	private $occurSearchProjectExists = 0;
 	protected $searchSupportManager = null;
 	protected $errorMessage;
