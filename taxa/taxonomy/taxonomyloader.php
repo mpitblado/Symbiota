@@ -155,9 +155,9 @@ if($isEditor){
 								<input type='text' id='unitind3' name='unitind3' onchange="updateFullname(this.form)" class='search-bar-extraShort' aria-label='<?php echo $LANG['UNITNAME3']; ?>:' title='<?php echo $LANG['RANK_FIELD']; ?>'/>
 								<input type='text' id='unitname3' name='unitname3' onchange="updateFullname(this.form)" class='search-bar' aria-label="<?php echo $LANG['INFRA_EPITHET_FIELD']; ?>" title="<?php echo $LANG['INFRA_EPITHET_FIELD']; ?>" />
 							</div>
-							<div id="div3hide" style="clear:both;">
+							<div id="div3hide" style="clear:both;display:none;">
 								<div class="left-column">
-									<label for="unitind4">
+									<label for="">
 										<?php echo $LANG['UNITNAME4']; ?>:
 									</label>
 									<!-- TODO add description -->
@@ -165,9 +165,9 @@ if($isEditor){
 								</div>
 								<input type='text' id='cultivarEpithet' name='cultivarEpithet' onchange="updateFullname(this.form)" class='search-bar' aria-label="<?php echo $LANG['UNITNAME4']; ?>" title="<?php echo $LANG['UNITNAME4']; ?>" />
 							</div>
-							<div id="div3hide" style="clear:both;">
+							<div id="div4hide" style="clear:both;display:none;">
 								<div class="left-column">
-									<label for="unitind5">
+									<label for="tradeName">
 										<?php echo $LANG['UNITNAME5']; ?>:
 									</label>
 									<!-- TODO add description -->
@@ -257,8 +257,11 @@ if($isEditor){
 			</div>
 			<?php
 		}
-		include($SERVER_ROOT.'/includes/footer.php');
+		
 		?>
 	</div>
+	<?php
+	include($SERVER_ROOT . '/includes/footer.php');
+	?>
 </body>
 </html>

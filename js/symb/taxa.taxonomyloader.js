@@ -334,6 +334,8 @@ document.getElementById("rankid").addEventListener("change", function () {
 
   const div1 = document.getElementById("div1hide");
   const div2 = document.getElementById("div2hide");
+  const div3 = document.getElementById("div3hide");
+  const div4 = document.getElementById("div4hide");
   const label = document.getElementById("unitind1label");
 
   if (selectedValue > 150) {
@@ -353,4 +355,15 @@ document.getElementById("rankid").addEventListener("change", function () {
   } else {
     label.textContent = "Genus Name";
   }
+
+  if (selectedValue == 300) {
+    div3.style.display = "block";
+    div4.style.display = "block";
+    
+  } else {
+    div3.style.display = "none";
+    div4.style.display = "none";
+  }
+
+
 });
