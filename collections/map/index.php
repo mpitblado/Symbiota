@@ -1700,9 +1700,9 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 
 				if(shapeType) {
 					shape = loadMapShape(shapeType, {
-						polygonLoader: () => document.getElementById("polycoords").value.trim(),
+						polygonLoader: () => ({geoJSON: document.getElementById("polycoords").value.trim()}),
 						circleLoader: () => {
-                     const units = document.getElementById("pointunits").value;
+							const units = document.getElementById("pointunits").value;
 							return {
 								radius: parseFloat(document.getElementById("radius").value),
 								radUnits: units == "mi" || units == "km"? units: "km",
