@@ -35,7 +35,7 @@ class RpcTaxonomy extends RpcBase{
 			if($rankLimit) $sql .= 'AND (t.rankid = '.$rankLimit.') ';
 			else{
 				if($rankLow) $sql .= 'AND (t.rankid > '.$rankLow.' OR t.rankid IS NULL) ';
-				if($rankHigh) $sql .= 'AND (t.rankid < '.$rankHigh.' OR t.rankid IS NULL) ';
+				if($rankHigh) $sql .= 'AND (t.rankid <= '.$rankHigh.' OR t.rankid IS NULL) ';
 			}
 			$sql .= 'ORDER BY t.sciname';
 			$rs = $this->conn->query($sql);
@@ -48,12 +48,14 @@ class RpcTaxonomy extends RpcBase{
 				}
 
 				if(!empty($r->cultivarEpithet)){
-					$sciname = str_replace($r->cultivarEpithet, '', trim($sciname)); // @TODO could possibly replace off-target if cultivarEpithet matches some parent taxon exactly.
+					$sciname = str_replace("'" . $r->cultivarEpithet . "'", '', trim($sciname)); // @TODO could possibly replace off-target if cultivarEpithet matches some parent taxon exactly.
 				}
 
-				$sciname = trim($sciname) . ' ' . $r->author;
+				if(!empty($r->author)){
+					$sciname = trim($sciname) . ' ' . $r->author;
+				}
 				if(!empty($r->cultivarEpithet)){
-					$sciname .= ' ' . $r->cultivarEpithet;
+					$sciname .= "'" . $r->cultivarEpithet . "'";
 				}
 				if(!empty($r->tradeName)){
 					$sciname .= ' ' . $r->tradeName;
