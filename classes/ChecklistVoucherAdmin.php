@@ -88,30 +88,6 @@ class ChecklistVoucherAdmin extends Manager {
 		}
 	}
 
-	public function getPolygonCoordinates(){
-		$retArr = array();
-		if($this->clid){
-			if($this->clMetadata['dynamicsql']){
-				$sql = 'SELECT o.decimallatitude, o.decimallongitude FROM omoccurrences o ';
-				if($this->clMetadata['footprintwkt'] && substr($this->clMetadata['footprintwkt'],0,7) == 'POLYGON'){
-					$sql .= 'INNER JOIN omoccurpoints p ON o.occid = p.occid WHERE (ST_Within(p.point,GeomFromText("'.$this->clMetadata['footprintwkt'].'"))) ';
-				}
-				else{
-					$this->setCollectionVariables();
-					$sql .= 'WHERE ('.$this->getSqlFrag().') ';
-				}
-				$sql .= 'LIMIT 50';
-				//echo $sql; exit;
-				$rs = $this->conn->query($sql);
-				while($r = $rs->fetch_object()){
-					$retArr[] = $r->decimallatitude.','.$r->decimallongitude;
-				}
-				$rs->free();
-			}
-		}
-		return $retArr;
-	}
-
 	public function getAssociatedExternalService(){
 		$resp = false;
  		if($this->clMetadata['dynamicProperties']){
@@ -310,7 +286,7 @@ class ChecklistVoucherAdmin extends Manager {
 		}
 		if(isset($this->queryVariablesArr['includewkt']) && $this->queryVariablesArr['includewkt'] && $this->footprintWkt){
 			//Searh based on polygon
-			$sqlFrag .= 'AND (ST_Within(p.point,GeomFromText("'.$this->footprintWkt.'"))) ';
+			$sqlFrag .= 'AND (ST_Within(p.lngLatPoint,ST_GeomFromGeoJson("'.$this->footprintGeoJson.'"))) ';
 			$llStr = false;
 		}
 		if(isset($this->queryVariablesArr['latlngor']) && $this->queryVariablesArr['latlngor'] && $locStr && $llStr){

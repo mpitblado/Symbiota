@@ -225,7 +225,7 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 				$lLng = $llboundArr[2];
 				$rLng = $llboundArr[3];
 				//$sqlWhere .= 'AND (o.DecimalLatitude BETWEEN '.$llboundArr[1].' AND '.$llboundArr[0].' AND o.DecimalLongitude BETWEEN '.$llboundArr[2].' AND '.$llboundArr[3].') ';
-				$sqlWhere .= 'AND (ST_Within(p.lngLatPoint,GeomFromText("POLYGON(('.$uLat.' '.$rLng.','.$bLat.' '.$rLng.','.$bLat.' '.$lLng.','.$uLat.' '.$lLng.','.$uLat.' '.$rLng.'))"))) ';
+				$sqlWhere .= 'AND (ST_Within(p.lngLatPoint,GeomFromText("POLYGON(('.$rLng.' '.$uLat.','.$rLng.' '.$bLat.','.$lLng.' '.$bLat.','.$lLng.' '.$uLat.','.$rLng.' '.$uLat.'))"))) ';
 				$this->displaySearchArr[] = $this->LANG['LAT'] . ': ' . $llboundArr[1] . ' - ' . $llboundArr[0] . ' ' . $this->LANG['LONG'] . ': '.$llboundArr[2].' - '.$llboundArr[3];
 			}
 		}
@@ -251,14 +251,7 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 			}
 			$this->displaySearchArr[] = $pointArr[0] . ' ' . $pointArr[1] . ' +- ' . $pointArr[2] . $pointArr[3];
 		}
-/*
-		elseif(array_key_exists('footprintwkt',$this->searchTermArr)){
-			$sqlWhere .= 'AND (ST_Within(p.point,GeomFromText("'.$this->searchTermArr['footprintwkt'].'"))) ';
-			$this->displaySearchArr[] = $this->LANG['POLYGON_SEARCH'];
-		}
-*/
 		elseif(array_key_exists('footprintGeoJson',$this->searchTermArr)){
-			error_log('AND (ST_Within(p.lngLatPoint,ST_GeomFromGeoJSON(\''.$this->searchTermArr['footprintGeoJson'].'\'))) ');
 			$sqlWhere .= 'AND (ST_Within(p.lngLatPoint,ST_GeomFromGeoJSON(\''.$this->searchTermArr['footprintGeoJson'].'\'))) ';
 			$this->displaySearchArr[] = $this->LANG['POLYGON_SEARCH'];
 		}
