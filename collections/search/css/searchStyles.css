@@ -125,7 +125,7 @@
   --bg-hover1: rgba(0, 0, 0, 0.08);
   --bbc: rgba(0, 0, 0, 0.42);
   --opaq1: 0.08;
-  --fz: 16px;
+  --fz: 18px;
   margin: 0 auto;
   padding-top: 14px;
   width: 100%;
@@ -245,7 +245,7 @@
 /* Select control ***********************************/
 .select-container label {
   font-size: 0.8em;
-  postion: relative;
+  position: relative;
   top: 22px;
   background-color: white;
   padding: 2px 4px;
@@ -260,6 +260,7 @@
   pointer-events: none;
   color: gray;
   line-height: 1;
+  font-size: var(--fz);
 }
 
 .select-container select {
