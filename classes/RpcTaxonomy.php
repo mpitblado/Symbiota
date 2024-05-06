@@ -55,7 +55,7 @@ class RpcTaxonomy extends RpcBase{
 					$sciname = trim($sciname) . ' ' . $r->author;
 				}
 				if(!empty($r->cultivarEpithet)){
-					$sciname .= "'" . $r->cultivarEpithet . "'";
+					$sciname .= " '" . $r->cultivarEpithet . "'";
 				}
 				if(!empty($r->tradeName)){
 					$sciname .= ' ' . $r->tradeName;
