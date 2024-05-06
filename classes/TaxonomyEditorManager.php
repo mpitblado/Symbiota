@@ -224,8 +224,8 @@ class TaxonomyEditorManager extends Manager{
 	public function submitTaxonEdits($postArr){
 		$statusStr = '';
 		$sciname = trim($postArr['unitind1'] . $postArr['unitname1'] . ' ' . $postArr['unitind2'] . $postArr['unitname2'] . ' ' . trim($postArr['unitind3'] . ' ' . $postArr['unitname3']));
-		$processedCultivarEpithet = $postArr['cultivarEpithet'] ? trim($postArr['cultivarEpithet'],"'\`\"") : NULL;
-		$processedTradeName = $postArr['tradeName'] ? strtoupper($postArr['tradeName']) : 'NULL';
+		$processedCultivarEpithet = $postArr['cultivarEpithet'] ? trim($postArr['cultivarEpithet'],"'\`\"") : '';
+		$processedTradeName = $postArr['tradeName'] ? strtoupper($postArr['tradeName']) : '';
 		$sql = 'UPDATE taxa SET '. // @TODO make this a prepared statement
 			'unitind1 = '.($postArr['unitind1']?'"'.$this->cleanInStr($postArr['unitind1']).'"':'NULL').', '.
 			'unitname1 = "'.$this->cleanInStr($postArr['unitname1']).'",'.
@@ -233,8 +233,8 @@ class TaxonomyEditorManager extends Manager{
 			'unitname2 = '.($postArr['unitname2']?'"'.$this->cleanInStr($postArr['unitname2']).'"':'NULL').', '.
 			'unitind3 = '.($postArr['unitind3']?'"'.$this->cleanInStr($postArr['unitind3']).'"':'NULL').', '.
 			'unitname3 = '.($postArr['unitname3']?'"'.$this->cleanInStr($postArr['unitname3']).'"':'NULL').', '.
-			'cultivarEpithet = '.($postArr['cultivarEpithet'] ? '"' . $this->cleanInStr($processedCultivarEpithet) . '"' : 'NULL') . ', ' .
-			'tradeName = "' . ($postArr['tradeName'] ? $this->cleanInStr($processedTradeName) : 'NULL') . '", ' .
+			'cultivarEpithet = "'.($postArr['cultivarEpithet'] ? ($this->cleanInStr($processedCultivarEpithet)) : '') . '", ' .
+			'tradeName = "' . ($postArr['tradeName'] ? $this->cleanInStr($processedTradeName) : '') . '", ' .
 			'author = "'.($postArr['author']?$this->cleanInStr($postArr['author']):'').'", '.
 			'rankid = '.(is_numeric($postArr['rankid'])?$postArr['rankid']:'NULL').', '.
 			'source = '.($postArr['source']?'"'.$this->cleanInStr($postArr['source']).'"':'NULL').', '.
