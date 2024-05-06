@@ -8,7 +8,6 @@ class ChecklistVoucherAdmin extends Manager {
 	protected $clName;
 	protected $clMetadata;
 	private $childClidArr = array();
-	private $footprintWkt;
 	private $footprintGeoJson;
 	private $queryVariablesArr = array();
 
@@ -46,7 +45,7 @@ class ChecklistVoucherAdmin extends Manager {
 	private function setMetaData(){
 		if($this->clid){
 			$sql = 'SELECT clid, name, locality, publication, abstract, authors, parentclid, notes, latcentroid, longcentroid, pointradiusmeters, '.
-				'footprintwkt, footprintGeoJson, access, defaultSettings, dynamicsql, datelastmodified, dynamicProperties, uid, type, initialtimestamp '.
+				'footprintGeoJson, access, defaultSettings, dynamicsql, datelastmodified, dynamicProperties, uid, type, initialtimestamp '.
 				'FROM fmchecklists WHERE (clid = '.$this->clid.')';
 		 	$rs = $this->conn->query($sql);
 			if($rs){
@@ -63,7 +62,6 @@ class ChecklistVoucherAdmin extends Manager {
 					$this->clMetadata["latcentroid"] = $row->latcentroid;
 					$this->clMetadata["longcentroid"] = $row->longcentroid;
 					$this->clMetadata["pointradiusmeters"] = $row->pointradiusmeters;
-					$this->clMetadata['footprintwkt'] = $row->footprintwkt;
 					$this->clMetadata['footprintGeoJson'] = $row->footprintGeoJson;
 					$this->clMetadata["access"] = $row->access;
 					$this->clMetadata["defaultSettings"] = $row->defaultSettings;
@@ -102,11 +100,10 @@ class ChecklistVoucherAdmin extends Manager {
 	//Dynamic query variable functions
 	public function setCollectionVariables(){
 		if($this->clid){
-			$sql = 'SELECT name, dynamicsql, footprintwkt, footprintGeoJson FROM fmchecklists WHERE (clid = '.$this->clid.')';
+			$sql = 'SELECT name, dynamicsql, footprintGeoJson FROM fmchecklists WHERE (clid = '.$this->clid.')';
 			$result = $this->conn->query($sql);
 			if($row = $result->fetch_object()){
 				$this->clName = $this->cleanOutStr($row->name);
-				$this->footprintWkt = $row->footprintwkt;
 				$this->footprintGeoJson = $row->footprintGeoJson;
 				$sqlFrag = $row->dynamicsql ?? '';
 				$varArr = json_decode($sqlFrag, true);
@@ -284,9 +281,9 @@ class ChecklistVoucherAdmin extends Manager {
 					'AND (o.decimallongitude BETWEEN '.$this->queryVariablesArr['lngwest'].' AND '.$this->queryVariablesArr['lngeast'].') ';
 			}
 		}
-		if(isset($this->queryVariablesArr['includewkt']) && $this->queryVariablesArr['includewkt'] && $this->footprintWkt){
+		if(isset($this->queryVariablesArr['includewkt']) && $this->queryVariablesArr['includewkt'] && $this->footprintGeoJson){
 			//Searh based on polygon
-			$sqlFrag .= 'AND (ST_Within(p.lngLatPoint,ST_GeomFromGeoJson("'.$this->footprintGeoJson.'"))) ';
+			$sqlFrag .= 'AND (ST_Within(p.lngLatPoint,ST_GeomFromGeoJson(\''.$this->footprintGeoJson.'\'))) ';
 			$llStr = false;
 		}
 		if(isset($this->queryVariablesArr['latlngor']) && $this->queryVariablesArr['latlngor'] && $locStr && $llStr){
@@ -780,12 +777,8 @@ class ChecklistVoucherAdmin extends Manager {
 		return $this->clMetadata;
 	}
 
-	public function getClFootprintWkt(){
-		return $this->footprintWkt;
-	}
-
-	public function getClFootprint(){
-		return $this->footprintGeoJson ?? $this->footprintWkt;
+	public function getClFootprint() {
+		return $this->footprintGeoJson;
 	}
 
 	//Misc functions
