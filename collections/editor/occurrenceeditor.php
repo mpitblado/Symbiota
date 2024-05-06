@@ -468,6 +468,7 @@ else{
 	?>
 	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
 	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-ui.min.js" type="text/javascript"></script>
+	<script src="<?= $CLIENT_ROOT ?>/js/symb/mapAidUtils.js" type="text/javascript"></script>
 	<script type="text/javascript">
 		var collId = "<?php echo (isset($collMap['collid'])?$collMap['collid']:(is_numeric($collId)?$collId:0)); ?>";
 		var csMode = "<?php echo $crowdSourceMode; ?>";
@@ -1220,7 +1221,7 @@ else{
 													<div id="footprintWktDiv" class="field-div">
 														<?php echo $LANG['FOOTPRINT_WKT']; ?>
 														<br/>
-														<div id="mapPolyAidDiv" style="float:right;margin-top:-2px;margin-left:2px;" onclick="openMappingPolyAid();" title="">
+														<div id="mapPolyAidDiv" style="float:right;margin-top:-2px;margin-left:2px;" onclick="openCoordAid({map_mode: MAP_MODES.POLYGON, map_mode_strict:true, polygon_text_type: POLYGON_TEXT_TYPES.GEOJSON})" title="">
 															<img src="../../images/world.png" style="width:14px;" >
 														</div>
 														<textarea name="footprintwkt" id="footprintwkt" onchange="footPrintWktChanged(this)" style="height:40px;resize:vertical;" ><?php echo array_key_exists('footprintwkt',$occArr)?$occArr['footprintwkt']:''; ?></textarea>
