@@ -50,7 +50,7 @@ class RpcTaxonomy extends RpcBase{
 				}
 
 				if(!empty($r->cultivarEpithet)){
-					$sciname = str_replace("'" . $r->cultivarEpithet . "'", '', trim($sciname)); // @TODO could possibly replace off-target if cultivarEpithet matches some parent taxon exactly.
+					$sciname = str_replace("'" . $r->cultivarEpithet . "'", '', trim($sciname)); // @TODO could possibly replace off-target if cultivarEpithet matches some parent taxon exactly. We think extremely unlikely edge case, so ignoring for now.
 				}
 
 				if(!empty($r->author)){
@@ -83,7 +83,7 @@ class RpcTaxonomy extends RpcBase{
 			}
 
 			if(!empty($r->cultivarEpithet)){
-				$sciname = str_replace("'" . $r->cultivarEpithet . "'", '', trim($sciname)); // @TODO could possibly replace off-target if cultivarEpithet matches some parent taxon exactly.
+				$sciname = str_replace("'" . $r->cultivarEpithet . "'", '', trim($sciname)); // @TODO could possibly replace off-target if cultivarEpithet matches some parent taxon exactly. We think extremely unlikely edge case, so ignoring for now.
 			}
 
 			if(!empty($r->author)){
