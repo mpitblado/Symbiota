@@ -1,6 +1,5 @@
 <?php
 include_once('TPEditorManager.php');
-include_once($SERVER_ROOT.'/traits/TaxonomyTrait.php');
 
 class TPDescEditorManager extends TPEditorManager{
 

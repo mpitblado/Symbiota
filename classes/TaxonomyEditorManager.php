@@ -225,7 +225,7 @@ class TaxonomyEditorManager extends Manager{
 		$sciname = trim($postArr['unitind1'] . $postArr['unitname1'] . ' ' . $postArr['unitind2'] . $postArr['unitname2'] . ' ' . trim($postArr['unitind3'] . ' ' . $postArr['unitname3']));
 		$processedCultivarEpithet = $postArr['cultivarEpithet'] ? trim($postArr['cultivarEpithet'],"'\`\"") : '';
 		$processedTradeName = $postArr['tradeName'] ? strtoupper($postArr['tradeName']) : '';
-		$sql = 'UPDATE taxa SET '. // @TODO make this a prepared statement
+		$sql = 'UPDATE taxa SET '.
 			'unitind1 = '.($postArr['unitind1']?'"'.$this->cleanInStr($postArr['unitind1']).'"':'NULL').', '.
 			'unitname1 = "'.$this->cleanInStr($postArr['unitname1']).'",'.
 			'unitind2 = '.($postArr['unitind2']?'"'.$this->cleanInStr($postArr['unitind2']).'"':'NULL').', '.
