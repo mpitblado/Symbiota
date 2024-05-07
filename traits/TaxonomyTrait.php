@@ -17,5 +17,31 @@ trait TaxonomyTrait {
 
 		return $returnObj;
 	}
+
+	function splitScinameByProvided($sciName, $cultivarEpithet = '', $tradeName = '', $author = ''){
+		
+		$returnObj = [];
+		if(empty($sciName)) return $returnObj;
+		
+		$scinameBase = $sciName;
+		if(!empty($tradeName)){
+			$scinameBase = str_replace($tradeName, '', $scinameBase);
+			$returnObj['tradeName'] = $tradeName;
+		}
+
+		if(!empty($cultivarEpithet)){
+			$scinameBase = str_replace("'". $cultivarEpithet . "'", '', trim($scinameBase)); // @TODO could possibly replace off-target if cultivarEpithet matches some parent taxon exactly.
+			$returnObj['cultivarEpithet'] = $cultivarEpithet; // assumes quotes not stored in db
+		}
+
+		if(!empty($author)){
+			$returnObj['author'] = $author;
+		}
+
+		$returnObj['base'] = trim($scinameBase ?? '');
+		
+		return $returnObj;
+
+	}
 }
 ?>

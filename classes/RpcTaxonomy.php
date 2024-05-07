@@ -1,7 +1,9 @@
 <?php
 include_once($SERVER_ROOT.'/classes/RpcBase.php');
-
+include_once($SERVER_ROOT.'/traits/TaxonomyTrait.php');
 class RpcTaxonomy extends RpcBase{
+
+	use TaxonomyTrait;
 
 	private $taxAuthID = 1;
 
@@ -69,7 +71,7 @@ class RpcTaxonomy extends RpcBase{
 
 	public function getAcceptedTaxa($queryTerm){
 		$retArr = Array();
-		$sql = 'SELECT t.tid, t.sciname, t.author '.
+		$sql = 'SELECT t.tid, t.sciname, t.cultivarEpithet, t.tradeName, t.author '.
 			'FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid '.
 			'WHERE (ts.taxauthid = '.$this->taxAuthID.') AND (ts.tid = ts.tidaccepted) AND (t.sciname LIKE "'.$this->cleanInStr($queryTerm).'%") '.
 			'ORDER BY t.sciname LIMIT 20';
@@ -133,7 +135,7 @@ class RpcTaxonomy extends RpcBase{
 				$lowestRank = $row->RankId;
 			}
 			$rs->free();
-			$sql1 = 'SELECT DISTINCT t.tid, t.sciname, t.author, t.rankid FROM taxa t LEFT JOIN taxstatus ts ON t.tid = ts.tid WHERE ts.taxauthid = '.$this->taxAuthID.' AND t.RankId = '.$lowestRank.' ';
+			$sql1 = 'SELECT DISTINCT t.tid, t.sciname, t.cultivarEpithet, t.tradeName, t.author, t.rankid FROM taxa t LEFT JOIN taxstatus ts ON t.tid = ts.tid WHERE ts.taxauthid = '.$this->taxAuthID.' AND t.RankId = '.$lowestRank.' ';
 			//echo "<div>".$sql1."</div>";
 			$rs1 = $this->conn->query($sql1);
 			$i = 0;
@@ -172,7 +174,7 @@ class RpcTaxonomy extends RpcBase{
 		else{
 			$objId = filter_var($objId, FILTER_SANITIZE_NUMBER_INT);
 			//Get children, but only accepted children
-			$sql = 'SELECT DISTINCT t.tid, t.sciname, t.author, t.rankid FROM taxa AS t INNER JOIN taxstatus AS ts ON t.tid = ts.tid ';
+			$sql = 'SELECT DISTINCT t.tid, t.sciname, t.cultivarEpithet, t.tradeName, t.author, t.rankid FROM taxa AS t INNER JOIN taxstatus AS ts ON t.tid = ts.tid ';
 			if($limitToOccurrences) $sql .= 'INNER JOIN taxaenumtree e ON t.tid = e.parenttid INNER JOIN omoccurrences o ON e.tid = o.tidInterpreted ';
 			$sql .=	'WHERE (ts.taxauthid = '.$this->taxAuthID.') AND (ts.tid = ts.tidaccepted) AND ((ts.parenttid = '.$objId.') OR (t.tid = '.$objId.')) ';
 			//echo $sql.'<br>';
@@ -181,10 +183,14 @@ class RpcTaxonomy extends RpcBase{
 			while($r = $rs->fetch_object()){
 				$rankName = (isset($taxonUnitArr[$r->rankid])?$taxonUnitArr[$r->rankid]:'Unknown');
 				$label = '2-'.$r->rankid.'-'.$rankName.'-'.$r->sciname;
-				$sciName = $r->sciname;
+				$sciNameParts = $this->splitScinameByProvided($r->sciname, $r->cultivarEpithet, $r->tradeName, $r->author);
+				$sciName = $sciNameParts['base'];
 				if($r->rankid >= 180) $sciName = '<i>'.$sciName.'</i>';
+				$sciName .= $displayAuthor ? " " . $r->author : "";
+				if(isset($sciNameParts['cultivarEpithet'])) $sciName .= " " . $sciNameParts['cultivarEpithet'];
+				if(isset($sciNameParts['tradeName'])) $sciName .= " " . $sciNameParts['tradeName'];
 				if($r->tid == $targetId) $sciName = '<b>'.$sciName.'</b>';
-				$sciName = "<span style='font-size:75%;'>".$rankName.":</span> ".$sciName.($displayAuthor?" ".$r->author:"");
+				$sciName = "<span style='font-size:75%;'>".$rankName.":</span> " . $sciName;
 				if($r->tid == $objId){
 					$retArr['id'] = $r->tid;
 					$retArr['label'] = $label;
@@ -221,7 +227,7 @@ class RpcTaxonomy extends RpcBase{
 			$rs->free();
 
 			//Get synonyms for all accepted taxa
-			$sqlSyns = 'SELECT DISTINCT t.tid, t.sciname, t.author, t.rankid '.
+			$sqlSyns = 'SELECT DISTINCT t.tid, t.sciname, t.cultivarEpithet, t.tradeName, t.author, t.rankid '.
 				'FROM taxa AS t INNER JOIN taxstatus AS ts ON t.tid = ts.tid '.
 				'WHERE (ts.tid <> ts.tidaccepted) AND (ts.taxauthid = '.$this->taxAuthID.') AND (ts.tidaccepted = '.$objId.')';
 			//echo 'syn: '.$sqlSyns.'<br/>';
@@ -229,10 +235,13 @@ class RpcTaxonomy extends RpcBase{
 			while($row = $rsSyns->fetch_object()){
 				$rankName = (isset($taxonUnitArr[$row->rankid])?$taxonUnitArr[$row->rankid]:'Unknown');
 				$label = '1-'.$row->rankid.'-'.$rankName.'-'.$row->sciname;
-				$sciName = $row->sciname;
-				if($row->rankid >= 180) $sciName = '<i>'.$sciName.'</i>';
+				$sciNameParts = $this->splitScinameByProvided($row->sciname, $row->cultivarEpithet, $row->tradeName, $row->author);
+				$sciName = $sciNameParts['base'];
+				if($row->rankid >= 180) $sciName = '[<i>'.$sciName.'</i>]';
+				$sciName .= $displayAuthor ? " " . $row->author : "";
+				if(isset($sciNameParts['cultivarEpithet'])) $sciName .= " " . $sciNameParts['cultivarEpithet'];
+				if(isset($sciNameParts['tradeName'])) $sciName .= " " . $sciNameParts['tradeName'];
 				if($row->tid == $targetId) $sciName = '<b>'.$sciName.'</b>';
-				$sciName = '['.$sciName.']'.($displayAuthor?' '.$row->author:'');
 				$childArr[$i]['id'] = $row->tid;
 				$childArr[$i]['label'] = $label;
 				$childArr[$i]['name'] = $sciName;
