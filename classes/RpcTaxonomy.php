@@ -77,7 +77,24 @@ class RpcTaxonomy extends RpcBase{
 			'ORDER BY t.sciname LIMIT 20';
 		$rs = $this->conn->query($sql);
 		while($r = $rs->fetch_object()){
-			$sciname = $r->sciname.' '.$r->author;
+			$sciname = $r->sciname; //.' '.$r->author;
+			if(!empty($r->tradeName)){
+				$sciname = str_replace($r->tradeName, '', $sciname);
+			}
+
+			if(!empty($r->cultivarEpithet)){
+				$sciname = str_replace("'" . $r->cultivarEpithet . "'", '', trim($sciname)); // @TODO could possibly replace off-target if cultivarEpithet matches some parent taxon exactly.
+			}
+
+			if(!empty($r->author)){
+				$sciname = trim($sciname) . ' ' . $r->author;
+			}
+			if(!empty($r->cultivarEpithet)){
+				$sciname .= " '" . $r->cultivarEpithet . "'";
+			}
+			if(!empty($r->tradeName)){
+				$sciname .= ' ' . $r->tradeName;
+			}
 			$retArr[] = array('id' => $r->tid,'label' => $sciname);
 		}
 		$rs->free();
