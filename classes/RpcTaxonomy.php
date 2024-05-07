@@ -187,7 +187,7 @@ class RpcTaxonomy extends RpcBase{
 				$sciName = $sciNameParts['base'];
 				if($r->rankid >= 180) $sciName = '<i>'.$sciName.'</i>';
 				$sciName .= $displayAuthor ? " " . $r->author : "";
-				if(isset($sciNameParts['cultivarEpithet'])) $sciName .= " " . $sciNameParts['cultivarEpithet'];
+				if(isset($sciNameParts['cultivarEpithet'])) $sciName .= " '" . $sciNameParts['cultivarEpithet'] . "'";
 				if(isset($sciNameParts['tradeName'])) $sciName .= " " . $sciNameParts['tradeName'];
 				if($r->tid == $targetId) $sciName = '<b>'.$sciName.'</b>';
 				$sciName = "<span style='font-size:75%;'>".$rankName.":</span> " . $sciName;
@@ -239,7 +239,7 @@ class RpcTaxonomy extends RpcBase{
 				$sciName = $sciNameParts['base'];
 				if($row->rankid >= 180) $sciName = '[<i>'.$sciName.'</i>]';
 				$sciName .= $displayAuthor ? " " . $row->author : "";
-				if(isset($sciNameParts['cultivarEpithet'])) $sciName .= " " . $sciNameParts['cultivarEpithet'];
+				if(isset($sciNameParts['cultivarEpithet'])) $sciName .= " '" . $sciNameParts['cultivarEpithet'] . "'";
 				if(isset($sciNameParts['tradeName'])) $sciName .= " " . $sciNameParts['tradeName'];
 				if($row->tid == $targetId) $sciName = '<b>'.$sciName.'</b>';
 				$childArr[$i]['id'] = $row->tid;
