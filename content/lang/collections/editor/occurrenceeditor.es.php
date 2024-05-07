@@ -26,7 +26,7 @@ $LANG['NEXT_REC'] = 'Registro Siguiente';
 $LANG['LAST_REC'] = 'Último Registro';
 $LANG['NEW_REC'] = 'Nuevo Registro';
 $LANG['OCCEDITOR'] = 'Editor de Ocurrencias';
-$LANG['SEARCH_FILTER'] = 'Buscar/Filtrar';
+$LANG['SEARCH_FILTER'] = 'Abrir Formulario de Búsqueda de Registros';
 $LANG['EDITOR'] = 'Editor';
 $LANG['CENTRAL_CROWD'] = 'Central de Colaboración Abierta';
 $LANG['PERS_MANAGEMENT'] = 'Manejo Personal';
@@ -195,7 +195,6 @@ $LANG['GEN_RES_ADD_SUCCESS'] = 'Genetic resource added successfully!';
 $LANG['ERROR_UNABLE_INSERT'] = 'ERROR: unable to INSERT text fragment';
 $LANG['ERROR_UNABLE_UPDATE'] = 'ERROR: unable to UPDATE text fragment';
 $LANG['ERROR_UNABLE_DELETE'] = 'ERROR: unable DELETE text fragment';
-
 $LANG['MAP'] = 'Mapa';
 $LANG['CULTIVAR_NAME'] = 'Nombre del Cultivar';
 $LANG['TRADE_NAME'] = 'Nombre Comercial';

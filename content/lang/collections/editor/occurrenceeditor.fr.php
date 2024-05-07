@@ -26,7 +26,7 @@ $LANG['NEXT_REC'] = 'Enregistrement suivant';
 $LANG['LAST_REC'] = 'Dernier enregistrement';
 $LANG['NEW_REC'] = 'Nouvel enregistrement';
 $LANG['OCCEDITOR'] = 'Éditeur d\'occurrences';
-$LANG['SEARCH_FILTER'] = 'Rechercher/Filtrer';
+$LANG['SEARCH_FILTER'] = 'Ouvrir le Formulaire de Recherche d\'Enregistrement';
 $LANG['EDITOR'] = 'Éditeur';
 $LANG['CENTRAL_CROWD'] = 'Crowdsourcing Central';
 $LANG['PERS_MANAGEMENT'] = 'Gestion Personnelle';
@@ -195,7 +195,6 @@ $LANG['GEN_RES_ADD_SUCCESS'] = 'Ressource génétique ajoutée avec succès!';
 $LANG['ERROR_UNABLE_INSERT'] = "ERREUR: impossible d'INSÉRER un fragment de texte";
 $LANG['ERROR_UNABLE_UPDATE'] = 'ERREUR: impossible de mettre à jour le fragment de texte';
 $LANG['ERROR_UNABLE_DELETE'] = 'ERREUR: impossible de supprimer le fragment de texte';
-
 $LANG['MAP'] = 'Carte';
 $LANG['CULTIVAR_NAME'] = 'Nom du Cultivar';
 $LANG['TRADE_NAME'] = 'Nom Commercial';
