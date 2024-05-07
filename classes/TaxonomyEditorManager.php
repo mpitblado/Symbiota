@@ -1,6 +1,5 @@
 <?php
 
-use PHPUnit\Util\Json;
 
 include_once($SERVER_ROOT.'/classes/Manager.php');
 include_once($SERVER_ROOT.'/content/lang/classes/TaxonomyEditorManager.'.$LANG_TAG.'.php');
