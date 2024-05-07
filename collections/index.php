@@ -107,7 +107,7 @@ $otherCatArr = $collManager->getOccurVoucherProjects();
 						<?php
 							$buttonTxt = isset($LANG['SEARCH'])?$LANG['SEARCH']:'Search;';
 							$buttonStr = '<button aria-label="' . $buttonTxt . '" type="submit" value="search">' . $buttonTxt . '</button>';
-							echo '<div id="sticky-button-for-joint-specimens-observations" class="search-button-div sticky-buttons">'.$buttonStr.'</div>';
+							echo '<div id="sticky-button-for-joint-specimens-observations" class="search-button-div sticky-buttons">' . $buttonStr . '</div>';
 							$collManager->outputFullCollArr($specArr, $catId, true, false, 'Specimen', '');
 							$hrAndHeaderText = '<div class="specimen-header-margin"><hr/><h2>' . $LANG['OBSERVATION_COLLECTIONS'] . '</h2></div>';
 							if($specArr && $obsArr) echo $hrAndHeaderText;

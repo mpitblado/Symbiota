@@ -159,6 +159,9 @@ $LANG['RESTORE_RECORD'] = 'Restore Record';
 $LANG['RECORD_DELETED'] = 'Enregistrement supprimé';
 $LANG['VALUE'] = 'Valeur';
 $LANG['LAT_LNG'] = 'Latitude/Longitude';
+$LANG['CULT_STATUS'] = 'Statut de Culture';
+$LANG['CULTIVATED'] = 'Cultivé';
+$LANG['NOT_CULTIVATED'] = 'Non Cultivé';
 
 //Used within OccurrenceIndividual class
 $LANG['INAPPROPRIATE'] = 'Commentaire inapproprié signalé';
@@ -167,4 +170,7 @@ $LANG['EMAIL_NOT_DEFINED'] = "ERREUR : adresse e-mail de l'administrateur du p
 $LANG['PRIVATE_STATUS'] = 'statut privé';
 $LANG['UNABLE_TO_VERIFY_TARGET'] = 'ERREUR lors de la suppression du bon : impossible de vérifier la liste de contrôle cible pour le bon';
 $LANG['PERMISSION_ERROR'] = "ERREUR lors de la suppression du bon : erreur d'autorisation";
+
+$LANG['CULTIVAR_NAME'] = 'Nom du Cultivar';
+$LANG['TRADE_NAME'] = 'Nom Commercial';
 ?>

@@ -159,6 +159,9 @@ $LANG['RESTORE_RECORD'] = 'Restore Record';
 $LANG['RECORD_DELETED'] = 'Record deleted';
 $LANG['VALUE'] = 'Value';
 $LANG['LAT_LNG'] = 'Latitude/Longitude';
+$LANG['CULT_STATUS'] = 'Cultivation Status';
+$LANG['CULTIVATED'] = 'Cultivated';
+$LANG['NOT_CULTIVATED'] = 'Not Cultivated';
 
 //Used within OccurrenceIndividual class
 $LANG['INAPPROPRIATE'] = 'Inappropriate comment reported';
@@ -167,4 +170,7 @@ $LANG['EMAIL_NOT_DEFINED'] = 'ERROR: Portal admin email not defined in central c
 $LANG['PRIVATE_STATUS'] = 'private status';
 $LANG['UNABLE_TO_VERIFY_TARGET'] = 'ERROR deleting voucher: unable to verify target checklist for voucher';
 $LANG['PERMISSION_ERROR'] = 'ERROR deleting voucher: permission error';
+
+$LANG['CULTIVAR_NAME'] = 'Cultivar Name';
+$LANG['TRADE_NAME'] = 'Trade Name';
 ?>

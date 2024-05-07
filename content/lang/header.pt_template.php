@@ -48,8 +48,8 @@ $LANG['H_LOGIN'] = 'Entrar';
 $LANG['H_NEW_ACCOUNT'] = 'Nova Conta';
 $LANG['SELECT_LANGUAGE'] = 'Selecionar Idioma';
 
-$LANG['TOGGLE_508_OFF'] = "Modo Condensado";
-$LANG['TOGGLE_508_ON'] = "Modo de Acessibilidade";
+$LANG['TOGGLE_508_OFF'] = "Use Layout de Formulário Condensado";
+$LANG['TOGGLE_508_ON'] = "Use Layout de Formulário Vertical";
 
 $LANG['CONTACT_US'] = 'Entre em Contato Conosco';
 $LANG['LOGIN'] = 'Login';

@@ -317,6 +317,7 @@ $traitArr = $indManager->getTraitArr();
 		</style>
 </head>
 <body>
+	<script src="<?php echo htmlspecialchars($CLIENT_ROOT, HTML_SPECIAL_CHARS_FLAGS); ?>/collections/individual/domManipulationUtils.js" type="text/javascript"></script>
 	<header style="background-image: none;">
 		<a class="screen-reader-only" href="#end-nav"><?php echo $LANG['SKIP_NAV'] ?></a>
 		<h1 class="page-heading">
@@ -699,7 +700,9 @@ $traitArr = $indManager->getTraitArr();
 						if($occArr['decimallatitude']){
 							?>
 							<div id="latlng-div" class="bottom-breathing-room-rel-sm">
-								<?php echo $LANG['LAT_LNG'] ?>:
+								<label>
+									<?php echo $LANG['LAT_LNG'] ?>:
+								</label>
 								<?php
 								echo $occArr['decimallatitude'].'&nbsp;&nbsp;'.$occArr['decimallongitude'];
 								if($occArr['coordinateuncertaintyinmeters']) echo ' +-'.$occArr['coordinateuncertaintyinmeters'].'m.';
@@ -893,10 +896,17 @@ $traitArr = $indManager->getTraitArr();
 							</div>
 							<?php
 						}
+						if($occArr['cultivationstatus'] && $occArr['cultivationstatus'] == "1"){
+							?>
+							<div id="cultivation-status-div" class="bottom-breathing-room-rel-sm">
+								<label><?php echo $LANG['CULT_STATUS']; ?>:</label>
+								<?php echo $LANG['CULTIVATED']?>
+							</div>
+							<?php
+						} 
 						$noteStr = '';
 						if($occArr['occurrenceremarks']) $noteStr .= "; ".$occArr['occurrenceremarks'];
 						if($occArr['establishmentmeans']) $noteStr .= "; ".$occArr['establishmentmeans'];
-						if($occArr['cultivationstatus']) $noteStr .= "; Cultivated or Captive";
 						if($noteStr){
 							?>
 							<div id="notes-div" class="bottom-breathing-room-rel-sm">
@@ -1528,5 +1538,11 @@ $traitArr = $indManager->getTraitArr();
 		}
 		?>
 	</div>
+	<script type="text/javascript">
+		document.addEventListener('DOMContentLoaded', ()=>{
+			reorderElements("occur-div", ["cat-div", "br", "preparations-div", "disposition-div", "sampleprotocol-div", "assoccatnum-parent-div" , "othercatalognumbers", "assoccatnum-div", "br", "association-div", "sciname-div", "idqualifier-div", "family-div", "br", "taxonremarks-div", "idqualifier-div","identref-div","identremarks-div", "determination-div", "br", "identby-div", "identdate-div", "br", "recordedby-div", "recordnumber-div","br", "eventdate-div", "verbeventid-div", "br", "cultivation-status-div", "locality-div", "latlng-div", "verbcoord-div", "elev-div", "habitat-div", "assoctaxa-div", "substrate-div", "sex-div", "lifestage-div", "reproductive-div", "attr-div", "indcnt-div", "notes-div", "br", "rights-div", "contact-div", "openeditor-div", "br", "record-id-div"], ["occurrenceid-div", "disposition-div"]);
+
+		});
+	</script>
 </body>
 </html>

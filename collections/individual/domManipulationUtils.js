@@ -1,21 +1,47 @@
 const reorderElements = (parentDivId, desiredDivIds, removeDivIds) => {
   const parent = document.getElementById(parentDivId);
   const allChildren = Array.from(parent.children);
+  const allChildrenIds = allChildren.map((child) => child.id);
+  const revisedDesired = desiredDivIds.filter((desiredDiv) => {
+    return (
+      allChildrenIds.includes(desiredDiv) ||
+      desiredDiv === "br" ||
+      desiredDiv == "hr"
+    );
+  });
 
-  allChildren.forEach((childEl) => {
-    const currentId = childEl.id;
-    if (desiredDivIds.includes(currentId)) {
-      currentChildIdxInDesiredList = desiredDivIds.indexOf(currentId);
-      parent.appendChild(childEl);
-      if (desiredDivIds[currentChildIdxInDesiredList + 1] === "hr") {
-        const hrElement = document.createElement("hr");
-        hrElement.style.cssText = "margin-bottom: 2rem; clear: both;";
-        parent.appendChild(hrElement);
-      }
+  revisedDesired.forEach((desired) => {
+    //get tip of parent child array to make sure we're not repeating breaks or hrs
+    const tipId = Array.from(parent.children)?.slice(-1)[0]?.id;
+
+    if (desired === "hr" && tipId !== "") {
+      // @TODO skip if preceding entry in parent's id is hr
+      const hrElement = document.createElement("hr");
+      hrElement.style.cssText = "margin-bottom: 2rem; clear: both;";
+      parent.appendChild(hrElement);
     }
-    if (removeDivIds.includes(currentId)) {
-      childEl.remove();
+    if (desired === "br" && tipId !== "") {
+      // @TODO skip if preceding entry in parent's id is hr
+      const brElement = document.createElement("br");
+      brElement.style.cssText = "margin-bottom: 2rem; clear: both;";
+      parent.appendChild(brElement);
     }
+    if (desired !== "hr" && desired !== "br") {
+      const targetIndexInAllChildren = allChildrenIds.indexOf(desired);
+      parent.appendChild(allChildren[targetIndexInAllChildren]);
+    }
+  });
+
+  const leftOverChildren = allChildren.filter(
+    (child) => !revisedDesired.includes(child.id)
+  );
+  if (leftOverChildren.length > 0) {
+    const brElement = document.createElement("br");
+    brElement.style.cssText = "margin-bottom: 2rem; clear: both;";
+    parent.appendChild(brElement);
+  }
+  leftOverChildren.forEach((orphan) => {
+    parent.appendChild(orphan);
   });
 };
 

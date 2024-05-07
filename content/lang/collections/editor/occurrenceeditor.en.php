@@ -195,4 +195,7 @@ $LANG['GEN_RES_ADD_SUCCESS'] = 'Genetic resource added successfully!';
 $LANG['ERROR_UNABLE_INSERT'] = 'ERROR: unable to INSERT text fragment';
 $LANG['ERROR_UNABLE_UPDATE'] = 'ERROR: unable to UPDATE text fragment';
 $LANG['ERROR_UNABLE_DELETE'] = 'ERROR: unable DELETE text fragment';
+$LANG['MAP'] = 'Map';
+$LANG['CULTIVAR_NAME'] = 'Cultivar Name';
+$LANG['TRADE_NAME'] = 'Trade Name';
 ?>
