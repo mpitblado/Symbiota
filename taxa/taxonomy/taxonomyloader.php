@@ -104,7 +104,7 @@ if($isEditor){
 					<div>
 						<div class="left-column">
 							<label for="sciname"> 
-								<?php echo (isset($LANG['TAXON_NAME']) ? $LANG['TAXON_NAME'] : 'Taxon Name'); ?>: 
+								<?php echo $LANG['TAXON_NAME']; ?>: 
 							</label>
 						</div>
 						<input type="text" id="sciname" name="sciname" class="search-bar-long" value="" onchange="parseName(this.form)"/>
@@ -112,7 +112,7 @@ if($isEditor){
 					<div>
 						<div class="left-column">
 							<label for="author">
-								<?php echo (isset($LANG['AUTHOR']) ? $LANG['AUTHOR'] : 'Author'); ?>:
+								<?php echo $LANG['AUTHOR']; ?>:
 							</label>
 						</div>
 						<input type='text' id='author' name='author' class='search-bar-long' />
@@ -160,8 +160,6 @@ if($isEditor){
 									<label for="">
 										<?php echo $LANG['UNITNAME4']; ?>:
 									</label>
-									<!-- TODO add description -->
-									<!-- TODO make dependant on cultivated selection -->
 								</div>
 								<input type='text' id='cultivarEpithet' name='cultivarEpithet' onchange="updateFullname(this.form)" class='search-bar' aria-label="<?php echo $LANG['UNITNAME4']; ?>" title="<?php echo $LANG['UNITNAME4']; ?>" />
 							</div>
@@ -170,8 +168,6 @@ if($isEditor){
 									<label for="tradeName">
 										<?php echo $LANG['UNITNAME5']; ?>:
 									</label>
-									<!-- TODO add description -->
-									<!-- TODO make dependant on cultivated selection -->
 								</div>
 								<input type='text' id='tradeName' name='tradeName' onchange="updateFullname(this.form)" class='search-bar' aria-label="<?php echo $LANG['UNITNAME5']; ?>" title="<?php echo $LANG['UNITNAME5']; ?>" />
 							</div>

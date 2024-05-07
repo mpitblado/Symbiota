@@ -8,7 +8,7 @@ trait TaxonomyTrait {
 		}
 
 		if(!empty($this->cultivarEpithet)){
-			$scinameBase = str_replace("'". $this->cultivarEpithet . "'", '', trim($scinameBase)); // @TODO could possibly replace off-target if cultivarEpithet matches some parent taxon exactly.
+			$scinameBase = str_replace("'". $this->cultivarEpithet . "'", '', trim($scinameBase)); // @TODO could possibly replace off-target if cultivarEpithet matches some parent taxon exactly. We think extremely unlikely edge case, so ignoring for now.
 		}
 		$returnObj['base'] = trim($scinameBase ?? '');
 		$returnObj['cultivarEpithet'] = $this->cultivarEpithet; // assumes quotes not stored in db
@@ -30,7 +30,7 @@ trait TaxonomyTrait {
 		}
 
 		if(!empty($cultivarEpithet)){
-			$scinameBase = str_replace("'". $cultivarEpithet . "'", '', trim($scinameBase)); // @TODO could possibly replace off-target if cultivarEpithet matches some parent taxon exactly.
+			$scinameBase = str_replace("'". $cultivarEpithet . "'", '', trim($scinameBase)); // @TODO could possibly replace off-target if cultivarEpithet matches some parent taxon exactly. We think extremely unlikely edge case, so ignoring for now.
 			$returnObj['cultivarEpithet'] = $cultivarEpithet; // assumes quotes not stored in db
 		}
 
