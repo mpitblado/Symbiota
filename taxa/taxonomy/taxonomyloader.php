@@ -80,13 +80,13 @@ if($isEditor){
 				<fieldset>
 					<!-- TODO add button for autoparsing with accessibility in mind -->
 					<legend><b><?php echo (isset($LANG['ADD_NEW_TAXON']) ? $LANG['ADD_NEW_TAXON'] : 'Add a New Taxon'); ?></b></legend>
-					<div style="clear:both;">
-						<div class="left-column  bottom-breathing-room-rel"> 
+					<div style="clear:both;" class="bottom-breathing-room-rel">
+						<div class="left-column"> 
 							<label for="rankid">
 								 <?php echo $LANG['TAXON_RANK']; ?>: 
 								</label>
 						</div>
-						<select id="rankid" name="rankid" title="Rank ID" class='search-bar-short bottom-breathing-room-rel-sm'>
+						<select id="rankid" name="rankid" title="Rank ID" class='search-bar-short'>
 							<option value=""><?php echo $LANG['SEL_TAX_RANK']; ?></option>
 							<option value="0"><?php echo $LANG['NON_RANKED_NODE']; ?></option>
 							<option value="">--------------------------------</option>
@@ -101,7 +101,7 @@ if($isEditor){
 						</select>
 						<script src="../../js/symb/taxa.taxonomyloader.js"> </script>
 					</div>
-					<div>
+					<div style="clear:both;" class="bottom-breathing-room-rel">
 						<div class="left-column">
 							<label for="sciname"> 
 								<?php echo $LANG['TAXON_NAME']; ?>: 
@@ -109,7 +109,7 @@ if($isEditor){
 						</div>
 						<input type="text" id="sciname" name="sciname" class="search-bar-long" value="" onchange="parseName(this.form)"/>
 					</div>
-					<div>
+					<div class="bottom-breathing-room-rel">
 						<div class="left-column">
 							<label for="author">
 								<?php echo $LANG['AUTHOR']; ?>:
@@ -118,8 +118,8 @@ if($isEditor){
 						<input type='text' id='author' name='author' class='search-bar-long' />
 					</div>
 					
-					<div style="clear:both;">
-						<div class="left-column bottom-breathing-room-rel">
+					<div style="clear:both;" class="bottom-breathing-room-rel">
+						<div class="left-column">
 							<label id="unitind1label" for="unitind1">
 								<?php echo $LANG['GENUS_NAME']; ?>:
 							</label>
@@ -134,8 +134,8 @@ if($isEditor){
 					<?php
 					if ($rankId > 150){
 						?>
-							<div id="div1hide" style="clear:both;">
-								<div class="left-column bottom-breathing-room-rel">
+							<div id="div1hide" style="clear:both;" class="bottom-breathing-room-rel">
+								<div class="left-column">
 									<label for="unitind2">
 										<?php echo $LANG['UNITNAME2']; ?>:
 									</label>
@@ -146,8 +146,8 @@ if($isEditor){
 								</select>
 								<input type='text' id='unitname2' name='unitname2' onchange="updateFullname(this.form)" class='search-bar' aria-label="<?php echo (isset($LANG['SPECIF_EPITHET_FIELD']) ? $LANG['SPECIF_EPITHET_FIELD'] : 'Specific Epithet Field'); ?>" title="<?php echo (isset($LANG['SPECIF_EPITHET_FIELD']) ? $LANG['SPECIF_EPITHET_FIELD'] : 'Specific Epithet Field'); ?>"/>
 							</div>
-							<div id="div2hide" style="clear:both;">
-								<div class="left-column bottom-breathing-room-rel">
+							<div id="div2hide" style="clear:both;" class="bottom-breathing-room-rel">
+								<div class="left-column">
 									<label for="unitind3">
 										<?php echo $LANG['UNITNAME3']; ?>:
 									</label>
@@ -155,7 +155,7 @@ if($isEditor){
 								<input type='text' id='unitind3' name='unitind3' onchange="updateFullname(this.form)" class='search-bar-extraShort' aria-label='<?php echo $LANG['UNITNAME3']; ?>:' title='<?php echo $LANG['RANK_FIELD']; ?>'/>
 								<input type='text' id='unitname3' name='unitname3' onchange="updateFullname(this.form)" class='search-bar' aria-label="<?php echo $LANG['INFRA_EPITHET_FIELD']; ?>" title="<?php echo $LANG['INFRA_EPITHET_FIELD']; ?>" />
 							</div>
-							<div id="div3hide" style="clear:both;display:none;">
+							<div id="div3hide" style="clear:both;display:none;" class="bottom-breathing-room-rel">
 								<div class="left-column">
 									<label for="">
 										<?php echo $LANG['UNITNAME4']; ?>:
@@ -163,7 +163,7 @@ if($isEditor){
 								</div>
 								<input type='text' id='cultivarEpithet' name='cultivarEpithet' onchange="updateFullname(this.form)" class='search-bar' aria-label="<?php echo $LANG['UNITNAME4']; ?>" title="<?php echo $LANG['UNITNAME4']; ?>" />
 							</div>
-							<div id="div4hide" style="clear:both;display:none;">
+							<div id="div4hide" style="clear:both;display:none;" class="bottom-breathing-room-rel">
 								<div class="left-column">
 									<label for="tradeName">
 										<?php echo $LANG['UNITNAME5']; ?>:
@@ -174,7 +174,7 @@ if($isEditor){
 					<?php
 					}?>
 
-					<div style="clear:both;">
+					<div style="clear:both;" class="bottom-breathing-room-rel">
 						<div class="left-column bottom-breathing-room-rel">
 							<label for="parentname">
 								<?php echo $LANG['PARENT_TAXON']; ?>:
@@ -188,23 +188,23 @@ if($isEditor){
 						</span>
 						<input id="parenttid" name="parenttid" type="hidden" value="" />
 					</div>
-					<div style="clear:both;">
-						<div class="left-column bottom-breathing-room-rel">
+					<div style="clear:both;" class="bottom-breathing-room-rel">
+						<div class="left-column">
 							<label for="notes">
 								<?php echo $LANG['NOTES']; ?>:
 							</label>
 						</div>
 						<input type='text' id='notes' name='notes' class='search-bar-long'/>
 					</div>
-					<div style="clear:both;">
-						<div class="left-column bottom-breathing-room-rel">
+					<div style="clear:both;" class="bottom-breathing-room-rel">
+						<div class="left-column">
 							<label for="source"> <?php echo $LANG['SOURCE']; ?>:
 							</label>
 						</div>
 						<input type='text' id='source' name='source' class='search-bar-long'/>
 					</div>
-					<div style="clear:both;">
-						<div class="left-column bottom-breathing-room-rel">
+					<div style="clear:both;" class="bottom-breathing-room-rel">
+						<div class="left-column">
 							<label for="securitystatus"> <?php echo $LANG['LOC_SECURITY']; ?>:
 							</label>
 						</div>
@@ -213,7 +213,7 @@ if($isEditor){
 							<option value="1"><?php echo $LANG['HIDE_LOC_DETAILS']; ?></option>
 						</select>
 					</div>
-					<div style="clear:both;">
+					<div style="clear:both;" class="bottom-breathing-room-rel">
 						<fieldset>
 							<legend><b><?php echo $LANG['ACCEPT_STATUS']; ?></b></legend>
 							<div>
