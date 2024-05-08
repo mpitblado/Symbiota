@@ -563,10 +563,10 @@ class TaxonomyEditorManager extends Manager{
 		if(array_key_exists('tradeName', $dataArr) && $dataArr['tradeName']){
 			$processedSciname .= ' ' . $processedTradeName;
 		}
-		$sqlTaxa = 'INSERT INTO taxa(sciname, author, rankid, unitind1, unitname1, unitind2, unitname2, unitind3, unitname3, cultivarEpithet, tradeName,  '.
+		$sqlTaxa = 'INSERT INTO taxa(sciname, author, rankid, unitind1, unitname1, unitind2, unitname2, unitind3, unitname3, cultivarEpithet, tradeName, '.
 			'source, notes, securitystatus, modifiedUid, modifiedTimeStamp) '.
 			'VALUES ("'.$this->cleanInStr($processedSciname).'","'.
-			($dataArr['author']?$this->cleanInStr($dataArr['author']):'').'",'.
+			($dataArr['author']? ($this->cleanInStr($dataArr['author'])) : '').'",'.
 			(isset($dataArr['rankid'])?$dataArr['rankid']:0).','.
 			($dataArr['unitind1']?'"'.$this->cleanInStr($dataArr['unitind1']).'"':'NULL').',"'.
 			$this->cleanInStr($dataArr['unitname1']).'",'.
@@ -574,12 +574,13 @@ class TaxonomyEditorManager extends Manager{
 			($dataArr['unitname2']?'"'.$this->cleanInStr($dataArr['unitname2']).'"':'NULL').','.
 			($dataArr['unitind3']?'"'.$this->cleanInStr($dataArr['unitind3']).'"':'NULL').','.
 			($dataArr['unitname3']?'"'.$this->cleanInStr($dataArr['unitname3']).'"':'NULL').','.
-			($dataArr['cultivarEpithet'] ? '"' . $this->cleanInStr($processedCultivarEpithet) . '"' : 'NULL') . ',' .
-			($dataArr['tradeName'] ? '"' . $this->cleanInStr($processedTradeName) . '"' : 'NULL') . ',' .
-			($dataArr['source']?'"'.$this->cleanInStr($dataArr['source']).'"':'NULL').','.
+			($dataArr['cultivarEpithet'] ? ('"' . $this->cleanInStr($processedCultivarEpithet) . '"') : '""') . ',' .
+			($dataArr['tradeName'] ? ('"' . $this->cleanInStr($processedTradeName) . '"') : '""') . ',' .
+			($dataArr['source']? '"'.$this->cleanInStr($dataArr['source']).'"':'NULL').','.
 			($dataArr['notes']?'"'.$this->cleanInStr($dataArr['notes']).'"':'NULL').','.
 			$this->cleanInStr($dataArr['securitystatus']).','.
-			$GLOBALS['SYMB_UID'].',"'.date('Y-m-d H:i:s').'")';
+			$GLOBALS['SYMB_UID'].',"'.
+			date('Y-m-d H:i:s').'")';
 		if($this->conn->query($sqlTaxa)){
 			$tid = $this->conn->insert_id;
 		 	//Load accepteance status into taxstatus table
