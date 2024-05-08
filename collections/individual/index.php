@@ -68,12 +68,6 @@ $occArr = $indManager->getOccData();
 $collMetadata = $indManager->getMetadata();
 $genticArr = $indManager->getGeneticArr();
 
-$taxonEditorObj = new TaxonomyEditorManager();
-$taxonEditorObj->setTid($occArr['tidinterpreted']);
-$taxonEditorObj->setTaxon();
-$splitSciname = $taxonEditorObj->splitSciname();
-$nonItalicizedScinameComponent = trim((!empty($splitSciname['author']) ? ($splitSciname['author'] . ' ') : '') . (!empty($splitSciname['cultivarEpithet']) ? ("'" . $splitSciname['cultivarEpithet'] . "' ") : '') . (!empty($splitSciname['tradeName']) ? ($splitSciname['tradeName'] . ' ') : ''));
-
 $statusStr = '';
 //  If other than HTML was requested, return just that content.
 if(isset($_SERVER['HTTP_ACCEPT'])){
@@ -485,12 +479,19 @@ $traitArr = $indManager->getTraitArr();
 							<div id="sciname-div" class="sciname-div bottom-breathing-room-rel-sm">
 								<?php
 								echo '<label>'.$LANG['TAXON'].':</label> ';
-								echo '<i>' . $splitSciname['base'] . '</i> ' . $nonItalicizedScinameComponent;
 								if(isset($occArr['taxonsecure'])){
 									echo '<span class="notice-span"> '.$LANG['ID_PROTECTED'].'</span>';
 								}
 								if($occArr['tidinterpreted']){
+									$taxonEditorObj = new TaxonomyEditorManager();
+									$taxonEditorObj->setTid($occArr['tidinterpreted']);
+									$taxonEditorObj->setTaxon();
+									$splitSciname = $taxonEditorObj->splitSciname();
+									$nonItalicizedScinameComponent = trim((!empty($splitSciname['author']) ? ($splitSciname['author'] . ' ') : '') . (!empty($splitSciname['cultivarEpithet']) ? ("'" . $splitSciname['cultivarEpithet'] . "' ") : '') . (!empty($splitSciname['tradeName']) ? ($splitSciname['tradeName'] . ' ') : ''));
+									echo '<i>' . $splitSciname['base'] . '</i> ' . $nonItalicizedScinameComponent;
 									//echo ' <a href="../../taxa/index.php?taxon=' . $occArr['tidinterpreted'] . '" title="Open Species Profile Page"><img src="" /></a>';
+								} else{
+									echo '<i>' . $occArr['sciname'] .  '</i>';
 								}
 								?>
 							</div>
