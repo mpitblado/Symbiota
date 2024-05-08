@@ -44,8 +44,8 @@ $LANG['H_MY_PROFILE'] = 'Mi Perfil';
 $LANG['H_LOGOUT'] = 'Finalizar Sesión';
 $LANG['H_LOGIN'] = 'Iniciar Sesi&oacute;n';
 $LANG['H_NEW_ACCOUNT'] = 'Nueva Cuenta';
-$LANG['TOGGLE_508_OFF'] = "Alternar el Diseño de Formulario Condensado";
-$LANG['TOGGLE_508_ON'] = "Alternar Diseño de Formulario Vertical";
+$LANG['TOGGLE_508_OFF'] = "Usar Diseño de Formulario Condensado";
+$LANG['TOGGLE_508_ON'] = "Usar Diseño de Formulario Vertical";
 $LANG['SELECT_LANGUAGE'] = 'Seleccionar un Idioma';
 
 $LANG['CONTACT_US'] = 'Contacta con Nosotros';

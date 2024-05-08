@@ -14,7 +14,6 @@ else include_once($SERVER_ROOT . '/content/lang/collections/search/index.en.php'
 
 $collManager = new OccurrenceManager();
 $collectionSource = $collManager->getQueryTermStr();
-
 $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT = $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT ?? false;
 $collData = new CollectionMetadata();
 $siteData = new DatasetsMetadata();
@@ -38,6 +37,7 @@ $obsArr = (isset($collList['obs'])?$collList['obs']:null);
 	<link href="<?= $CLIENT_ROOT ?>/collections/search/css/tables.css" type="text/css" rel="stylesheet">
 	<link href="<?= $CSS_BASE_PATH ?>/symbiota/collections/sharedCollectionStyling.css" type="text/css" rel="stylesheet">
 	<script src="<?= $CLIENT_ROOT ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
+	<script src="../../js/symb/localitySuggest.js" type="text/javascript"></script>
 	<script>
 		const clientRoot = '<?php echo $CLIENT_ROOT; ?>';
 		const handleAccordionExpand = () => {
@@ -593,6 +593,17 @@ $obsArr = (isset($collList['obs'])?$collList['obs']:null);
 		updateChip();
 	}
 
+	window.initLocalitySuggest({
+		country: {
+			id: 'country',
+		},
+		state_province: {
+			id: 'state',
+		},
+		county: {
+			id: 'county',
+		},
+	})
 </script>
 
 </html>

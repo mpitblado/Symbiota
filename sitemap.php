@@ -6,7 +6,6 @@ else include_once($SERVER_ROOT.'/content/lang/sitemap.en.php');
 header("Content-Type: text/html; charset=".$CHARSET);
 $submitAction = array_key_exists('submitaction',$_REQUEST)?$_REQUEST['submitaction']:'';
 $SHOULD_USE_HARVESTPARAMS = $SHOULD_USE_HARVESTPARAMS ?? false;
-$actionPage = $SHOULD_USE_HARVESTPARAMS ? "collections/index.php" : "collections/search/index.php";
 $smManager = new SiteMapManager();
 ?>
 <!DOCTYPE html>
@@ -42,6 +41,7 @@ $smManager = new SiteMapManager();
 	<?php
 	$displayLeftMenu = (isset($sitemapMenu)?$sitemapMenu:"true");
 	include($SERVER_ROOT.'/includes/header.php');
+	$actionPage = $SHOULD_USE_HARVESTPARAMS ? "collections/index.php" : "collections/search/index.php";
 	echo '<div class="navpath">';
 	echo '<a href="index.php">' . $LANG['HOME'] . '</a> &gt; ';
 	echo ' <b>' . $LANG['SITEMAP'] . '</b>';
