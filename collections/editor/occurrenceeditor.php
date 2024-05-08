@@ -909,7 +909,7 @@ else{
 													<?php echo $LANG['AUTHOR']; ?>
 													<a href="#" onclick="return dwcDoc('scientificNameAuthorship')" tabindex="-1"><img class="docimg" src="../../images/qmark.png" /></a>
 													<br/>
-													<input type="text" name="scientificnameauthorship" maxlength="100" tabindex="0" value="<?php echo array_key_exists('scientificnameauthorship',$occArr)?$occArr['scientificnameauthorship']:''; ?>" onchange="fieldChanged('scientificnameauthorship');" disabled />
+													<input type="text" name="scientificnameauthorship" maxlength="100" tabindex="0" value="<?php echo array_key_exists('scientificnameauthorship',$occArr)?$occArr['scientificnameauthorship']:''; ?>" onchange="fieldChanged('scientificnameauthorship');"  <?php if($isEditor > 2) echo 'disabled'; ?> />
 												</div>
 											</div>
 											<div style="clear:both;padding:3px 0px 0px 10px;">
@@ -936,7 +936,7 @@ else{
 												<div  id="familyDiv">
 													<?php echo $LANG['FAMILY']; ?>
 													<a href="#" onclick="return dwcDoc('family')" tabindex="-1"><img class="docimg" src="../../images/qmark.png" /></a>
-													<input disabled type="text" name="family" maxlength="50" tabindex="0" value="<?php echo array_key_exists('family',$occArr)?$occArr['family']:''; ?>" onchange="fieldChanged('family');" />
+													<input type="text" name="family" maxlength="50" tabindex="0" value="<?php echo array_key_exists('family',$occArr)?$occArr['family']:''; ?>" onchange="fieldChanged('family');" />
 												</div>
 												
 											</div>
