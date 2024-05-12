@@ -14,6 +14,7 @@ $LANG['CAPTION'] = 'Légende';
 $LANG['SOURCE'] = 'Source';
 $LANG['SOURCE_URL'] = 'URL Source';
 $LANG['NOTES'] = 'Notes';
+$LANG['DISPLAY_LEVEL'] = 'Niveau d\'Affichage';
 $LANG['CAPTION'] = 'Légende';
 $LANG['ADD_DESC_BLOCK'] = 'Ajouter Bloc de Description';
 $LANG['SORT_SEQUENCE'] = 'Séquence de Tri';
