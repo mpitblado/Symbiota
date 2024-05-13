@@ -60,7 +60,7 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
 											</header>
 											<div class="usa-card__media">
 												<div class="usa-card__img">
-													<img style="height:235px;" loading="lazy" src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/NA_tile.png" width="330" height="220" alt="An image of a flower" class="img-responsive" />
+													<img style="height:235px;" loading="lazy" src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/NA_tile.png" width="330" height="220" alt="Plant with several leaves on the bottom right hand corner and a cluster of purple flowers in the upper left" class="img-responsive" />
 												</div>
 											</div>
 											<div class="usa-card__body">
@@ -88,7 +88,7 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
 											</header>
 											<div class="usa-card__media">
 												<div class="usa-card__img">
-													<img style="height:235px;" loading="lazy" src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/BARC_tile.png" width="330" height="220" alt="An image of a seed" class="img-responsive" />
+													<img style="height:235px;" loading="lazy" src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/BARC_tile.png" width="330" height="220" alt="Five brown almond-shaped seeds about 5 mm long and about 3 mm wide with a 5mm scale provided" class="img-responsive" />
 												</div>
 											</div>
 											<div class="usa-card__body">
@@ -116,7 +116,7 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
 											</header>
 											<div class="usa-card__media">
 												<div class="usa-card__img">
-													<img style="height:235px;" loading="lazy" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJkAYHVampT3wmtnFbdohmwyCsiIpfFVDuJQ&usqp=CAU" width="330" height="220" alt="An image of a mushroom" class="img-responsive" />
+													<img style="height:235px;" loading="lazy" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJkAYHVampT3wmtnFbdohmwyCsiIpfFVDuJQ&usqp=CAU" width="330" height="220" alt="A brigth orange cluster of mushrooms on top of bark with moss on it" class="img-responsive" />
 												</div>
 											</div>
 											<div class="usa-card__body">
@@ -144,7 +144,7 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
 											</header>
 											<div class="usa-card__media">
 												<div class="usa-card__img">
-													<img style="height:235px;" loading="lazy" src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/ARSEF_tilephoto.jpg" width="330" height="220" alt="An image of a flower" class="img-responsive" />
+													<img style="height:235px;" loading="lazy" src="<?php echo $CLIENT_ROOT ?>/assets/uswds/img/ARSEF_tilephoto.jpg" width="330" height="220" alt="Irridescent pink and green beetle elytra with white fungal fruiting bodies exploding out of all corners" class="img-responsive" />
 												</div>
 											</div>
 											<div class="usa-card__body">
