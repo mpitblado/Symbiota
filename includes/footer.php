@@ -50,7 +50,7 @@
       <nav class="row" aria-labelledby="nal-usda-links">
         <h2 id="nal-usda-links" class="visually-hidden">Government Links</h2>
         <ul>
-          <li>
+          <!-- <li>
             <a
               href="#example-modal-1"
               class="usa-button"
@@ -104,7 +104,7 @@
                   </button>
                 </div>
             </div>
-          </li>
+          </li> -->
           <li><a href="https://ask.usda.gov/s/">AskUSDA</a></li>
           <li>
             <a href="/web-policies-and-important-links">Policies and Links</a>
