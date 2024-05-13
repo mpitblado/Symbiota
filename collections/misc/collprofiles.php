@@ -135,7 +135,7 @@ if ($SYMB_UID) {
 		<a href="../index.php"><?php echo htmlspecialchars((isset($LANG['COLLECTION_SEARCH']) ? $LANG['COLLECTION_SEARCH'] : 'Collection Search Page'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> &gt;&gt;
 		<b><?php echo (isset($LANG['COLL_PROFILE']) ? $LANG['COLL_PROFILE'] : 'Collection Profile'); ?></b>
 	</div>
-	<div id="innertext">
+	<div role="main" id="innertext">
 		<?php if ($collid && !$collid == 0){
 		?>
 			<section id="quicksearch-box" class="fieldset-like no-left-margin float-rt-no-overlap">
