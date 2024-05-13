@@ -188,7 +188,7 @@ if($isEditor && $action){
 		echo '<b>'.$LANG['TAX_PROF_EDITOR'].'</b>';
 		?>
 	</div>
-	<div id="innertext">
+	<div role="main" id="innertext">
 		<h1 class="page-heading"><?php
 		 $splitSciname = $tEditor->splitSciname();
 		 $nonItalicizedScinameComponent = trim((!empty($splitSciname['author']) ? ($splitSciname['author'] . ' ') : '') . (!empty($splitSciname['cultivarEpithet']) ? ("'" . $splitSciname['cultivarEpithet'] . "' ") : '') . (!empty($splitSciname['tradeName']) ? ($splitSciname['tradeName'] . ' ') : ''));

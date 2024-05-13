@@ -126,7 +126,7 @@ if($isEditor){
 	}
 	?>
 	<!-- This is inner text! -->
-	<div id="innertext">
+	<div role="main" id="innertext">
 		<h1 class="page-heading">
 			<?php 
 			$splitSciname = $taxonEditorObj->splitSciname();
