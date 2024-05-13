@@ -70,10 +70,10 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
 											</div>
 											<div class="usa-card__footer">
 												<div class="field field--name-card-link field--type-link field--label-hidden field--item">
-													<a href="<?php echo $CLIENT_ROOT?>/collections/misc/collprofiles.php?collid=<?php echo  $NA_COLLID?>" class="usa-button card-button" style="margin-bottom: 1rem;">About Collection</a>
+													<a aria-label="About NA Collection" href="<?php echo $CLIENT_ROOT?>/collections/misc/collprofiles.php?collid=<?php echo  $NA_COLLID?>" class="usa-button card-button" style="margin-bottom: 1rem;">About Collection</a>
 												</div>
 												<div class="field field--name-card-link field--type-link field--label-hidden field--item">
-													<a href="<?php echo $CLIENT_ROOT?>/collections/<?php echo $actionPage ?>?db=<?php echo  $NA_COLLID?>" class="usa-button card-button">Search Collection</a>
+													<a aria-label="Search NA Collection" href="<?php echo $CLIENT_ROOT?>/collections/<?php echo $actionPage ?>?db=<?php echo  $NA_COLLID?>" class="usa-button card-button">Search Collection</a>
 												</div>
 											</div>
 										</div>
@@ -98,10 +98,10 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
 											</div>
 											<div class="usa-card__footer">
 												<div class="field field--name-card-link field--type-link field--label-hidden field--item">
-													<a href="<?php echo $CLIENT_ROOT?>/collections/misc/collprofiles.php?collid=<?php echo  $BARC_COLLID?>" class="usa-button card-button" style="margin-bottom: 1rem;">About Collection</a>
+													<a aria-label="About BARC Collection" href="<?php echo $CLIENT_ROOT?>/collections/misc/collprofiles.php?collid=<?php echo  $BARC_COLLID?>" class="usa-button card-button" style="margin-bottom: 1rem;">About Collection</a>
 												</div>
 												<div class="field field--name-card-link field--type-link field--label-hidden field--item">
-													<a href="<?php echo $CLIENT_ROOT?>/collections/<?php echo $actionPage ?>?db=<?php echo  $BARC_COLLID?>" class="usa-button card-button">Search Collection</a>
+													<a aria-label="Search BARC Collection" href="<?php echo $CLIENT_ROOT?>/collections/<?php echo $actionPage ?>?db=<?php echo  $BARC_COLLID?>" class="usa-button card-button">Search Collection</a>
 												</div>
 											</div>
 										</div>
@@ -126,10 +126,10 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
 											</div>
 											<div class="usa-card__footer">
 												<div class="field field--name-card-link field--type-link field--label-hidden field--item">
-													<a href="<?php echo $CLIENT_ROOT?>/collections/misc/collprofiles.php?collid=<?php echo  $BPI_SNAPSHOT_COLLID?>" class="usa-button card-button" style="margin-bottom: 1rem;">About Collection</a>
+													<a aria-label="About BPI Collection" href="<?php echo $CLIENT_ROOT?>/collections/misc/collprofiles.php?collid=<?php echo  $BPI_SNAPSHOT_COLLID?>" class="usa-button card-button" style="margin-bottom: 1rem;">About Collection</a>
 												</div>
 												<div class="field field--name-card-link field--type-link field--label-hidden field--item">
-													<a href="<?php echo $CLIENT_ROOT?>/collections/<?php echo $actionPage ?>?db=<?php echo  $BPI_SNAPSHOT_COLLID?>" class="usa-button card-button">Search Collection</a>
+													<a aria-label="Search BPI Collection" href="<?php echo $CLIENT_ROOT?>/collections/<?php echo $actionPage ?>?db=<?php echo  $BPI_SNAPSHOT_COLLID?>" class="usa-button card-button">Search Collection</a>
 												</div>
 											</div>
 										</div>
@@ -154,10 +154,10 @@ $actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.
 											</div>
 											<div class="usa-card__footer">
 												<div class="field field--name-card-link field--type-link field--label-hidden field--item">
-													<a href="<?php echo $CLIENT_ROOT?>/collections/misc/collprofiles.php?collid=<?php echo  $ARSEF_SNAPSHOT_COLLID?>" class="usa-button card-button" style="margin-bottom: 1rem;">About Collection</a>
+													<a aria-label="About ARSEF Collection" href="<?php echo $CLIENT_ROOT?>/collections/misc/collprofiles.php?collid=<?php echo  $ARSEF_SNAPSHOT_COLLID?>" class="usa-button card-button" style="margin-bottom: 1rem;">About Collection</a>
 												</div>
 												<div class="field field--name-card-link field--type-link field--label-hidden field--item">
-													<a href="<?php echo $CLIENT_ROOT?>/collections/<?php echo $actionPage ?>?db=<?php echo  $ARSEF_SNAPSHOT_COLLID?>" class="usa-button card-button">Search Collection</a>
+													<a aria-label="Search ARSEF Collection" href="<?php echo $CLIENT_ROOT?>/collections/<?php echo $actionPage ?>?db=<?php echo  $ARSEF_SNAPSHOT_COLLID?>" class="usa-button card-button">Search Collection</a>
 												</div>
 											</div>
 										</div>
