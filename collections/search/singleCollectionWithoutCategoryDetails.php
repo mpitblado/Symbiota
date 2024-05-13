@@ -9,9 +9,9 @@
                 if($cArr["icon"]){
                     $cIcon = (substr($cArr["icon"],0,6)=='images'?$CLIENT_ROOT:'').$cArr["icon"];
                     ?>
-                    <a href = '<?php echo htmlspecialchars($CLIENT_ROOT, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>/collections/misc/collprofiles.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>'>
+                    <!-- <a href = '<?php echo htmlspecialchars($CLIENT_ROOT, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>/collections/misc/collprofiles.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>'> -->
                         <img alt="" src="<?php echo htmlspecialchars($cIcon, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>" style="border:0px;width:30px;height:30px;" />
-                    </a>
+                    <!-- </a> -->
                     <?php
                 }
                 ?>
