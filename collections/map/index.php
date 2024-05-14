@@ -156,6 +156,8 @@ if(isset($_REQUEST['llpoint'])) {
 		</style>
 		<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
 		<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-ui.min.js" type="text/javascript"></script>
+
+		<link href="<?php echo htmlspecialchars($CSS_BASE_PATH, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>/symbiota/collections/sharedCollectionStyling.css" type="text/css" rel="stylesheet" />
 		<link href="../../css/jquery.symbiota.css" type="text/css" rel="stylesheet" />
 		<script src="../../js/jquery.popupoverlay.js" type="text/javascript"></script>
 		<script src="../../js/jscolor/jscolor.js?ver=1" type="text/javascript"></script>
@@ -1926,7 +1928,7 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 											</div>
 										</div>
 										<div id="deleteshapediv" style="margin-top:5px;display:<?php echo (($mapManager->getSearchTerm('pointlat') || $mapManager->getSearchTerm('upperlat') || $mapManager->getSearchTerm('polycoords'))?'block':'none'); ?>;">
-											<button data-role="none" type="button" onclick="deleteMapShape()"><?php echo (isset($LANG['DELETE_SHAPE'])?$LANG['DELETE_SHAPE']:'Delete Selected Shape'); ?></button>
+											<button class="button-danger" data-role="none" type="button" onclick="deleteMapShape()"><?php echo (isset($LANG['DELETE_SHAPE'])?$LANG['DELETE_SHAPE']:'Delete Selected Shape'); ?></button>
 										</div>
 									</div>
 									<div style="margin:5 0 5 0;"><hr /></div>
