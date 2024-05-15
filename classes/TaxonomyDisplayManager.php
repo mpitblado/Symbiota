@@ -269,15 +269,13 @@ class TaxonomyDisplayManager extends Manager{
 					$sciName = str_replace($this->targetStr, '<b>'.htmlspecialchars($this->targetStr).'</b>', $sciName);
 					$taxonRankId = $this->taxaArr[$key]['rankid'];
 					if($this->taxaArr[$key]['rankid'] >= 180){
-						$sciNameParts = $this->splitScinameByProvided($this->taxaArr[$key]['sciname'], $this->taxaArr[$key]['cultivarEpithet'], $this->taxaArr[$key]['tradeName'], $this->taxaArr[$key]['author']);
+						$author = ($this->displayAuthor) ? $this->taxaArr[$key]['author'] : '';
+						$sciNameParts = $this->splitScinameByProvided($this->taxaArr[$key]['sciname'], $this->taxaArr[$key]['cultivarEpithet'], $this->taxaArr[$key]['tradeName'], $author);
 						$sciName = $sciNameParts['base'];
 						if($taxonRankId >= 180) $sciName = '<i>'.$sciName.'</i>';
-						// @TODO $sciName .= $displayAuthor ? " " . $r->author : "";
 						if(isset($sciNameParts['cultivarEpithet'])) $sciName .= " '" . $sciNameParts['cultivarEpithet'] . "'";
 						if(isset($sciNameParts['tradeName'])) $sciName .= " " . $sciNameParts['tradeName'];
-						//$sciName = ' <i>' . $sciName . '</i> ';
 					}
-					//if($this->displayAuthor) $sciName .= ' '.$this->taxaArr[$key]['author'];
 				}
 				elseif(!$key){
 					$sciName = '&nbsp;';
