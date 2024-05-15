@@ -14,6 +14,7 @@ $LANG['CAPTION'] = 'Título';
 $LANG['FUENTE'] = 'Fuente';
 $LANG['SOURCE_URL'] = 'URL de Origen';
 $LANG['NOTES'] = 'Notas';
+$LANG['DISPLAY_LEVEL'] = 'Nivel de Visualización';
 $LANG['CAPTION'] = 'Título';
 $LANG['ADD_DESC_BLOCK'] = 'Agregar Bloque de Descripción';
 $LANG['SORT_SEQUENCE'] = 'Ordenar Secuencia';

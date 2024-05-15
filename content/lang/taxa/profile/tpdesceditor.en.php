@@ -12,6 +12,7 @@ $LANG['CAPTION'] = 'Caption';
 $LANG['SOURCE'] = 'Source';
 $LANG['SOURCE_URL'] = 'Source URL';
 $LANG['NOTES'] = 'Notes';
+$LANG['DISPLAY_LEVEL'] = 'Display Level';
 $LANG['CAPTION'] = 'Caption';
 $LANG['ADD_DESC_BLOCK'] = 'Add Description Block';
 $LANG['SORT_SEQUENCE'] = 'Sort Sequence';
