@@ -1,8 +1,10 @@
+/*
 const main = document.getElementById('innertext');
 let div = document.createElement('div');
 div.id = 'alert-msgs';
 div.classList.add('alerts');
 main.appendChild(div);
+*/
 
 function handleAlerts(alerts,id,limitMessage) {
 	if(limitMessage){
@@ -24,4 +26,34 @@ function handleAlerts(alerts,id,limitMessage) {
 		};
 		alertDiv.appendChild(alertP);
 	});
+}
+
+
+function initAlerts(options={closeTimeMs: 5000}) {
+	// Find Alerts that have been Embeded by Server
+	const alerts = document.getElementsByClassName('alert');
+
+	function addCloseButton(alert) {
+		// Create Close Marker 
+		let closeMarker = document.createElement('div');
+		closeMarker.classList.add('closable');
+		closeMarker.innerHTML = "x";
+
+		closeMarker.addEventListener('click', () => alert.remove());
+		
+		alert.appendChild(closeMarker);
+	}
+	function addCloseTimer(alert) {
+		progressBarTillClose = document.createElement('div');
+		progressBarTillClose.style.setProperty('--duration', options.closeTimeMs / 1000);
+		progressBarTillClose.classList.add('progress-bar');
+
+		alert.appendChild(progressBarTillClose);
+		setTimeout(() => alert.remove(), options.closeTimeMs);
+	}
+
+	for(let alert of alerts) {
+		addCloseButton(alert);
+		if(options.closeTimeMs) addCloseTimer(alert);
+	}
 }

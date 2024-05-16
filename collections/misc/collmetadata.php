@@ -74,6 +74,8 @@ $collManager->cleanOutArr($collData);
 	?>
 	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
 	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-ui.min.js" type="text/javascript"></script>
+	<script src="<?php echo $CLIENT_ROOT; ?>/js/alerts.js" type="text/javascript"></script>
+	<link href="<?php echo $CLIENT_ROOT; ?>/css/alerts.css" rel="stylesheet">
 	<script src="../../js/symb/common.js" type="text/javascript"></script>
 	<script type="text/javascript" src="../../js/tinymce/tinymce.min.js"></script>
 	<script>
@@ -703,6 +705,28 @@ $collManager->cleanOutArr($collData);
 			}
 			?>
 		</div>
+	</div>
+	<div id="alert-msgs" class="alerts">
+	<?php if(!empty($statusStr)): ?>
+		<div class="alert error"> 
+			<?= $statusStr ?>
+		</div>
+		<script type="text/javascript">
+			window.initAlerts();
+		</script>
+	<?php endif?>
+		<div class="alert error"> 
+			This is an error status Alert
+		</div>
+		<div class="alert info"> 
+			This is an info status Alert
+		</div>
+		<div class="alert success"> 
+			This is a success status Alert
+		</div>
+		<script type="text/javascript">
+			window.initAlerts();
+		</script>
 	</div>
 	<?php
 	include($SERVER_ROOT . '/includes/footer.php');
