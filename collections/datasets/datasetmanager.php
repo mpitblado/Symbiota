@@ -54,7 +54,7 @@ if($isEditor){
 				//$statusStr = 'Selected occurrences removed successfully';
 			}
 			else{
-				$statusStr = implode(',',$datasetManager->getErrorArr());
+				$statusStr = $datasetManager->getErrorMessage();
 			}
 		}
 	}
@@ -66,7 +66,7 @@ if($isEditor){
 				$statusStr = $LANG['DS_EDITS_SAVED'];
 			}
 			else{
-				$statusStr = implode(',',$datasetManager->getErrorArr());
+				$statusStr = $datasetManager->getErrorMessage();
 			}
 		}
 		elseif($action == 'Merge'){
@@ -74,7 +74,7 @@ if($isEditor){
 				$statusStr = $LANG['DS_MERGED'];
 			}
 			else{
-				$statusStr = implode(',',$datasetManager->getErrorArr());
+				$statusStr = $datasetManager->getErrorMessage();
 			}
 		}
 		elseif($action == 'Clone (make copy)'){
@@ -82,7 +82,7 @@ if($isEditor){
 				$statusStr = $LANG['DS_CLONED'];
 			}
 			else{
-				$statusStr = implode(',',$datasetManager->getErrorArr());
+				$statusStr = $datasetManager->getErrorMessage();
 			}
 		}
 		elseif($action == 'Delete Dataset'){
@@ -90,7 +90,7 @@ if($isEditor){
 				header('Location: index.php');
 			}
 			else{
-				$statusStr = implode(',',$datasetManager->getErrorArr());
+				$statusStr = $datasetManager->getErrorMessage();
 			}
 		}
 		elseif($action == 'addUser'){
@@ -98,7 +98,7 @@ if($isEditor){
 				$statusStr = $LANG['USER_ADDED'];
 			}
 			else{
-				$statusStr = implode(',',$datasetManager->getErrorArr());
+				$statusStr = $datasetManager->getErrorMessage();
 			}
 		}
 		elseif($action == 'DelUser'){
@@ -106,7 +106,7 @@ if($isEditor){
 				$statusStr = $LANG['USER_REMOVED'];
 			}
 			else{
-				$statusStr = implode(',',$datasetManager->getErrorArr());
+				$statusStr = $datasetManager->getErrorMessage();
 			}
 		}
 	}

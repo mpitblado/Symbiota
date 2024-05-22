@@ -1,43 +1,32 @@
 <?php
-include_once($SERVER_ROOT.'/config/dbconnection.php');
-include_once($SERVER_ROOT.'/classes/DwcArchiverCore.php');
+include_once($SERVER_ROOT.'/classes/Manager.php');
 
-class OccurrenceDataset {
+class OccurrenceDataset extends Manager {
 
-	private $conn;
 	private $collArr = array();
 	private $datasetId = 0;
-	private $errorArr = array();
 
 	public function __construct($type = 'write'){
-		$this->conn = MySQLiConnectionFactory::getCon($type);
+		parent::__construct(null, $type);
 	}
 
 	public function __destruct(){
-		if(!($this->conn === null)) $this->conn->close();
+		parent::__destruct();
 	}
 
-  public function getPublicDatasets(){
-    // Tests if field `category` exists in table
-    $sqlFields = 'SHOW COLUMNS FROM omoccurdatasets LIKE "category"';
-    $fields = $this->conn->query($sqlFields);
-    $catExists = $fields->num_rows?TRUE:FALSE;
-    $fields->free();
-    $retArr = array();
-    $sql = '';
-    if ($catExists) {
-      $sql = 'SELECT datasetid, category, name, notes, description, uid, sortsequence, initialtimestamp, ispublic FROM omoccurdatasets WHERE ispublic=1 ORDER BY category,name';
-
-    } else {
-      $sql = 'SELECT datasetid, name, notes, description, uid, sortsequence, initialtimestamp, ispublic FROM omoccurdatasets WHERE ispublic=1 ORDER BY name';
-    }
-    $rs = $this->conn->query($sql);
-    while($r = $rs->fetch_assoc()){
-      $retArr[] = $r;
-    }
-    $rs->free();
-    return $retArr;
-  }
+	public function getPublicDatasets(){
+		$retArr = array();
+		$sql = 'SELECT datasetID, category, name, notes, description, uid, sortSequence, initialTimestamp, ispublic FROM omoccurdatasets WHERE ispublic=1 ORDER BY category, name';
+		if($rs = $this->conn->query($sql)){
+			while($r = $rs->fetch_object()){
+				$category = 0;
+				if($r->category) $category = $this->cleanOutStr($r->category);
+				$retArr[$category][$r->datasetID] = $this->cleanOutArray($r);
+			}
+			$rs->free();
+		}
+		return $retArr;
+	}
 
 	public function getPublicDatasetMetadata($dsid){
 		$retArr = array();
@@ -71,7 +60,7 @@ class OccurrenceDataset {
 				$retArr['uid'] = $r->uid;
 				$retArr['sort'] = $r->sortsequence;
 				$retArr['ts'] = $r->initialtimestamp;
-        $retArr['ispublic'] = $r->ispublic;
+				$retArr['ispublic'] = $r->ispublic;
 			}
 			$rs->free();
 			//Get roles for current user
@@ -124,7 +113,7 @@ class OccurrenceDataset {
 	public function editDataset($dsid,$name,$notes,$description,$ispublic){
 		$sql = 'UPDATE omoccurdatasets SET name = "'.$this->cleanInStr($name).'", notes = "'.$this->cleanInStr($notes).'", description = "'.$this->cleanInStr($description).'", ispublic = '.$this->cleanInStr($ispublic).' WHERE datasetid = '.$dsid;
 		if(!$this->conn->query($sql)){
-			$this->errorArr[] = 'ERROR saving dataset edits: '.$this->conn->error;
+			$this->errorMessage = 'ERROR saving dataset edits: '.$this->conn->error;
 			return false;
 		}
 		return true;
@@ -137,7 +126,7 @@ class OccurrenceDataset {
 			$this->datasetId = $this->conn->insert_id;
 		}
 		else{
-			$this->errorArr[] = 'ERROR creating new dataset: '.$this->conn->error;
+			$this->errorMessage = 'ERROR creating new dataset: '.$this->conn->error;
 			return false;
 		}
 		return true;
@@ -154,17 +143,17 @@ class OccurrenceDataset {
 				//Delete dataset, including linked occurrences that failed to transfer due to being linked multiple times within the group
 				$sql3 = 'DELETE FROM omoccurdatasets WHERE datasetid IN('.implode(',',$targetArr).')';
 				if(!$this->conn->query($sql3)){
-					$this->errorArr[] = 'WARNING: Unable to remove extra datasets: '.$this->conn->error;
+					$this->errorMessage = 'WARNING: Unable to remove extra datasets: '.$this->conn->error;
 					return false;
 				}
 			}
 			else{
-				$this->errorArr[] = 'FATAL ERROR: Unable to transfer occurrence records into target dataset: '.$this->conn->error;
+				$this->errorMessage = 'FATAL ERROR: Unable to transfer occurrence records into target dataset: '.$this->conn->error;
 				return false;
 			}
 		}
 		else{
-			$this->errorArr[] = 'FATAL ERROR: Unable to rename target dataset in prep for merge: '.$this->conn->error;
+			$this->errorMessage = 'FATAL ERROR: Unable to rename target dataset in prep for merge: '.$this->conn->error;
 			return false;
 		}
 		return true;
@@ -199,12 +188,12 @@ class OccurrenceDataset {
 				$sql3 = 'INSERT INTO omoccurdatasetlink(occid, datasetid, notes, description) '.
 					'SELECT occid, '.$this->datasetId.', notes, description FROM omoccurdatasetlink WHERE datasetid = '.$r->datasetid;
 				if(!$this->conn->query($sql3)){
-					$this->errorArr[] = 'ERROR: Unable to clone dataset links into new datasets: '.$this->conn->error;
+					$this->errorMessage = 'ERROR: Unable to clone dataset links into new datasets: '.$this->conn->error;
 					$status = false;
 				}
 			}
 			else{
-				$this->errorArr[] = 'ERROR: Unable to create new dataset within clone method: '.$this->conn->error;
+				$this->errorMessage = 'ERROR: Unable to create new dataset within clone method: '.$this->conn->error;
 				$status = false;
 			}
 		}
@@ -217,14 +206,14 @@ class OccurrenceDataset {
 		$sql1 = 'DELETE FROM userroles WHERE (role IN("DatasetAdmin","DatasetEditor","DatasetReader")) AND (tablename = "omoccurdatasets") AND (tablepk = '.$dsid.') ';
 		//echo $sql;
 		if(!$this->conn->query($sql1)){
-			$this->errorArr[] = 'ERROR deleting user: '.$this->conn->error;
+			$this->errorMessage = 'ERROR deleting user: '.$this->conn->error;
 			return false;
 		}
 
 		//Delete datasets
 		$sql2 = 'DELETE FROM omoccurdatasets WHERE datasetid = '.$dsid;
 		if(!$this->conn->query($sql2)){
-			$this->errorArr[] = 'ERROR: Unable to delete target datasets: '.$this->conn->error;
+			$this->errorMessage = 'ERROR: Unable to delete target datasets: '.$this->conn->error;
 			return false;
 		}
 		return true;
@@ -232,7 +221,7 @@ class OccurrenceDataset {
 		//Delete dataset records
 		$sql3 = 'DELETE FROM omoccurdatasetlink WHERE datasetid = '.$dsid;
 		if(!$this->conn->query($sql3)){
-			$this->errorArr[] = 'ERROR: Unable to delete target datasets: '.$this->conn->error;
+			$this->errorMessage = 'ERROR: Unable to delete target datasets: '.$this->conn->error;
 			return false;
 		}
 		return true;
@@ -257,7 +246,7 @@ class OccurrenceDataset {
 		if(is_numeric($uid)){
 			$sql = 'INSERT INTO userroles(uid,role,tablename,tablepk,uidassignedby) VALUES('.$uid.',"'.$this->cleanInStr($role).'","omoccurdatasets",'.$datasetID.','.$GLOBALS['SYMB_UID'].')';
 			if(!$this->conn->query($sql)){
-				$this->errorArr[] = 'ERROR adding new user: '.$this->conn->error;
+				$this->errorMessage = 'ERROR adding new user: '.$this->conn->error;
 				return false;
 			}
 		}
@@ -268,7 +257,7 @@ class OccurrenceDataset {
 		$status = true;
 		$sql = 'DELETE FROM userroles WHERE (uid = '.$uid.') AND (role = "'.$role.'") AND (tablename = "omoccurdatasets") AND (tablepk = '.$datasetID.') ';
 		if(!$this->conn->query($sql)){
-			$this->errorArr[] = 'ERROR deleting user: '.$this->conn->error;
+			$this->errorMessage = 'ERROR deleting user: '.$this->conn->error;
 			return false;
 		}
 		return $status;
@@ -306,7 +295,7 @@ class OccurrenceDataset {
 		if($datasetId && $occArr){
 			$sql = 'DELETE FROM omoccurdatasetlink WHERE (datasetid = '.$datasetId.') AND (occid IN('.implode(',',$occArr).'))';
 			if(!$this->conn->query($sql)){
-				$this->errorArr[] = 'ERROR deleting selected occurrences: '.$this->conn->error;
+				$this->errorMessage = 'ERROR deleting selected occurrences: '.$this->conn->error;
 				return false;
 			}
 		}
@@ -322,7 +311,7 @@ class OccurrenceDataset {
 					$sql = 'INSERT IGNORE INTO omoccurdatasetlink(occid,datasetid) VALUES("'.$v.'",'.$datasetId.') ';
 					if($this->conn->query($sql)) $status = true;
 					else{
-						$this->errorArr[] = 'ERROR adding occurrence ('.$v.'): '.$this->conn->error;
+						$this->errorMessage = 'ERROR adding occurrence ('.$v.'): '.$this->conn->error;
 						$status = false;
 					}
 				}
@@ -366,14 +355,6 @@ class OccurrenceDataset {
 			}
 			$rs->free();
 		}
-	}
-
-	public function getErrorArr(){
-		return $this->errorArr;
-	}
-
-	public function getErrorMessage(){
-		return implode('; ',$this->errorArr);
 	}
 
 	public function getDatasetId(){
