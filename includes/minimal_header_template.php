@@ -1,5 +1,5 @@
 <?php
-var_dump($SERVER_ROOT);
+var_dump($LANG_TAG);
 try{
     if($LANG_TAG == 'en' || !file_exists($SERVER_ROOT.'/content/lang/header.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT . '/content/lang/header.en.php');
     else include_once($SERVER_ROOT . '/content/lang/header.' . $LANG_TAG . '.php');
@@ -36,7 +36,7 @@ $collectionSearchPage = $SHOULD_USE_HARVESTPARAMS ? '/collections/index.php' : '
 					?>
 					<span class="button button-tertiary">
 						<a onclick="window.location.href='#'">
-							<?= $LANG['CONTACT_US'] ?>
+							<?= $LANG['CONTACT_US']; ?>
 						</a>
 					</span>
 					<span class="button button-secondary">
