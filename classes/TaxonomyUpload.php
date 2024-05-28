@@ -1,7 +1,6 @@
 <?php
 include_once($SERVER_ROOT.'/config/dbconnection.php');
 include_once($SERVER_ROOT.'/classes/TaxonomyUtilities.php');
-include_once($SERVER_ROOT.'/classes/TaxonomyHarvester.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceMaintenance.php');
 
 class TaxonomyUpload{

@@ -1,101 +1,133 @@
 <?php
 include_once('../../config/symbini.php');
-include_once($SERVER_ROOT.'/classes/TaxonomyHarvester.php');
+include_once($SERVER_ROOT.'/classes/TaxonomyMaintenance.php');
 if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/taxa/taxonomy/taxonomymaintenance.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT . '/content/lang/taxa/taxonomy/taxonomymaintenance.' . $LANG_TAG . '.php');
 else include_once($SERVER_ROOT.'/content/lang/taxa/taxonomy/taxonomymaintenance.en.php');
 
-if(!$SYMB_UID) header('Location: ../../profile/index.php?refurl=../taxa/taxonomy/taxonomymaintenance.php?'.htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
+if(!$SYMB_UID) header('Location: ../../profile/index.php?refurl=../taxa/taxonomy/taxonomymaintenance.php?' . htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
 
-$action = array_key_exists('action',$_REQUEST)?$_REQUEST['action']:'';
 
-$harvesterManager = new TaxonomyHarvester();
+$kingdomID = array_key_exists('kingdomid', $_REQUEST) ? filter_var($_REQUEST['kingdomid'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$taxAuthID = array_key_exists('taxauthid', $_REQUEST) ? filter_var($_REQUEST['taxauthid'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$action = array_key_exists('action', $_REQUEST) ? $_REQUEST['action'] : '';
+
+$harvesterManager = new TaxonomyMaintenance();
 
 $isEditor = false;
-if($IS_ADMIN || array_key_exists("Taxonomy",$USER_RIGHTS)) $isEditor = true;
+if($IS_ADMIN || array_key_exists('Taxonomy', $USER_RIGHTS)) $isEditor = true;
 
-if($isEditor){
-	if($action == 'buildenumtree'){
-		if($harvesterManager->buildHierarchyEnumTree()){
-			$statusStr = $LANG['SUCCESS_TAX_INDEX'];
-		}
-		else{
-			$statusStr = $LANG['ERROR_TAX_INDEX'] . ': ' . $harvesterManager->getErrorMessage();
-		}
-	}
-	elseif($action == 'rebuildenumtree'){
-		if($harvesterManager->rebuildHierarchyEnumTree()){
-			$statusStr = $LANG['SUCCESS_TAX_INDEX'];
-		}
-		else{
-			$statusStr = $LANG['ERROR_TAX_INDEX'] . ': ' . $harvesterManager->getErrorMessage();
+$reportArr = array();
+$statusStr = '';
+if($isEditor && $action){
+	if($action == 'syncFamilies'){
+		if($cnt = $harvesterManager->synchronizeFamilyQuickLookup()){
+			$statusStr = 'Success batch synchronized ' . $cnt . ' records';
 		}
 	}
+	elseif($action == 'autoPruneBadNode'){
+		if($cnt = $harvesterManager->pruneBadParentNodes()){
+			$statusStr = 'Successfully pruned bad nodes';
+		}
+	}
+	$reportArr = $harvesterManager->getTaxonomyReport();
+
 }
 
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $LANG_TAG ?>">
+<html lang="<?= $LANG_TAG ?>">
 <head>
-	<title><?php echo $DEFAULT_TITLE . " " . $LANG['TAX_MAINT']; ?></title>
-	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET; ?>"/>
-	<link href="<?php echo $CSS_BASE_PATH; ?>/jquery-ui.css" type="text/css" rel="stylesheet">
+	<title><?= $DEFAULT_TITLE . ' ' . $LANG['TAX_MAINT'] ?></title>
+	<meta http-equiv="Content-Type" content="text/html; charset=<?= $CHARSET ?>"/>
+	<link href="<?= $CSS_BASE_PATH ?>/jquery-ui.css" type="text/css" rel="stylesheet">
 	<?php
 	include_once($SERVER_ROOT.'/includes/head.php');
 	?>
-	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
-	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-ui.min.js" type="text/javascript"></script>
+	<script src="<?= $CLIENT_ROOT ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
+	<script src="<?= $CLIENT_ROOT ?>/js/jquery-ui.min.js" type="text/javascript"></script>
+	<script type="text/javascript" src="../js/symb/shared.js"></script>
 </head>
 <body>
 	<?php
-	$displayLeftMenu = (isset($taxa_admin_taxonomydisplayMenu)?$taxa_admin_taxonomydisplayMenu:"true");
 	include($SERVER_ROOT.'/includes/header.php');
-	if(isset($taxa_admin_taxonomydisplayCrumbs)){
-		echo "<div class='navpath'>";
-		echo "<a href='../index.php'>" . $LANG['HOME'] ."</a> &gt; ";
-		echo $taxa_admin_taxonomydisplayCrumbs;
-		echo " <b>" . $LANG['TAX_TREE_VIEW'] . "</b>";
-		echo "</div>";
-	}
-	if(isset($taxa_admin_taxonomydisplayCrumbs)){
-		if($taxa_admin_taxonomydisplayCrumbs){
-			echo '<div class="navpath">';
-			echo $taxa_admin_taxonomydisplayCrumbs;
-			echo ' <b>' . $LANG['TAX_TREE_VIEW'] . '</b>';
-			echo '</div>';
-		}
-	}
-	else{
-		?>
-		<div class="navpath">
-			<a href="../../index.php"><?php echo htmlspecialchars($LANG['HOME'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> &gt;&gt;
-			<a href="taxonomydisplay.php"><b><?php echo htmlspecialchars($LANG['TAX_TREE_VIEW'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></b></a>
-		</div>
-		<?php
-	}
 	?>
-	<!-- This is inner text! -->
+	<div class="navpath">
+		<a href="../index.php"><?= $LANG['HOME'] ?></a> &gt;&gt;
+		<b><?= $LANG['TAX_TREE_VIEW'] ?></b>
+	</div>
 	<div role="main" id="innertext">
 		<h1 class="page-heading"><?= $LANG['TAX_MAINT']; ?></h1>
 		<?php
 		if($statusStr){
 			?>
 			<hr/>
-			<div style="color:<?php echo (strpos($statusStr,'SUCCESS') !== false?'green':'red'); ?>;margin:15px;">
-				<?php echo $statusStr; ?>
+			<div style="color:<?= (strpos($statusStr,'SUCCESS') !== false ? 'green' : 'red') ?>;margin:15px;">
+				<?= $statusStr ?>
 			</div>
 			<hr/>
 			<?php
 		}
 		if($isEditor){
-			?>
+			if($reportArr){
+				?>
+				<div>
+					<div>
+						<label>Mismatched families: </label> <?= $reportArr['mismatchedFamilies'] ?> <img class="icon" src="../../images/triangledown.png" onclick="toggleElement('mismatchFamilies-div', 'block')">
+						<div id="mismatchFamilies-div" style="display: none">
+							<div>
+								Quick-lookup family field is out of sync with defined hierarchy. The button below will syncronize the quick-lookup field.
+								If all taxon records fail to update, there is likely an issue with the hierarchy (e.g. taxa linked to multiple families).
+							</div>
+							<form name="mismatchFamilyForm" method="post" action="taxonomymaintenance.php">
+								<button name="action" type="submit" value="syncFamilies">Synchronize Families</button>
+								<input name="kingdomid" value="<?= $kingdomID ?>" >
+								<input name="taxauthid" value="<?= $taxAuthID ?>" >
+							</form>
+						</div>
+					</div>
+					<div>
+						<label>Illegal parents: </label> <?= $reportArr['illegalParents'] ?> <img class="icon" src="../../images/triangledown.png" onclick="toggleElement('illegalParents-div', 'block')">
+						<div id="illegalParents-div" style="display: none">
+							<div>
+								Taxa linked to parents that have a greater rankID is not allowed. Repair options include:
+								<ul>
+									<li>List taxa for manual cleaning</li>
+									<li>Automatically prune out bad nodes</li>
+								</ul>
+							</div>
+							<form name="listBadParentsForm" method="post" action="taxonomymaintenance.php">
+								<button name="action" type="submit" value="listBadParents">List Bad Parents</button>
+								<input name="kingdomid" value="<?= $kingdomID ?>" >
+								<input name="taxauthid" value="<?= $taxAuthID ?>" >
+							</form>
+							<form name="autoPruneBadNodeForm" method="post" action="taxonomymaintenance.php">
+								<button name="action" type="submit" value="autoPruneBadNode">Automatically Prune Bad Node</button>
+								<input name="kingdomid" value="<?= $kingdomID ?>" >
+								<input name="taxauthid" value="<?= $taxAuthID ?>" >
+							</form>
+						</div>
+					</div>
 
 
-			<?php
+				</div>
+
+
+		$retArr['illegalParents'] = $this->getIllegalParentCount();
+		$retArr['illegalAccepted'] = $this->getIllegalAcceptedCount();
+		$retArr['infraspIssues'] = $this->getMislinkedInfraspecificCount();
+		$retArr['speciesIssues'] = $this->getMislinkedSpeciesCount();
+		$retArr['generaIssues'] = $this->getMislinkedGeneraCount();
+
+				<?php
+			}
+			elseif($action == 'listBadParents'){
+
+			}
 		}
 		else{
 			?>
 			<div style="margin:30px;font-weight:bold;font-size:120%;">
-				<?php echo $LANG['NOT_AUTH']; ?>
+				<?= $LANG['NOT_AUTH'] ?>
 			</div>
 			<?php
 		}
