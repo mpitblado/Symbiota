@@ -7,11 +7,12 @@ else include_once($SERVER_ROOT.'/content/lang/taxa/taxonomy/taxonomymaintenance.
 if(!$SYMB_UID) header('Location: ../../profile/index.php?refurl=../taxa/taxonomy/taxonomymaintenance.php?' . htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
 
 
-$kingdomID = array_key_exists('kingdomid', $_REQUEST) ? filter_var($_REQUEST['kingdomid'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$node = array_key_exists('node', $_REQUEST) ? htmlspecialchars($_REQUEST['node']) : '';
 $taxAuthID = array_key_exists('taxauthid', $_REQUEST) ? filter_var($_REQUEST['taxauthid'], FILTER_SANITIZE_NUMBER_INT) : 0;
 $action = array_key_exists('action', $_REQUEST) ? $_REQUEST['action'] : '';
 
-$harvesterManager = new TaxonomyMaintenance();
+$taxonomyManager = new TaxonomyMaintenance();
+$taxonomyManager->setNode($node);
 
 $isEditor = false;
 if($IS_ADMIN || array_key_exists('Taxonomy', $USER_RIGHTS)) $isEditor = true;
@@ -20,16 +21,16 @@ $reportArr = array();
 $statusStr = '';
 if($isEditor && $action){
 	if($action == 'syncFamilies'){
-		if($cnt = $harvesterManager->synchronizeFamilyQuickLookup()){
+		if($cnt = $taxonomyManager->synchronizeFamilyQuickLookup()){
 			$statusStr = 'Success batch synchronized ' . $cnt . ' records';
 		}
 	}
 	elseif($action == 'autoPruneBadNode'){
-		if($cnt = $harvesterManager->pruneBadParentNodes()){
+		if($cnt = $taxonomyManager->pruneBadParentNodes()){
 			$statusStr = 'Successfully pruned bad nodes';
 		}
 	}
-	$reportArr = $harvesterManager->getTaxonomyReport();
+	$reportArr = $taxonomyManager->getTaxonomyReport();
 
 }
 
@@ -80,7 +81,7 @@ if($isEditor && $action){
 							</div>
 							<form name="mismatchFamilyForm" method="post" action="taxonomymaintenance.php">
 								<button name="action" type="submit" value="syncFamilies">Synchronize Families</button>
-								<input name="kingdomid" value="<?= $kingdomID ?>" >
+								<input name="node" value="<?= $node ?>" >
 								<input name="taxauthid" value="<?= $taxAuthID ?>" >
 							</form>
 						</div>
@@ -97,12 +98,12 @@ if($isEditor && $action){
 							</div>
 							<form name="listBadParentsForm" method="post" action="taxonomymaintenance.php">
 								<button name="action" type="submit" value="listBadParents">List Bad Parents</button>
-								<input name="kingdomid" value="<?= $kingdomID ?>" >
+								<input name="node" value="<?= $node ?>" >
 								<input name="taxauthid" value="<?= $taxAuthID ?>" >
 							</form>
 							<form name="autoPruneBadNodeForm" method="post" action="taxonomymaintenance.php">
 								<button name="action" type="submit" value="autoPruneBadNode">Automatically Prune Bad Node</button>
-								<input name="kingdomid" value="<?= $kingdomID ?>" >
+								<input name="node" value="<?= $node ?>" >
 								<input name="taxauthid" value="<?= $taxAuthID ?>" >
 							</form>
 						</div>
@@ -112,16 +113,32 @@ if($isEditor && $action){
 				</div>
 
 
-		$retArr['illegalParents'] = $this->getIllegalParentCount();
-		$retArr['illegalAccepted'] = $this->getIllegalAcceptedCount();
-		$retArr['infraspIssues'] = $this->getMislinkedInfraspecificCount();
-		$retArr['speciesIssues'] = $this->getMislinkedSpeciesCount();
-		$retArr['generaIssues'] = $this->getMislinkedGeneraCount();
 
 				<?php
+				//$retArr['illegalAccepted'] = $this->getIllegalAcceptedCount();
+				//$retArr['infraspIssues'] = $this->getMislinkedInfraspecificCount();
+				//$retArr['speciesIssues'] = $this->getMislinkedSpeciesCount();
+				//$retArr['generaIssues'] = $this->getMislinkedGeneraCount();
 			}
 			elseif($action == 'listBadParents'){
 
+			}
+			else{
+				?>
+				<form name="generateReportForm" method="post" action="taxonomymaintenance.php">
+					<select name="node">
+						<option value="0">Select Taxon Node</option>
+						<?php
+						$nodeArr = $taxonomyManager->getNodeArr();
+						foreach($nodeArr as $nodeTid => $nodeName){
+							echo '<option value="' . $nodeTid . '-' . $nodeName . '">' . $nodeName . '</option>';
+						}
+						?>
+					</select>
+					<input name="taxauthid" type="hidden" value="<?= $taxAuthID ?>">
+					<button name="action" type="submit" value="generateReport">Generate Report</button>
+				</form>
+				<?php
 			}
 		}
 		else{

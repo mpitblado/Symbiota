@@ -5,8 +5,8 @@ include_once($SERVER_ROOT.'/classes/TaxonomyUtilities.php');
 class TaxonomyMaintenance extends Manager{
 
 	private $taxAuthID = 1;
-	private $kingdomID;
-	private $filterNodeTid = 0;
+	private $nodeTid = '';
+	private $nodeName = '';
 	private $rankArr = array();
 
 	function __construct() {
@@ -33,9 +33,11 @@ class TaxonomyMaintenance extends Manager{
 	public function getOrphanedTaxaCount(){
 		//Count of taxa entered into taxa table, but without hierarchy or acceptance defined within taxstatus table
 		$retCnt = 0;
-		$sql = 'SELECT COUNT(tid) as cnt FROM taxa WHERE tid NOT IN(SELECT tid FROM taxstatus WHERE taxauthid = ?)';
+		$sql = 'SELECT COUNT(t.tid) as cnt
+			FROM taxa t INNER JOIN taxaenumtree e ON t.tid = e.tid
+			WHERE t.tid NOT IN(SELECT tid FROM taxstatus WHERE taxauthid = ?) AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('i', $this->taxAuthID);
+			$stmt->bind_param('ii', $this->taxAuthID, $this->nodeTid);
 			$stmt->execute();
 			$stmt->bind_result($retCnt);
 			$stmt->fetch();
@@ -51,9 +53,10 @@ class TaxonomyMaintenance extends Manager{
 			FROM taxstatus ts INNER JOIN taxaenumtree e ON ts.tid = e.tid
 			INNER JOIN taxa t ON ts.tid = t.tid
 			INNER JOIN taxa p ON e.parenttid = p.tid
-			WHERE e.taxauthid = ? AND ts.taxauthid = ? AND p.rankid = 140 AND ts.family != p.sciname';
+			INNER JOIN taxaenumtree e ON ts.tid = e.tid
+			WHERE e.taxauthid = ? AND ts.taxauthid = ? AND p.rankid = 140 AND ts.family != p.sciname AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('ii', $this->taxAuthID, $this->taxAuthID);
+			$stmt->bind_param('iii', $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
 			$stmt->execute();
 			$stmt->bind_result($retCnt);
 			$stmt->fetch();
@@ -68,9 +71,10 @@ class TaxonomyMaintenance extends Manager{
 		$sql = 'SELECT COUNT(t.tid) AS cnt
 			FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid
 			INNER JOIN taxa p ON ts.parenttid = p.tid
-			WHERE ts.taxauthid = ? AND t.rankid < p.rankid';
+			INNER JOIN taxaenumtree e ON t.tid = e.tid
+			WHERE ts.taxauthid = ? AND t.rankid < p.rankid AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('i', $this->taxAuthID);
+			$stmt->bind_param('ii', $this->taxAuthID, $this->nodeTid);
 			$stmt->execute();
 			$stmt->bind_result($retCnt);
 			$stmt->fetch();
@@ -85,9 +89,10 @@ class TaxonomyMaintenance extends Manager{
 		$sql = 'SELECT COUNT(t.tid) AS cnt
 			FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid
 			INNER JOIN taxstatus pts ON ts.parentTid = pts.tid
-			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND ts.tid = ts.tidAccepted AND pts.tid != pts.tidAccepted';
+			INNER JOIN taxaenumtree e ON t.tid = e.tid
+			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND ts.tid = ts.tidAccepted AND pts.tid != pts.tidAccepted AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('ii', $this->taxAuthID, $this->taxAuthID);
+			$stmt->bind_param('iii', $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
 			$stmt->execute();
 			$stmt->bind_result($retCnt);
 			$stmt->fetch();
@@ -103,9 +108,10 @@ class TaxonomyMaintenance extends Manager{
 			FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid
 			INNER JOIN taxstatus pts ON ts.parentTid = pts.tid
 			INNER JOIN taxa p ON pts.tid = p.tid
-			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid > 220 AND p.rankid < 220';
+			INNER JOIN taxaenumtree e ON t.tid = e.tid
+			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid > 220 AND p.rankid < 220 AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('ii', $this->taxAuthID, $this->taxAuthID);
+			$stmt->bind_param('iii', $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
 			$stmt->execute();
 			$stmt->bind_result($retCnt);
 			$stmt->fetch();
@@ -121,9 +127,10 @@ class TaxonomyMaintenance extends Manager{
 			FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid
 			INNER JOIN taxstatus pts ON ts.parentTid = pts.tid
 			INNER JOIN taxa p ON pts.tid = p.tid
-			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid = 220 AND p.rankid < 180';
+			INNER JOIN taxaenumtree e ON t.tid = e.tid
+			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid = 220 AND p.rankid < 180 AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('ii', $this->taxAuthID, $this->taxAuthID);
+			$stmt->bind_param('iii', $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
 			$stmt->execute();
 			$stmt->bind_result($retCnt);
 			$stmt->fetch();
@@ -139,9 +146,10 @@ class TaxonomyMaintenance extends Manager{
 			FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid
 			INNER JOIN taxstatus pts ON ts.parentTid = pts.tid
 			INNER JOIN taxa p ON pts.tid = p.tid
-			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid = 180 AND p.rankid < 140';
+			INNER JOIN taxaenumtree e ON t.tid = e.tid
+			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid = 180 AND p.rankid < 140 AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('ii', $this->taxAuthID, $this->taxAuthID);
+			$stmt->bind_param('iii', $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
 			$stmt->execute();
 			$stmt->bind_result($retCnt);
 			$stmt->fetch();
@@ -154,9 +162,11 @@ class TaxonomyMaintenance extends Manager{
 	public function getOrphanedTaxa(){
 		$retArr = array();
 		$this->setRankArr();
-		$sql = 'SELECT tid, sciname, author, rankid FROM taxa WHERE tid NOT IN(SELECT tid FROM taxstatus WHERE taxauthid = ?)';
+		$sql = 'SELECT t.tid, t.sciname, t.author, t.rankid
+			FROM taxa t INNER JOIN taxaenumtree e ON ts.tid = e.tid
+			WHERE t.tid NOT IN(SELECT tid FROM taxstatus WHERE taxauthid = ?) AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('i', $this->taxAuthID);
+			$stmt->bind_param('ii', $this->taxAuthID, $this->nodeTid);
 			$stmt->execute();
 			if($rs = $stmt->get_result()){
 				if($r = $rs->fetch_object()){
@@ -179,9 +189,10 @@ class TaxonomyMaintenance extends Manager{
 		$sql = 'SELECT t.tid, t.sciname, t.rankid, p.tid AS parentTid, p.sciname as parent, p.rankID AS parentRankID
 			FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid
 			INNER JOIN taxa p ON ts.parenttid = p.tid
-			WHERE ts.taxauthid = ? AND t.rankid < p.rankid';
+			INNER JOIN taxaenumtree e ON t.tid = e.tid
+			WHERE ts.taxauthid = ? AND t.rankid < p.rankid AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('i', $this->taxAuthID);
+			$stmt->bind_param('ii', $this->taxAuthID, $this->nodeTid);
 			$stmt->execute();
 			if($rs = $stmt->get_result()){
 				if($r = $rs->fetch_object()){
@@ -207,9 +218,10 @@ class TaxonomyMaintenance extends Manager{
 			FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid
 			INNER JOIN taxstatus pts ON ts.parentTid = pts.tid
 			INNER JOIN taxa p ON pts.tid = p.tid
-			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND ts.tid = ts.tidAccepted AND pts.tid != pts.tidAccepted';
+			INNER JOIN taxaenumtree e ON t.tid = e.tid
+			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND ts.tid = ts.tidAccepted AND pts.tid != pts.tidAccepted AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('ii', $this->taxAuthID, $this->taxAuthID);
+			$stmt->bind_param('iii', $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
 			$stmt->execute();
 			if($rs = $stmt->get_result()){
 				if($r = $rs->fetch_object()){
@@ -235,9 +247,10 @@ class TaxonomyMaintenance extends Manager{
 			FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid
 			INNER JOIN taxstatus pts ON ts.parentTid = pts.tid
 			INNER JOIN taxa p ON pts.tid = p.tid
-			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid > 220 AND p.rankid < 220';
+			INNER JOIN taxaenumtree e ON t.tid = e.tid
+			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid > 220 AND p.rankid < 220 AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('ii', $this->taxAuthID, $this->taxAuthID);
+			$stmt->bind_param('iii', $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
 			$stmt->execute();
 			if($rs = $stmt->get_result()){
 				if($r = $rs->fetch_object()){
@@ -265,9 +278,10 @@ class TaxonomyMaintenance extends Manager{
 			FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid
 			INNER JOIN taxstatus pts ON ts.parentTid = pts.tid
 			INNER JOIN taxa p ON pts.tid = p.tid
-			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid = 220 AND p.rankid < 180';
+			INNER JOIN taxaenumtree e ON t.tid = e.tid
+			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid = 220 AND p.rankid < 180 AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('ii', $this->taxAuthID, $this->taxAuthID);
+			$stmt->bind_param('iii', $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
 			$stmt->execute();
 			if($rs = $stmt->get_result()){
 				if($r = $rs->fetch_object()){
@@ -295,9 +309,10 @@ class TaxonomyMaintenance extends Manager{
 			FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid
 			INNER JOIN taxstatus pts ON ts.parentTid = pts.tid
 			INNER JOIN taxa p ON pts.tid = p.tid
-			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid = 180 AND p.rankid < 140';
+			INNER JOIN taxaenumtree e ON t.tid = e.tid
+			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid = 180 AND p.rankid < 140 AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('ii', $this->taxAuthID, $this->taxAuthID);
+			$stmt->bind_param('iii', $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
 			$stmt->execute();
 			if($rs = $stmt->get_result()){
 				if($r = $rs->fetch_object()){
@@ -352,26 +367,48 @@ class TaxonomyMaintenance extends Manager{
 		$status = false;
 		$taxaArr = $this->getIllegalParentTaxa();
 		foreach($taxaArr as $tid => $taxaArr){
-
+			$this->pruneTaxonNodes($tid, $taxaArr['rankid']);
 		}
 		return $status;
 	}
 
-	private function pruneTaxonNodes($tid){
-		$previousTid = 0;
-		$previousRankID = 0;
+	private function pruneTaxonNodes($childTid, $childRankID){
+		$remapTid = 0;
+		$parentTid = 0;
+		$parentRankID = 0;
+		$cnt = 0;
 		do{
-			$currentTid = 0;
-			$currentRankID = 0;
-			$sql = 'SELECT ts.tid, ts.parentTid, t.rankid FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid WHERE ts.taxauthid = ? AND t.tid = ?';
+			if(!$childRankID) return false;
+			$sql = 'SELECT p.tid, p.rankid FROM taxstatus ts INNER JOIN taxa p ON ts.parentTid = p.tid WHERE ts.taxauthid = ? AND ts.tid = ?';
 			if($stmt = $this->conn->prepare($sql)){
-				$stmt->bind_param('ii', $this->taxAuthID, $tid);
+				$stmt->bind_param('ii', $this->taxAuthID, $childTid);
 				$stmt->execute();
-				$stmt->bind_result($currentTid, $tid, $currentRankID);
+				$stmt->bind_result($parentTid, $parentRankID);
+				$stmt->fetch();
+				$stmt->close();
+				if($remapTid){
+					$this->remapNode($parentTid, $childTid);
+					$remapTid = 0;
+				}
+				if($childTid == $parentTid) break;
+				if($parentRankID >= $childRankID){
+					$remapTid = $childTid;
+				}
+				else $childRankID = $parentRankID;
+				$childTid = $parentTid;
 			}
+			$cnt++;
 		}
-		while($currentRankID > 11);
+		while($parentRankID < 11 || $cnt > 20);
+	}
 
+	private function remapNode($parentTid, $childTid){
+		$sql = 'UPDATE taxstatus SET parentTid = ? WHERE taxauthid = ? AND tid = ?';
+		if($stmt = $this->conn->prepare($sql)){
+			$stmt->bind_param('iii', $parentTid, $this->taxAuthID, $childTid);
+			$stmt->execute();
+			$stmt->close();
+		}
 	}
 
 	public function rebuildHierarchyEnumTree(){
@@ -380,12 +417,12 @@ class TaxonomyMaintenance extends Manager{
 
 	//Data set functions
 	private function setRankArr(){
-		if(!$this->rankArr && $this->kingdomID){
-			$sql = 'SELECT u.rankID, u.rankName
-				FROM taxonunits u INNER JOIN taxa t ON u.kingdomName = t.sciname
-				WHERE t.tid = ?';
+		if(!$this->rankArr && $this->nodeID){
+			$sql = 'SELECT u.rankID, u.rankName, t.sciname
+				FROM taxonunits u LEFT JOIN taxa t ON u.kingdomName = t.sciname
+				WHERE t.tid = ? ORDER BY t.sciname';
 			if($stmt = $this->conn->prepare($sql)){
-				$stmt->bind_param('i', $this->kingdomID);
+				$stmt->bind_param('i', $this->nodeTid);
 				$stmt->execute();
 				$rankID = 0;
 				$rankName = '';
@@ -398,17 +435,27 @@ class TaxonomyMaintenance extends Manager{
 		}
 	}
 
+	public function getNodeArr(){
+		$retArr = array();
+		$sql = 'SELECT tid, sciname FROM taxa WHERE rankid <= 10 ORDER BY rankid, sciname';
+		$rs = $this->conn->query($sql);
+		while($r = $rs->fetch_object()){
+			$retArr[$r->tid] = $r->sciname;
+		}
+		return $retArr;
+	}
+
 	//Setters and getters
 	public function setTaxAuthID($authID){
 		$this->taxAuthID = filter_var($authID, FILTER_SANITIZE_NUMBER_INT);
 	}
 
-	public function setFilterNodeTid($filterTid){
-		$this->filterNodeTid = filter_var($filterTid, FILTER_SANITIZE_NUMBER_INT);
-	}
-
-	public function setKingdomID($id){
-		$this->kingdomID = filter_var($id, FILTER_SANITIZE_NUMBER_INT);
+	public function setNode($node){
+		if(strpos($node, '-')){
+			$nodeArr = explode('-', $node);
+			$this->nodeTid = filter_var($nodeArr[0], FILTER_SANITIZE_NUMBER_INT);
+			$this->nodeName = $nodeArr[1];
+		}
 	}
 }
 ?>
