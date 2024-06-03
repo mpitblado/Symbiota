@@ -1,5 +1,4 @@
 <?php
-var_dump($LANG_TAG);
 try{
     if($LANG_TAG == 'en' || !file_exists($SERVER_ROOT.'/content/lang/header.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT . '/content/lang/header.en.php');
     else include_once($SERVER_ROOT . '/content/lang/header.' . $LANG_TAG . '.php');
@@ -14,7 +13,7 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
 $SHOULD_USE_HARVESTPARAMS = $SHOULD_USE_HARVESTPARAMS ?? false;
 $collectionSearchPage = $SHOULD_USE_HARVESTPARAMS ? '/collections/index.php' : '/collections/search/index.php';
 ?>
-<div class="header-wrapper">
+<div class="header-wrapper" style="position:absolute;top:10;z-index:10;">
 	<header>
 		<div class="top-wrapper">
 			<a class="screen-reader-only" href="#end-nav"><?= $LANG['SKIP_NAV'] ?></a>
