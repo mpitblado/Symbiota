@@ -19,10 +19,10 @@ class TaxonomyMaintenance extends Manager{
 
 	public function getTaxonomyReport(){
 		$retArr = array();
-		$retArr['orphanedTaxa'] = $this->getOrphanedTaxaCount();
 		$retArr['mismatchedFamilies'] = $this->getMismatchedFamilyCount();
-		$retArr['illegalParents'] = $this->getIllegalParentCount();
-		$retArr['illegalAccepted'] = $this->getIllegalAcceptedCount();
+		$retArr['illegalParentRankid'] = $this->getIllegalParentRankidCount();
+		$retArr['acceptedNonAcceptedParent'] = $this->getAcceptedNonAcceptedParentCount();
+		$retArr['nonAcceptedLinkedToNonAccepted'] = $this->getNonAcceptedLinkedToNonAcceptedCount();
 		$retArr['infraspIssues'] = $this->getMislinkedInfraspecificCount();
 		$retArr['speciesIssues'] = $this->getMislinkedSpeciesCount();
 		$retArr['generaIssues'] = $this->getMislinkedGeneraCount();
@@ -33,11 +33,9 @@ class TaxonomyMaintenance extends Manager{
 	public function getOrphanedTaxaCount(){
 		//Count of taxa entered into taxa table, but without hierarchy or acceptance defined within taxstatus table
 		$retCnt = 0;
-		$sql = 'SELECT COUNT(t.tid) as cnt
-			FROM taxa t INNER JOIN taxaenumtree e ON t.tid = e.tid
-			WHERE t.tid NOT IN(SELECT tid FROM taxstatus WHERE taxauthid = ?) AND e.parentTid = ?';
+		$sql = 'SELECT COUNT(*) as cnt FROM taxa WHERE tid NOT IN(SELECT tid FROM taxstatus WHERE taxauthid = ?)';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('ii', $this->taxAuthID, $this->nodeTid);
+			$stmt->bind_param('i', $this->taxAuthID);
 			$stmt->execute();
 			$stmt->bind_result($retCnt);
 			$stmt->fetch();
@@ -53,7 +51,6 @@ class TaxonomyMaintenance extends Manager{
 			FROM taxstatus ts INNER JOIN taxaenumtree e ON ts.tid = e.tid
 			INNER JOIN taxa t ON ts.tid = t.tid
 			INNER JOIN taxa p ON e.parenttid = p.tid
-			INNER JOIN taxaenumtree e ON ts.tid = e.tid
 			WHERE e.taxauthid = ? AND ts.taxauthid = ? AND p.rankid = 140 AND ts.family != p.sciname AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
 			$stmt->bind_param('iii', $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
@@ -65,16 +62,16 @@ class TaxonomyMaintenance extends Manager{
 		return $retCnt;
 	}
 
-	public function getIllegalParentCount(){
+	public function getIllegalParentRankidCount(){
 		//Taxa whose direct parent is of an equal or higher rankid
 		$retCnt = 0;
 		$sql = 'SELECT COUNT(t.tid) AS cnt
 			FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid
 			INNER JOIN taxa p ON ts.parenttid = p.tid
 			INNER JOIN taxaenumtree e ON t.tid = e.tid
-			WHERE ts.taxauthid = ? AND t.rankid < p.rankid AND e.parentTid = ?';
+			WHERE ts.taxauthid = ? AND t.rankid < p.rankid AND e.taxAuthID = ? AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('ii', $this->taxAuthID, $this->nodeTid);
+			$stmt->bind_param('iii', $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
 			$stmt->execute();
 			$stmt->bind_result($retCnt);
 			$stmt->fetch();
@@ -83,16 +80,34 @@ class TaxonomyMaintenance extends Manager{
 		return $retCnt;
 	}
 
-	public function getIllegalAcceptedCount(){
+	public function getAcceptedNonAcceptedParentCount(){
 		//Accepted taxa with a non-accepted parent
 		$retCnt = 0;
 		$sql = 'SELECT COUNT(t.tid) AS cnt
 			FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid
 			INNER JOIN taxstatus pts ON ts.parentTid = pts.tid
 			INNER JOIN taxaenumtree e ON t.tid = e.tid
-			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND ts.tid = ts.tidAccepted AND pts.tid != pts.tidAccepted AND e.parentTid = ?';
+			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND ts.tid = ts.tidAccepted AND pts.tid != pts.tidAccepted AND e.taxAuthID = ? AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('iii', $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
+			$stmt->bind_param('iiii', $this->taxAuthID, $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
+			$stmt->execute();
+			$stmt->bind_result($retCnt);
+			$stmt->fetch();
+			$stmt->close();
+		}
+		return $retCnt;
+	}
+
+	public function getNonAcceptedLinkedToNonAcceptedCount(){
+		//Non-accepted taxa linked to another non-accepted taxon as the accepted taxon
+		$retCnt = 0;
+		$sql = 'SELECT COUNT(t.tid) AS cnt
+			FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid
+			INNER JOIN taxstatus a ON ts.tidAccepted = a.tid
+			INNER JOIN taxaenumtree e ON t.tid = e.tid
+			WHERE ts.taxauthid = ? AND a.taxauthid = ? AND ts.tid != ts.tidAccepted AND e.taxAuthID = ? AND e.parentTid = ?';
+		if($stmt = $this->conn->prepare($sql)){
+			$stmt->bind_param('iiii', $this->taxAuthID, $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
 			$stmt->execute();
 			$stmt->bind_result($retCnt);
 			$stmt->fetch();
@@ -109,9 +124,9 @@ class TaxonomyMaintenance extends Manager{
 			INNER JOIN taxstatus pts ON ts.parentTid = pts.tid
 			INNER JOIN taxa p ON pts.tid = p.tid
 			INNER JOIN taxaenumtree e ON t.tid = e.tid
-			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid > 220 AND p.rankid < 220 AND e.parentTid = ?';
+			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid > 220 AND p.rankid < 220 AND e.taxAuthID = ? AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('iii', $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
+			$stmt->bind_param('iiii', $this->taxAuthID, $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
 			$stmt->execute();
 			$stmt->bind_result($retCnt);
 			$stmt->fetch();
@@ -128,9 +143,9 @@ class TaxonomyMaintenance extends Manager{
 			INNER JOIN taxstatus pts ON ts.parentTid = pts.tid
 			INNER JOIN taxa p ON pts.tid = p.tid
 			INNER JOIN taxaenumtree e ON t.tid = e.tid
-			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid = 220 AND p.rankid < 180 AND e.parentTid = ?';
+			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid = 220 AND p.rankid < 180 AND e.taxAuthID = ? AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('iii', $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
+			$stmt->bind_param('iiii', $this->taxAuthID, $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
 			$stmt->execute();
 			$stmt->bind_result($retCnt);
 			$stmt->fetch();
@@ -147,9 +162,9 @@ class TaxonomyMaintenance extends Manager{
 			INNER JOIN taxstatus pts ON ts.parentTid = pts.tid
 			INNER JOIN taxa p ON pts.tid = p.tid
 			INNER JOIN taxaenumtree e ON t.tid = e.tid
-			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid = 180 AND p.rankid < 140 AND e.parentTid = ?';
+			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid = 180 AND p.rankid < 140 AND e.taxAuthID = ? AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('iii', $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
+			$stmt->bind_param('iiii', $this->taxAuthID, $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
 			$stmt->execute();
 			$stmt->bind_result($retCnt);
 			$stmt->fetch();
@@ -162,16 +177,14 @@ class TaxonomyMaintenance extends Manager{
 	public function getOrphanedTaxa(){
 		$retArr = array();
 		$this->setRankArr();
-		$sql = 'SELECT t.tid, t.sciname, t.author, t.rankid
-			FROM taxa t INNER JOIN taxaenumtree e ON ts.tid = e.tid
-			WHERE t.tid NOT IN(SELECT tid FROM taxstatus WHERE taxauthid = ?) AND e.parentTid = ?';
+		$sql = 'SELECT tid, sciname, author, rankid FROM taxa WHERE tid NOT IN(SELECT tid FROM taxstatus WHERE taxauthid = ?)';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('ii', $this->taxAuthID, $this->nodeTid);
+			$stmt->bind_param('i', $this->taxAuthID);
 			$stmt->execute();
 			if($rs = $stmt->get_result()){
 				if($r = $rs->fetch_object()){
-					$retArr[$r->tid]['sciname'] = $r->sciname;
-					$retArr[$r->tid]['author'] = $r->author;
+					$retArr[$r->tid]['sciname'] = $this->cleanInStr($r->sciname);
+					$retArr[$r->tid]['author'] = $this->cleanInStr($r->author);
 					$retArr[$r->tid]['rankid'] = $r->rankid;
 					if($this->rankArr[$r->rankid]) $retArr[$r->tid]['rankName'] = $this->rankArr[$r->rankid];
 				}
@@ -182,21 +195,22 @@ class TaxonomyMaintenance extends Manager{
 		return $retArr;
 	}
 
-	public function getIllegalParentTaxa(){
+	public function getIllegalParentRankidTaxa(){
 		//Taxa whose direct parent is of an equal or higher rankid
 		$retArr = array();
 		$this->setRankArr();
-		$sql = 'SELECT t.tid, t.sciname, t.rankid, p.tid AS parentTid, p.sciname as parent, p.rankID AS parentRankID
+		$sql = 'SELECT t.tid, t.sciname, t.author, t.rankid, p.tid AS parentTid, p.sciname as parent, p.rankID AS parentRankID
 			FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid
 			INNER JOIN taxa p ON ts.parenttid = p.tid
 			INNER JOIN taxaenumtree e ON t.tid = e.tid
-			WHERE ts.taxauthid = ? AND t.rankid < p.rankid AND e.parentTid = ?';
+			WHERE ts.taxauthid = ? AND t.rankid < p.rankid AND e.taxAuthID = ? AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('ii', $this->taxAuthID, $this->nodeTid);
+			$stmt->bind_param('iii', $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
 			$stmt->execute();
 			if($rs = $stmt->get_result()){
 				if($r = $rs->fetch_object()){
-					$retArr[$r->tid]['sciname'] = $r->sciname;
+					$retArr[$r->tid]['sciname'] = $this->cleanInStr($r->sciname);
+					$retArr[$r->tid]['author'] = $this->cleanInStr($r->author);
 					$retArr[$r->tid]['rankid'] = $r->rankid;
 					if($this->rankArr[$r->rankid]) $retArr[$r->tid]['rankName'] = $this->rankArr[$r->rankid];
 					$retArr[$r->tid]['parentTid'] = $r->parentTid;
@@ -210,22 +224,52 @@ class TaxonomyMaintenance extends Manager{
 		return $retArr;
 	}
 
-	public function getIllegalAcceptedTaxa(){
-		//Accepted taxa with a non-accepted parent
+	public function getAcceptedNonAcceptedParentTaxa(){
+		//Accepted taxa with a non-accepted parents
 		$retArr = array();
 		$this->setRankArr();
-		$sql = 'SELECT t.tid, t.sciname, t.rankid, p.tid AS parentTid, p.sciname AS parent, p.rankid AS parentRankID
+		$sql = 'SELECT t.tid, t.sciname, t.author, t.rankid, p.tid AS parentTid, p.sciname AS parent, p.rankid AS parentRankID
 			FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid
 			INNER JOIN taxstatus pts ON ts.parentTid = pts.tid
 			INNER JOIN taxa p ON pts.tid = p.tid
 			INNER JOIN taxaenumtree e ON t.tid = e.tid
-			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND ts.tid = ts.tidAccepted AND pts.tid != pts.tidAccepted AND e.parentTid = ?';
+			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND ts.tid = ts.tidAccepted AND pts.tid != pts.tidAccepted AND e.taxAuthID = ? AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('iii', $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
+			$stmt->bind_param('iiii', $this->taxAuthID, $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
 			$stmt->execute();
 			if($rs = $stmt->get_result()){
 				if($r = $rs->fetch_object()){
-					$retArr[$r->tid]['sciname'] = $r->sciname;
+					$retArr[$r->tid]['sciname'] = $this->cleanInStr($r->sciname);
+					$retArr[$r->tid]['author'] = $this->cleanInStr($r->author);
+					$retArr[$r->tid]['rankid'] = $r->rankid;
+					if($this->rankArr[$r->rankid]) $retArr[$r->tid]['rankName'] = $this->rankArr[$r->rankid];
+					$retArr[$r->tid]['parentTid'] = $r->parentTid;
+					$retArr[$r->tid]['parent'] = $this->cleanInStr($r->parent);
+					$retArr[$r->tid]['parentRankID'] = $r->parentRankID;
+				}
+				$rs->free();
+			}
+			$stmt->close();
+		}
+		return $retArr;
+	}
+
+	public function getNonAcceptedLinkedToNonAcceptedTaxa(){
+		//Non-accepted taxa linked to another non-accepted taxon as the accepted taxon
+		$retArr = array();
+		$this->setRankArr();
+		$sql = 'SELECT t.tid, t.sciname, t.author, t.rankid, p.tid AS parentTid, p.sciname AS parent, p.rankid AS parentRankID
+			FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid
+			INNER JOIN taxstatus a ON ts.tid = a.tidAccepted
+			INNER JOIN taxaenumtree e ON t.tid = e.tid
+			WHERE ts.taxauthid = ? AND a.taxauthid = ? AND ts.tid != ts.tidAccepted AND e.taxAuthID = ? AND e.parentTid = ?';
+		if($stmt = $this->conn->prepare($sql)){
+			$stmt->bind_param('iiii', $this->taxAuthID, $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
+			$stmt->execute();
+			if($rs = $stmt->get_result()){
+				if($r = $rs->fetch_object()){
+					$retArr[$r->tid]['sciname'] = $this->cleanInStr($r->sciname);
+					$retArr[$r->tid]['author'] = $this->cleanInStr($r->author);
 					$retArr[$r->tid]['rankid'] = $r->rankid;
 					if($this->rankArr[$r->rankid]) $retArr[$r->tid]['rankName'] = $this->rankArr[$r->rankid];
 					$retArr[$r->tid]['parentTid'] = $r->parentTid;
@@ -243,20 +287,21 @@ class TaxonomyMaintenance extends Manager{
 		//Accepted taxa with a non-accepted parent
 		$retArr = array();
 		$this->setRankArr();
-		$sql = 'SELECT t.tid, t.sciname, t.rankid, ts.tidaccepted, p.tid AS parentTid, p.sciname AS parent, p.rankid AS parentRankid
+		$sql = 'SELECT t.tid, t.sciname, t.author, t.rankid, ts.tidaccepted, p.tid AS parentTid, p.sciname AS parent, p.rankid AS parentRankid
 			FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid
 			INNER JOIN taxstatus pts ON ts.parentTid = pts.tid
 			INNER JOIN taxa p ON pts.tid = p.tid
 			INNER JOIN taxaenumtree e ON t.tid = e.tid
-			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid > 220 AND p.rankid < 220 AND e.parentTid = ?';
+			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid > 220 AND p.rankid < 220 AND e.taxAuthID = ? AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('iii', $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
+			$stmt->bind_param('iiii', $this->taxAuthID, $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
 			$stmt->execute();
 			if($rs = $stmt->get_result()){
 				if($r = $rs->fetch_object()){
 					$acceptance = 1;
 					if($r->tid != $r->tidaccepted) $acceptance = 0;
-					$retArr[$r->tid][$acceptance]['sciname'] = $r->sciname;
+					$retArr[$r->tid][$acceptance]['sciname'] = $this->cleanInStr($r->sciname);
+					$retArr[$r->tid][$acceptance]['author'] = $this->cleanInStr($r->author);
 					$retArr[$r->tid][$acceptance]['rankid'] = $r->rankid;
 					if($this->rankArr[$r->rankid]) $retArr[$r->tid]['rankName'] = $this->rankArr[$r->rankid];
 					$retArr[$r->tid][$acceptance]['parentTid'] = $r->parentTid;
@@ -274,20 +319,21 @@ class TaxonomyMaintenance extends Manager{
 		//Species ranked taxa (rankid = 220) that are linked to a parent of a rank < genus rank
 		$retArr = array();
 		$this->setRankArr();
-		$sql = 'SELECT t.tid, t.sciname, t.rankid, ts.tidaccepted, p.tid AS parentTid, p.sciname AS parent, p.rankid AS parentRankid
+		$sql = 'SELECT t.tid, t.sciname, t.author, t.rankid, ts.tidaccepted, p.tid AS parentTid, p.sciname AS parent, p.rankid AS parentRankid
 			FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid
 			INNER JOIN taxstatus pts ON ts.parentTid = pts.tid
 			INNER JOIN taxa p ON pts.tid = p.tid
 			INNER JOIN taxaenumtree e ON t.tid = e.tid
-			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid = 220 AND p.rankid < 180 AND e.parentTid = ?';
+			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid = 220 AND p.rankid < 180 AND e.taxAuthID = ? AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('iii', $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
+			$stmt->bind_param('iiii', $this->taxAuthID, $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
 			$stmt->execute();
 			if($rs = $stmt->get_result()){
 				if($r = $rs->fetch_object()){
 					$acceptance = 1;
 					if($r->tid != $r->tidaccepted) $acceptance = 0;
-					$retArr[$r->tid][$acceptance]['sciname'] = $r->sciname;
+					$retArr[$r->tid][$acceptance]['sciname'] = $this->cleanInStr($r->sciname);
+					$retArr[$r->tid][$acceptance]['author'] = $this->cleanInStr($r->author);
 					$retArr[$r->tid][$acceptance]['rankid'] = $r->rankid;
 					if($this->rankArr[$r->rankid]) $retArr[$r->tid]['rankName'] = $this->rankArr[$r->rankid];
 					$retArr[$r->tid][$acceptance]['parentTid'] = $r->parentTid;
@@ -305,20 +351,21 @@ class TaxonomyMaintenance extends Manager{
 		//Species ranked taxa (rankid = 220) that are linked to a parent of a rank < genus rank
 		$retArr = array();
 		$this->setRankArr();
-		$sql = 'SELECT t.tid, t.sciname, t.rankid, ts.tidaccepted, p.tid AS parentTid, p.sciname AS parent, p.rankid AS parentRankid
+		$sql = 'SELECT t.tid, t.sciname, t.author, t.rankid, ts.tidaccepted, p.tid AS parentTid, p.sciname AS parent, p.rankid AS parentRankid
 			FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid
 			INNER JOIN taxstatus pts ON ts.parentTid = pts.tid
 			INNER JOIN taxa p ON pts.tid = p.tid
 			INNER JOIN taxaenumtree e ON t.tid = e.tid
-			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid = 180 AND p.rankid < 140 AND e.parentTid = ?';
+			WHERE ts.taxauthid = ? AND pts.taxauthid = ? AND t.rankid = 180 AND p.rankid < 140 AND e.taxAuthID = ? AND e.parentTid = ?';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('iii', $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
+			$stmt->bind_param('iiii', $this->taxAuthID, $this->taxAuthID, $this->taxAuthID, $this->nodeTid);
 			$stmt->execute();
 			if($rs = $stmt->get_result()){
 				if($r = $rs->fetch_object()){
 					$acceptance = 1;
 					if($r->tid != $r->tidaccepted) $acceptance = 0;
-					$retArr[$r->tid][$acceptance]['sciname'] = $r->sciname;
+					$retArr[$r->tid][$acceptance]['sciname'] = $this->cleanInStr($r->sciname);
+					$retArr[$r->tid][$acceptance]['author'] = $this->cleanInStr($r->author);
 					$retArr[$r->tid][$acceptance]['rankid'] = $r->rankid;
 					if($this->rankArr[$r->rankid]) $retArr[$r->tid]['rankName'] = $this->rankArr[$r->rankid];
 					$retArr[$r->tid][$acceptance]['parentTid'] = $r->parentTid;
@@ -353,9 +400,9 @@ class TaxonomyMaintenance extends Manager{
 		$sql = 'UPDATE taxstatus ts INNER JOIN taxaenumtree e ON ts.tid = e.tid
 			INNER JOIN taxa p ON e.parenttid = p.tid
 			SET ts.family = p.sciname
-			WHERE e.taxauthid = ? AND p.rankid = 140 AND ts.taxauthid = ? AND ts.family != p.sciname';
+			WHERE ts.taxauthid = ? AND e.taxauthid = ? AND p.rankid = 140 AND ts.taxauthid = ? AND ts.family != p.sciname';
 		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('ii', $this->taxAuthID, $this->taxAuthID);
+			$stmt->bind_param('iii', $this->taxAuthID, $this->taxAuthID, $this->taxAuthID);
 			$stmt->execute();
 			$status = $stmt->affected_rows;
 			$stmt->close();
@@ -365,7 +412,7 @@ class TaxonomyMaintenance extends Manager{
 
 	public function pruneBadParentNodes(){
 		$status = false;
-		$taxaArr = $this->getIllegalParentTaxa();
+		$taxaArr = $this->getIllegalParentRankidTaxa();
 		foreach($taxaArr as $tid => $taxaArr){
 			$this->pruneTaxonNodes($tid, $taxaArr['rankid']);
 		}
@@ -403,7 +450,7 @@ class TaxonomyMaintenance extends Manager{
 	}
 
 	private function remapNode($parentTid, $childTid){
-		$sql = 'UPDATE taxstatus SET parentTid = ? WHERE taxauthid = ? AND tid = ?';
+		$sql = 'UPDATE taxstatus SET parentTid = ? WHERE taxAuthID = ? AND tid = ?';
 		if($stmt = $this->conn->prepare($sql)){
 			$stmt->bind_param('iii', $parentTid, $this->taxAuthID, $childTid);
 			$stmt->execute();
