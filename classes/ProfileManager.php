@@ -5,7 +5,6 @@ use function PHPUnit\Framework\returnValue;
 include_once('Manager.php');
 include_once('Person.php');
 include_once('Encryption.php');
-include_once('UuidFactory.php');
 @include_once 'Mail.php';
 
 class ProfileManager extends Manager{
@@ -98,9 +97,7 @@ class ProfileManager extends Manager{
 				if($stmt->bind_param('sss', $pwdStr, $this->userName, $this->userName)){
 					$stmt->execute();
 					$stmt->bind_result($this->uid, $this->displayName, $this->userName);
-					if($stmt->fetch()) {
-						$status = true;
-					}
+					if($stmt->fetch()) $status = true;
 					$stmt->close();
 				}
 				else echo 'error binding parameters: '.$stmt->error;
