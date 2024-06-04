@@ -35,6 +35,7 @@ class ProfileManager extends Manager{
 		setcookie('SymbiotaCrumb', '', time() - 3600, ($GLOBALS['CLIENT_ROOT']?$GLOBALS['CLIENT_ROOT']:'/'));
 		unset($_SESSION['userrights']);
 		unset($_SESSION['userparams']);
+		unset($_SESSION['csrf']);
 	}
 
 	public function authenticate($pwdStr = ''){
@@ -99,8 +100,6 @@ class ProfileManager extends Manager{
 					$stmt->bind_result($this->uid, $this->displayName, $this->userName);
 					if($stmt->fetch()) {
 						$status = true;
-						$uf = new UuidFactory();
-						$_SESSION['csrf'] = $uf->getUuidV4();
 					}
 					$stmt->close();
 				}

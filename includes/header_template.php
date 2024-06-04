@@ -4,10 +4,15 @@ else include_once($SERVER_ROOT . '/content/lang/header.' . $LANG_TAG . '.php');
 include_once($SERVER_ROOT . '/includes/head.php');
 
 include_once($SERVER_ROOT . '/classes/ProfileManager.php');
+include_once($SERVER_ROOT.'/classes/UuidFactory.php');
 $pHandler = new ProfileManager();
 $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
 $SHOULD_USE_HARVESTPARAMS = $SHOULD_USE_HARVESTPARAMS ?? false;
 $collectionSearchPage = $SHOULD_USE_HARVESTPARAMS ? '/collections/index.php' : '/collections/search/index.php';
+$uf = new UuidFactory();
+if(!isset($_SESSION['csrf'])){
+	$_SESSION['csrf'] = $uf->getUuidV4();
+}
 ?>
 <div class="header-wrapper">
 	<header>
