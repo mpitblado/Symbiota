@@ -16,11 +16,6 @@ $collectionSearchPage = $SHOULD_USE_HARVESTPARAMS ? '/collections/index.php' : '
 ?>
 <div class="header-wrapper" style="position:absolute;top:10;z-index:10; width: 100vw;">
 	<header>
-		<!-- <div class="top-wrapper" style="height: 9vh;">
-			<a class="screen-reader-only" href="#end-nav"><?= $LANG['SKIP_NAV'] ?></a>
-			<div class="top-brand">
-			</div>
-		</div> -->
 		<div class="menu-wrapper">
 			<!-- Hamburger icon -->
 			<input class="side-menu" type="checkbox" id="side-menu" name="side-menu" />
