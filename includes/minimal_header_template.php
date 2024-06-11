@@ -1,10 +1,11 @@
 <?php
-try{
-    if($LANG_TAG == 'en' || !file_exists($SERVER_ROOT.'/content/lang/header.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT . '/content/lang/header.en.php');
-    else include_once($SERVER_ROOT . '/content/lang/header.' . $LANG_TAG . '.php');
-} catch(Exception $error){
-    var_dump($error);
-}
+// try{
+    // if($LANG_TAG == 'en' || !file_exists($SERVER_ROOT.'/content/lang/header.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT . '/content/lang/header.en.php');
+    // else include_once($SERVER_ROOT . '/content/lang/header.' . $LANG_TAG . '.php');
+// } 
+// catch(Exception $error){
+//     // var_dump($error);
+// }
 include_once($SERVER_ROOT . '/includes/head.php');
 
 include_once($SERVER_ROOT . '/classes/ProfileManager.php');
@@ -15,11 +16,11 @@ $collectionSearchPage = $SHOULD_USE_HARVESTPARAMS ? '/collections/index.php' : '
 ?>
 <div class="header-wrapper" style="position:absolute;top:10;z-index:10; width: 100vw;">
 	<header>
-		<div class="top-wrapper" style="height: 9vh;">
+		<!-- <div class="top-wrapper" style="height: 9vh;">
 			<a class="screen-reader-only" href="#end-nav"><?= $LANG['SKIP_NAV'] ?></a>
 			<div class="top-brand">
 			</div>
-		</div>
+		</div> -->
 		<div class="menu-wrapper">
 			<!-- Hamburger icon -->
 			<input class="side-menu" type="checkbox" id="side-menu" name="side-menu" />

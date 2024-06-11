@@ -1,6 +1,8 @@
 <?php
 include_once('../../config/symbini.php');
 include_once($SERVER_ROOT.'/content/lang/collections/map/index.'.$LANG_TAG.'.php');
+if($LANG_TAG == 'en' || !file_exists($SERVER_ROOT.'/content/lang/header.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT . '/content/lang/header.en.php');
+    else include_once($SERVER_ROOT . '/content/lang/header.' . $LANG_TAG . '.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceMapManager.php');
 
 header('Content-Type: text/html; charset='.$CHARSET);
@@ -17,6 +19,9 @@ $recLimit = array_key_exists('recordlimit',$_REQUEST)?$_REQUEST['recordlimit']:1
 $catId = array_key_exists('catid',$_REQUEST)?$_REQUEST['catid']:0;
 $tabIndex = array_key_exists('tabindex',$_REQUEST)?$_REQUEST['tabindex']:0;
 $submitForm = array_key_exists('submitform',$_REQUEST)?$_REQUEST['submitform']:'';
+
+$shouldUseMinimalMapHeader = $SHOULD_USE_MINIMAL_MAP_HEADER ?? true;
+$topVal = $shouldUseMinimalMapHeader ? '6rem' : '0';
 
 if(!$catId && isset($DEFAULTCATID) && $DEFAULTCATID) $catId = $DEFAULTCATID;
 
@@ -285,6 +290,16 @@ if(isset($_REQUEST['llpoint'])) {
 		.cluster text {
 		text-shadow: 0 0 8px white, 0 0 8px white, 0 0 8px white;
 		}
+
+		<?php if($shouldUseMinimalMapHeader){ ?>
+			.leaflet-top {
+				top: <?php echo $topVal; ?>;
+				margin-top: 0px;
+			}
+			.leaflet-top .leaflet-control {
+				margin-top: 0px;
+			}
+		<?php } ?>
 		</style>
 		<script type="text/javascript">
 		//Clid
@@ -1838,7 +1853,7 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 	</head>
 	<body style='width:100%;max-width:100%;min-width:500px;' <?php echo (!$activateGeolocation?'onload="initialize();"':''); ?>>
 		<?php
-			include_once($SERVER_ROOT . '/includes/minimal_header_template.php');
+			if($shouldUseMinimalMapHeader) include_once($SERVER_ROOT . '/includes/minimal_header_template.php');
 		?>
 	  	<h1 class="page-heading screen-reader-only">Map Interface</h1>
 		<div
@@ -1854,7 +1869,7 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 		>
 		</div>
 		<div>
-			<button onclick="document.getElementById('defaultpanel').style.width='380px';  " style="position:absolute;top:0;left:0;margin:0px;z-index:10;font-size: 14px;border-style: solid; border-color: var(--medium-color);">&#9776; <b>Open Search Panel</b></button>
+			<button onclick="document.getElementById('defaultpanel').style.width='380px';  " style="position:absolute;top:<?php echo $topVal ?>;left:0;margin:0px;z-index:10;font-size: 14px;border-style: solid; border-color: var(--medium-color);">&#9776; <b>Open Search Panel</b></button>
 		</div>
 		<div id='map' style='width:100vw;height:100vh;z-index:1'></div>
 		<div id="defaultpanel" class="sidepanel" style="width: <?= $menuClosed? '0': '390px'?>">
