@@ -101,7 +101,7 @@ if($isEditor){
 		<a href="incoming.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&loanid=' . htmlspecialchars($loanId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>"><b><?php echo $LANG['INCOMING_LOAN_MANAGE']; ?></b></a>
 	</div>
 	<!-- This is inner text! -->
-	<div id="innertext">
+	<div role="main" id="innertext">
 		<h1 class="page-heading"><?= $LANG['INCOMING_LOAN_MANAGE']; ?></h1>
 		<?php
 		if($isEditor && $collid){
@@ -345,7 +345,7 @@ if($isEditor){
 				if($specList){
 					?>
 					<div id="specdiv">
-						<table class="styledtable" style="font-family:Arial;font-size:12px;">
+						<table class="styledtable" style="font-size:12px;">
 							<tr>
 								<th style="width:100px;text-align:center;"><?php echo $LANG['CATNO']; ?></th>
 								<th style="width:375px;text-align:center;"><?php echo $LANG['DETAILS']; ?></th>
@@ -399,7 +399,7 @@ if($isEditor){
 								<?php
 							}
 							?>
-							<button name="formsubmit" type="submit" value="Delete Loan" <?php if($specList) echo 'DISABLED'; ?>><?php echo $LANG['DELETE_LOAN']; ?></button>
+							<button class="button-danger" name="formsubmit" type="submit" value="Delete Loan" <?php if($specList) echo 'DISABLED'; ?>><?php echo $LANG['DELETE_LOAN']; ?></button>
 							<input name="collid" type="hidden" value="<?php echo $collid; ?>" />
 							<input name="loanid" type="hidden" value="<?php echo $loanId; ?>" />
 						</fieldset>

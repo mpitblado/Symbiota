@@ -9,6 +9,7 @@ $catId = array_key_exists("catid",$_REQUEST)?$_REQUEST["catid"]:'';
 if(!preg_match('/^[,\d]+$/',$catId)) $catId = '';
 if($catId == '' && isset($DEFAULTCATID)) $catId = $DEFAULTCATID;
 
+
 $collManager = new OccurrenceManager();
 $SHOULD_USE_HARVESTPARAMS = $SHOULD_USE_HARVESTPARAMS ?? false;
 //$collManager->reset();
@@ -70,7 +71,7 @@ $otherCatArr = $collManager->getOccurVoucherProjects();
 	}
 	?>
 	<!-- This is inner text! -->
-	<div id="innertext" class="inntertext-tab pin-things-here">
+	<div role="main" id="innertext" class="inntertext-tab pin-things-here">
 		<h1 class="page-heading screen-reader-only">Collections List</h1>
         <div id="tabs">
 			<ul>
@@ -90,7 +91,7 @@ $otherCatArr = $collManager->getOccurVoucherProjects();
 				?>
 			</ul>
 			<?php
-			$actionPage = $SHOULD_USE_HARVESTPARAMS ? "harvestparams.php" : "./search/index.php";
+			$actionPage = "harvestparams.php";
 			if($specArr && $obsArr){
 				?>
 				<div id="specobsdiv">

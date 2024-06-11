@@ -78,7 +78,7 @@ if($isEditor){
 		<a href="exchange.php?exchangeid=<?php echo htmlspecialchars($exchangeId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>&collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>"><b><?php echo $LANG['EXCHANGE_MNG']; ?></b></a>
 	</div>
 	<!-- This is inner text! -->
-	<div id="innertext">
+	<div role="main" id="innertext">
 		<h1 class="page-heading"><?= $LANG['EXCHANGE_MNG']; ?></h1>
 		<?php
 		if($isEditor && $collid){
@@ -244,7 +244,7 @@ if($isEditor){
 									</div>
 								</div>
 								<div style="padding-top:8px;padding-bottom:8px;">
-									<table class="styledtable" style="font-family:Arial;font-size:12px;">
+									<table class="styledtable" style="font-size:12px;">
 										<tr>
 											<th style="width:220px;text-align:center;"><?php echo $LANG['GIFT_SPECIMENS']; ?></th>
 											<th style="width:220px;text-align:center;"><?php echo $LANG['EXCH_SPECIMENS']; ?></th>
@@ -375,11 +375,11 @@ if($isEditor){
 				<div id="exchangedeldiv">
 					<form name="delexchangeform" action="index.php" method="post" onsubmit="return confirm('<?php echo $LANG['SURE_DELETE_EX']; ?>')">
 						<fieldset>
-							<legend><?php echo $LANG['DEL_EXCHANGE']; ?></legend>
+							<legend><?php echo $LANG['DELETE_EXCHANGE']; ?></legend>
 							<input name="collid" type="hidden" value="<?php echo $collid; ?>" />
 							<input name="tabindex" type="hidden" value="2" />
 							<input name="exchangeid" type="hidden" value="<?php echo $exchangeId; ?>" />
-							<input name="formsubmit" type="submit" value="Delete Exchange" />
+							<button class="button-danger" name="formsubmit" type="submit" value="Delete Exchange"><?php echo $LANG['DELETE_EXCHANGE']; ?></button>
 						</fieldset>
 					</form>
 				</div>

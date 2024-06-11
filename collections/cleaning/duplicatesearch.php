@@ -103,7 +103,7 @@ if($collMap){
 		<a href="index.php?collid=<?php echo $collid; ?>"><?php echo $LANG['CLEAN_MOD_INDEX']; ?></a> &gt;&gt;
 		<b><?php echo $LANG['DUP_OCCS']; ?></b>
 	</div>
-	<div id="innertext" style="background-color:white; margin:10px; width: 100%; max-width: 100%; padding: 0px;">
+	<div role="main" id="innertext" style="background-color:white; margin:10px; width: 100%; max-width: 100%; padding: 0px;">
 		<h1 class="page-heading">Duplicate Catalog Number Cleaning Tool</h1>
 		<?php
 		if($collMap && $isEditor){
@@ -129,7 +129,7 @@ if($collMap){
 							?>
 						</div>
 						<div style="clear: both">
-							<table class="styledtable" style="font-family:Arial;font-size:12px;">
+							<table class="styledtable" style="font-size:12px;">
 								<tr>
 									<th style="width:40px;"><?php echo $LANG['ID']; ?></th>
 									<th style="width:20px;"><input name="selectalldupes" type="checkbox" title="<?php echo $LANG['SEL_DESEL_ALL']; ?>" onclick="selectAllDuplicates(this.form)" /></th>

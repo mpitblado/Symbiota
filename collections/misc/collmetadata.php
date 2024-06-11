@@ -27,7 +27,11 @@ $statusStr = '';
 if ($isEditor) {
 	if ($action == 'saveEdits') {
 		$statusStr = $collManager->collectionUpdate($_POST);
-		if ($statusStr === true) header('Location: collprofiles.php?collid=' . $collid);
+		if ($statusStr === true) { 
+			header('Location: collprofiles.php?collid=' . $collid);
+		} else {
+			$statusStr = $collManager->getErrorMessage();
+		}
 	}
 	elseif ($action == 'newCollection') {
 		if ($IS_ADMIN) {
@@ -67,7 +71,7 @@ $collManager->cleanOutArr($collData);
 <html lang="<?php echo $LANG_TAG ?>">
 
 <head>
-	<title><?php echo $DEFAULT_TITLE . ' ' . ($collid ? $collData['collectionname'] : '') . ' ' . $LANG['COLL_PROFS']; ?></title>
+	<title><?php echo $DEFAULT_TITLE . ' ' . ($collid ? $collData['collectionname'] : '') . ' ' . $LANG['COL_PROFS']; ?></title>
 	<link href="<?php echo $CSS_BASE_PATH; ?>/jquery-ui.css" type="text/css" rel="stylesheet">
 	<?php
 	include_once($SERVER_ROOT . '/includes/head.php');
@@ -89,7 +93,11 @@ $collManager->cleanOutArr($collData);
 			block_unsupported_drop: true,
 			images_file_types: 'jpg,jpeg,png,gif',
 			images_upload_url: 'tinymceimagehandler.php',
-			a11y_advanced_options: true
+			a11y_advanced_options: true,
+			init_instance_callback: function (editor) {
+				var iframeBody = editor.getBody();
+				iframeBody.setAttribute('aria-label', <?php echo json_encode($LANG['TINYMCE_INFO'], JSON_UNESCAPED_UNICODE); ?>);
+			}
 		});
 
 		$(function() {
@@ -255,7 +263,7 @@ $collManager->cleanOutArr($collData);
 	else echo '<b>' . (isset($LANG['CREATE_COLL']) ? $LANG['CREATE_COLL'] : 'Create New Collection Profile') . '</b>';
 	echo '</div>';
 	?>
-	<div id="innertext">
+	<div role="main" id="innertext">
 		<?php
 		if ($statusStr) {
 			?>
@@ -331,7 +339,7 @@ $collManager->cleanOutArr($collData);
 							</div>
 							<div class="field-block">
 								<div class="field-elem">
-									<label for="full-description"> <?php echo (isset($LANG['DESC']) ? htmlspecialchars($LANG['DESC'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : 'Description (2000 character max)'); ?>: </label>
+									<label for="full-description"  tabindex="0" > <?php echo htmlspecialchars($LANG['DESC'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);?>: </label>
 									<textarea id="full-description" name="fullDescription" style="width:95%;height:90px;"><?php echo ($collid ? $collData["fulldescription"] : ''); ?></textarea>
 								</div>
 							</div>
@@ -537,7 +545,7 @@ $collManager->cleanOutArr($collData);
 										echo (isset($LANG['OCCID_DEF_1']) ? $LANG['OCCID_DEF_1'] : '');
 										echo ' <a href="http://rs.tdwg.org/dwc/terms/index.htm#occurrenceID" target="_blank">';
 										echo (isset($LANG['OCCURRENCEID']) ? $LANG['OCCURRENCEID'] : 'occurrenceId') . '</a>';
-										echo (isset($LANG['OCCID_DEF_2']) ? $LANG['OCCID_DEF_2'] : '');
+										echo (isset($LANG['OCCID_DEF_2']) ? ' ' . $LANG['OCCID_DEF_2'] : '');
 										?>
 									</span>
 							</div>

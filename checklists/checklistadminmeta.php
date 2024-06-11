@@ -264,7 +264,7 @@ if(!$clid){
 						<?php echo $LANG['POLYGON_NOT_DEFINED']; ?>
 					</span>
 					<span style="margin:10px;"><a href="#" onclick="openCoordAid({map_mode:MAP_MODES.POLYGON, client_root: '<?= $CLIENT_ROOT?>', polygon_text_type: POLYGON_TEXT_TYPES.<?=$footprint['type'] === 'geoJson' ? 'GEOJSON': 'WKT'?>});return false;" title="<?php echo $LANG['CREATE_EDIT_POLYGON']; ?>"><img src="../images/world.png" style="width:1em;" /></a></span>
-               <input type="hidden" id="footprintwkt" name="footprint<?=htmlspecialchars($footprint['type'])?>" value="<?=htmlspecialchars($footprint['footprint'])?>" />
+					<input type="hidden" id="footprintwkt" name="footprint<?=htmlspecialchars($footprint['type'])?>" value="<?=htmlspecialchars($footprint['footprint'])?>" />
 				</fieldset>
 			</div>
 			<div style="clear:both;margin-top:5px;">
@@ -320,7 +320,7 @@ if(!$clid){
 						<?php
 						// Activate Identification key: 0 = false, 1 = true
 						$activateKey = $KEY_MOD_IS_ACTIVE;
-						if(array_key_exists('activatekey', $defaultArr)) $activateKey = $defaultArr["activatekey"];
+						if(array_key_exists('activatekey', $defaultArr??[])) $activateKey = $defaultArr["activatekey"];
 						?>
 						<input name='activatekey' type='checkbox' value='1' <?php echo ($activateKey?"checked":""); ?> />
 						<?php echo $LANG['ACTIVATEKEY']; ?>

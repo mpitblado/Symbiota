@@ -64,8 +64,9 @@ else{
 		</style>
 	</head>
 	<body style="background-color:#ffffff; display:flex; flex-direction:column;">
-		<div style="padding: 0.75rem">
-			<button name="closebutton" type="button" onclick="commitFieldBuffer(fieldBuffer);self.close()">
+		<h1 class="page-heading" style="margin-left:5px;">Taxon Map</h1>
+		<div style="float:right;margin-top:5px;margin-bottom:5px;margin-right:15px;margin-left:5px;">
+			<button name="closebutton" type="button" onclick="self.close()">
 				<?php echo isset($LANG['SAVE_N_CLOSE'])? $LANG['SAVE_N_CLOSE'] :'Save and Close'?>
 			</button>
 			<?php echo isset($LANG['COORD_AID_HELP_TEXT'])? $LANG['COORD_AID_HELP_TEXT'] :'Click the map to start drawing or select from the shape controls to draw bounds of that shape'?>
@@ -137,7 +138,12 @@ else{
 		}
 
 		const setField = (id, v) => {
-			fieldBuffer[id] = v;
+			var elem = opener.document.getElementById(id);
+			if(elem) {
+				elem.value = v;
+				var event = new Event('change');
+				elem.dispatchEvent(event);
+			}
 		};
 
 		const getField = (id) => {

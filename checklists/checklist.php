@@ -41,7 +41,7 @@ $activateKey = $KEY_MOD_IS_ACTIVE;
 $showDetails = 0;
 if(isset($clArray['defaultSettings'])){
 	try {
-		$defaultArr = json_decode($clArray['defaultSettings'], true, $depth=512, JSON_THROW_ON_ERROR);
+		$defaultArr = json_decode(stripslashes(html_entity_decode($clArray['defaultSettings'])), true, $depth=512, JSON_THROW_ON_ERROR);
 	}
 	catch (Exception $e){
 		$statusStr = $e->getMessage();
@@ -142,6 +142,7 @@ $taxonFilter = htmlspecialchars($taxonFilter, ENT_COMPAT | ENT_HTML401 | ENT_SUB
 		}
 		?>
 		#editsppon { display: none; color:green; font-size: 70%; font-weight:bold; padding-bottom: 5px; position: relative; top: -4px; }
+		.moredetails{ clear: both }
 		.normal-font-weight {
 			font-weight: normal;
 		}
@@ -565,7 +566,7 @@ $taxonFilter = htmlspecialchars($taxonFilter, ENT_COMPAT | ENT_HTML401 | ENT_SUB
 							?>
 						</div>
 					</div>
-					<hr />
+					<hr style="margin-right: 2rem"/>
 					<div class="printoff">
 						<?php
 						$taxaLimit = ($showImages?$clManager->getImageLimit():$clManager->getTaxaLimit());
@@ -591,7 +592,7 @@ $taxonFilter = htmlspecialchars($taxonFilter, ENT_COMPAT | ENT_HTML401 | ENT_SUB
 						}
 						?>
 					</div>
-					<hr />
+					<hr style="margin-right: 2rem"/>
 					<?php
 					if($showImages){
 						$prevfam = '';
