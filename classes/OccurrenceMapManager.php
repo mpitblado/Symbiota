@@ -200,17 +200,21 @@ class OccurrenceMapManager extends OccurrenceManager {
 	private function setGeoSqlWhere(){
 		global $USER_RIGHTS;
 		$sqlWhere = $this->getSqlWhere();
-		if($this->searchTermArr){
+		if($this->searchTermArr) {
 			$sqlWhere = $this->getSqlWhere();
-			$sqlWhere .= ($sqlWhere?'AND ':'WHERE ').'(o.DecimalLatitude IS NOT NULL AND o.DecimalLongitude IS NOT NULL) ';
+			$sqlWhere .= ($sqlWhere?' AND ':' WHERE ').'(o.DecimalLatitude IS NOT NULL AND o.DecimalLongitude IS NOT NULL) ';
 			if(array_key_exists('clid',$this->searchTermArr) && $this->searchTermArr['clid']) {
 				if(isset($this->searchTermArr['cltype']) && $this->searchTermArr['cltype'] == 'all') {
 					$sqlWhere .= "AND (ST_Within(p.lngLatPoint,ST_GeomFromGeoJSON('". $this->voucherManager.getClFootprint()." '))) ";
 				}
 			}
 			elseif(array_key_exists("polycoords",$this->searchTermArr)){
-				$sqlWhere .= "AND (ST_Within(p.lngLatPoint,ST_GeomFromGeoJSON('" . $this->searchTermArr["polycoords"] . "'))) ";
+				$sqlWhere .= ($sqlWhere? ' AND': ' WHERE') . " (ST_Within(p.lngLatPoint,ST_GeomFromGeoJSON('" . $this->searchTermArr["polycoords"] . "'))) ";
 			}
+		}
+
+		//Only add these if a search is going to be done
+		if($sqlWhere) {
 			//Check and exclude records with sensitive species protections
 			if(array_key_exists('SuperAdmin',$USER_RIGHTS) || array_key_exists('CollAdmin',$USER_RIGHTS) || array_key_exists('RareSppAdmin',$USER_RIGHTS) || array_key_exists('RareSppReadAll',$USER_RIGHTS)){
 				//Is global rare species reader, thus do nothing to sql and grab all records
@@ -219,32 +223,15 @@ class OccurrenceMapManager extends OccurrenceManager {
 				$securityCollArr = array();
 				if(isset($USER_RIGHTS['CollEditor'])) $securityCollArr = $USER_RIGHTS['CollEditor'];
 				if(isset($USER_RIGHTS['RareSppReader'])) $securityCollArr = array_unique(array_merge($securityCollArr, $USER_RIGHTS['RareSppReader']));
-				$sqlWhere .= ' AND (o.CollId IN ('.implode(',',$securityCollArr).') OR (o.LocalitySecurity = 0 OR o.LocalitySecurity IS NULL)) ';
+				$sqlWhere .= ($sqlWhere ? ' AND' : ' WHERE' ) . ' (o.CollId IN ('.implode(',',$securityCollArr).') OR (o.LocalitySecurity = 0 OR o.LocalitySecurity IS NULL)) ';
 			}
-			else{
-				$sqlWhere .= ' AND (o.LocalitySecurity = 0 OR o.LocalitySecurity IS NULL) ';
-			}
-			$this->sqlWhere = $sqlWhere;
-		}
-		//Check and exclude records with sensitive species protections
-		if(array_key_exists('SuperAdmin',$USER_RIGHTS) || array_key_exists('CollAdmin',$USER_RIGHTS) || array_key_exists('RareSppAdmin',$USER_RIGHTS) || array_key_exists('RareSppReadAll',$USER_RIGHTS)){
-			//Is global rare species reader, thus do nothing to sql and grab all records
-		}
-		elseif(isset($USER_RIGHTS['RareSppReader']) || isset($USER_RIGHTS['CollEditor'])){
-			$securityCollArr = array();
-			if(isset($USER_RIGHTS['CollEditor'])) $securityCollArr = $USER_RIGHTS['CollEditor'];
-			if(isset($USER_RIGHTS['RareSppReader'])) $securityCollArr = array_unique(array_merge($securityCollArr, $USER_RIGHTS['RareSppReader']));
-			$sqlWhere .= ($sqlWhere ? ' AND' : ' WHERE' ) . ' (o.CollId IN ('.implode(',',$securityCollArr).') OR (o.LocalitySecurity = 0 OR o.LocalitySecurity IS NULL)) ';
-		}
-		elseif(!empty($sqlWhere)){
+			elseif(!empty($sqlWhere)){
 				$sqlWhere .= ($sqlWhere ? ' AND' : ' WHERE' ) . ' (o.LocalitySecurity = 0 OR o.LocalitySecurity IS NULL) ';
-		}
+			}
 
-		if($sqlWhere) {
 			$sqlWhere .=  ' AND ((o.decimallatitude BETWEEN -90 AND 90) AND (o.decimallongitude BETWEEN -180 AND 180)) ';
 		}
 		$this->sqlWhere = $sqlWhere;
-		//echo '<div style="margin-left:10px">sql: '.$this->sqlWhere.'</div>'; exit;
 	}
 
 	//Shape functions
