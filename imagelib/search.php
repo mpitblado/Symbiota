@@ -17,11 +17,11 @@ $tagExistance = 1;
 $tag = '';
 $cntPerPage = 200;
 $action = '';
-$uf = new UuidFactory();
-$localCsrfToken = $uf->getUuidV4();
+// $uf = new UuidFactory();
+$localCsrfToken = UuidFactory::getUuidV4();
 
 
-if(isset($_REQUEST['csrf']) && isset($_SESSION['csrf']) && $_REQUEST['csrf'] == $_SESSION['csrf']){
+// if(isset($_REQUEST['csrf']) && isset($_SESSION['csrf']) && $_REQUEST['csrf'] == $_SESSION['csrf']){
 	$taxonType = isset($_REQUEST['taxontype']) ? filter_var($_REQUEST['taxontype'], FILTER_SANITIZE_NUMBER_INT) : 0;
 	$useThes = array_key_exists('usethes',$_REQUEST) ? filter_var($_REQUEST['usethes'], FILTER_SANITIZE_NUMBER_INT) : 0;
 	$taxaStr = isset($_REQUEST['taxa']) ? $_REQUEST['taxa'] : '';
@@ -35,7 +35,7 @@ if(isset($_REQUEST['csrf']) && isset($_SESSION['csrf']) && $_REQUEST['csrf'] == 
 	$cntPerPage = array_key_exists('cntperpage', $_REQUEST) ? filter_var($_REQUEST['cntperpage'], FILTER_SANITIZE_NUMBER_INT) : 200;
 	
 	$action = $_REQUEST['submitaction'] ?? '';
-}
+// }
 
 if(!$useThes && !$action) $useThes = 1;
 if(!$taxonType && isset($DEFAULT_TAXON_SEARCH)) $taxonType = $DEFAULT_TAXON_SEARCH;
@@ -52,12 +52,12 @@ $imgLibManager->setTag($tag);
 $imgLibManager->setKeywords($keywords);
 $imgLibManager->setImageCount($imageCount);
 $imgLibManager->setImageType($imageType);
-if(isset($_REQUEST['csrf']) && isset($_SESSION['csrf']) &&  $_REQUEST['csrf'] == $_SESSION['csrf']){
+// if(isset($_REQUEST['csrf']) && isset($_SESSION['csrf']) &&  $_REQUEST['csrf'] == $_SESSION['csrf']){
 	if(isset($_REQUEST['db'])) $imgLibManager->setCollectionVariables($_REQUEST);
-}
+// }
 
 $statusStr = '';
-if($action == 'batchAssignTag'){
+if($action == 'batchAssignTag' && isset($_REQUEST['csrf']) && isset($_SESSION['csrf']) &&  $_REQUEST['csrf'] == $_SESSION['csrf']){
 	$statusCnt = $imgLibManager->batchAssignImageTag($_POST);
 	$statusArr = explode('-', $statusCnt);
 	if(isset($statusArr[0]) && is_numeric($statusArr[0])){
