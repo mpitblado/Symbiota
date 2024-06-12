@@ -32,12 +32,6 @@ class OccurrenceMapManager extends OccurrenceManager {
 			if($_REQUEST['cltype'] == 'all') $this->searchTermArr['cltype'] = 'all';
 			else $this->searchTermArr['cltype'] = 'vouchers';
 		}
-		if(array_key_exists('polycoords',$_REQUEST) && $_REQUEST['polycoords']) {
-			$this->searchTermArr['polycoords'] = $_REQUEST['polycoords'];
-		}
-		elseif($this->voucherManager && $this->voucherManager->getClFootprint()) {
-			$this->searchTermArr['polycoords'] = $this->voucherManager->getClFootprint();
-		}
 	}
 
 	//Coordinate retrival functions
@@ -69,17 +63,10 @@ class OccurrenceMapManager extends OccurrenceManager {
 				$latLngStr = $row->DecimalLatitude.",".$row->DecimalLongitude;
 				$coordArr[$collName][$row->occid]["llStr"] = $latLngStr;
 				$coordArr[$collName][$row->occid]["collid"] = $this->htmlEntities($row->collid);
-				//$tidcode = strtolower(str_replace(" ", "",$tidInterpreted.$row->sciname));
-				//$tidcode = preg_replace( "/[^A-Za-z0-9 ]/","",$tidcode);
-				//$coordArr[$collName][$occId]["ns"] = $this->htmlEntities($tidcode);
 				$coordArr[$collName][$row->occid]["tid"] = $tidInterpreted;
 				$coordArr[$collName][$row->occid]["fam"] = ($row->family?strtoupper($row->family):'undefined');
 				$coordArr[$collName][$row->occid]["sn"] = $row->sciname;
 				$coordArr[$collName][$row->occid]["id"] = $this->htmlEntities($row->identifier);
-				//$coordArr[$collName][$occId]["icode"] = $this->htmlEntities($row->institutioncode);
-				//$coordArr[$collName][$occId]["ccode"] = $this->htmlEntities($row->collectioncode);
-				//$coordArr[$collName][$occId]["cn"] = $this->htmlEntities($row->catalognumber);
-				//$coordArr[$collName][$occId]["ocn"] = $this->htmlEntities($row->othercatalognumbers);
 				$coordArr[$collName]["c"] = $color;
 			}
 			$statsManager->recordAccessEventByArr($occidArr, 'map');
@@ -204,12 +191,13 @@ class OccurrenceMapManager extends OccurrenceManager {
 			$sqlWhere = $this->getSqlWhere();
 			$sqlWhere .= ($sqlWhere?' AND ':' WHERE ').'(o.DecimalLatitude IS NOT NULL AND o.DecimalLongitude IS NOT NULL) ';
 			if(array_key_exists('clid',$this->searchTermArr) && $this->searchTermArr['clid']) {
+				//Set Footprint for map to load
+				$this->setSearchTerm('footprintGeoJson', $this->voucherManager->getClFootprint());
 				if(isset($this->searchTermArr['cltype']) && $this->searchTermArr['cltype'] == 'all') {
-					$sqlWhere .= "AND (ST_Within(p.lngLatPoint,ST_GeomFromGeoJSON('". $this->voucherManager.getClFootprint()." '))) ";
+					$sqlWhere .= "AND (ST_Within(p.lngLatPoint,ST_GeomFromGeoJSON('". $this->voucherManager->getClFootprint()." '))) ";
+
 				}
-			}
-			elseif(array_key_exists("polycoords",$this->searchTermArr)){
-				$sqlWhere .= ($sqlWhere? ' AND': ' WHERE') . " (ST_Within(p.lngLatPoint,ST_GeomFromGeoJSON('" . $this->searchTermArr["polycoords"] . "'))) ";
+
 			}
 		}
 
