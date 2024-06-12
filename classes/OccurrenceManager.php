@@ -252,7 +252,7 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 			$this->displaySearchArr[] = $pointArr[0] . ' ' . $pointArr[1] . ' +- ' . $pointArr[2] . $pointArr[3];
 		}
 		elseif(array_key_exists('footprintGeoJson',$this->searchTermArr)){
-			$sqlWhere .= 'AND (ST_Within(p.lngLatPoint,ST_GeomFromGeoJSON(\''.$this->searchTermArr['footprintGeoJson'].'\'))) ';
+			$sqlWhere .= "AND (ST_Within(p.lngLatPoint,ST_GeomFromGeoJSON('".$this->searchTermArr['footprintGeoJson']."'))) ";
 			$this->displaySearchArr[] = $this->LANG['POLYGON_SEARCH'];
 		}
 		if(array_key_exists('collector',$this->searchTermArr)){
@@ -946,9 +946,9 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 		if(array_key_exists('llpoint',$_REQUEST) && $_REQUEST['llpoint']){
 			$this->searchTermArr['llpoint'] = $this->cleanInputStr($_REQUEST['llpoint']);
 		}
-		if(array_key_exists('footprintwkt',$_REQUEST) && $_REQUEST['footprintwkt']){
+		if(array_key_exists('footprintGeoJson',$_REQUEST) && $_REQUEST['footprintGeoJson']){
 			//$this->searchTermArr['footprintwkt'] = $this->cleanInputStr($_REQUEST['footprintwkt']);
-			$this->searchTermArr['footprintGeoJson'] = $this->cleanInputStr($_REQUEST['footprintwkt']);
+			$this->searchTermArr['footprintGeoJson'] = $this->cleanInputStr($_REQUEST['footprintGeoJson']);
 		}
 	}
 

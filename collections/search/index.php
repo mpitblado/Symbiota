@@ -289,7 +289,7 @@ $obsArr = (isset($collList['obs'])?$collList['obs']:null);
 								<div class="text-area-container">
 									<label for="footprintwkt" class="text-area--outlined">
 										<span class="screen-reader-only"><?php echo $LANG['POLYGON'] ?></span>
-										<textarea id="footprintwkt" name="footprintwkt" class="full-width-pcnt" rows="5"></textarea>
+										<textarea id="footprintwkt" name="footprintGeoJson" class="full-width-pcnt" rows="5"></textarea>
 										<span class="inset-input-label"><?php echo $LANG['POLYGON'] ?></span>
 									</label>
 									<span class="assistive-text"><?php echo $LANG['SELECT_MAP_BUTTON_PASTE'] ?></span>
