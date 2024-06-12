@@ -11,7 +11,7 @@ include_once($SERVER_ROOT.'/classes/OccurrenceAttributeSearch.php');
 header("Content-Type: text/html; charset=" . $CHARSET);
 if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/search/index.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT.'/content/lang/collections/search/index.' . $LANG_TAG . '.php');
 else include_once($SERVER_ROOT . '/content/lang/collections/search/index.en.php');
-$dbsWithBracketsRemoved =str_replace(array('[',']'), '', $_GET["db"]);
+$dbsWithBracketsRemoved = array_key_exists("db",$_GET) ?  str_replace(array('[',']'), '', $_GET["db"]) : '';
 $explodable = $dbsWithBracketsRemoved;
 if(is_array($dbsWithBracketsRemoved)){
 	$explodable = $dbsWithBracketsRemoved[0];
