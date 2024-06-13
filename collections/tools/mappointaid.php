@@ -15,7 +15,7 @@ if($MAPPING_BOUNDARIES){
 }
 
 $errMode = array_key_exists("errmode",$_REQUEST)?$_REQUEST["errmode"]:1;
-$shouldUseMinimalMapHeader = $SHOULD_USE_MINIMAL_MAP_HEADER ?? true;
+$shouldUseMinimalMapHeader = $SHOULD_USE_MINIMAL_MAP_HEADER ?? false;
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $LANG_TAG ?>">

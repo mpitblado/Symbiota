@@ -17,7 +17,7 @@ if(!is_numeric($pid)) $pid = 0;
 $clManager = new ChecklistManager();
 $clManager->setProj($pid);
 
-$shouldUseMinimalMapHeader = $SHOULD_USE_MINIMAL_MAP_HEADER ?? true;
+$shouldUseMinimalMapHeader = $SHOULD_USE_MINIMAL_MAP_HEADER ?? false;
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $LANG_TAG ?>">

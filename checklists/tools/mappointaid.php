@@ -31,7 +31,7 @@ else{
 	$lng = -97.380979;
 }
 
-$shouldUseMinimalMapHeader = $SHOULD_USE_MINIMAL_MAP_HEADER ?? true;
+$shouldUseMinimalMapHeader = $SHOULD_USE_MINIMAL_MAP_HEADER ?? false;
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $LANG_TAG ?>">

@@ -22,7 +22,7 @@ $tabIndex = array_key_exists('tabindex', $_REQUEST) ? $indManager->sanitizeInt($
 $clid = array_key_exists('clid', $_REQUEST) ? $indManager->sanitizeInt($_REQUEST['clid']) : 0;
 $format = isset($_GET['format']) ? $_REQUEST['format'] : '';
 
-$shouldUseMinimalMapHeader = $SHOULD_USE_MINIMAL_MAP_HEADER ?? true;
+$shouldUseMinimalMapHeader = $SHOULD_USE_MINIMAL_MAP_HEADER ?? false;
 
 if($occid) $indManager->setOccid($occid);
 elseif($guid) $occid = $indManager->setGuid($guid);

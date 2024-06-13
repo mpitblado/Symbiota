@@ -34,7 +34,7 @@ foreach($coordArr as $tid => $taxaCoords) {
 $coordJson = json_encode($coords);
 $metaJson = json_encode($clMeta);
 
-$shouldUseMinimalMapHeader = $SHOULD_USE_MINIMAL_MAP_HEADER ?? true;
+$shouldUseMinimalMapHeader = $SHOULD_USE_MINIMAL_MAP_HEADER ?? false;
 
 ?>
 <!DOCTYPE html>

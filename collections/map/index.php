@@ -20,7 +20,7 @@ $catId = array_key_exists('catid',$_REQUEST)?$_REQUEST['catid']:0;
 $tabIndex = array_key_exists('tabindex',$_REQUEST)?$_REQUEST['tabindex']:0;
 $submitForm = array_key_exists('submitform',$_REQUEST)?$_REQUEST['submitform']:'';
 
-$shouldUseMinimalMapHeader = $SHOULD_USE_MINIMAL_MAP_HEADER ?? true;
+$shouldUseMinimalMapHeader = $SHOULD_USE_MINIMAL_MAP_HEADER ?? false;
 $topVal = $shouldUseMinimalMapHeader ? '6rem' : '0';
 
 if(!$catId && isset($DEFAULTCATID) && $DEFAULTCATID) $catId = $DEFAULTCATID;

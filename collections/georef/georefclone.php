@@ -15,7 +15,7 @@ $collType = array_key_exists('colltype',$_POST)?$_POST['colltype']:0;
 $collid = array_key_exists('collid',$_REQUEST)?$_REQUEST['collid']:0;
 $submitAction = array_key_exists('submitaction',$_POST)?$_POST['submitaction']:'';
 
-$shouldUseMinimalMapHeader = $SHOULD_USE_MINIMAL_MAP_HEADER ?? true;
+$shouldUseMinimalMapHeader = $SHOULD_USE_MINIMAL_MAP_HEADER ?? false;
 $topVal = $shouldUseMinimalMapHeader ? '1rem' : '0';
 
 //Remove country, state, county from beginning of string
