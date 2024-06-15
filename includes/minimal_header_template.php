@@ -14,7 +14,7 @@ $isAccessiblePreferred = $pHandler->getAccessibilityPreference($SYMB_UID);
 $SHOULD_USE_HARVESTPARAMS = $SHOULD_USE_HARVESTPARAMS ?? false;
 $collectionSearchPage = $SHOULD_USE_HARVESTPARAMS ? '/collections/index.php' : '/collections/search/index.php';
 ?>
-<div class="header-wrapper" style="position:absolute;top:10; width: 100vw;">
+<div class="header-wrapper" style="width: 100vw;">
 	<header>
 		<div class="menu-wrapper">
 			<!-- Hamburger icon -->
