@@ -36,7 +36,14 @@ class ParameterizedOccurrenceMapManager extends ParameterizedOccurrenceManager {
 			$this->searchTermArr['polycoords'] = $_REQUEST['poly_array'];
 		}
 		elseif(array_key_exists('polycoords',$_REQUEST) && $_REQUEST['polycoords']){
-			$this->searchTermArr['polycoords'] = $_REQUEST['polycoords'];
+			$pattern = '/^POLYGON\(\(\s*(-?\d+(\.\d+)?\s+-?\d+(\.\d+)?)(\s*,\s*-?\d+(\.\d+)?\s+-?\d+(\.\d+)?)\s*\)\)$/';
+			if (preg_match($pattern, $_REQUEST['polycoords'])) {
+				echo "Valid POLYGON input.";
+				$this->searchTermArr['polycoords'] = $_REQUEST['polycoords'];
+			} else {
+				echo "Invalid POLYGON input.";
+			}
+			// $this->searchTermArr['polycoords'] = $_REQUEST['polycoords'];
 		}
 		elseif($this->getClFootprintWkt()){
 			$this->searchTermArr['polycoords'] = $this->getClFootprintWkt();
