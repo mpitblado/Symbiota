@@ -166,11 +166,11 @@ class RpcTaxonomy extends RpcBase{
 				$statement1->execute();
 				$result1 = $statement1->get_result();
 				while($row1 = $result1->fetch_object()){
-					$rankName = (isset($taxonUnitArr[$row1->rankid])?$taxonUnitArr[$row1->rankid]:'Unknown');
-					$label = '2-'.$row1->rankid.'-'.$rankName.'-'.$row1->sciname;
+					$rankName = (isset($taxonUnitArr[$row1->rankid]) ? $taxonUnitArr[$row1->rankid] : 'Unknown');
+					$label = '2-' . $row1->rankid . '-' . $rankName.'-' . $row1->sciname;
 					$sciName = $row1->sciname;
-					if($row1->tid == $targetId) $sciName = '<b>'.$sciName.'</b>';
-					$sciName = "<span style='font-size:75%;'>".$rankName.":</span> ".$sciName.($displayAuthor?" ".$row1->author:"");
+					if($row1->tid == $targetId) $sciName = '<b>' . $sciName . '</b>';
+					$sciName = "<span style='font-size:75%;'>" . $rankName . ":</span> " . $sciName . ($displayAuthor ? " " . $row1->author : "");
 					$childArr[$i]['id'] = $row1->tid;
 					$childArr[$i]['label'] = $label;
 					$childArr[$i]['name'] = $sciName;
@@ -217,12 +217,12 @@ class RpcTaxonomy extends RpcBase{
 			$sql .=	'WHERE (ts.taxauthid = ?) AND (ts.tid = ts.tidaccepted) AND ((ts.parenttid = ?) OR (t.tid = ?)) ';
 			//echo $sql.'<br>';
 			if ($statement = $this->conn->prepare($sql)) {
-				$statement->bind_param("sss", $this->taxAuthID, $objId, $objId);
+				$statement->bind_param("iii", $this->taxAuthID, $objId, $objId);
 				$statement->execute();
 				$result = $statement->get_result();
 				$i = 0;
 				while($r = $result->fetch_object()){
-					$rankName = (isset($taxonUnitArr[$r->rankid])?$taxonUnitArr[$r->rankid]:'Unknown');
+					$rankName = (isset($taxonUnitArr[$r->rankid]) ? $taxonUnitArr[$r->rankid] : 'Unknown');
 					$label = '2-'.$r->rankid.'-'.$rankName.'-'.$r->sciname;
 					$sciNameParts = $this->splitScinameByProvided($r->sciname, $r->cultivarEpithet, $r->tradeName, $r->author);
                     $sciName = $sciNameParts['base'];
