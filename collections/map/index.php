@@ -2,7 +2,7 @@
 include_once('../../config/symbini.php');
 if($LANG_TAG == 'en' || !file_exists($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/header.en.php');
 include_once($SERVER_ROOT.'/content/lang/collections/map/index.'.$LANG_TAG.'.php');
-include_once($SERVER_ROOT.'/classes/OccurrenceMapManager.php');
+include_once($SERVER_ROOT.'/classes/ParameterizedOccurrenceMapManager.php');
 
 header('Content-Type: text/html; charset='.$CHARSET);
 header("Accept-Encoding: gzip, deflate, br");
@@ -21,7 +21,7 @@ $submitForm = array_key_exists('submitform',$_REQUEST)?$_REQUEST['submitform']:'
 
 if(!$catId && isset($DEFAULTCATID) && $DEFAULTCATID) $catId = $DEFAULTCATID;
 
-$mapManager = new OccurrenceMapManager();
+$mapManager = new ParameterizedOccurrenceMapManager();
 $searchVar = $mapManager->getQueryTermStr();
 if($searchVar && $recLimit) $searchVar .= '&reclimit='.$recLimit;
 
