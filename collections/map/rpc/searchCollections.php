@@ -1,6 +1,6 @@
 <?php
 include_once('../../../config/symbini.php');
-include_once($SERVER_ROOT.'/classes/OccurrenceMapManager.php');
+include_once($SERVER_ROOT.'/classes/ParameterizedOccurrenceMapManager.php');
 
 header('Content-Type: application/json;charset='.$CHARSET);
 include_once($SERVER_ROOT . '/rpc/crossPortalHeaders.php');
@@ -34,7 +34,7 @@ ob_start();
 $recLimit = array_key_exists('recordlimit',$_REQUEST)?$_REQUEST['recordlimit']:15000;
 if(!is_numeric($recLimit)) $recLimit = 15000;
 
-$mapManager = new OccurrenceMapManager();
+$mapManager = new ParameterizedOccurrenceMapManager();
 $searchVar = $mapManager->getQueryTermStr();
 
 $obsIDs = $mapManager->getObservationIds();

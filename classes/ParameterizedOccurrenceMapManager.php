@@ -1,8 +1,8 @@
 <?php
-include_once('OccurrenceManager.php');
+include_once('ParameterizedOccurrenceManager.php');
 include_once('OccurrenceAccessStats.php');
 
-class ParameterizedOccurrenceMapManager extends OccurrenceManager {
+class ParameterizedOccurrenceMapManager extends ParameterizedOccurrenceManager {
 
 	private $recordCount = 0;
 	private $collArrIndex = 0;
