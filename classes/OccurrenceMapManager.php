@@ -36,7 +36,7 @@ class OccurrenceMapManager extends OccurrenceManager {
 			$this->searchTermArr['polycoords'] = $_REQUEST['poly_array'];
 		}
 		elseif(array_key_exists('polycoords',$_REQUEST) && $_REQUEST['polycoords']){
-			$pattern = '/^POLYGON\(\(\s*(-?\d+(\.\d+)?\s+-?\d+(\.\d+)?)(\s*,\s*-?\d+(\.\d+)?\s+-?\d+(\.\d+)?)\s*\)\)$/';
+			$pattern = '/^POLYGON\s*\(\(\s*(-?\d+(\.\d+)?\s+-?\d+(\.\d+)?)(\s*,\s*-?\d+(\.\d+)?\s+-?\d+(\.\d+)?)*\s*\)\)\s*$/';
 			if (preg_match($pattern, $_REQUEST['polycoords'])) {
 				$this->searchTermArr['polycoords'] = $_REQUEST['polycoords'];
 			} else {
