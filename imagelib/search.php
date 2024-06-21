@@ -36,9 +36,7 @@ $imgLibManager->setTag($tag);
 $imgLibManager->setKeywords($keywords);
 $imgLibManager->setImageCount($imageCount);
 $imgLibManager->setImageType($imageType);
-// if(isset($_REQUEST['csrf']) && isset($_SESSION['csrf']) &&  $_REQUEST['csrf'] == $_SESSION['csrf']){
-	if(isset($_REQUEST['db'])) $imgLibManager->setCollectionVariables($_REQUEST);
-// }
+if(isset($_REQUEST['db'])) $imgLibManager->setCollectionVariables($_REQUEST);
 
 $statusStr = '';
 if($action == 'batchAssignTag' && isset($_REQUEST['csrf']) && isset($_SESSION['csrf']) &&  $_REQUEST['csrf'] == $_SESSION['csrf']){
