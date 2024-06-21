@@ -6,35 +6,20 @@ if($LANG_TAG != 'en' && !file_exists($SERVER_ROOT . '/content/lang/imagelib/sear
 include_once($SERVER_ROOT . '/content/lang/imagelib/search.' . $LANG_TAG . '.php');
 header('Content-Type: text/html; charset=' . $CHARSET);
 
-$keywords = '';
-$imageCount = 'all';
-$imageType = 0;
-$useThes = 0;
-$taxonType = 0;
-$taxaStr = '';
-$phUid = 0;
-$tagExistance = 1;
-$tag = '';
-$cntPerPage = 200;
-$action = '';
+$taxonType = isset($_REQUEST['taxontype']) ? filter_var($_REQUEST['taxontype'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$useThes = array_key_exists('usethes',$_REQUEST) ? filter_var($_REQUEST['usethes'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$taxaStr = isset($_REQUEST['taxa']) ? $_REQUEST['taxa'] : '';
+$phUid = array_key_exists('phuid',$_REQUEST) ? filter_var($_REQUEST['phuid'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$tagExistance = array_key_exists('tagExistance',$_REQUEST) ? filter_var($_REQUEST['tagExistance'], FILTER_SANITIZE_NUMBER_INT) : 1;
+$tag = array_key_exists('tag',$_REQUEST) ? $_REQUEST['tag'] : '';
+$keywords = array_key_exists('keywords',$_REQUEST) ? $_REQUEST['keywords'] : '';
+$imageCount = isset($_REQUEST['imagecount']) ? $_REQUEST['imagecount'] : 'all';
+$imageType = isset($_REQUEST['imagetype']) ? filter_var($_REQUEST['imagetype'], FILTER_SANITIZE_NUMBER_INT) : 0;
+$pageNumber = array_key_exists('page', $_REQUEST) ? filter_var($_REQUEST['page'], FILTER_SANITIZE_NUMBER_INT) : 1;
+$cntPerPage = array_key_exists('cntperpage', $_REQUEST) ? filter_var($_REQUEST['cntperpage'], FILTER_SANITIZE_NUMBER_INT) : 200;
+
+$action = $_REQUEST['submitaction'] ?? '';
 $localCsrfToken = UuidFactory::getUuidV4();
-
-
-// if(isset($_REQUEST['csrf']) && isset($_SESSION['csrf']) && $_REQUEST['csrf'] == $_SESSION['csrf']){
-	$taxonType = isset($_REQUEST['taxontype']) ? filter_var($_REQUEST['taxontype'], FILTER_SANITIZE_NUMBER_INT) : 0;
-	$useThes = array_key_exists('usethes',$_REQUEST) ? filter_var($_REQUEST['usethes'], FILTER_SANITIZE_NUMBER_INT) : 0;
-	$taxaStr = isset($_REQUEST['taxa']) ? $_REQUEST['taxa'] : '';
-	$phUid = array_key_exists('phuid',$_REQUEST) ? filter_var($_REQUEST['phuid'], FILTER_SANITIZE_NUMBER_INT) : 0;
-	$tagExistance = array_key_exists('tagExistance',$_REQUEST) ? filter_var($_REQUEST['tagExistance'], FILTER_SANITIZE_NUMBER_INT) : 1;
-	$tag = array_key_exists('tag',$_REQUEST) ? $_REQUEST['tag'] : '';
-	$keywords = array_key_exists('keywords',$_REQUEST) ? $_REQUEST['keywords'] : '';
-	$imageCount = isset($_REQUEST['imagecount']) ? $_REQUEST['imagecount'] : 'all';
-	$imageType = isset($_REQUEST['imagetype']) ? filter_var($_REQUEST['imagetype'], FILTER_SANITIZE_NUMBER_INT) : 0;
-	$pageNumber = array_key_exists('page', $_REQUEST) ? filter_var($_REQUEST['page'], FILTER_SANITIZE_NUMBER_INT) : 1;
-	$cntPerPage = array_key_exists('cntperpage', $_REQUEST) ? filter_var($_REQUEST['cntperpage'], FILTER_SANITIZE_NUMBER_INT) : 200;
-	
-	$action = $_REQUEST['submitaction'] ?? '';
-// }
 
 if(!$useThes && !$action) $useThes = 1;
 if(!$taxonType && isset($DEFAULT_TAXON_SEARCH)) $taxonType = $DEFAULT_TAXON_SEARCH;
