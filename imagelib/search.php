@@ -17,7 +17,6 @@ $tagExistance = 1;
 $tag = '';
 $cntPerPage = 200;
 $action = '';
-// $uf = new UuidFactory();
 $localCsrfToken = UuidFactory::getUuidV4();
 
 
