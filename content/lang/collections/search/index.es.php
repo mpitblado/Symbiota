@@ -114,4 +114,5 @@ $LANG['TRAIT_CRITERIA'] = 'Criterios de Rasgo';
 $LANG['TRAIT'] = 'Rasgo';
 $LANG['EXPAND_ALL_SECTIONS'] = 'Expandir todas las secciones';
 $LANG['COLLAPSE_ALL_SECTIONS'] = 'Contraer todas las secciones';
+$LANG['ASSOCIATIONS'] = 'Asociaciones';
 ?>

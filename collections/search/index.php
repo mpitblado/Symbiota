@@ -530,6 +530,51 @@ $obsArr = (isset($collList['obs'])?$collList['obs']:null);
 					</div>
 				</section>
 
+
+				<!-- Associations -->
+				<section>
+					<!-- Accordion selector -->
+					<input type="checkbox" id="associations" class="accordion-selector" checked />
+
+					<!-- Accordion header -->
+					<label for="associations" class="accordion-header"><?php echo $LANG['ASSOCIATIONS'] ?></label>
+
+					<!-- Taxonomy -->
+					<div id="search-form-associations" class="content">
+						<div>
+							<p><?= $LANG['ASSOCIATION_DESCRIPTION']; ?>: </p>
+						</div>
+						<div style="padding-top:14px">
+							<div class="select-container" style="position: relative">
+								<label for="association-type" class="screen-reader-only"><?php echo $LANG['ASSOCIATION_TYPE'] ?></label>
+								<select name="association-type" id="association-type" style="margin-top:0;padding-top:0; margin-bottom: 0.5rem">
+									<option id="association-type-scientific" value="2" data-chip="<?php echo $LANG['TAXON'] . ': ' . $LANG['SCIENTIFIC_NAME'] ?>"><?php echo $LANG['SCIENTIFIC_NAME'] ?></option>
+									<option id="association-type-family" value="3" data-chip="<?php echo $LANG['TAXON'] . ': ' . $LANG['FAMILY'] ?>"><?php echo $LANG['FAMILY'] ?></option>
+									<option id="association-type-group" value="4" data-chip="<?php echo $LANG['TAXON'] . ': ' . $LANG['TAXONOMIC_GROUP'] ?>"><?php echo $LANG['TAXONOMIC_GROUP'] ?></option>
+									<option id="association-type-common" value="5" data-chip="<?php echo $LANG['TAXON'] . ': ' . $LANG['COMMON_NAME'] ?>"><?php echo $LANG['COMMON_NAME'] ?></option>
+								</select>
+								<span class="inset-input-label"><?php echo $LANG['TAXON_TYPE'] ?></span>
+								<span class="assistive-text"><?php echo $LANG['TAXON_TYPE'] ?></span>
+							</div>
+						</div>
+						<div id="taxa-text" class="input-text-container">
+							<label for="taxa" class="input-text--outlined">
+								<span class="screen-reader-only"><?php echo $LANG['TAXON'] ?></span>
+								<input type="text" name="taxa" id="taxa" data-chip="<?php echo $LANG['TAXON'] ?>" />
+								<span class="inset-input-label"><?php echo $LANG['TAXON'] ?></span>
+							</label>
+							<span class="assistive-text"><?php echo $LANG['TYPE_CHAR_FOR_SUGGESTIONS'] ?></span>
+						</div>
+							
+						<div>
+							<input type="checkbox" name="usethes" id="usethes" data-chip="<?php echo $LANG['INCLUDE_SYNONYMS'] ?>" value="1" checked />
+							<label for="usethes">
+								<span class="ml-1"><?php echo $LANG['INCLUDE_SYNONYMS'] ?></span>
+							</label>
+						</div>
+					</div>
+				</section>
+
 			</div>
 
 			<!-- Criteria panel -->
