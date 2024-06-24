@@ -109,7 +109,7 @@ if (isset($_POST['formsubmit'])) {
 	}
 	?>
 	<!-- This is inner text! -->
-	<div id="innertext">
+	<div role="main" id="innertext">
 		<h1 class="page-heading"><?php echo $LANG['ACTION_REQUEST']; ?></h1>
 		<div id="tabs" style="margin:0px;">
 	        <?php

@@ -88,7 +88,7 @@ if($isEditor && $action){
 	</script>
 </head>
 <body>
-<div id="innertext">
+<div role="main" id="innertext">
 	<h1 class="page-heading"><?php echo $LANG['IDENTIFICATION_CHAR_FINDER']; ?></h1>
 	<?php
 	if($isEditor && $tid){

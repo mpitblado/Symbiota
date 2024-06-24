@@ -43,7 +43,7 @@ if($IS_ADMIN || (array_key_exists("ClAdmin",$USER_RIGHTS) && in_array($clid,$USE
 		f.submit();
 	}
 </script>
-<div id="innertext" style="background-color:white;">
+<div role="main" id="innertext" style="background-color:white;">
 	<div style="margin-bottom:10px;">
 		<?php
 		echo $LANG['EXPLAIN_PARAGRAPH'];
@@ -54,7 +54,7 @@ if($IS_ADMIN || (array_key_exists("ClAdmin",$USER_RIGHTS) && in_array($clid,$USE
 		echo '<div style="font-weight:bold;">' . $LANG['CONFLICT_COUNT'] . ': ' . count($conflictArr) . '</div>';
 		?>
 		<form name="batchConflictForm" method="post" action="voucheradmin.php">
-			<table class="styledtable" style="font-family:Arial;font-size:12px;">
+			<table class="styledtable" style="font-size:12px;">
 				<tr>
 					<th><input type="checkbox" onclick="selectAll(this)" /></th>
 					<th><b><?php echo $LANG['CHECK_ID']; ?></b></th>

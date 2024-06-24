@@ -57,7 +57,7 @@ $statusStr = "";
 		echo '</div>';
 		?>
 		<!-- This is inner text! -->
-		<div id="innertext">
+		<div role="main" id="innertext">
 			<h1 class="page-heading"><?php echo $LANG['SPEC_PROCESSOR_CONTROL_PANEL']; ?></h1>
 			<h2><?php echo $specManager->getCollectionName(); ?></h2>
 			<?php

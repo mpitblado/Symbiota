@@ -76,7 +76,7 @@ if($isEditor){
 			<b>Batch GeoLocate Tools</b>
 		</div>
 		<!-- This is inner text! -->
-		<div id="innertext">
+		<div role="main" id="innertext">
 			<h1 class="page-heading"><?php echo $LANG['GEO_LOCATE_PROCESSES']; ?></h1>
 		<?php
 		if($collId){
@@ -122,7 +122,7 @@ if($isEditor){
 
 					?>
 					<form name="coordsubmitform" action="geolocatetool" method="post">
-						<table class="styledtable" style="font-family:Arial;font-size:12px;">
+						<table class="styledtable" style="font-size:12px;">
 							<tr>
 								<th>occid</th>
 								<th>Map Tool</th>

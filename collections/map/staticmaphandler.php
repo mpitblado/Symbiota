@@ -435,7 +435,7 @@ rowTemplate.innerHTML = `<tr><td><a target="_blank" href=\"<?php echo $CLIENT_RO
          data-lat="<?= htmlspecialchars($latCen)?>"
          data-lng="<?= htmlspecialchars($longCen)?>"
       ></div>
-      <div id="innertext">
+      <div role="main" id="innertext">
          <h1 class="page-heading"><?php echo $LANG['STATIC_DIST_MAP_GENERATOR']; ?></h1>
          <div style="display:flex; justify-content:center">
             <div id="map" style="width:50rem;height:50rem;"></div>

@@ -37,7 +37,7 @@ if($IS_ADMIN || (array_key_exists('CollAdmin', $USER_RIGHTS) && in_array($collid
 	</head>
 	<body>
 		<!-- This is inner text! -->
-		<div id="innertext" style="background-color:white;">
+		<div role="main" id="innertext" style="background-color:white;">
 			<h1 class="page-heading screen-reader-only"><?php echo $LANG['GEOLOCATE_COGE_EXPORT_MANAGER']; ?></h1>
 			<?php
 			if($collid && $isEditor){

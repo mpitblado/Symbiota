@@ -478,7 +478,7 @@ class ProfileManager extends Manager{
 		return $status;
 	}
 
-	protected function setUserRights(){
+	public function setUserRights(){
 		if($this->uid){
 			$userRights = array();
 			$sql = 'SELECT role, tablepk FROM userroles WHERE (uid = ?) ';
@@ -1082,8 +1082,8 @@ class ProfileManager extends Manager{
 		$returnVal = false;
 		$dynPropArr = $this->getDynamicProperties($uid);
 		
-		if($dynPropArr){
-			$returnVal = $dynPropArr['accessibilityPref'] == 1? true: false;
+		if($dynPropArr && isset($dynPropArr['accessibilityPref'])){
+			$returnVal = ($dynPropArr['accessibilityPref'] === '1') ? true : false;
 		}
 		return $returnVal;
 	}

@@ -86,7 +86,7 @@ $clMetaArr = $clManager->getClMetadata();
 		.family-div{ font-weight: bold; }
 		.taxa-block{ margin: 10px; font-style: italic; }
 		.taxon-input{ width: 200px; }
-		.styledtable{ font-family:Arial; font-size: 1rem; }
+		.styledtable{ font-size: 1rem; }
 		.voucher-admin-header {
 			font-size: 2em;
 			font-weight: bold;
@@ -153,7 +153,7 @@ if($clid && $isEditor){
 				</div>
 				<table style="margin:15px;">
 					<tr>
-						<td>
+						<td style="vertical-align: middle">
 							<div style="margin:2px;">
 								<b><?php echo $LANG['COUNTRY'];?>:</b>
 								<input type="text" name="country" value="<?php echo isset($termArr['country'])?$termArr['country']:''; ?>" title="<?php echo $LANG['ENTER_MULT_COUNTRIES']; ?>" />
@@ -192,13 +192,13 @@ if($clid && $isEditor){
 								<input name="recordedby" type="text" value="<?php echo isset($termArr['recordedby'])?$termArr['recordedby']:''; ?>" style="width:250px" title="<?php echo $LANG['MULTIPLE_COLLECTORS'] ?>" />
 							</div>
 						</td>
-						<td style="padding-left:20px;">
+						<td style="padding-left:20px; vertical-align: middle">
 							<div style="float:left;">
 								<div>
 									<b><?php echo $LANG['LATN'];?>:</b>
 									<input id="upperlat" type="text" name="latnorth" style="width:80px;" value="<?php echo isset($termArr['latnorth'])?$termArr['latnorth']:''; ?>" title="<?php echo $LANG['LAT_NORTH'] ?>" />
 									<?php
-									$coordAidUrl = '../collections/tools/mapcoordaid.php?mapmode=rectangle&latdef='.$clMetaArr['latcentroid'].'&lngdef='.$clMetaArr['longcentroid'];
+									$coordAidUrl = '../collections/tools/mapcoordaid.php?map_mode_strict=true&mapmode=rectangle&latdef='.$clMetaArr['latcentroid'].'&lngdef='.$clMetaArr['longcentroid'];
 									?>
 									<a href="#" onclick="openPopup('<?php echo htmlspecialchars($coordAidUrl, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>','boundingbox')"><img src="../images/world.png" style="width:1.2em" title="<?php echo $LANG['FIND_COORD'] ?>" /></a>
 								</div>
@@ -233,7 +233,9 @@ if($clid && $isEditor){
 					<tr>
 						<td colspan="2">
 							<div style="margin:10px;">
-								<input type="submit" name="submit" value="<?php echo $LANG['SAVESEARCH'];?>" />
+								<button type="submit">
+									<?php echo $LANG['SAVESEARCH'];?>
+								</button>
 								<input type="hidden" name="submitaction" value="SaveSearch" />
 								<input type='hidden' name='clid' value='<?php echo $clid; ?>' />
 								<input type='hidden' name='pid' value='<?php echo $pid; ?>' />
@@ -250,8 +252,10 @@ if($clid && $isEditor){
 				<legend><b><?php echo $LANG['REMOVESEARCH'];?></b></legend>
 				<form name="sqldeleteform" action="voucheradmin.php" method="post" onsubmit="return confirm('<?php echo $LANG['SURE_DELETE_QUERY'];?>');">
 					<div style="margin:20px">
-						<input type="submit" name="submit" value="<?php echo $LANG['DELETEVARIABLES'];?>" />
-						<input type="hidden" name="submitaction" value="DeleteVariables" />
+					<button class="button-danger" type="submit">
+						<?php echo $LANG['DELETEVARIABLES'];?>
+					</button>
+					<input type="hidden" name="submitaction" value="DeleteVariables" />
 					</div>
 					<input type="hidden" name="clid" value="<?php echo $clid; ?>" />
 					<input type="hidden" name="pid" value="<?php echo $pid; ?>" />

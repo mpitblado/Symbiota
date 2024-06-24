@@ -8,6 +8,7 @@ header("Content-Type: text/html; charset=".$CHARSET);
 $collManager = new OccurrenceManager();
 $searchVar = $collManager->getQueryTermStr();
 $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT = $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT ?? false;
+
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $LANG_TAG ?>">
@@ -71,8 +72,8 @@ $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT = $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT ??
 		<?php
 	}
 	?>
-	<div id="innertext">
-		<h1 class="page-heading"><?php echo $LANG['SEARCH']; ?></h1>
+	<div role="main" id="innertext">
+		<h1 class="page-heading bottom-breathing-room-rel top-breathing-room-rel"><?php echo $LANG['SEARCH']; ?></h1>
 		<form name="harvestparams" id="harvestparams" action="list.php" method="post" onsubmit="return checkHarvestParamsForm(this)">
 			<hr/>
 			<div>

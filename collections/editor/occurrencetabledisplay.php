@@ -92,7 +92,7 @@ if($SYMB_UID){
 	if(!is_numeric($occIndex)) $occIndex = 0;
 	$recStart = floor($occIndex/$recLimit)*$recLimit;
 	$recArr = $occManager->getOccurMap($recStart, $recLimit);
-	$navStr = '<div class="navpath" style="float:right;">';
+	$navStr = '<div class="navpath">';
 
 
 	if($recStart >= $recLimit){
@@ -107,6 +107,7 @@ if($SYMB_UID){
 
 		$navStr .= '<a href="#" onclick="return submitQueryForm('.(floor($qryCnt/$recLimit) * $recLimit).');" title="'.(isset($LANG['LAST'])?$LANG['LAST']:'Last').' '.$recLimit.' '.(isset($LANG['RECORDS'])?$LANG['RECORDS']:'records').'">&gt;|</a>';
 	}
+	$navStr .= ' * ' . (isset($LANG['CLICK_ID'])?$LANG['CLICK_ID']:'Click on the Symbiota identifier in the first column to open the editor.');
 	$navStr .= '</div>';
 }
 else{
@@ -146,9 +147,15 @@ else{
 		table.styledtable td { white-space: nowrap; }
 		fieldset{ padding:15px }
 		fieldset > legend{ font-weight:bold }
-		.fieldGroupDiv{ clear:both; margin-bottom:2px; overflow: auto}
-		.fieldDiv{ float:left; margin-right: 20px}
+		.fieldGroupDiv{ clear:both; margin-bottom: 1rem; overflow: auto}
+		.fieldDiv{ float:left; margin-right: 1rem;}
 		#innertext{ background-color: white; margin: 0px 10px; }
+
+		#record-viewer-innertext { 
+			margin-left: 2em;
+			width: calc(100vw - 4em);
+			background-color: white; 
+		}
 		.editimg{ width: 15px; }
 		.accessible-font {
 			font-size: 1.4em;
@@ -157,33 +164,80 @@ else{
 			display: block;
 			white-space: nowrap;
 			overflow-x: scroll;
+			overflow-y: scroll;
+			max-height: 80vh;
+			padding-bottom: 1.2rem;
+		}
+
+		.button-toggle {
+			background-color: transparent; 
+			color: var(--body-text-color); 
+			border: 2px solid var(--darkest-color);
+
+			&.active {
+				background-color: var(--darkest-color); 
+				color: white; 
+			}
+
+			&:hover {
+				background-color: var(--medium-color);
+				border: 2px solid var(--medium-color);
+				color: var(--light-color);
+			}
 		}
 	</style>
 </head>
 <body style="margin-left: 0px; margin-right: 0px;background-color:white;">
 	<a class="screen-reader-only" href="#skip-search"><?php echo $LANG['SKIP_SEARCH'] ?></a>
-	<div id="innertext" style="max-width: 100vw">
+	<div id="record-viewer-innertext">
 		<h1 class="page-heading screen-reader-only"><?php echo $LANG['TABLE_DISPLAY']; ?></h1>
 		<?php
 		if(($isEditor || $crowdSourceMode)){
 			?>
-			<div id="titleDiv">
-				<div style="float:right;">
-					<a href="#" title="<?= $LANG['SEARCH_FILTER'] ?>" aria-label="<?= $LANG['SEARCH_FILTER'] ?>" onclick="toggleQueryForm();"><img src="../../images/find.png" style="width:1.3em;" alt="<?= $LANG['IMG_SEARCH'] ?>" /></a>
+
+			<div style="width:850px;clear:both;">
+				<div class='navpath' style="float:left; padding-left: 5px">
+					<a href="../../index.php"><?php echo htmlspecialchars((isset($LANG['HOME'])?$LANG['HOME']:'Home'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> &gt;&gt;
 					<?php
-					if($isEditor == 1 || $isGenObs){
+					if($crowdSourceMode){
 						?>
-						<a href="#" title="<?= $LANG['BATCH_TOOL'] ?>" aria-label="<?= $LANG['BATCH_TOOL'] ?>" onclick="toggleBatchUpdate();return false;" style="width:1.3em;"><img class="editimg" src="../../images/editplus.png" alt="<?= $LANG['IMG_EDIT'] ?>" style="width:1.3em;"></a>
+						<a href="../specprocessor/crowdsource/index.php"><?php echo htmlspecialchars((isset($LANG['CENTRAL_CROWD'])?$LANG['CENTRAL_CROWD']:'Crowd Source Central'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> &gt;&gt;
 						<?php
 					}
+					else{
+						if(!$isGenObs || $IS_ADMIN){
+							?>
+							<a href="../misc/collprofiles.php?collid=<?php echo htmlspecialchars($collId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>&emode=1"><?php echo htmlspecialchars((isset($LANG['COL_MANAGEMENT'])?$LANG['COL_MANAGEMENT']:'Collection Management'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> &gt;&gt;
+							<?php
+						}
+						if($isGenObs){
+							?>
+							<a href="../../profile/viewprofile.php?tabindex=1"><?php echo htmlspecialchars((isset($LANG['PERS_MANAGEMENT'])?$LANG['PERS_MANAGEMENT']:'Personal Management'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> &gt;&gt;
+							<?php
+						}
+					}
 					?>
+					<b><?php echo (isset($LANG['TABLE_VIEW'])?$LANG['TABLE_VIEW']:'Occurrence Table View'); ?></b>
 				</div>
+			</div>
+			<div id="titleDiv">
 				<?php
 				if($collMap) echo '<h2>' . $collMap['collectionname'].' ('.$collMap['institutioncode'].($collMap['collectioncode']?':'.$collMap['collectioncode']:'').')</h2>';
 				?>
+				<div>
+				   <button id="query-btn" type="button" class="button-toggle active" onclick="toggleSearch(); toggleButtonVisuals(this, 'querydiv', ['batch-update-btn'])">
+					  <?= $LANG['SEARCH_FILTER'] ?>
+				   </button>
+				   <?php if($isEditor == 1 || $isGenObs): ?>
+				   <button id="batch-update-btn" type="button" class="button-toggle" onclick="toggleBatchUpdate(); toggleButtonVisuals(this, 'batchupdatediv', ['query-btn'])">
+					  <?= $LANG['BATCH_TOOL'] ?>
+				   </button>
+				   <?php endif ?>
+				</div>
 			</div>
 			<?php
 			if(!$recArr) $displayQuery = 1;
+
 			include 'includes/queryform.php';
 			//Setup header map
 			if($recArr){
@@ -286,32 +340,9 @@ else{
 				<?php
 			}
 			?>
-			<div style="width:850px;clear:both;">
-				<div class='navpath' style="float:left">
-					<a href="../../index.php"><?php echo htmlspecialchars((isset($LANG['HOME'])?$LANG['HOME']:'Home'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> &gt;&gt;
-					<?php
-					if($crowdSourceMode){
-						?>
-						<a href="../specprocessor/crowdsource/index.php"><?php echo htmlspecialchars((isset($LANG['CENTRAL_CROWD'])?$LANG['CENTRAL_CROWD']:'Crowd Source Central'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> &gt;&gt;
-						<?php
-					}
-					else{
-						if(!$isGenObs || $IS_ADMIN){
-							?>
-							<a href="../misc/collprofiles.php?collid=<?php echo htmlspecialchars($collId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>&emode=1"><?php echo htmlspecialchars((isset($LANG['COL_MANAGEMENT'])?$LANG['COL_MANAGEMENT']:'Collection Management'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> &gt;&gt;
-							<?php
-						}
-						if($isGenObs){
-							?>
-							<a href="../../profile/viewprofile.php?tabindex=1"><?php echo htmlspecialchars((isset($LANG['PERS_MANAGEMENT'])?$LANG['PERS_MANAGEMENT']:'Personal Management'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> &gt;&gt;
-							<?php
-						}
-					}
-					?>
-					<b><?php echo (isset($LANG['TABLE_VIEW'])?$LANG['TABLE_VIEW']:'Occurrence Table View'); ?></b>
-				</div>
-				<?php
-				echo $navStr; ?>
+			<div style="display:flex;width:850px;clear:both;">
+				<?php echo $navStr; ?>
+				
 			</div>
 			<?php
 			if($recArr){
@@ -371,10 +402,6 @@ else{
 							<?php echo htmlspecialchars((isset($LANG['TABLE_VIEW_DESC']) ? $LANG['TABLE_VIEW_DESC'] : 'Table displays occurrence information with columns showing Symbiota ID, Family, Event Date, Author, Location, and other details'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 					</p>
 				</div>
-				<div style="width:790px;">
-					<?php echo $navStr; ?>
-				</div>
-				*<?php echo (isset($LANG['CLICK_ID'])?$LANG['CLICK_ID']:'Click on the Symbiota identifier in the first column to open the editor.'); ?>
 				<?php
 			}
 			else{

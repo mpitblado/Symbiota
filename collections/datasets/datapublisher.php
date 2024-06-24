@@ -210,7 +210,7 @@ if ($isEditor) {
 		<b><?php echo $LANG['DWCA_PUBLISHER']; ?></b>
 	</div>
 	<!-- This is inner text! -->
-	<div id="innertext" class="accessible-font">
+	<div role="main" id="innertext" class="accessible-font">
 		<?php
 		if (!$collid && $IS_ADMIN) {
 			?>
@@ -540,7 +540,7 @@ if ($isEditor) {
 			}
 			if ($dwcaArr = $dwcaManager->getDwcaItems()) {
 				?>
-				<table class="styledtable" style="font-family:Arial;font-size:12px;margin:10px;">
+				<table class="styledtable" style="font-size:12px;margin:10px;">
 					<tr>
 						<th><?php echo $LANG['CODE']; ?></th>
 						<th><?php echo $LANG['COL_NAME']; ?></th>

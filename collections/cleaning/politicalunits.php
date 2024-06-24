@@ -146,7 +146,7 @@ if($action && $isEditor){
 	</div>
 	
 	<!-- inner text -->
-	<div id="innertext">
+	<div role="main" id="innertext">
 		<?php
 		echo '<h1 class="page-heading">' . $LANG['GEO_CLEANING_TOOLS'] . ': ' . $collMap['collectionname'] . ' (' . $collMap['code'] . ')</h1>';
 		if($statusStr){

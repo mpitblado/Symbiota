@@ -473,7 +473,7 @@ $whereManager = new GamesWhereManager();
 			<b>Where in the World Game</b>
 		</div>
 		<!-- This is inner text! -->
-		<div id="innertext">
+		<div role="main" id="innertext">
 			<h1 class="page-heading"><?php echo $LANG['WHERE_GAME']; ?></h1>
 			<h2>Where in the World do these plants grow?</h2>
 			<table>

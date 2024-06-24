@@ -54,7 +54,7 @@ $status = '';
 		<b>Taxonomy Loader</b>
 	</div>
 	<!-- This is inner text! -->
-	<div id="innertext">
+	<div role="main" id="innertext">
 		<h1 class="page-heading"><?php echo $LANG['TAXON_LOADER']; ?></h1>
 		<?php
 		if($status){

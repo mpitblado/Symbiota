@@ -33,7 +33,7 @@ $verifyPathsObj = new VerifyPaths();
 	}
 	?>
 	<!-- This is inner text! -->
-	<div id="innertext">
+	<div role="main" id="innertext">
 		<h1 class="page-heading"><?php echo $LANG['IMAGE_PATH_VERIFICATION']; ?></h1>
 		<div>Clicking the button below will go through all the images in the image directory and
 		verify mapping within the database. Two following two error files will be produced:</div>

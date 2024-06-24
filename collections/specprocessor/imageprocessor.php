@@ -212,7 +212,7 @@ if($spprid) $specManager->setProjVariables($spprid);
 	</head>
 	<body>
 		<!-- This is inner text! -->
-		<div id="innertext" style="background-color:white;">
+		<div role="main" id="innertext" style="background-color:white;">
 			<h1 class="page-heading screen-reader-only"><?= $LANG['IMG_PROCESSOR']; ?></h1>
 			<div style="padding:15px;">
 				<?php echo $LANG['IMG_PROCESSOR_EXPLAIN']; ?>
@@ -226,7 +226,7 @@ if($spprid) $specManager->setProjVariables($spprid);
 							<fieldset>
 								<legend><b><?php echo $LANG['IMG_FILE_UPLOAD_MAP']; ?></b></legend>
 								<div style="margin:15px;">
-									<table class="styledtable" style="width:600px;font-family:Arial;font-size:12px;">
+									<table class="styledtable" style="width:600px;font-size:12px;">
 										<tr><th><?php echo $LANG['SOURCE_FIELD']; ?></th><th><?php echo $LANG['TARGET_FIELD']; ?></th></tr>
 										<?php
 										$translationMap = array('catalognumber' => 'catalognumber', 'othercatalognumbers' => 'othercatalognumbers', 'othercatalognumber' => 'othercatalognumbers', 'url' => 'url',
@@ -497,7 +497,7 @@ if($spprid) $specManager->setProjVariables($spprid);
 										<div style="margin:5px 15px;">
 											<b><?php echo $LANG['SEL_URL_MAP_FILE']; ?>:</b>
 											<input type='hidden' name='MAX_FILE_SIZE' value='20000000' />
-											<button name='uploadfile' type='file' size='70' value="Choose File"><?php echo $LANG['CHOOSE_FILE']; ?></button>
+											<input name='uploadfile' type='file' size='70' value="Choose File">
 										</div>
 									</div>
 									<div id="submitDiv" class="profileDiv" style="clear:both;padding:15px;display:<?php echo ($projectType?'block':'none'); ?>">
@@ -518,7 +518,7 @@ if($spprid) $specManager->setProjVariables($spprid);
 											<input name="sppriddel" type="hidden" value="<?php echo $spprid; ?>" />
 											<input name="collid" type="hidden" value="<?php echo $collid; ?>" />
 											<input name="tabindex" type="hidden" value="0" />
-											<button name="submitaction" type="submit" value="Delete Profile" ><?php echo $LANG['DELETE_PROF']; ?></button>
+											<button class="button-danger" name="submitaction" type="submit" value="Delete Profile" ><?php echo $LANG['DELETE_PROF']; ?></button>
 										</div>
 									</fieldset>
 								</form>

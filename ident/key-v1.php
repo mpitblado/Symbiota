@@ -118,7 +118,7 @@ if($chars){
 	}
 
 ?>
-<div id="innertext">
+<div role="main" id="innertext">
 	<h1 class="page-heading screen-reader-only"><?php echo $LANG['KEY']; ?></h1>
 	<?php
 	if($isEditor){

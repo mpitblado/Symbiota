@@ -87,7 +87,7 @@ if($IS_ADMIN) $isEditor = true;
 	<?php
 	if($isEditor){
 		?>
-		<div id="innertext">
+		<div role="main" id="innertext">
 			<h1 class="page-heading"><?php echo $LANG['MEDIA_TOOLS']; ?></h1>
 			<div id="actionDiv">
 				<?php

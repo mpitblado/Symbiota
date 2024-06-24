@@ -33,11 +33,6 @@ $oidc->authenticate();
 <html lang="<?php echo $LANG_TAG ?>">
 <head>
     <title><?php echo $LANG['OPEN_ID_CONNECT_CLIENT']; ?></title>
-    <style>
-        body {
-            font-family: 'Lucida Grande', Verdana, Arial, sans-serif;
-        }
-    </style>
 </head>
 <body>
     <h1 class="page-heading"><?php echo $LANG['OPEN_ID_CONNECT_CLIENT']; ?></h1>

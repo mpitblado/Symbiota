@@ -153,7 +153,7 @@ include($SERVER_ROOT.'/includes/header.php');
 	<b><?php echo (isset($LANG['BACKUP_MOD'])?$LANG['BACKUP_MOD']:'Backup Restore Module'); ?></b>
 </div>
 <!-- This is inner text! -->
-<div id="innertext">
+<div role="main" id="innertext">
 	<h1 class="page-heading"><?php echo $LANG['RESTORE_COLLEC_FROM_LIST']; ?></h1>
 	<?php
 	$recReplaceMsg = '<span style="color:orange"><b>'.(isset($LANG['CAUTION'])?$LANG['CAUTION']:'Caution').':</b></span> '.(isset($LANG['MATCH_REPLACE'])?$LANG['MATCH_REPLACE']:'Matching records will be replaced with incoming records');

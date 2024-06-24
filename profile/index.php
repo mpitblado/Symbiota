@@ -201,7 +201,7 @@ $displayLeftMenu = (isset($profile_indexMenu)?$profile_indexMenu:'true');
 include($SERVER_ROOT.'/includes/header.php');
 ?>
 <!-- inner text -->
-<div id="innertext" style="padding-left:0px;margin-left:0px;">
+<div role="main" id="innertext" style="padding-left:0px;margin-left:0px;">
 	<h1 class="page-heading screen-reader-only"><?php echo $LANG['LOGIN']; ?></h1>
 	<?php
 	if($statusStr){

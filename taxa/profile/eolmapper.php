@@ -42,7 +42,7 @@ include($SERVER_ROOT.'/includes/header.php');
 	<b>Encyclopedia of Life Manager</b>
 </div>
 	<!-- This is inner text! -->
-	<div id="innertext">
+	<div role="main" id="innertext">
 		<h1 class="page-heading"><?php echo $LANG['ENCYCLOPEDIA_OF_LIFE_LINKAGE']; ?></h1>
 		<?php
 		if($statusStr){

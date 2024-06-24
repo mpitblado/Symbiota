@@ -189,7 +189,7 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 		<b> <?php echo (isset($LANG['LABEL_PRINT']) ? $LANG['LABEL_PRINT'] : 'Label Printing') ?> </b>
 	</div>
 	<!-- This is inner text! -->
-	<div id="innertext">
+	<div role="main" id="innertext">
 		<h1 class="page-heading"><?= $LANG['SPEC_LABEL_MANAGER']; ?></h1>
 		<?php
 		if($isEditor){
@@ -307,7 +307,7 @@ $labelFormatArr = $labelManager->getLabelFormatArr(true);
 						if($occArr){
 							?>
 							<form name="selectform" id="selectform" action="labeldynamic.php" method="post" onsubmit="return validateSelectForm(this);">
-								<table class="styledtable" style="font-family:Arial;font-size:12px;">
+								<table class="styledtable" style="font-size:12px;">
 									<tr>
 										<th title="Select/Deselect all Specimens"><input type="checkbox" onclick="selectAll(this);" /></th>
 										<th title="Label quantity"> <?php echo (isset($LANG['QTY']) ? $LANG['QTY'] : 'Qty') ?> </th>

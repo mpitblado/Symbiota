@@ -79,7 +79,7 @@ if(!$addAuth){
 	}
 	?>
 	<!-- This is inner text! -->
-	<div id="innertext">
+	<div role="main" id="innertext">
 		<h1 class="page-heading"><?php echo $LANG['AUTHOR_MANAGEMENT']; ?></h1>
 		<?php
 		if($isEditor){

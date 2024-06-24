@@ -19,7 +19,7 @@ header('Location: '.$CLIENT_ROOT.'/index.php');
 		include($SERVER_ROOT.'/includes/header.php');
 		?>
 		<!-- This is inner text! -->
-		<div id="innertext">
+		<div role="main" id="innertext">
 			<h1 class="page-heading"><?php echo $LANG['ACCESS_DENIED']; ?></h1>
 			<h1 class="page-heading"><?php echo $LANG['FORBIDDEN']; ?></h1>
 			<div style="font-weight:bold;">

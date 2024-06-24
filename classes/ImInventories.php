@@ -44,6 +44,7 @@ class ImInventories extends Manager{
 				$retArr['defaultsettings'] = $row->defaultsettings;
 				$retArr['dynamicsql'] = $row->dynamicsql;
 				$retArr['hasfootprintwkt'] = ($row->footprintwkt?'1':'0');
+				$retArr['footprintwkt'] = $row->footprintwkt;
 				$retArr['sortsequence'] = $row->sortsequence;
 				$retArr['datelastmodified'] = $row->datelastmodified;
 				$retArr['dynamicProperties'] = $row->dynamicProperties;
@@ -666,8 +667,9 @@ class ImInventories extends Manager{
 			elseif(isset($inputArr[strtolower($field)])) $postField = strtolower($field);
 			if($postField){
 				$value = trim($inputArr[$postField]);
+				if($field == 'clid' || $field == 'tid') $value = filter_var($value, FILTER_SANITIZE_NUMBER_INT);
 				if(!$value) $value = null;
-				$this->parameterArr[$field] = htmlspecialchars($value, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);
+				$this->parameterArr[$field] = $value;
 				$this->typeStr .= $type;
 			}
 		}

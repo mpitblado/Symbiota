@@ -26,7 +26,7 @@ $statusStr = '';
 $projArr = $csManager->getProjectDetails();
 ?>
 <!-- inner text -->
-<div id="innertext" style="background-color:white;">
+<div role="main" id="innertext" style="background-color:white;">
 	<h1 class="page-heading screen-reader-only"><?php echo $LANG['CROWDSOURCING_ADMIN']; ?></h1>
 	<?php
 	if($statusStr){
@@ -204,7 +204,7 @@ $projArr = $csManager->getProjectDetails();
 				?>
 				<div style="margin:15px;">
 					<div style="font-weight:bold;text-decoration:underline;margin-bottom:15px;"><?php echo $LANG['VOLUNTEERS']; ?></div>
-					<table class="styledtable" style="font-family:Arial;font-size:12px;width:500px;">
+					<table class="styledtable" style="font-size:12px;width:500px;">
 						<tr>
 							<th><?php echo $LANG['USER']; ?></th>
 							<th><?php echo $LANG['SCORE']; ?></th>
@@ -239,7 +239,7 @@ $projArr = $csManager->getProjectDetails();
 				</div>
 				<div style="margin:25px 15px">
 					<div style="font-weight:bold;text-decoration:underline;margin-bottom:15px;"><?php echo $LANG['APPROVED_EDITORS']; ?></div>
-					<table class="styledtable" style="font-family:Arial;font-size:12px;width:500px;">
+					<table class="styledtable" style="font-size:12px;width:500px;">
 						<tr>
 							<th><?php echo $LANG['USER']; ?></th>
 							<th><?php echo $LANG['SCORE']; ?></th>

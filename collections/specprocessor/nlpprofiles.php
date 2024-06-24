@@ -86,7 +86,7 @@ if($isEditor){
 		include($SERVER_ROOT.'/includes/header.php');
 		?>
 		<!-- This is inner text! -->
-		<div id="innertext">
+		<div role="main" id="innertext">
 			<h1 class="page-heading"><?php echo $LANG['SPEC_NPL_PROFILE_MANAGER']; ?></h1>
 			<?php
 			if($status){

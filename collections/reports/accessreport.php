@@ -111,7 +111,7 @@ else{
 		echo '</div>';
 		?>
 		<!-- This is inner text! -->
-		<div id="innertext" style="min-width:1100px">
+		<div role="main" id="innertext" style="min-width:1100px">
 			<h1 class="page-heading"><?php echo $LANG['OCCUR_ACCESS_REPORTING']; ?></h1>
 			<div>
 				<div style="float:left;font-size:120%"><b><u>User Access Statistics</u></b></div>

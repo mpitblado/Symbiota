@@ -1,8 +1,10 @@
 <?php
 include_once('../../config/symbini.php');
-if($LANG_TAG == 'en' || !file_exists($SERVER_ROOT.'/content/lang/header.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/header.en.php');
 if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/map/index.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT.'/content/lang/collections/map/index.' . $LANG_TAG . '.php');
-else include_once($SERVER_ROOT . '/content/lang/collections/map/index.en.php');
+	else include_once($SERVER_ROOT . '/content/lang/collections/map/index.en.php');
+if($LANG_TAG == 'en' || !file_exists($SERVER_ROOT.'/content/lang/header.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT . '/content/lang/header.en.php');
+    else include_once($SERVER_ROOT . '/content/lang/header.' . $LANG_TAG . '.php');
+
 include_once($SERVER_ROOT.'/classes/OccurrenceMapManager.php');
 
 header('Content-Type: text/html; charset='.$CHARSET);
@@ -13,11 +15,15 @@ ini_set('max_execution_time', 180); //180 seconds = 3 minutes
 $distFromMe = array_key_exists('distFromMe', $_REQUEST)?$_REQUEST['distFromMe']:'';
 $gridSize = array_key_exists('gridSizeSetting', $_REQUEST) && $_REQUEST['gridSizeSetting']?$_REQUEST['gridSizeSetting']:60;
 $minClusterSize = array_key_exists('minClusterSetting',$_REQUEST)&&$_REQUEST['minClusterSetting']?$_REQUEST['minClusterSetting']:10;
-$clusterOff = array_key_exists('clusterSwitch',$_REQUEST)&&$_REQUEST['clusterSwitch']?$_REQUEST['clusterSwitch']:'n';
+$clusterOff = array_key_exists('clusterSwitch',$_REQUEST)&&$_REQUEST['clusterSwitch']? $_REQUEST['clusterSwitch']:'y';
+$menuClosed = array_key_exists('menuClosed',$_REQUEST)? true: false;
 $recLimit = array_key_exists('recordlimit',$_REQUEST)?$_REQUEST['recordlimit']:15000;
 $catId = array_key_exists('catid',$_REQUEST)?$_REQUEST['catid']:0;
 $tabIndex = array_key_exists('tabindex',$_REQUEST)?$_REQUEST['tabindex']:0;
 $submitForm = array_key_exists('submitform',$_REQUEST)?$_REQUEST['submitform']:'';
+
+$shouldUseMinimalMapHeader = $SHOULD_USE_MINIMAL_MAP_HEADER ?? false;
+$topVal = $shouldUseMinimalMapHeader ? '6rem' : '0';
 
 if(!$catId && isset($DEFAULTCATID) && $DEFAULTCATID) $catId = $DEFAULTCATID;
 
@@ -30,7 +36,7 @@ $obsIDs = $mapManager->getObservationIds();
 //Sanitation
 if(!is_numeric($gridSize)) $gridSize = 60;
 if(!is_numeric($minClusterSize)) $minClusterSize = 10;
-if(!is_string($clusterOff) || strlen($clusterOff) > 1) $clusterOff = 'n';
+if(!is_string($clusterOff) || strlen($clusterOff) > 1) $clusterOff = 'y';
 if(!is_numeric($recLimit)) $recLimit = 15000;
 if(!is_numeric($distFromMe)) $distFromMe = '';
 if(!is_numeric($catId)) $catId = 0;
@@ -157,6 +163,8 @@ if(isset($_REQUEST['llpoint'])) {
 		</style>
 		<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
 		<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-ui.min.js" type="text/javascript"></script>
+
+		<link href="<?php echo htmlspecialchars($CSS_BASE_PATH, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>/symbiota/collections/sharedCollectionStyling.css" type="text/css" rel="stylesheet" />
 		<link href="../../css/jquery.symbiota.css" type="text/css" rel="stylesheet" />
 		<script src="../../js/jquery.popupoverlay.js" type="text/javascript"></script>
 		<script src="../../js/jscolor/jscolor.js?ver=1" type="text/javascript"></script>
@@ -173,7 +181,7 @@ if(isset($_REQUEST['llpoint'])) {
 
 		<script src="../../js/symb/wktpolygontools.js" type="text/javascript"></script>
 		<script src="../../js/symb/MapShapeHelper.js" type="text/javascript"></script>
-
+		<script src="../../js/symb/localitySuggest.js" type="text/javascript"></script>
 		<script src="../../js/symb/collections.list.js?ver=1" type="text/javascript"></script>
 
 		<style type="text/css">
@@ -266,8 +274,6 @@ if(isset($_REQUEST['llpoint'])) {
 		}
 
 		#mapSearchRecordsTable {
-
-		font-family:Arial;
 		font-size:12px;
 		}
 
@@ -286,6 +292,16 @@ if(isset($_REQUEST['llpoint'])) {
 		.cluster text {
 		text-shadow: 0 0 8px white, 0 0 8px white, 0 0 8px white;
 		}
+
+		<?php if($shouldUseMinimalMapHeader){ ?>
+			.leaflet-top {
+				top: <?php echo $topVal; ?>;
+				margin-top: 0px;
+			}
+			.leaflet-top .leaflet-control {
+				margin-top: 0px;
+			}
+		<?php } ?>
 		</style>
 		<script type="text/javascript">
 		//Clid
@@ -311,6 +327,9 @@ if(isset($_REQUEST['llpoint'])) {
 		let collLegendMap = {}
 		//Object that maps portals to matching mapGroup Index
 		let portalLegendMap = {}
+
+		//Indciates if clustering should be drawn. Only comes into effect after redraw or refreshes 
+		let clusteroff = true;
 
 		const colorChange = new Event("colorchange",  {
 			bubbles: true,
@@ -340,7 +359,7 @@ if(isset($_REQUEST['llpoint'])) {
          }
 			setPanels(true);
 			$("#accordion").accordion("option",{active: 1});
-         buildPortalLegend();
+			buildPortalLegend();
 			buildTaxaLegend();
 			buildCollectionLegend();
 
@@ -540,6 +559,51 @@ value="${color}"
 			document.getElementById("deleteshapediv").style.display = "block";
 		}
 
+		function addRefPoint() {
+			let lat = document.getElementById("lat").value;
+			let lng = document.getElementById("lng").value;
+			let title = document.getElementById("title").value;
+			let useLLDecimal = document.getElementById("useLLDecimal");
+			if(useLLDecimal?.style?.display === 'block'){
+				var latdeg = document.getElementById("latdeg").value;
+				var latmin = document.getElementById("latmin").value;
+				var latsec = document.getElementById("latsec").value;
+				var latns = document.getElementById("latns").value;
+				var longdeg = document.getElementById("longdeg").value;
+				var longmin = document.getElementById("longmin").value;
+				var longsec = document.getElementById("longsec").value;
+				var longew = document.getElementById("longew").value;
+				if(latdeg != null && longdeg != null){
+					if(latmin == null) latmin = 0;
+					if(latsec == null) latsec = 0;
+					if(longmin == null) longmin = 0;
+					if(longsec == null) longsec = 0;
+					lat = latdeg*1 + latmin/60 + latsec/3600;
+					lng = longdeg*1 + longmin/60 + longsec/3600;
+					if(latns == "S") lat = lat * -1;
+					if(longew == "W") lng = lng * -1;
+				}
+			}
+
+			if((lat === null || lat === "") && (lng === null || lng === "")){
+				window.alert("<?php echo $LANG['ENTER_VALUES_IN_LAT_LONG']; ?>");
+			} else if(lat < -180 || lat > 180 || lng < -180 || lng > 180) {
+				window.alert("<?php echo $LANG['LAT_LONG_MUST_BE_BETWEEN_VALUES']; ?> (" + lat + ";" + lng + ")");
+			} else {
+				var addPoint = true;
+				if(lng > 0) addPoint = window.confirm("<?php echo $LANG['LONGITUDE_IS_POSITIVE']; ?>?");
+				if(!addPoint) lng = -1*lng;
+
+				document.dispatchEvent(new CustomEvent('addReferencePoint', {
+					detail: {
+						lat,
+						lng,
+						title 
+					}
+				}));
+			}
+		}
+
 		function leafletInit() {
 
 			L.DivIcon.CustomColor = L.DivIcon.extend({
@@ -556,9 +620,9 @@ value="${color}"
 				}
 			})
 
-         let map = new LeafletMap('map', {
-            lang: "<?php echo $LANG_TAG; ?>"
-         })
+			let map = new LeafletMap('map', {
+				lang: "<?php echo $LANG_TAG; ?>",
+			})
 			map.enableDrawing({
 				polyline: false,
 				circlemarker: false,
@@ -566,8 +630,6 @@ value="${color}"
 				drawColor: {opacity: 0.85, fillOpacity: 0.55, color: '#000' },
 			}, setQueryShape);
 
-			let cluster = L.markerClusterGroup();
-			let clusteroff = false;
 			let cluster_type = "taxa";
 
 			let markers = [];
@@ -677,7 +739,7 @@ value="${color}"
 						if(marker.options.icon && marker.options.icon.options.observation) {
 							marker.setIcon(getObservationSvg({color: `#${color}`, size:30 }))
 						} else {
-							marker.options.fillColor =`#${color}`
+							marker.setStyle({fillColor: `#${color}`})
 						}
 					}
 				}
@@ -735,7 +797,10 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 					}
 
 					let cluster = L.markerClusterGroup({
-						iconCreateFunction: colorCluster
+						iconCreateFunction: colorCluster,
+						disableClusteringAtZoom: recordArr.length >= 10000? 12 : 10,
+						spiderfyOnMaxZoom: false,
+					    chunkedLoading: true
 					});
 
 					value.id_map.forEach(g => {
@@ -794,6 +859,8 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 			function fitMap() {
 				if(shape && !map.activeShape) {
 					map.drawShape(shape);
+				} else if(map.activeShape) {
+					map.mapLayer.fitBounds(map.activeShape.layer.getBounds());
 				} else if(markers && markers.length > 0) {
 					const group = new L.FeatureGroup(markers);
 					map.mapLayer.fitBounds(group.getBounds());
@@ -802,8 +869,8 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 				}
 			}
 
-         document.addEventListener('resetMap', async e => {
-			   setPanels(false);
+			document.addEventListener('resetMap', async e => {
+				setPanels(false);
 				mapGroups.forEach(group => {
 					group.taxonMapGroup.resetGroup();
 					group.collectionMapGroup.resetGroup();
@@ -813,13 +880,15 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 				markers = [];
 				recordArr = [];
 
-            if(heatmapLayer) map.mapLayer.removeLayer(heatmapLayer);
-         })
+				if(heatmapLayer) map.mapLayer.removeLayer(heatmapLayer);
+			})
 
 			document.getElementById("mapsearchform").addEventListener('submit', async e => {
 				e.preventDefault();
-				if(!verifyCollForm(e.target)) return;
+				if(!verifyCollForm(e.target)) return false;
+
 				showWorking();
+
 				let formData = new FormData(e.target);
 
 				mapGroups.forEach(group => {
@@ -830,56 +899,56 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 
 				markers = [];
 
-            if(heatmapLayer) map.mapLayer.removeLayer(heatmapLayer);
+				if(heatmapLayer) map.mapLayer.removeLayer(heatmapLayer);
 
 				getOccurenceRecords(formData).then(res => {
 					if (res) loadOccurenceRecords(res);
 				});
 
 				let searches = [
-               searchCollections(formData).then(res => {
-               res.label = "<?= $LANG['CURRENT_PORTAL']?>";
-                  return res;
-               })
-            ]
+					searchCollections(formData).then(res => {
+						res.label = "<?= $LANG['CURRENT_PORTAL']?>";
+						return res;
+					})
+				]
 
-            //If Cross Portal Checkbox Enabled add cross portal search
-            if(formData.get('cross_portal_switch') && formData.get('cross_portal')) {
-               formData.set("taxa", formData.get('external-taxa-input'));
-               searches.push(searchCollections(formData, formData.get('cross_portal')).then(res => {
-                  res.label= formData.get('cross_portal_label');
-                  return res;
-               }));
+				//If Cross Portal Checkbox Enabled add cross portal search
+				if(formData.get('cross_portal_switch') && formData.get('cross_portal')) {
+					formData.set("taxa", formData.get('external-taxa-input'));
+					searches.push(searchCollections(formData, formData.get('cross_portal')).then(res => {
+						res.label= formData.get('cross_portal_label');
+						return res;
+					}));
 
-               getOccurenceRecords(formData, formData.get('cross_portal')).then(res => {
-                  if (res) loadOccurenceRecords(res, "external_occurrencelist");
-               });
+					getOccurenceRecords(formData, formData.get('cross_portal')).then(res => {
+						if (res) loadOccurenceRecords(res, "external_occurrencelist");
+					});
 
-            }
+				}
 
 				//This is for handeling multiple portals
 				searches = await Promise.all(searches)
 
 				recordArr = [];
 				mapGroups = [];
-            let count = 0;
+				let count = 0;
 
 				for(let search of searches) {
-               if(count > 0) search.origin = "external-portal"
+					if(count > 0) search.origin = "external-portal"
 					if(search.recordArr) {
 						recordArr = recordArr.concat(search.recordArr)
 						mapGroups.push(genMapGroups(search.recordArr, search.taxaArr, search.collArr, search.label))
 					}
-               count++;
-            }
-            //Need to generate colors for eadch group
+					count++;
+				}
+				//Need to generate colors for each group
 				buildPanels(formData.get('cross_portal_switch'));
 
 				genClusters(taxaLegendMap, "taxa");
 				genClusters(collLegendMap, "coll");
 				genClusters(portalLegendMap, "portal");
 
-            autoColorTaxa();
+				autoColorTaxa();
 
 				drawPoints();
 				fitMap();
@@ -959,6 +1028,21 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 				shape = null;
 			});
 
+			document.addEventListener('addReferencePoint', e => {
+				try {
+					marker = L.marker([
+						parseFloat(e.detail.lat), 
+						parseFloat(e.detail.lng)
+					]);
+					if(e.detail.title) {
+						marker.bindTooltip(`<div style="font-size: 1.5rem">${e.detail.title}</div>`)
+					}
+					marker.addTo(map.drawLayer);
+				} catch(e) {
+					console.log('failed to add point because: ' + e)
+				}
+			});
+
 			document.getElementById('clusteroff').addEventListener('change', e => {
 				clusteroff = e.target.checked;
 				if(!heatmap) {
@@ -1001,6 +1085,7 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 
 					genClusters(taxaLegendMap, "taxa");
 					genClusters(collLegendMap, "coll");
+					genClusters(portalLegendMap, "portal");
 
                autoColorTaxa();
 
@@ -1025,7 +1110,6 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 			let heatmapLayer;
 
 			let bounds;
-			let clusteroff = false;
 
 			let cluster_type = "taxa";
 
@@ -1264,8 +1348,8 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 				});
 			}
 
-         document.addEventListener('resetMap', async e => {
-			   setPanels(false);
+			document.addEventListener('resetMap', async e => {
+				setPanels(false);
 				mapGroups.forEach(group => {
 					group.taxonMapGroup.resetGroup();
 					group.collectionMapGroup.resetGroup();
@@ -1276,15 +1360,14 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 				recordArr = [];
 
 				if(heatmapLayer) heatmapLayer.setData({data: []})
-         })
+			})
 
 			document.getElementById("mapsearchform").addEventListener('submit', async e => {
-				if(!verifyCollForm(e.target)) return;
+				e.preventDefault();
+				if(!verifyCollForm(e.target)) return false;
 
 				showWorking();
-				e.preventDefault();
 				let formData = new FormData(e.target);
-
 				mapGroups.map(group => {
 					group.taxonMapGroup.resetGroup();
 					group.collectionMapGroup.resetGroup();
@@ -1338,7 +1421,6 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 				autoColorTaxa();
 
 				drawPoints();
-
 				fitMap()
 				hideWorking();
 			});
@@ -1349,6 +1431,37 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 
 				map.clearMap();
 				shape = null;
+			});
+
+			document.addEventListener('addReferencePoint', e => {
+				try {
+					var iconImg = new google.maps.MarkerImage( '../../images/google/arrow.png' );
+					let marker = new google.maps.Marker({
+						position: new google.maps.LatLng(
+							parseFloat(e.detail.lat), 
+							parseFloat(e.detail.lng)
+						),
+						icon: iconImg,
+						zIndex: google.maps.Marker.MAX_ZINDEX
+					});
+
+					if(e.detail.title) {
+						const infoWin = new google.maps.InfoWindow({
+							content:`<div>${e.detail.title}</div>`
+						});
+
+						google.maps.event.addListener(marker, 'mouseover', () => {
+							infoWin.open(map.mapLayer, marker);
+						})
+
+						google.maps.event.addListener(marker, 'mouseout', () => {
+							infoWin.close();
+						})
+					}
+					marker.setMap(map.mapLayer);
+				} catch(e) {
+					console.log('failed to add point because: ' + e)
+				}
 			});
 
 			document.addEventListener('occur_click', function(e) {
@@ -1498,8 +1611,9 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 
 					genClusters(taxaLegendMap, "taxa");
 					genClusters(collLegendMap, "coll");
+					genClusters(portalLegendMap, "portal");
 
-               autoColorTaxa();
+					autoColorTaxa();
 
 					drawPoints();
 
@@ -1673,6 +1787,8 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 				collArr = JSON.parse(data.getAttribute('data-coll-map'));
 				recordArr = JSON.parse(data.getAttribute('data-records'));
 
+				clusteroff = data.getAttribute('data-cluster-off') ==='y'? true: false;
+
 				externalPortalHosts = JSON.parse(data.getAttribute('data-external-portal-hosts'));
 
 				searchVar = data.getAttribute('data-search-var');
@@ -1712,6 +1828,18 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 				}
             document.addEventListener("deleteShape", () => setQueryShape(shape))
 
+			window.initLocalitySuggest({
+				country: {
+					id: 'country',
+				},
+				state_province: {
+					id: 'state',
+				},
+				county: {
+					id: 'county',
+				},
+			})
+
 			} catch(e) {
 				alert("Failed to initialize map coordinate data")
 			}
@@ -1726,7 +1854,10 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 		<script src="../../js/symb/api.taxonomy.taxasuggest.js?ver=4" type="text/javascript"></script>
 	</head>
 	<body style='width:100%;max-width:100%;min-width:500px;' <?php echo (!$activateGeolocation?'onload="initialize();"':''); ?>>
-	  	<h1 class="page-heading screen-reader-only"><?php echo $LANG['MAP_INTERFACE']; ?></h1>
+		<?php
+			if($shouldUseMinimalMapHeader) include_once($SERVER_ROOT . '/includes/minimal_header_template.php');
+		?>
+	  	<h1 class="page-heading screen-reader-only">Map Interface</h1>
 		<div
 			id="service-container"
 			data-search-var="<?=htmlspecialchars($searchVar)?>"
@@ -1734,37 +1865,39 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 			data-taxa-map="<?=htmlspecialchars(json_encode($taxaArr))?>"
 			data-coll-map="<?=htmlspecialchars(json_encode($collArr))?>"
 			data-records="<?=htmlspecialchars(json_encode($recordArr))?>"
+			data-cluster-off="<?=htmlspecialchars($clusterOff)?>"
 			data-external-portal-hosts="<?=htmlspecialchars(json_encode($EXTERNAL_PORTAL_HOSTS))?>"
 			class="service-container"
-		/>
+		>
+		</div>
 		<div>
-			<button onclick="document.getElementById('defaultpanel').style.width='380px';  " style="position:absolute;top:0;left:0;margin:0px;z-index:10;font-size: 14px;">&#9776; <b>Open Search Panel</b></button>
+			<button onclick="document.getElementById('defaultpanel').style.width='380px';  " style="position:absolute;top:<?php echo $topVal ?>;left:0;margin:0px;z-index:10;font-size: 14px;border-style: solid; border-color: var(--medium-color);">&#9776; <b>Open Search Panel</b></button>
 		</div>
 		<div id='map' style='width:100vw;height:100vh;z-index:1'></div>
-		<div id="defaultpanel" class="sidepanel" style="width:390px">
+		<div id="defaultpanel" class="sidepanel" style="width: <?= $menuClosed? '0': '390px'?>">
 			<div class="panel-content">
 				<span style="position:absolute; top:0.7rem; right:0.7rem; z-index:1">
 					<a href="<?php echo htmlspecialchars($CLIENT_ROOT, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>/index.php">
-						<?php echo (isset($LANG['H_HOME'])?$LANG['H_HOME']:'Home'); ?>
+						<?php echo $LANG['H_HOME']; ?>
 					</a>
 					<button onclick="document.getElementById('defaultpanel').style.width='0px'" style="margin-left:1rem">&times</button>
 				</span>
 				<div id="mapinterface">
 					<div id="accordion">
-						<h3 style="padding-left:30px;"><?php echo (isset($LANG['SEARCH_CRITERIA'])?$LANG['SEARCH_CRITERIA']:'Search Criteria and Options'); ?></h3>
+						<h3 style="padding-left:30px;"><?php echo $LANG['SEARCH_CRITERIA']; ?></h3>
 						<div id="tabs1" style="padding:0px;height:100%">
 							<form name="mapsearchform" id="mapsearchform" data-ajax="false">
 								<ul>
-									<li><a href="#searchcollections"><span><?php echo htmlspecialchars((isset($LANG['COLLECTIONS'])?$LANG['COLLECTIONS']:'Collections'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></span></a></li>
-									<li><a href="#searchcriteria"><span><?php echo htmlspecialchars((isset($LANG['CRITERIA'])?$LANG['CRITERIA']:'Criteria'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></span></a></li>
+									<li><a href="#searchcollections"><span><?php echo htmlspecialchars($LANG['COLLECTIONS'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></span></a></li>
+									<li><a href="#searchcriteria"><span><?php echo htmlspecialchars($LANG['CRITERIA'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></span></a></li>
 									<li><a href="#mapoptions"><span><?php echo htmlspecialchars((isset($LANG['MAP_OPTIONS'])?$LANG['MAP_OPTIONS']:'Map Options'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></span></a></li>
 								</ul>
 								<div id="searchcollections" style="">
 									<div class="mapinterface">
 										<?php
 										$collList = $mapManager->getFullCollectionList($catId);
-										$specArr = (isset($collList['spec'])?$collList['spec']:null);
-										$obsArr = (isset($collList['obs'])?$collList['obs']:null);
+										$specArr = (isset($collList['spec']) ? $collList['spec'] : null);
+										$obsArr = (isset($collList['obs']) ? $collList['obs'] : null);
 										if($specArr || $obsArr){
 										?>
 										<div id="specobsdiv">
@@ -1790,7 +1923,7 @@ cluster.bindTooltip(`<div style="font-size:1.5rem"><?=$LANG['CLICK_TO_EXPAND']?>
 								</div>
 								<div id="searchcriteria" style="">
 									<div style="height:25px;">
-										<!-- <div style="float:left;<?php echo (isset($SOLR_MODE) && $SOLR_MODE?'display:none;':''); ?>">
+										<!-- <div style="float:left;<?php echo (isset($SOLR_MODE) && $SOLR_MODE ? 'display:none;' : ''); ?>">
 Record Limit:
 <input data-role="none" type="text" id="recordlimit" style="width:75px;" name="recordlimit" value="<?php echo ($recLimit?$recLimit:""); ?>" title="Maximum record amount returned from search." onchange="return checkRecordLimit(this.form);" />
 										</div> -->
@@ -1802,17 +1935,17 @@ Record Limit:
 											<input type="hidden" id="gridSizeSetting" name="gridSizeSetting" value="<?php echo $gridSize; ?>" />
 											<input type="hidden" id="minClusterSetting" name="minClusterSetting" value="<?php echo $minClusterSize; ?>" />
 											<input type="hidden" id="clusterSwitch" name="clusterSwitch" value="<?php echo $clusterOff; ?>" />
-											<input type="hidden" id="pointlat" name="pointlat" value='<?php echo isset($pointLat)? $pointLat:"" ?>' />
-											<input type="hidden" id="pointlong" name="pointlong" value='<?php echo isset($pointLng)? $pointLng:"" ?>' />
-											<input type="hidden" id="pointunits" name="pointunits" value='<?php echo isset($pointUnit)? $pointUnit:"km" ?>' />
-											<input type="hidden" id="radius" name="radius" value='<?php echo isset($pointRad)? $pointRad:"" ?>' />
-											<input type="hidden" id="upperlat" name="upperlat" value='<?php echo isset($upperLat)? $upperLat:"" ?>' />
-											<input type="hidden" id="rightlong" name="rightlong" value='<?php echo isset($upperLng)? $upperLng:"" ?>' />
-											<input type="hidden" id="bottomlat" name="bottomlat" value='<?php echo isset($lowerLat)? $lowerLat:"" ?>' />
-											<input type="hidden" id="leftlong" name="leftlong" value='<?php echo isset($lowerLng)? $lowerLng:"" ?>' />
+											<input type="hidden" id="pointlat" name="pointlat" value='<?php echo isset($pointLat)? $pointLat : "" ?>' />
+											<input type="hidden" id="pointlong" name="pointlong" value='<?php echo isset($pointLng)? $pointLng : "" ?>' />
+											<input type="hidden" id="pointunits" name="pointunits" value='<?php echo isset($pointUnit)? $pointUnit : "km" ?>' />
+											<input type="hidden" id="radius" name="radius" value='<?php echo isset($pointRad)? $pointRad : "" ?>' />
+											<input type="hidden" id="upperlat" name="upperlat" value='<?php echo isset($upperLat)? $upperLat : "" ?>' />
+											<input type="hidden" id="rightlong" name="rightlong" value='<?php echo isset($upperLng)? $upperLng : "" ?>' />
+											<input type="hidden" id="bottomlat" name="bottomlat" value='<?php echo isset($lowerLat)? $lowerLat : "" ?>' />
+											<input type="hidden" id="leftlong" name="leftlong" value='<?php echo isset($lowerLng)? $lowerLng : "" ?>' />
 											<input type="hidden" id="polycoords" name="polycoords" value='<?php echo $mapManager->getSearchTerm('polycoords'); ?>' />
-											<button data-role="none" type="button" name="resetbutton" onclick="resetQueryForm(this.form)"><?php echo (isset($LANG['RESET'])?$LANG['RESET']:'Reset'); ?></button>
-											<button data-role="none" name="submitform" type="submit" ><?php echo (isset($LANG['SEARCH'])?$LANG['SEARCH']:'Search'); ?></button>
+											<button data-role="none" type="button" name="resetbutton" onclick="resetQueryForm(this.form)"><?php echo $LANG['RESET']; ?></button>
+											<button data-role="none" name="submitform" type="submit" ><?php echo $LANG['SEARCH']; ?></button>
 										</div>
 									</div>
 									<div style="margin:5 0 5 0;"><hr /></div>
@@ -1833,7 +1966,7 @@ Record Limit:
 											</select>
 										</div>
 										<div style="margin-top:5px;">
-											<?php echo (isset($LANG['TAXA'])?$LANG['TAXA']:'Taxa'); ?>:
+											<?php echo $LANG['TAXA']; ?>:
 											<input data-role="none" id="taxa" name="taxa" type="text" style="width:275px;" value="<?php echo $mapManager->getTaxaSearchTerm(); ?>" title="<?php echo (isset($LANG['SEPARATE_MULTIPLE'])?$LANG['SEPARATE_MULTIPLE']:'Separate multiple taxa w/ commas'); ?>" />
 										</div>
 									</div>
@@ -1871,16 +2004,16 @@ Record Limit:
 									}
 									?>
 									<div>
-										<?php echo (isset($LANG['COUNTRY'])?$LANG['COUNTRY']:'Country'); ?>: <input data-role="none" type="text" id="country" style="width:225px;" name="country" value="<?php echo $mapManager->getSearchTerm('country'); ?>" title="<?php echo (isset($LANG['SEPARATE_MULTIPLE'])?$LANG['SEPARATE_MULTIPLE']:'Separate multiple taxa w/ commas'); ?>" />
+										<?php echo $LANG['COUNTRY']; ?>: <input data-role="none" type="text" id="country" style="width:225px;" name="country" value="<?php echo $mapManager->getSearchTerm('country'); ?>" title="<?php echo (isset($LANG['SEPARATE_MULTIPLE'])?$LANG['SEPARATE_MULTIPLE']:'Separate multiple taxa w/ commas'); ?>" />
 									</div>
 									<div style="margin-top:5px;">
 										<?php echo (isset($LANG['STATE'])?$LANG['STATE']:'State/Province'); ?>: <input data-role="none" type="text" id="state" style="width:150px;" name="state" value="<?php echo $mapManager->getSearchTerm('state'); ?>" title="<?php echo (isset($LANG['SEPARATE_MULTIPLE'])?$LANG['SEPARATE_MULTIPLE']:'Separate multiple taxa w/ commas'); ?>" />
 									</div>
 									<div style="margin-top:5px;">
-										<?php echo (isset($LANG['COUNTY'])?$LANG['COUNTY']:'County'); ?>: <input data-role="none" type="text" id="county" style="width:225px;"  name="county" value="<?php echo $mapManager->getSearchTerm('county'); ?>" title="<?php echo (isset($LANG['SEPARATE_MULTIPLE'])?$LANG['SEPARATE_MULTIPLE']:'Separate multiple taxa w/ commas'); ?>" />
+										<?php echo $LANG['COUNTY']; ?>: <input data-role="none" type="text" id="county" style="width:225px;"  name="county" value="<?php echo $mapManager->getSearchTerm('county'); ?>" title="<?php echo (isset($LANG['SEPARATE_MULTIPLE'])?$LANG['SEPARATE_MULTIPLE']:'Separate multiple taxa w/ commas'); ?>" />
 									</div>
 									<div style="margin-top:5px;">
-										<?php echo (isset($LANG['LOCALITY'])?$LANG['LOCALITY']:'Locality'); ?>: <input data-role="none" type="text" id="locality" style="width:225px;" name="local" value="<?php echo $mapManager->getSearchTerm('local'); ?>" />
+										<?php echo $LANG['LOCALITY']; ?>: <input data-role="none" type="text" id="locality" style="width:225px;" name="local" value="<?php echo $mapManager->getSearchTerm('local'); ?>" />
 									</div>
 									<div style="margin:5 0 5 0;"><hr /></div>
 									<div id="shapecriteria">
@@ -1892,7 +2025,7 @@ Record Limit:
 											</div>
 											<div id="distancegeocriteria" style="display:<?php echo ($distFromMe?'block':'none'); ?>;">
 												<div>
-													<?php echo (isset($LANG['WITHIN'])?$LANG['WITHIN']:'Within'); ?>
+													<?php echo $LANG['WITHIN']; ?>
 													<input data-role="none" type="text" id="distFromMe" style="width:40px;" name="distFromMe" value="<?php $distFromMe; ?>" /> miles from me, or
 													<?php echo (isset($LANG['SHAPE_TOOLS'])?strtolower($LANG['SHAPE_TOOLS']):'use the shape tools on the map to select occurrences within a given shape'); ?>.
 												</div>
@@ -1914,7 +2047,7 @@ Record Limit:
 											</div>
 										</div>
 										<div id="deleteshapediv" style="margin-top:5px;display:<?php echo (($mapManager->getSearchTerm('pointlat') || $mapManager->getSearchTerm('upperlat') || $mapManager->getSearchTerm('polycoords'))?'block':'none'); ?>;">
-											<button data-role="none" type="button" onclick="deleteMapShape()"><?php echo (isset($LANG['DELETE_SHAPE'])?$LANG['DELETE_SHAPE']:'Delete Selected Shape'); ?></button>
+											<button class="button-danger" data-role="none" type="button" onclick="deleteMapShape()"><?php echo (isset($LANG['DELETE_SHAPE'])?$LANG['DELETE_SHAPE']:'Delete Selected Shape'); ?></button>
 										</div>
 									</div>
 									<div style="margin:5 0 5 0;"><hr /></div>
@@ -1961,13 +2094,13 @@ Record Limit:
 							</form>
 							<div id="mapoptions" style="">
 								<fieldset>
-									<legend><?php echo (isset($LANG['CLUSTERING'])?$LANG['CLUSTERING']:'Clustering'); ?></legend>
+									<legend><?php echo $LANG['CLUSTERING']; ?></legend>
 									<label><?php echo (isset($LANG['TURN_OFF_CLUSTERING'])?$LANG['TURN_OFF_CLUSTERING']:'Turn Off Clustering'); ?>:</label>
 									<input data-role="none" type="checkbox" id="clusteroff" name="clusteroff" value='1' <?php echo ($clusterOff=="y"?'checked':'') ?>/>
 								</fieldset>
 								<br/>
 								<fieldset>
-									<legend><?php echo (isset($LANG['HEATMAP'])?$LANG['HEATMAP']:'Heatmap'); ?></legend>
+									<legend><?php echo $LANG['HEATMAP']; ?></legend>
 									<label><?php echo (isset($LANG['TURN_ON_HEATMAP'])?$LANG['TURN_ON_HEATMAP']:'Turn on heatmap'); ?>:</label>
 									<input data-role="none" type="checkbox" id="heatmap_on" name="heatmap_on" value='1'/>
 									<br/>
@@ -1983,6 +2116,71 @@ Record Limit:
 									<label for="heat-max-density"><?php echo (isset($LANG['MAX_DENSITY'])?$LANG['MAX_DENSITY']: 'Maximum Density') ?>: </label>
 									<input style="margin: 0 1rem; width: 5rem;"value="3" id="heat-max-density" name="heat-max-density">
 									<br/>
+								</fieldset>
+								<br/>
+								<fieldset>
+									<legend>
+									   <?= $LANG['ADD_REFERENCE_POINT'] ?>
+									</legend>
+									<div>
+										<div>
+									   <?= $LANG['MARKER_NAME'] ?>:
+											<input name='title' id='title' size='15' type='text' />
+										</div>
+										<div class="latlongdiv">
+											<div>
+											 <div style="float:left;margin-right:5px">
+												<?= $LANG['LATITUDE'] ?>
+												(<?= $LANG['DECIMAL'] ?>):
+												<input name='lat' id='lat' size='10' type='text' /> </div>
+												<div style="float:left;">eg: 34.57</div>
+											</div>
+											<div style="margin-top:5px;clear:both">
+											 <div style="float:left;margin-right:5px">
+												<?= $LANG['LONGITUDE'] ?>
+												(<?= $LANG['DECIMAL'] ?>):
+												<input name='lng' id='lng' size='10' type='text' /> </div>
+												<div style="float:left;">eg: -112.38</div>
+											</div>
+											<div style='font-size:80%;margin-top:5px;clear:both'>
+											 <a href='#' onclick='toggleLatLongDivs();'> 
+												<?= $LANG['ENTER_IN_DMS']?>
+											 </a>
+											</div>
+										</div>
+										<div id="useLLDecimal" class='latlongdiv' style='display:none;clear:both'>
+											<div>
+												<?= $LANG['LATITUDE'] ?>:
+												<input name='latdeg' id='latdeg' size='2' type='text' />&deg;
+												<input name='latmin' id='latmin' size='4' type='text' />&prime;
+												<input name='latsec' id='latsec' size='4' type='text' />&Prime;
+												<select name='latns' id='latns'>
+													<option value='N'><?= $LANG['NORTH']; ?></option>
+													<option value='S'><?= $LANG['SOUTH']; ?></option>
+												</select>
+											</div>
+											<div style="margin-top:5px;">
+										  <?= $LANG['LONGITUDE'] ?>:
+												<input name='longdeg' id='longdeg' size='2' type='text' />&deg;
+												<input name='longmin' id='longmin' size='4' type='text' />&prime;
+												<input name='longsec' id='longsec' size='4' type='text' />&Prime;
+												<select name='longew' id='longew'>
+													<option value='E'><?= $LANG['EAST']; ?></option>
+													<option value='W' selected><?= $LANG['WEST']; ?></option>
+												</select>
+											</div>
+											<div style='font-size:80%;margin-top:5px;'>
+											 <a href='#' onclick='toggleLatLongDivs();'>
+												<?= $LANG['ENTER_IN_DECIMAL'] ?>
+											 </a>
+											</div>
+										</div>
+										<div style="margin-top:10px;">
+									   <button onclick='addRefPoint();'>
+										  <?= $LANG['ADD_MARKER'] ?>
+									   </button>
+										</div>
+									</div>
 								</fieldset>
 							</div>
 							<form style="display:none;" name="csvcontrolform" id="csvcontrolform" action="csvdownloadhandler.php" method="post" onsubmit="">
@@ -2021,14 +2219,14 @@ Record Limit:
 												<g>
 													<circle cx="7.5" cy="7.5" r="7" fill="white" stroke="#000000" stroke-width="1px" ></circle>
 												</g>
-											</svg> = <?php echo (isset($LANG['COLLECTION'])?$LANG['COLLECTION']:'Collection'); ?>
+											</svg> = <?php echo $LANG['COLLECTION']; ?>
 										</div>
 										<div style="margin-top:5px;" >
 											<svg style="height:14px;width:14px;margin-bottom:-2px;">" xmlns="http://www.w3.org/2000/svg">
 												<g>
 													<path stroke="#000000" d="m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z" stroke-width="1px" fill="white"/>
 												</g>
-											</svg> = <?php echo (isset($LANG['OBSERVATION'])?$LANG['OBSERVATION']:'Observation'); ?>
+											</svg> = <?php echo $LANG['OBSERVATION']; ?>
 										</div>
 									</div>
 									<div id="portalsymbolizeResetButt" style='float:right;margin-bottom:5px;' >
@@ -2057,14 +2255,14 @@ Record Limit:
 												<g>
 													<circle cx="7.5" cy="7.5" r="7" fill="white" stroke="#000000" stroke-width="1px" ></circle>
 												</g>
-											</svg> = <?php echo (isset($LANG['COLLECTION'])?$LANG['COLLECTION']:'Collection'); ?>
+											</svg> = <?php echo $LANG['COLLECTION']; ?>
 										</div>
 										<div style="margin-top:5px;" >
 											<svg style="height:14px;width:14px;margin-bottom:-2px;">" xmlns="http://www.w3.org/2000/svg">
 												<g>
 													<path stroke="#000000" d="m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z" stroke-width="1px" fill="white"/>
 												</g>
-											</svg> = <?php echo (isset($LANG['OBSERVATION'])?$LANG['OBSERVATION']:'Observation'); ?>
+											</svg> = <?php echo $LANG['OBSERVATION']; ?>
 										</div>
 									</div>
 									<div id="symbolizeResetButt" style='float:right;margin-bottom:5px;' >
@@ -2095,14 +2293,14 @@ Record Limit:
 												<g>
 													<circle cx="7.5" cy="7.5" r="7" fill="white" stroke="#000000" stroke-width="1px" ></circle>
 												</g>
-											</svg> = <?php echo (isset($LANG['COLLECTION'])?$LANG['COLLECTION']:'Collection'); ?>
+											</svg> = <?php echo $LANG['COLLECTION']; ?>
 										</div>
 										<div style="margin-top:5px;" >
 											<svg style="height:14px;width:14px;margin-bottom:-2px;">" xmlns="http://www.w3.org/2000/svg">
 												<g>
 													<path stroke="#000000" d="m6.70496,0.23296l-6.70496,13.48356l13.88754,0.12255l-7.18258,-13.60611z" stroke-width="1px" fill="white"/>
 												</g>
-											</svg> = <?php echo (isset($LANG['OBSERVATION'])?$LANG['OBSERVATION']:'Observation'); ?>
+											</svg> = <?php echo $LANG['OBSERVATION']; ?>
 										</div>
 									</div>
 									<?php
