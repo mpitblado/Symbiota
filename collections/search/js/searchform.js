@@ -36,6 +36,9 @@ let paramNames = [
   "collector",
   "attr[]",
   "materialsampletype",
+  "association-type",
+  "associated-taxa",
+  "taxontype-association",
 ];
 const uLat = document.getElementById("upperlat") || null;
 const uLatNs = document.getElementById("upperlat_NS") || null;

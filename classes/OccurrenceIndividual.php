@@ -545,7 +545,7 @@ class OccurrenceIndividual extends Manager{
 				$displayStr = $this->occArr['catalognumber'];
 			}
 			elseif(strpos($iUrl,'--OTHERCATALOGNUMBERS--') !== false && $this->occArr['othercatalognumbers']){
-				if(substr($this->occArr['othercatalognumbers'],0,1) == '{'){
+				if(is_string($this->occArr['othercatalognumbers']) && substr($this->occArr['othercatalognumbers'],0,1) == '{'){
 					if($this->occArr['othercatalognumbers']){
 						foreach($this->occArr['othercatalognumbers'] as $idKey => $idArr){
 							if(!$displayStr || $idKey == 'NEON sampleID' || $idKey == 'NEON sampleCode (barcode)'){
@@ -558,7 +558,7 @@ class OccurrenceIndividual extends Manager{
 					}
 				}
 				else{
-					$ocn = str_replace($this->occArr['othercatalognumbers'], ',', ';');
+					$ocn =  is_string($this->occArr['othercatalognumbers']) ? str_replace($this->occArr['othercatalognumbers'], ',', ';') : ';';
 					$ocnArr = explode(';',$ocn);
 					$ocnValue = trim(array_pop($ocnArr));
 					if(stripos($ocnValue,':')) $ocnValue = trim(array_pop(explode(':',$ocnValue)));
