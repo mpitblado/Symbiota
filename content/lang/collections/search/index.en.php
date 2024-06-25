@@ -111,7 +111,8 @@ $LANG['TRAIT'] = 'Trait';
 $LANG['EXPAND_ALL_SECTIONS'] = 'Expand all sections';
 $LANG['COLLAPSE_ALL_SECTIONS'] = 'Collapse all sections';
 $LANG['ASSOCIATIONS'] = 'Associations';
-$LANG['ASSOCIATION_DESCRIPTION'] = 'Find all occurrences of taxa that';
+$LANG['ASSOCIATION_DESCRIPTION'] = 'Find all occurrences of taxa that have the following association';
+$LANG['ASSOCIATION_DESCRIPTION_2'] = 'with the following taxon';
 $LANG['ASSOCIATION_TYPE'] = 'Association Type';
 
 ?>
