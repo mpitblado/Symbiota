@@ -56,7 +56,7 @@ class AssociationManager extends Manager{
 		$returnVal = [];
 
 		// "Forward" association
-		$sqlBase = 'SELECT occid FROM omoccurassociations WHERE relationship = ? AND ';
+		$sqlBase = 'SELECT DISTINCT occid FROM omoccurassociations WHERE relationship = ? AND ';
 		if(is_numeric($taxonIdOrSciname)){
 			// var_dump('got here 1');
 			$sql = $sqlBase . 'tid = ?';
@@ -77,7 +77,7 @@ class AssociationManager extends Manager{
 		}
 
 		// @TODO handle situation where the associationType is external and there's no occidAssociate; pull resourceUrl instead?
-		$sqlBase = 'SELECT resourceUrl from omoccurassociations WHERE associationType="externalOccurrence" AND occidAssociate IS NULL AND relationship = ? AND ';
+		$sqlBase = 'SELECT DISTINCT resourceUrl from omoccurassociations WHERE associationType="externalOccurrence" AND occidAssociate IS NULL AND relationship = ? AND ';
 		if(is_numeric($taxonIdOrSciname)){
 			// var_dump('got here 3');
 			$sql = $sqlBase . 'tid = ?';
@@ -92,15 +92,17 @@ class AssociationManager extends Manager{
 			$sql = $sqlBase . 'verbatimSciname = ?';
 			$returnVal['sql'] = array_key_exists('sql', $returnVal) ? ($returnVal['sql'] . '; ' . $sql) : $sql;
 			if($statement = $this->conn->prepare($sql)){
-				$statement->bind_param('ss', $relationship, $taxonIdOrSciname);
+				$statement->bind_param('ss', $relationshipType, $taxonIdOrSciname);
 				$returnVal = array_merge($returnVal, $this->fetchTargetCriteriaFromStatementWithBoundParams($statement));
 			}
 		}
 
 
 		// "Reverse" association
-		$reverseAssociationType = $this->getInverseRelationshipOf($relationship); // @TODO still have to do something with this
-		$sqlBase = 'SELECT oa.occidAssociate FROM omoccurassociations oa INNER JOIN omoccurdeterminations od ON oa.occid=od.occid where isCurrent="1" AND relationship = ? AND ';
+		$reverseAssociationType = $this->getInverseRelationshipOf($relationshipType); // @TODO still have to do something with this
+		// var_dump('$reverseAssociationType is: ');
+		// var_dump($reverseAssociationType);
+		$sqlBase = 'SELECT DISTINCT oa.occidAssociate FROM omoccurassociations oa INNER JOIN omoccurdeterminations od ON oa.occid=od.occid where relationship = ? AND '; //isCurrent="1" AND my thought was that we want these results to be as relaxed as possible
 		if(is_numeric($taxonIdOrSciname)){
 			// var_dump('got here 5');
 			$sql = $sqlBase . 'od.taxonConceptID = ?';
@@ -116,14 +118,18 @@ class AssociationManager extends Manager{
 			$returnVal['sql'] = array_key_exists('sql', $returnVal) ? ($returnVal['sql'] . '; ' . $sql) : $sql;
 			if($statement = $this->conn->prepare($sql)){
 				$statement->bind_param('ss', $reverseAssociationType, $taxonIdOrSciname);
+				// var_dump($reverseAssociationType);
+				// var_dump($taxonIdOrSciname);
+				// var_dump($this->fetchTargetCriteriaFromStatementWithBoundParams($statement));
 				$returnVal = array_merge($returnVal, $this->fetchTargetCriteriaFromStatementWithBoundParams($statement));
 			}
 		}
-
+		$statement->close();
 		return $returnVal;
 	}
 
 	public function getInverseRelationshipOf($relationship){
+		// var_dump($relationship);
 		$sql = 'SELECT inverseRelationship FROM ctcontrolvocabterm where term = ?';
 		if($statement = $this->conn->prepare($sql)){
 			$statement->bind_param('s', $relationship);
@@ -144,11 +150,13 @@ class AssociationManager extends Manager{
 		if($statementWithBoundParams){
 			$statementWithBoundParams->execute();
 			$result = $statementWithBoundParams->get_result();
+			// var_dump($result);
 			$returnOccids = [];
 			while ($row = $result->fetch_assoc()) {
+				// var_dump($row);
 				$returnOccids[] = $row;
 			}
-			$statementWithBoundParams->close();
+			// $statementWithBoundParams->close();
 			return $returnOccids;
 		}else{
 			return [];
