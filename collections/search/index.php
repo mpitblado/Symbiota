@@ -119,7 +119,6 @@ $associationManager = new AssociationManager();
 								<input type="text" name="taxa" id="taxa" data-chip="<?php echo $LANG['TAXON'] ?>" />
 								<span class="inset-input-label"><?php echo $LANG['TAXON'] ?></span>
 							</label>
-							<span class="assistive-text"><?php echo $LANG['TYPE_CHAR_FOR_SUGGESTIONS'] ?></span>
 						</div>
 						<div style="padding-top:14px">
 							<div class="select-container" style="position: relative">
@@ -131,12 +130,11 @@ $associationManager = new AssociationManager();
 									<option id="taxontype-common" value="5" data-chip="<?php echo $LANG['TAXON'] . ': ' . $LANG['COMMON_NAME'] ?>"><?php echo $LANG['COMMON_NAME'] ?></option>
 								</select>
 								<span class="inset-input-label"><?php echo $LANG['TAXON_TYPE'] ?></span>
-								<span class="assistive-text"><?php echo $LANG['TAXON_TYPE'] ?></span>
 							</div>
 						</div>
 						<div>
-							<input type="checkbox" name="usethes" id="usethes" data-chip="<?php echo $LANG['INCLUDE_SYNONYMS'] ?>" value="1" checked />
-							<label for="usethes">
+							<input type="checkbox" name="usethes-associations" id="usethes-associations" data-chip="<?php echo $LANG['INCLUDE_SYNONYMS'] ?>" value="1" checked />
+							<label for="usethes-associations">
 								<span class="ml-1"><?php echo $LANG['INCLUDE_SYNONYMS'] ?></span>
 							</label>
 						</div>
@@ -159,7 +157,6 @@ $associationManager = new AssociationManager();
 										<input type="text" name="country" id="country" data-chip="<?php echo $LANG['COUNTRY'] ?>" />
 										<span class="inset-input-label"><?php echo $LANG['COUNTRY'] ?></span>
 									</label>
-									<span class="assistive-text"><?php echo $LANG['SEPARATE_MULTIPLE_W_COMMA'] ?></span>
 								</div>
 								<div class="input-text-container">
 									<label for="state" class="input-text--outlined">
@@ -167,7 +164,6 @@ $associationManager = new AssociationManager();
 										<input type="text" name="state" id="state" data-chip="<?php echo $LANG['STATE'] ?>" />
 										<span class="inset-input-label"><?php echo $LANG['STATE'] ?></span>
 									</label>
-									<span class="assistive-text"><?php echo $LANG['SEPARATE_MULTIPLE_W_COMMA'] ?></span>
 								</div>
 								<div class="input-text-container">
 									<label for="county" class="input-text--outlined">
@@ -175,7 +171,6 @@ $associationManager = new AssociationManager();
 										<input type="text" name="county" id="county" data-chip="<?php echo $LANG['COUNTY'] ?>" />
 										<span class="inset-input-label"><?php echo $LANG['COUNTY'] ?></span>
 									</label>
-									<span class="assistive-text"><?php echo $LANG['SEPARATE_MULTIPLE_W_COMMA'] ?></span>
 								</div>
 							</div>
 <div>
@@ -185,7 +180,6 @@ $associationManager = new AssociationManager();
 										 <input type="text" name="local" id="local" data-chip="<?php echo $LANG['LOCALITY'] ?>" />
 										<span class="inset-input-label"><?php echo $LANG['LOCALITY_LOCALITIES'] ?></span>
 									</label>
-									<span class="assistive-text"><?php echo $LANG['SEPARATE_MULTIPLE_W_COMMA'] ?></span>
 								</div>
 								<div class="grid grid--half">
 									<div class="input-text-container">
@@ -194,7 +188,6 @@ $associationManager = new AssociationManager();
 											<input type="number" step="any" name="elevlow" id="elevlow" data-chip="<?php echo $LANG['MIN_ELEVATION'] ?>" />
 											<span class="inset-input-label"><?php echo $LANG['MINIMUM_ELEVATION'] ?></span>
 										</label>
-										<span class="assistive-text"><?php echo $LANG['NUMBER_IN_METERS'] ?></span>
 									</div>
 									<div class="input-text-container">
 										<label for="elevhigh" class="input-text--outlined">
@@ -202,7 +195,6 @@ $associationManager = new AssociationManager();
 											<input type="number" step="any" name="elevhigh" id="elevhigh" data-chip="<?php echo $LANG['MAX_ELEVATION'] ?>" />
 											<span class="inset-input-label"><?php echo $LANG['MINIMUM_ELEVATION'] ?></span>
 										</label>
-										<span class="assistive-text"><?php echo $LANG['NUMBER_IN_METERS'] ?></span>
 									</div>
 								</div>
 							</div>
@@ -227,7 +219,6 @@ $associationManager = new AssociationManager();
 											<span class="screen-reader-only"><?php echo $LANG['UPPER_LATITUDE'] ?></span>
 											<input type="number" step="any" min="-90" max="90" id="upperlat" name="upperlat" data-chip="<?php echo $LANG['UPPER_LAT'] ?>" />
 											<span class="inset-input-label"><?php echo $LANG['MINIMUM_ELEVATION'] ?></span>
-											<span class="assistive-text"><?php echo $LANG['VALUE_BETWEEN_NUM'] ?></span>
 										</label>
 
 										<label for="upperlat_NS" class="input-text--outlined">
@@ -244,7 +235,6 @@ $associationManager = new AssociationManager();
 										<span class="screen-reader-only"><?php echo $LANG['BOTTOM_LATITUDE'] ?></span>
 										<input type="number" step="any" min="-90" max="90" id="bottomlat" name="bottomlat" data-chip="<?php echo $LANG['BOTTOM_LAT'] ?>" />
 										<span class="inset-input-label"><?php echo $LANG['SOUTHERN_LATITUDE'] ?></span>
-										<span class="assistive-text"><?php echo $LANG['VALUE_BETWEEN_NUM'] ?></span>
 									</label>
 									<label for="bottomlat_NS">
 										<span class="screen-reader-only"><?php echo $LANG['SELECT_BOTTOM_LAT_DIREC_NORTH_SOUTH'] ?></span>
@@ -260,7 +250,6 @@ $associationManager = new AssociationManager();
 										<span class="screen-reader-only"><?php echo $LANG['LEFT_LONGITUDE'] ?></span>
 										<input type="number" step="any" min="-180" max="180" id="leftlong" name="leftlong" data-chip="<?php echo $LANG['LEFT_LONG'] ?>" />
 										<span class="inset-input-label"><?php echo $LANG['WESTERN_LONGITUDE'] ?></span>
-										<span class="assistive-text"><?php echo $LANG['VALUES_BETWEEN_NEG180_TO_180'] ?></span>
 									</label>
 									<label for="leftlong_EW" class="input-text--outlined">
 										<span class="screen-reader-only"><?php echo $LANG['SELECT_LEFT_LONG_DIREC_WEST_EAST'] ?></span>
@@ -276,7 +265,6 @@ $associationManager = new AssociationManager();
 										<span class="screen-reader-only"><?php echo $LANG['RIGHT_LONGITUDE'] ?></span>
 										<input type="number" step="any" min="-180" max="180" id="rightlong" name="rightlong" data-chip="<?php echo $LANG['RIGHT_LONG'] ?>" />
 										<span class="inset-input-label"><?php echo $LANG['EASTERN_LONGITUDE'] ?></span>
-										<span class="assistive-text"><?php echo $LANG['VALUES_BETWEEN_NEG180_TO_180'] ?></span>
 									</label>
 										<label for="rightlong_EW" class="input-text--outlined">
 											<span class="screen-reader-only"><?php echo $LANG['SELECT_RIGHT_LONG_DIREC_WEST_EAST'] ?></span>
@@ -297,7 +285,6 @@ $associationManager = new AssociationManager();
 										<textarea id="footprintwkt" name="footprintwkt" class="full-width-pcnt" rows="5"></textarea>
 										<span class="inset-input-label"><?php echo $LANG['POLYGON'] ?></span>
 									</label>
-									<span class="assistive-text"><?php echo $LANG['SELECT_MAP_BUTTON_PASTE'] ?></span>
 								</div>
 							</div>
 							<div id="point-radius-form">
@@ -308,7 +295,6 @@ $associationManager = new AssociationManager();
 										<span class="screen-reader-only"><?php echo $LANG['POINT_LATITUDE'] ?></span>
 										<input type="number" step="any" min="-90" max="90" id="pointlat" name="pointlat" data-chip="<?php echo $LANG['POINT_LAT'] ?>" />
 										<span class="inset-input-label"><?php echo $LANG['LATITUDE'] ?></span>
-										<span class="assistive-text"><?php echo $LANG['VALUE_BETWEEN_NUM'] ?></span>
 									</label>
 									<label for="pointlat_NS" class="input-text--outlined">
 										<span class="screen-reader-only"><?php echo $LANG['POINT_LAT_DIREC_NORTH_SOUTH'] ?></span>
@@ -324,7 +310,6 @@ $associationManager = new AssociationManager();
 										<span class="screen-reader-only"><?php echo $LANG['POINT_LONGITUDE'] ?></span>
 										<input type="number" step="any" min="-180" max="180" id="pointlong" name="pointlong" data-chip="<?php echo $LANG['POINT_LONG'] ?>" />
 										<span class="inset-input-label"><?php echo $LANG['LONGITUDE'] ?></span>
-										<span class="assistive-text"><?php echo $LANG['VALUES_BETWEEN_NEG180_TO_180'] ?></span>
 									</label>
 									<label for="pointlong_EW" class="input-text--outlined">
 										<span class="screen-reader-only"><?php echo $LANG['POINT_LONGITUDE_DIREC_EAST_WEST'] ?></span>
@@ -340,7 +325,6 @@ $associationManager = new AssociationManager();
 										<span class="screen-reader-only"><?php echo $LANG['RADIUS'] ?></span>
 										<input type="number" min="0" step="any" id="radius" name="radius" data-chip="<?php echo $LANG['RADIUS'] ?>" />
 										<span class="inset-input-label"><?php echo $LANG['RADIUS'] ?></span>
-										<span class="assistive-text"><?php echo $LANG['ANY_POSITIVE_VALUES'] ?></span>
 									</label>
 									<label for="radiusunits" class="input-text--outlined">
 										<span class="screen-reader-only"><?php echo $LANG['SELECT_RADIUS_UNITS'] ?></span>
@@ -371,7 +355,6 @@ $associationManager = new AssociationManager();
 									<input type="text" name="eventdate1" id="eventdate1" data-chip="<?php echo $LANG['EVENT_DATE_START'] ?>" />
 									<span class="inset-input-label"><?php echo $LANG['COLLECTION_START_DATE'] ?></span>
 								</label>
-								<span class="assistive-text"><?php echo $LANG['SINGLE_DATE_START_DATE'] ?></span>
 							</div>
 							<div class="input-text-container">
 								<label for="eventdate2" class="input-text--outlined">
@@ -379,7 +362,6 @@ $associationManager = new AssociationManager();
 									<input type="text" name="eventdate2" id="eventdate2" data-chip="<?php echo $LANG['EVENT_DATE_END'] ?>" />
 									<span class="inset-input-label"><?php echo $LANG['COLLECTION_END_DATE'] ?></span>
 								</label>
-								<span class="assistive-text"><?php echo $LANG['SINGLE_DATE_END_DATE'] ?></span>
 							</div>
 							<div class="input-text-container">
 								<label for="collector" class="input-text--outlined">
@@ -419,7 +401,6 @@ $associationManager = new AssociationManager();
 										<input type="text" name="catnum" id="catnum" data-chip="<?php echo $LANG['CATALOG_NUMBER'] ?>" />
 										<span class="inset-input-label"><?php echo $LANG['CATALOG_NUMBER'] ?></span>
 									</label>
-									<span class="assistive-text"><?php echo $LANG['SEPARATE_MULTIPLE_W_COMMA'] ?></span>
 								</div>
 							</div>
 							<div>
@@ -536,7 +517,7 @@ $associationManager = new AssociationManager();
 				<!-- Associations -->
 				<section>
 					<!-- Accordion selector -->
-					<input type="checkbox" id="associations" class="accordion-selector" checked />
+					<input type="checkbox" id="associations" class="accordion-selector" />
 
 					<!-- Accordion header -->
 					<label for="associations" class="accordion-header"><?php echo $LANG['ASSOCIATIONS'] ?></label>
@@ -560,7 +541,6 @@ $associationManager = new AssociationManager();
 									?>
 								</select>
 								<span class="inset-input-label"><?php echo $LANG['ASSOCIATION_TYPE'] ?></span>
-								<span class="assistive-text"><?php echo $LANG['ASSOCIATION_TYPE'] ?></span>
 							</div>
 						</div>
 						<div>
@@ -573,7 +553,6 @@ $associationManager = new AssociationManager();
 									<input type="text" name="associated-taxa" id="associated-taxa" data-chip="<?php echo $LANG['ASSOCIATIONS'] . $LANG['TAXON'] . ': ' ?>" />
 									<span class="inset-input-label"><?php echo $LANG['TAXON'] ?></span>
 								</label>
-								<span class="assistive-text"><?php echo $LANG['TYPE_CHAR_FOR_SUGGESTIONS'] ?></span>
 							</div>
 							<div style="padding-top:14px">
 								<div class="select-container" style="position: relative; width: 13vw;">
@@ -585,7 +564,6 @@ $associationManager = new AssociationManager();
 										<option id="taxontype-2-common" value="5" data-chip="<?php echo $LANG['ASSOCIATIONS'] . '-' . $LANG['TAXON_TYPE'] . ': ' . $LANG['COMMON_NAME'] ?>"><?php echo $LANG['COMMON_NAME'] ?></option>
 									</select>
 									<span class="inset-input-label"><?php echo $LANG['TAXON_TYPE'] ?></span>
-									<span class="assistive-text"><?php echo $LANG['TAXON_TYPE'] ?></span>
 								</div>
 							</div>
 						</div>
