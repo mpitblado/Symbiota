@@ -551,10 +551,10 @@ $associationManager = new AssociationManager();
 								<label for="association-type" class="screen-reader-only"><?php echo $LANG['ASSOCIATION_TYPE'] ?></label>
 								<select name="association-type" id="association-type" style="margin-top:0;padding-top:0; margin-bottom: 0.5rem">
 									<?php
-										$associationTypes = $associationManager->getAssociationTypes();
-										foreach($associationTypes as $associationType){
+										$relationshipTypes = $associationManager->getRelationshipTypes();
+										foreach($relationshipTypes as $relationshipType){
 											?>
-											<option id="association-type-<?php echo $associationType ?>" value="<?php echo $associationType ?>" data-chip="<?php echo $LANG['ASSOCIATIONS'] . '-' . $associationType ?>"><?php echo $associationType; ?></option>
+											<option id="association-type-<?php echo $relationshipType ?>" value="<?php echo $relationshipType ?>" data-chip="<?php echo $LANG['ASSOCIATIONS'] . '-' . $relationshipType ?>"><?php echo $relationshipType; ?></option>
 											<?php
 										}
 									?>

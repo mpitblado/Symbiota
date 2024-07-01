@@ -36,68 +36,97 @@ class AssociationManager extends Manager{
 		parent::__destruct();
 	}
 
-	public function getAssociationTypes(){
+	public function getRelationshipTypes(){
 		$sql = 'SELECT DISTINCT relationship from omoccurassociations';
 		if($statement = $this->conn->prepare($sql)){
 			$statement->execute();
 			$result = $statement->get_result();
-			$associationTypes = [];
+			$relationshipTypes = [];
 			while ($row = $result->fetch_assoc()) {
-				$associationTypes[] = $row['relationship'];
+				$relationshipTypes[] = $row['relationship'];
 			}
 			$statement->close();
-			return $associationTypes;
+			return $relationshipTypes;
 		}else{
 			return [];
 		}
 	}
 
-	public function getAssociatedTaxa($associationType, $taxonIdOrSciname){
+	public function getAssociatedTaxa($relationshipType, $taxonIdOrSciname){
 		$returnVal = [];
-		$sqlBase = 'SELECT occidAssociate FROM omoccurassociations WHERE relationship = ? AND ';
+
+		// "Forward" association
+		$sqlBase = 'SELECT occid FROM omoccurassociations WHERE relationship = ? AND ';
 		if(is_numeric($taxonIdOrSciname)){
+			// var_dump('got here 1');
 			$sql = $sqlBase . 'tid = ?';
+			$returnVal['sql'] = array_key_exists('sql', $returnVal) ? ($returnVal['sql'] . '; ' . $sql) : $sql;
 			if($statement = $this->conn->prepare($sql)){
-				$statement->bind_param('si', $associationType, $taxonIdOrSciname);
-				$returnVal = array_merge($returnVal, $this->fetchOccIdsFromStatementWithBoundParams($statement));
+				$statement->bind_param('si', $relationshipType, $taxonIdOrSciname);
+				$returnVal = array_merge($returnVal, $this->fetchTargetCriteriaFromStatementWithBoundParams($statement));
 			}
 		}
 		if(is_string($taxonIdOrSciname)){
+			// var_dump('got here 2');
 			$sql = $sqlBase . 'verbatimSciname = ?';
+			$returnVal['sql'] = array_key_exists('sql', $returnVal) ? ($returnVal['sql'] . '; ' . $sql) : $sql;
 			if($statement = $this->conn->prepare($sql)){
-				$statement->bind_param('ss', $associationType, $taxonIdOrSciname);
-				$returnVal = array_merge($returnVal, $this->fetchOccIdsFromStatementWithBoundParams($statement));
+				$statement->bind_param('ss', $relationshipType, $taxonIdOrSciname);
+				$returnVal = array_merge($returnVal, $this->fetchTargetCriteriaFromStatementWithBoundParams($statement));
 			}
 		}
 
 		// @TODO handle situation where the associationType is external and there's no occidAssociate; pull resourceUrl instead?
-
-
-		// Now do the reverse association
-		$reverseAssociationType = $this->getInverseRelationshipOf($associationType); // @TODO still have to do something with this
-		$sqlBase = 'SELECT oa.occid FROM omoccurassociations oa INNER JOIN omoccurdeterminations od ON oa.occid=od.occid where isCurrent="1" AND relationship = ? AND ';
+		$sqlBase = 'SELECT resourceUrl from omoccurassociations WHERE associationType="externalOccurrence" AND occidAssociate IS NULL AND relationship = ? AND ';
 		if(is_numeric($taxonIdOrSciname)){
-			$sql = $sqlBase . 'od.taxonConceptID = ?';
+			// var_dump('got here 3');
+			$sql = $sqlBase . 'tid = ?';
+			$returnVal['sql'] = array_key_exists('sql', $returnVal) ? ($returnVal['sql'] . '; ' . $sql) : $sql;
 			if($statement = $this->conn->prepare($sql)){
-				$statement->bind_param('si', $reverseAssociationType, $taxonIdOrSciname);
-				$returnVal = array_merge($returnVal, $this->fetchOccIdsFromStatementWithBoundParams($statement));
+				$statement->bind_param('si', $relationshipType, $taxonIdOrSciname);
+				$returnVal = array_merge($returnVal, $this->fetchTargetCriteriaFromStatementWithBoundParams($statement));
 			}
 		}
 		if(is_string($taxonIdOrSciname)){
+			// var_dump('got here 4');
+			$sql = $sqlBase . 'verbatimSciname = ?';
+			$returnVal['sql'] = array_key_exists('sql', $returnVal) ? ($returnVal['sql'] . '; ' . $sql) : $sql;
+			if($statement = $this->conn->prepare($sql)){
+				$statement->bind_param('ss', $relationship, $taxonIdOrSciname);
+				$returnVal = array_merge($returnVal, $this->fetchTargetCriteriaFromStatementWithBoundParams($statement));
+			}
+		}
+
+
+		// "Reverse" association
+		$reverseAssociationType = $this->getInverseRelationshipOf($relationship); // @TODO still have to do something with this
+		$sqlBase = 'SELECT oa.occidAssociate FROM omoccurassociations oa INNER JOIN omoccurdeterminations od ON oa.occid=od.occid where isCurrent="1" AND relationship = ? AND ';
+		if(is_numeric($taxonIdOrSciname)){
+			// var_dump('got here 5');
+			$sql = $sqlBase . 'od.taxonConceptID = ?';
+			$returnVal['sql'] = array_key_exists('sql', $returnVal) ? ($returnVal['sql'] . '; ' . $sql) : $sql;
+			if($statement = $this->conn->prepare($sql)){
+				$statement->bind_param('si', $reverseAssociationType, $taxonIdOrSciname);
+				$returnVal = array_merge($returnVal, $this->fetchTargetCriteriaFromStatementWithBoundParams($statement));
+			}
+		}
+		if(is_string($taxonIdOrSciname)){
+			// var_dump('got here 6');
 			$sql = $sqlBase . 'od.sciname = ?';
+			$returnVal['sql'] = array_key_exists('sql', $returnVal) ? ($returnVal['sql'] . '; ' . $sql) : $sql;
 			if($statement = $this->conn->prepare($sql)){
 				$statement->bind_param('ss', $reverseAssociationType, $taxonIdOrSciname);
-				$returnVal = array_merge($returnVal, $this->fetchOccIdsFromStatementWithBoundParams($statement));
+				$returnVal = array_merge($returnVal, $this->fetchTargetCriteriaFromStatementWithBoundParams($statement));
 			}
 		}
 
 		return $returnVal;
 	}
 
-	public function getInverseRelationshipOf($associationType){
+	public function getInverseRelationshipOf($relationship){
 		$sql = 'SELECT inverseRelationship FROM ctcontrolvocabterm where term = ?';
 		if($statement = $this->conn->prepare($sql)){
-			$statement->bind_param('s', $associationType);
+			$statement->bind_param('s', $relationship);
 			$statement->execute();
 			$result = $statement->get_result();
 			$returnVal = '';
@@ -111,7 +140,7 @@ class AssociationManager extends Manager{
 		}
 	}
 
-	public function fetchOccIdsFromStatementWithBoundParams($statementWithBoundParams){
+	public function fetchTargetCriteriaFromStatementWithBoundParams($statementWithBoundParams){
 		if($statementWithBoundParams){
 			$statementWithBoundParams->execute();
 			$result = $statementWithBoundParams->get_result();
@@ -125,6 +154,7 @@ class AssociationManager extends Manager{
 			return [];
 		}
 	}
+
 
 	// public function displayTaxonomyHierarchy(){
 	// 	set_time_limit(300);
