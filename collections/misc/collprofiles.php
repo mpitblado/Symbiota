@@ -161,7 +161,7 @@ if ($SYMB_UID) {
 								echo (isset($LANG['IDENTIFIER_PLACEHOLDER_LIST']) ? $LANG['IDENTIFIER_PLACEHOLDER_LIST'] : 'Search by Catalog Number, Occurrence ID, or Record ID.') . ' ';
 							?>
 						</span>
-						<input name="catalog-number" id="catalog-number" type="text" />
+						<input name="catalog-number" id="catalog-number" type="text" class="bottom-breathing-room-rel" />
 						<a href="#" id="q_catalognumberinfo" style="text-decoration:none;">
 							<img src="../../images/info.png" style="width:1.3em;" alt="<?php echo $LANG['MORE_INFO_ALT']; ?>" title="<?php echo $LANG['MORE_INFO']; ?>" aria-label="<?php echo $LANG['MORE_INFO']; ?>"/>
 						</a>
