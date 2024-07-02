@@ -92,7 +92,7 @@ function initTaxaSuggest() {
   }
 
   runGenericTaxaSuggest("taxa", "taxontype");
-  runGenericTaxaSuggest("associated-taxa", "taxontype-2");
+  runGenericTaxaSuggest("associated-taxa", "taxontype-association");
 }
 
 $(document).ready(initTaxaSuggest);

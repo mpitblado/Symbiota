@@ -556,12 +556,12 @@ $associationManager = new AssociationManager();
 							</div>
 							<div style="padding-top:14px">
 								<div class="select-container" style="position: relative; width: 13vw;">
-									<label for="taxontype-2" class="screen-reader-only"><?php echo $LANG['TAXON_TYPE'] ?></label>
-									<select name="taxontype-2" id="taxontype-2" style="margin-top:0;padding-top:0; margin-bottom: 0.5rem">
-										<option id="taxontype-2-scientific" value="2" data-chip="<?php echo $LANG['ASSOCIATIONS'] . '-' . $LANG['TAXON_TYPE'] . ': ' . $LANG['SCIENTIFIC_NAME'] ?>"><?php echo $LANG['SCIENTIFIC_NAME'] ?></option>
-										<option id="taxontype-2-family" value="3" data-chip="<?php echo $LANG['ASSOCIATIONS'] . '-' . $LANG['TAXON_TYPE'] . ': ' . $LANG['FAMILY'] ?>"><?php echo $LANG['FAMILY'] ?></option>
-										<option id="taxontype-2-group" value="4" data-chip="<?php echo $LANG['ASSOCIATIONS'] . '-' . $LANG['TAXON_TYPE'] . ': ' . $LANG['TAXONOMIC_GROUP'] ?>"><?php echo $LANG['TAXONOMIC_GROUP'] ?></option>
-										<option id="taxontype-2-common" value="5" data-chip="<?php echo $LANG['ASSOCIATIONS'] . '-' . $LANG['TAXON_TYPE'] . ': ' . $LANG['COMMON_NAME'] ?>"><?php echo $LANG['COMMON_NAME'] ?></option>
+									<label for="taxontype-association" class="screen-reader-only"><?php echo $LANG['TAXON_TYPE'] ?></label>
+									<select name="taxontype-association" id="taxontype-association" style="margin-top:0;padding-top:0; margin-bottom: 0.5rem">
+										<option id="taxontype-association-scientific" value="2" data-chip="<?php echo $LANG['ASSOCIATIONS'] . '-' . $LANG['TAXON_TYPE'] . ': ' . $LANG['SCIENTIFIC_NAME'] ?>"><?php echo $LANG['SCIENTIFIC_NAME'] ?></option>
+										<option id="taxontype-association-family" value="3" data-chip="<?php echo $LANG['ASSOCIATIONS'] . '-' . $LANG['TAXON_TYPE'] . ': ' . $LANG['FAMILY'] ?>"><?php echo $LANG['FAMILY'] ?></option>
+										<option id="taxontype-association-group" value="4" data-chip="<?php echo $LANG['ASSOCIATIONS'] . '-' . $LANG['TAXON_TYPE'] . ': ' . $LANG['TAXONOMIC_GROUP'] ?>"><?php echo $LANG['TAXONOMIC_GROUP'] ?></option>
+										<option id="taxontype-association-common" value="5" data-chip="<?php echo $LANG['ASSOCIATIONS'] . '-' . $LANG['TAXON_TYPE'] . ': ' . $LANG['COMMON_NAME'] ?>"><?php echo $LANG['COMMON_NAME'] ?></option>
 									</select>
 									<span class="inset-input-label"><?php echo $LANG['TAXON_TYPE'] ?></span>
 								</div>

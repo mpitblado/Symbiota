@@ -40,6 +40,7 @@ class OccurrenceListManager extends OccurrenceManager{
 			$pageRequest = ($pageRequest - 1)*$cntPerPage;
 		}
 		$sql .= ' LIMIT ' . $pageRequest . ',' . $cntPerPage;
+		// var_dump($sql);
 		//echo '<div>Spec sql: ' . $sql . '</div>'; exit;
 		$result = $this->conn->query($sql);
 		if($result){
@@ -47,6 +48,7 @@ class OccurrenceListManager extends OccurrenceManager{
 			if(isset($GLOBALS['USER_RIGHTS']['CollEditor'])) $securityCollArr = $GLOBALS['USER_RIGHTS']['CollEditor'];
 			if(isset($GLOBALS['USER_RIGHTS']['RareSppReader'])) $securityCollArr = array_unique(array_merge($securityCollArr, $GLOBALS['USER_RIGHTS']['RareSppReader']));
 			while($row = $result->fetch_object()){
+				// var_dump($row);
 				$securityClearance = false;
 				if($isSecuredReader) $securityClearance = true;
 				elseif(in_array($row->collid,$securityCollArr)) $securityClearance = true;

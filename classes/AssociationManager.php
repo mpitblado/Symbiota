@@ -55,6 +55,8 @@ class AssociationManager extends Manager{
 	public function getAssociatedTaxa($relationshipType, $taxonIdOrSciname){
 		$returnVal = [];
 
+		// @TODO still have to handle cases where $taxonIdOrSciname is less specific than genus + specific epithet
+
 		// "Forward" association
 		$sqlBase = 'SELECT DISTINCT occid FROM omoccurassociations WHERE relationship = ? AND ';
 		if(is_numeric($taxonIdOrSciname)){

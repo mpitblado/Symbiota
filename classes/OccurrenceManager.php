@@ -57,12 +57,17 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 
 	protected function setSqlWhere(){
 		$sqlWhere = '';
+		var_dump($this->searchTermArr);
 		if(array_key_exists("targetclid",$this->searchTermArr) && is_numeric($this->searchTermArr["targetclid"])){
 			if(!$this->voucherManager){
 				$this->setChecklistVariables($this->searchTermArr['targetclid']);
 			}
 			$voucherVariableArr = $this->voucherManager->getQueryVariableArr();
+			// var_dump($voucherVariableArr);
 			if($voucherVariableArr){
+				if(isset($voucherVariableArr['association-type'])) $this->searchTermArr['association-type'] = $voucherVariableArr['association-type'];
+				if(isset($voucherVariableArr['taxontype-association'])) $this->searchTermArr['taxontype-association'] = $voucherVariableArr['taxontype-association'];
+				if(isset($voucherVariableArr['associated-taxa'])) $this->searchTermArr['associated-taxa'] = $voucherVariableArr['associated-taxa'];
 				if(isset($voucherVariableArr['collid'])) $this->searchTermArr['db'] = $voucherVariableArr['collid'];
 				if(isset($voucherVariableArr['country'])) $this->searchTermArr['country'] = $voucherVariableArr['country'];
 				if(isset($voucherVariableArr['state'])) $this->searchTermArr['state'] = $voucherVariableArr['state'];
@@ -120,6 +125,7 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 		}
 		
 		$sqlWhere .= $this->getTaxonWhereFrag();
+		// var_dump($sqlWhere);
 		
 		if(array_key_exists('country',$this->searchTermArr)){
 			$countryArr = explode(";",$this->searchTermArr["country"]);
@@ -672,10 +678,13 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 	}
 
 	protected function readRequestVariables(){
+		var_dump($_REQUEST); // @TODO this is an intervention point
 		if(array_key_exists('searchvar',$_REQUEST)){
 			$parsedArr = array();
 			$taxaArr = array();
+			// var_dump($_REQUEST['searchvar']);
 			parse_str($_REQUEST['searchvar'], $parsedArr);
+			// var_dump($parsedArr);
 
 			if(isset($parsedArr['taxa'])){
 				$taxaArr['taxa'] = $this->cleanInputStr($parsedArr['taxa']);
@@ -724,6 +733,10 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 		}
 		if(array_key_exists('taxa',$_REQUEST) && $_REQUEST['taxa']){
 			$this->setTaxonRequestVariable();
+		}
+		$hasEverythingRequiredForAssociationSearch = array_key_exists('association-type',$_REQUEST) && $_REQUEST['association-type'] && array_key_exists('associated-taxa',$_REQUEST) && $_REQUEST['associated-taxa'] && array_key_exists('taxontype-association',$_REQUEST) && $_REQUEST['taxontype-association'];
+		if($hasEverythingRequiredForAssociationSearch){
+			$this->setAssociationRequestVariable();
 		}
 		if(array_key_exists('country',$_REQUEST)){
 			$country = $this->cleanInputStr($_REQUEST['country']);

@@ -34,9 +34,11 @@ class OccurrenceTaxaManager {
 
 	protected $conn	= null;
 	protected $taxaArr = array();
+	protected $associationArr = array();
 	protected $taxAuthId = 1;
 	private $exactMatchOnly = false;
 	private $taxaSearchTerms = array();
+	private $associationTaxaSearchTerms = array();
 
 	public function __construct($type='readonly'){
 		$this->conn = MySQLiConnectionFactory::getCon($type);
@@ -46,6 +48,72 @@ class OccurrenceTaxaManager {
 			$this->conn->close();
 			$this->conn = null;
 		}
+	}
+
+	public function setAssociationRequestVariable($inputArr = null, $exactMatchOnly = false){
+		if($exactMatchOnly) $this->exactMatchOnly = true;
+		
+		//sanitize
+		$associationTypeStr = $this->cleanAndAssignGeneric('association-type', $inputArr);
+		$associatedTaxonStr = $this->cleanAndAssignGeneric('associated-taxa', $inputArr);
+		// $taxonTypeAssociationStr = $this->cleanAndAssignGeneric('taxontype-association', $inputArr);
+
+		// @TODO $associationTypeStr
+		if($associatedTaxonStr){
+			$this->associationArr['search'] = $associatedTaxonStr;
+			$this->setAssociationUseThes($inputArr);
+			$this->setAssociationDefaultTaxaType($inputArr);
+			
+			$this->associationTaxaSearchTerms = explode(',',$associatedTaxonStr);
+			foreach($this->associationTaxaSearchTerms as $key => $term){
+				$searchTerm = $this->cleanInputStr($term);
+				if(!$searchTerm){
+					unset($this->associationTaxaSearchTerms);
+					continue;
+				}
+				$this->associationTaxaSearchTerms[$key] = $searchTerm;
+				// @TODO LEFT OFF HERE
+
+			}
+
+
+			
+
+
+		}
+		// @TODO $taxonType2Str
+	}
+
+	public function setAssociationUseThes($inputArr = null){
+		$this->associationArr['usethes'] = 0;
+		if(isset($inputArr['usethes']) && $inputArr['usethes']){
+			$this->taxaArr['usethes'] = 1;
+		}
+		elseif(array_key_exists('usethes',$_REQUEST) && $_REQUEST['usethes']){
+			$this->taxaArr['usethes'] = 1;
+		}
+	}
+
+	public function setAssociationDefaultTaxaType($inputArr = null){
+		$defaultTaxaType = TaxaSearchType::SCIENTIFIC_NAME;
+		if(isset($inputArr['associated-taxa']) && is_numeric($inputArr['associated-taxa'])){
+			$defaultTaxaType = $inputArr['associated-taxa'];
+		}
+		elseif(array_key_exists('taxontype-association',$_REQUEST) && is_numeric($_REQUEST['taxontype-association'])){
+			$defaultTaxaType = $_REQUEST['taxontype-association'];
+		}
+		$this->taxaArr['associated-taxa'] = $defaultTaxaType;
+	}
+
+	public function cleanAndAssignGeneric($stringForInputArray, $inputArr = null){
+		$returnStr = '';
+		if(isset($inputArr[$stringForInputArray]) && $inputArr[$stringForInputArray]){
+			$returnStr = $this->cleanInputStr($inputArr[$stringForInputArray]);
+		}
+		else{
+			$returnStr = str_replace(';',',',$this->cleanInputStr($_REQUEST[$stringForInputArray]));
+		}
+		return $returnStr;
 	}
 
 	public function setTaxonRequestVariable($inputArr = null, $exactMatchOnly = false){
@@ -223,6 +291,7 @@ class OccurrenceTaxaManager {
 
 	public function getTaxonWhereFrag(){
 		$sqlWhereTaxa = '';
+		// var_dump($this->taxaArr);
 		if(isset($this->taxaArr['taxa'])){
 			$tidInArr = array();
 			$taxonType = $this->taxaArr['taxontype'];
