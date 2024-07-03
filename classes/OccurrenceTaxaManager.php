@@ -99,9 +99,6 @@ class OccurrenceTaxaManager {
 					}
 				} else{
 					if($this->associationArr['usethes']){
-						// $sql .= 'INNER JOIN taxstatus ts ON t.tid = ts.tidaccepted
-						// INNER JOIN taxa t2 ON ts.tid = t2.tid
-						// WHERE (ts.taxauthid = ' . $this->taxAuthId . ') AND (t2.sciname IN("' . $this->cleanInStr($searchTerm) . '"))';
 						$sql .= 'INNER JOIN taxstatus ts ON t.tid = ts.tidaccepted
 						INNER JOIN taxa t2 ON ts.tid = t2.tid
 						WHERE (ts.taxauthid = ?) AND (t2.sciname IN("?"))'; // @TODO does this work?
@@ -113,21 +110,108 @@ class OccurrenceTaxaManager {
 						array_push($bindingArr, $this->cleanInStr($searchTerm));
 					}
 				}
-				// @TODO LEFT OFF HERE
-
+				if ($statement = $this->conn->prepare($sql)) {
+					$statement->bind_param($typeStr,...$bindingArr);
+					$statement->execute();
+					$result = $statement->get_result();
+					if($result->num_rows > 0){
+						while($r = $result->fetch_assoc()){
+							$this->associationArr['taxa'][$r['sciname']]['tid'][$r['tid']] = $r['rankid'];
+							if($r['rankid'] == 140){
+								$taxaType = TaxaSearchType::FAMILY_ONLY;
+							}
+							elseif($r['rankid'] < 180){
+								$taxaType = TaxaSearchType::TAXONOMIC_GROUP;
+							}
+							else{
+								$taxaType = TaxaSearchType::SCIENTIFIC_NAME;
+							}
+							$this->associationArr['taxa'][$r['sciname']]['taxontype'] = $taxaType;
+						}
+					} else{
+						$this->associationArr['taxa'][$searchTerm]['taxontype'] = $taxaType;
+					}
+					$statement->close();
+				}
 
 			}
-
-
-			
+			if($this->associationArr['usethes']){
+				$this->setAssociationSynonyms();
+			}
 
 
 		}
 		// @TODO $taxonType2Str
 	}
 
-	public function setAssociationUseThes($inputArr = null){
-		$this->associationArr['usethes'] = 0;
+	protected function setAssociationSynonyms(){
+		if(isset($this->associationArr['taxa'])){
+			foreach($this->associationArr['taxa'] as $searchStr => $searchArr){ // @TODO LEFT OFF HERE
+				if(isset($searchArr['tid']) && $searchArr['tid']){
+					foreach($searchArr['tid'] as $tid => $rankid){
+						$accArr = array();
+						$accArr[] = $tid;
+						if($rankid >= 180 && $rankid <= 220){
+							$this->addAcceptedChildrenToArray($tid, $rankid, $accArr, $searchStr);
+						}
+						$this->addSynonymsOfAcceptedTaxaToArray($accArr, $rankid, $searchStr);
+					}
+				}
+			}
+		}
+	}
+
+	protected function addAcceptedChildrenToArray($tid, $rankid, $accArr, $searchStr){
+		$typeStr1 = '';
+		$bindingArr1 = array();
+		$sql1 = 'SELECT DISTINCT t.tid, t.sciname, t.rankid
+			FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid
+			INNER JOIN taxaenumtree e ON t.tid = e.tid
+			WHERE (e.parenttid IN(?)) AND (ts.TidAccepted = ts.tid) AND (ts.taxauthid = ?) AND (e.taxauthid = ?)' ;
+		$typeStr1 .= 'iii';
+		array_push($bindingArr1, $tid, $this->taxAuthId, $this->taxAuthId);
+		if ($statement1 = $this->conn->prepare($sql1)) {
+			$statement1->bind_param($typeStr1,...$bindingArr1);
+			$statement1->execute();
+			$result = $statement1->get_result();
+			if($result->num_rows > 0){
+				while($r1 = $result->fetch_assoc()){
+					$accArr[] = $r1['tid'];
+					if(!isset($this->associationArr['taxa'][$r1['sciname']])){
+						if($rankid == 220) $this->associationArr['taxa'][$r1['sciname']]['tid'][$r1['tid']] = $r1['rankid'];
+						else $this->associationArr['taxa'][$searchStr]['TID_BATCH'][$r1['tid']] = ''; // @TODO generalize and use in setSynonyms as well to DRY up code
+					}
+				}
+			}
+			$statement1->close();
+		}
+	}
+
+	protected function addSynonymsOfAcceptedTaxaToArray($accArr, $rankid, $searchStr){
+		$typeStr2 = '';
+		$bindingArr2 = array();
+		$sql2 = 'SELECT DISTINCT t.tid, t.sciname, t2.sciname as accepted '.
+			'FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid '.
+			'INNER JOIN taxa t2 ON ts.tidaccepted = t2.tid '.
+			'WHERE (ts.TidAccepted != ts.tid) AND (ts.taxauthid = ?) AND (ts.tidaccepted IN(?)) ';
+		$typeStr2 .= 'is';
+		array_push($bindingArr2, $this->taxAuthId, implode(',',$accArr));
+		if ($statement2 = $this->conn->prepare($sql2)) {
+			$statement2->bind_param($typeStr2,...$bindingArr2);
+			$statement2->execute();
+			$result = $statement2->get_result();
+			if($result->num_rows > 0){
+				while($r2 = $result->fetch_assoc()){
+					if($rankid >= 220) $this->associationArr['taxa'][$r2['accepted']]['synonyms'][$r2['tid']] = $r2['sciname']; // @TODO generalize and use in setSynonyms as well to DRY up code
+					else $this->associationArr['taxa'][$searchStr]['TID_BATCH'][$r2['tid']] = '';
+				}
+			}
+			$statement2->close();
+		}
+	}
+
+	protected function setAssociationUseThes($inputArr = null){
+		$this->associationArr['usethes'] = 0; // @TODO generalize and use in setTaxonRequestVariable as well to DRY up code
 		if(isset($inputArr['usethes']) && $inputArr['usethes']){
 			$this->associationArr['usethes'] = 1;
 		}
@@ -136,7 +220,7 @@ class OccurrenceTaxaManager {
 		}
 	}
 
-	public function setAndGetAssociationDefaultTaxaType($inputArr = null){
+	protected function setAndGetAssociationDefaultTaxaType($inputArr = null){ // @TOD generalize this work with setTaxonRequestVariable as well
 		$defaultTaxaType = TaxaSearchType::SCIENTIFIC_NAME;
 		if(isset($inputArr['associated-taxa']) && is_numeric($inputArr['associated-taxa'])){
 			$defaultTaxaType = $inputArr['associated-taxa'];
@@ -144,11 +228,11 @@ class OccurrenceTaxaManager {
 		elseif(array_key_exists('taxontype-association',$_REQUEST) && is_numeric($_REQUEST['taxontype-association'])){
 			$defaultTaxaType = $_REQUEST['taxontype-association'];
 		}
-		$this->taxaArr['associated-taxa'] = $defaultTaxaType;
+		$this->associationArr['associated-taxa'] = $defaultTaxaType;
 		return $defaultTaxaType;
 	}
 
-	public function cleanAndAssignGeneric($stringForInputArray, $inputArr = null){
+	protected function cleanAndAssignGeneric($stringForInputArray, $inputArr = null){
 		$returnStr = '';
 		if(isset($inputArr[$stringForInputArray]) && $inputArr[$stringForInputArray]){
 			$returnStr = $this->cleanInputStr($inputArr[$stringForInputArray]);
