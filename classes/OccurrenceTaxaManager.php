@@ -62,17 +62,59 @@ class OccurrenceTaxaManager {
 		if($associatedTaxonStr){
 			$this->associationArr['search'] = $associatedTaxonStr;
 			$this->setAssociationUseThes($inputArr);
-			$this->setAssociationDefaultTaxaType($inputArr);
+			$defaultTaxaType = $this->setAndGetAssociationDefaultTaxaType($inputArr);
 			
 			$this->associationTaxaSearchTerms = explode(',',$associatedTaxonStr);
-			foreach($this->associationTaxaSearchTerms as $key => $term){
+			foreach($this->associationTaxaSearchTerms as $searchTermkey => $term){
 				$searchTerm = $this->cleanInputStr($term);
 				if(!$searchTerm){
 					unset($this->associationTaxaSearchTerms);
 					continue;
 				}
-				$this->associationTaxaSearchTerms[$key] = $searchTerm;
+				$this->associationTaxaSearchTerms[$searchTermkey] = $searchTerm;
+				$taxaType = $defaultTaxaType;
+				if($defaultTaxaType == TaxaSearchType::ANY_NAME) {
+					$searchTermName = explode(': ',$searchTerm);
+					if (count($searchTermName) > 1) {
+						$taxaType = TaxaSearchType::taxaSearchTypeFromAnyNameSearchTag($searchTermName[0]);
+						$searchTerm = $searchTermName[1];
+					}else{
+						$taxaType = TaxaSearchType::SCIENTIFIC_NAME;
+					}
+				}
+				$this->setSciNamesByVerns($searchTerm, $this->associationArr);
+				$sql = 'SELECT t.sciname, t.tid, t.rankid FROM taxa t ';
+				$typeStr = '';
+				$bindingArr = array();
+				if(is_numeric($searchTerm)){
+					$searchTerm = filter_var($searchTerm, FILTER_SANITIZE_NUMBER_INT);
+					if($this->associationArr['usethes']){
+						$sql .= 'INNER JOIN taxstatus ts ON t.tid = ts.tidaccepted WHERE (ts.taxauthid = ?) AND (ts.tid = ?)';
+						$typeStr .= 'ii';
+						array_push($bindingArr, $this->taxAuthId, $searchTerm);
+					}else{
+						$sql .= 'WHERE (t.tid = ' . $searchTerm . ')';
+						$typeStr .= 'i';
+						array_push($bindingArr, $searchTerm);
+					}
+				} else{
+					if($this->associationArr['usethes']){
+						// $sql .= 'INNER JOIN taxstatus ts ON t.tid = ts.tidaccepted
+						// INNER JOIN taxa t2 ON ts.tid = t2.tid
+						// WHERE (ts.taxauthid = ' . $this->taxAuthId . ') AND (t2.sciname IN("' . $this->cleanInStr($searchTerm) . '"))';
+						$sql .= 'INNER JOIN taxstatus ts ON t.tid = ts.tidaccepted
+						INNER JOIN taxa t2 ON ts.tid = t2.tid
+						WHERE (ts.taxauthid = ?) AND (t2.sciname IN("?"))'; // @TODO does this work?
+						$typeStr .= 'is';
+						array_push($bindingArr, $this->taxAuthId, $this->cleanInStr($searchTerm));
+					} else{
+						$sql .= 'WHERE t.sciname IN("?")';
+						$typeStr .= 's';
+						array_push($bindingArr, $this->cleanInStr($searchTerm));
+					}
+				}
 				// @TODO LEFT OFF HERE
+
 
 			}
 
@@ -87,14 +129,14 @@ class OccurrenceTaxaManager {
 	public function setAssociationUseThes($inputArr = null){
 		$this->associationArr['usethes'] = 0;
 		if(isset($inputArr['usethes']) && $inputArr['usethes']){
-			$this->taxaArr['usethes'] = 1;
+			$this->associationArr['usethes'] = 1;
 		}
 		elseif(array_key_exists('usethes',$_REQUEST) && $_REQUEST['usethes']){
-			$this->taxaArr['usethes'] = 1;
+			$this->associationArr['usethes'] = 1;
 		}
 	}
 
-	public function setAssociationDefaultTaxaType($inputArr = null){
+	public function setAndGetAssociationDefaultTaxaType($inputArr = null){
 		$defaultTaxaType = TaxaSearchType::SCIENTIFIC_NAME;
 		if(isset($inputArr['associated-taxa']) && is_numeric($inputArr['associated-taxa'])){
 			$defaultTaxaType = $inputArr['associated-taxa'];
@@ -103,6 +145,7 @@ class OccurrenceTaxaManager {
 			$defaultTaxaType = $_REQUEST['taxontype-association'];
 		}
 		$this->taxaArr['associated-taxa'] = $defaultTaxaType;
+		return $defaultTaxaType;
 	}
 
 	public function cleanAndAssignGeneric($stringForInputArray, $inputArr = null){
@@ -213,7 +256,7 @@ class OccurrenceTaxaManager {
 		}
 	}
 
-	private function setSciNamesByVerns(&$searchTerm) {
+	private function setSciNamesByVerns(&$searchTerm, $alternateTaxaArr = null) {
 		if(preg_match('/^(.+)\s{1}\((.+)\)$/', $searchTerm, $m)){
 			$searchTerm = $m[2];
 		}
@@ -230,12 +273,24 @@ class OccurrenceTaxaManager {
 				while($row = $result->fetch_object()){
 					$vernName = $row->VernacularName;
 					if($row->rankid == 140){
-						$this->taxaArr['taxa'][$vernName]['families'][] = $row->sciname;
+						if(array_key_exists('taxa', $alternateTaxaArr)){
+							$alternateTaxaArr['taxa'][$vernName]['families'][] = $row->sciname;	// @TODO check that these values update correctly
+						} else{
+							$this->taxaArr['taxa'][$vernName]['families'][] = $row->sciname;
+						}
 					}
 					else{
-						$this->taxaArr['taxa'][$vernName]['scinames'][] = $row->sciname;
+						if(array_key_exists('taxa', $alternateTaxaArr)){
+							$alternateTaxaArr['taxa'][$vernName]['scinames'][] = $row->sciname;
+						}else{
+							$this->taxaArr['taxa'][$vernName]['scinames'][] = $row->sciname;
+						}
 					}
-					$this->taxaArr['taxa'][$vernName]['tid'][$row->tid] = $row->rankid;
+					if(array_key_exists('taxa', $alternateTaxaArr)){
+						$alternateTaxaArr['taxa'][$vernName]['tid'][$row->tid] = $row->rankid;
+					}else{
+						$this->taxaArr['taxa'][$vernName]['tid'][$row->tid] = $row->rankid;
+					}
 				}
 				$result->free();
 				$statement->close();
