@@ -71,69 +71,7 @@ class OccurrenceTaxaManager {
 					unset($this->associationTaxaSearchTerms);
 					continue;
 				}
-				$this->associationTaxaSearchTerms[$searchTermkey] = $searchTerm;
-				$taxaType = $defaultTaxaType;
-				if($defaultTaxaType == TaxaSearchType::ANY_NAME) {
-					$searchTermName = explode(': ',$searchTerm);
-					if (count($searchTermName) > 1) {
-						$taxaType = TaxaSearchType::taxaSearchTypeFromAnyNameSearchTag($searchTermName[0]);
-						$searchTerm = $searchTermName[1];
-					}else{
-						$taxaType = TaxaSearchType::SCIENTIFIC_NAME;
-					}
-				}
-				$this->setSciNamesByVerns($searchTerm, $this->associationArr);
-				$sql = 'SELECT t.sciname, t.tid, t.rankid FROM taxa t ';
-				$typeStr = '';
-				$bindingArr = array();
-				if(is_numeric($searchTerm)){
-					$searchTerm = filter_var($searchTerm, FILTER_SANITIZE_NUMBER_INT);
-					if($this->associationArr['usethes']){
-						$sql .= 'INNER JOIN taxstatus ts ON t.tid = ts.tidaccepted WHERE (ts.taxauthid = ?) AND (ts.tid = ?)';
-						$typeStr .= 'ii';
-						array_push($bindingArr, $this->taxAuthId, $searchTerm);
-					}else{
-						$sql .= 'WHERE (t.tid = ' . $searchTerm . ')';
-						$typeStr .= 'i';
-						array_push($bindingArr, $searchTerm);
-					}
-				} else{
-					if($this->associationArr['usethes']){
-						$sql .= 'INNER JOIN taxstatus ts ON t.tid = ts.tidaccepted
-						INNER JOIN taxa t2 ON ts.tid = t2.tid
-						WHERE (ts.taxauthid = ?) AND (t2.sciname IN("?"))'; // @TODO does this work?
-						$typeStr .= 'is';
-						array_push($bindingArr, $this->taxAuthId, $this->cleanInStr($searchTerm));
-					} else{
-						$sql .= 'WHERE t.sciname IN("?")';
-						$typeStr .= 's';
-						array_push($bindingArr, $this->cleanInStr($searchTerm));
-					}
-				}
-				if ($statement = $this->conn->prepare($sql)) {
-					$statement->bind_param($typeStr,...$bindingArr);
-					$statement->execute();
-					$result = $statement->get_result();
-					if($result->num_rows > 0){
-						while($r = $result->fetch_assoc()){
-							$this->associationArr['taxa'][$r['sciname']]['tid'][$r['tid']] = $r['rankid'];
-							if($r['rankid'] == 140){
-								$taxaType = TaxaSearchType::FAMILY_ONLY;
-							}
-							elseif($r['rankid'] < 180){
-								$taxaType = TaxaSearchType::TAXONOMIC_GROUP;
-							}
-							else{
-								$taxaType = TaxaSearchType::SCIENTIFIC_NAME;
-							}
-							$this->associationArr['taxa'][$r['sciname']]['taxontype'] = $taxaType;
-						}
-					} else{
-						$this->associationArr['taxa'][$searchTerm]['taxontype'] = $taxaType;
-					}
-					$statement->close();
-				}
-
+				$this->processSingleTerm($searchTerm, $searchTermkey, $defaultTaxaType);
 			}
 			if($this->associationArr['usethes']){
 				$this->setAssociationSynonyms();
@@ -142,6 +80,75 @@ class OccurrenceTaxaManager {
 
 		}
 		// @TODO $taxonType2Str
+	}
+
+	protected function processSingleTerm($searchTerm, $searchTermkey, $defaultTaxaType){
+		$this->associationTaxaSearchTerms[$searchTermkey] = $searchTerm; // @TODO generalize
+		$taxaType = $defaultTaxaType;
+		if($defaultTaxaType == TaxaSearchType::ANY_NAME) {
+			$searchTermName = explode(': ',$searchTerm);
+			if (count($searchTermName) > 1) {
+				$taxaType = TaxaSearchType::taxaSearchTypeFromAnyNameSearchTag($searchTermName[0]);
+				$searchTerm = $searchTermName[1];
+			}else{
+				$taxaType = TaxaSearchType::SCIENTIFIC_NAME;
+			}
+		}
+		$this->setSciNamesByVerns($searchTerm, $this->associationArr); // @TODO test whether this works
+		$this->setTaxonRankAndType($searchTerm, $taxaType);
+	}
+
+	protected function setTaxonRankAndType($searchTerm, $taxaType){
+		$sql = 'SELECT t.sciname, t.tid, t.rankid FROM taxa t ';
+		$typeStr = '';
+		$bindingArr = array();
+		if(is_numeric($searchTerm)){
+			$searchTerm = filter_var($searchTerm, FILTER_SANITIZE_NUMBER_INT);
+			if($this->associationArr['usethes']){
+				$sql .= 'INNER JOIN taxstatus ts ON t.tid = ts.tidaccepted WHERE (ts.taxauthid = ?) AND (ts.tid = ?)';
+				$typeStr .= 'ii';
+				array_push($bindingArr, $this->taxAuthId, $searchTerm);
+			}else{
+				$sql .= 'WHERE (t.tid = ' . $searchTerm . ')';
+				$typeStr .= 'i';
+				array_push($bindingArr, $searchTerm);
+			}
+		} else{
+			if($this->associationArr['usethes']){
+				$sql .= 'INNER JOIN taxstatus ts ON t.tid = ts.tidaccepted
+				INNER JOIN taxa t2 ON ts.tid = t2.tid
+				WHERE (ts.taxauthid = ?) AND (t2.sciname IN("?"))'; // @TODO does this work?
+				$typeStr .= 'is';
+				array_push($bindingArr, $this->taxAuthId, $this->cleanInStr($searchTerm));
+			} else{
+				$sql .= 'WHERE t.sciname IN("?")';
+				$typeStr .= 's';
+				array_push($bindingArr, $this->cleanInStr($searchTerm));
+			}
+		}
+		if ($statement = $this->conn->prepare($sql)) {
+			$statement->bind_param($typeStr,...$bindingArr);
+			$statement->execute();
+			$result = $statement->get_result();
+			if($result->num_rows > 0){
+				while($r = $result->fetch_assoc()){
+					$this->associationArr['taxa'][$r['sciname']]['tid'][$r['tid']] = $r['rankid'];
+					if($r['rankid'] == 140){
+						$taxaType = TaxaSearchType::FAMILY_ONLY;
+					}
+					elseif($r['rankid'] < 180){
+						$taxaType = TaxaSearchType::TAXONOMIC_GROUP;
+					}
+					else{
+						$taxaType = TaxaSearchType::SCIENTIFIC_NAME;
+					}
+					$this->associationArr['taxa'][$r['sciname']]['taxontype'] = $taxaType;
+				}
+			} else{
+				$this->associationArr['taxa'][$searchTerm]['taxontype'] = $taxaType;
+			}
+			$statement->close();
+		}
 	}
 
 	protected function setAssociationSynonyms(){
@@ -340,7 +347,7 @@ class OccurrenceTaxaManager {
 		}
 	}
 
-	private function setSciNamesByVerns(&$searchTerm, $alternateTaxaArr = null) {
+	private function setSciNamesByVerns(&$searchTerm, &$alternateTaxaArr = null) {
 		if(preg_match('/^(.+)\s{1}\((.+)\)$/', $searchTerm, $m)){
 			$searchTerm = $m[2];
 		}
