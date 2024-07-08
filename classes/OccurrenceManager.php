@@ -57,7 +57,7 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 
 	protected function setSqlWhere(){
 		$sqlWhere = '';
-		var_dump($this->searchTermArr);
+		// var_dump($this->searchTermArr);
 		if(array_key_exists("targetclid",$this->searchTermArr) && is_numeric($this->searchTermArr["targetclid"])){
 			if(!$this->voucherManager){
 				$this->setChecklistVariables($this->searchTermArr['targetclid']);
@@ -125,7 +125,8 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 		}
 		
 		$sqlWhere .= $this->getTaxonWhereFrag();
-		// var_dump($sqlWhere);
+		$sqlWhere .= $this->getAssociatedTaxonWhereFrag();
+		var_dump($sqlWhere);
 		
 		if(array_key_exists('country',$this->searchTermArr)){
 			$countryArr = explode(";",$this->searchTermArr["country"]);
