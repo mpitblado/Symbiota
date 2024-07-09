@@ -53,16 +53,16 @@ class AssociationManager extends Manager{
 	}
 
 	public function getAssociatedTaxaSqlFragment($relationshipType, $taxonIdOrSciname){
-		var_dump('entering getAssociatedTaxaSqlFragment. $relationshipType is: ' . $relationshipType . ' and $taxonIdOrSciname is: ' . $taxonIdOrSciname);
+		// var_dump('entering getAssociatedTaxaSqlFragment. $relationshipType is: ' . $relationshipType . ' and $taxonIdOrSciname is: ' . $taxonIdOrSciname);
 		// "Forward" association
-		$sql = 'IN (SELECT DISTINCT occid FROM omoccurassociations WHERE relationship =' . $relationshipType . ' AND ';
+		$sql = "1234 o.occid IN (SELECT DISTINCT occid FROM omoccurassociations WHERE relationship ='" . $relationshipType . "' AND ";
 
 		// TODO update taxon stuff to be more labile
 		if(is_numeric($taxonIdOrSciname)){
-			$sql = $sql . 'tid = ' . $taxonIdOrSciname . ')';
+			$sql = $sql . "tid = '" . $taxonIdOrSciname . "')";
 		}
 		if(is_string($taxonIdOrSciname)){
-			$sql = $sql . 'verbatimSciname = ' . $taxonIdOrSciname . ')';
+			$sql = $sql . "verbatimSciname = '" . $taxonIdOrSciname . "')";
 		}
 
 		// @TODO handle situation where the associationType is external and there's no occidAssociate; pull resourceUrl instead? // @TODO remove from the current query
@@ -77,96 +77,96 @@ class AssociationManager extends Manager{
 
 		// "Reverse" association
 		$reverseAssociationType = $this->getInverseRelationshipOf($relationshipType); // @TODO still have to do something with this
-		var_dump('$reverseAssociationType is: ' . $reverseAssociationType);
-		$sql .= ' OR IN (SELECT DISTINCT oa.occidAssociate FROM omoccurassociations oa INNER JOIN omoccurdeterminations od ON oa.occid=od.occid where relationship = ' . $reverseAssociationType . ' AND '; //isCurrent="1" AND my thought was that we want these results to be as relaxed as possible
+		// var_dump('$reverseAssociationType is: ' . $reverseAssociationType);
+		$sql .= " OR o.occid IN (SELECT DISTINCT oa.occidAssociate FROM omoccurassociations oa INNER JOIN omoccurdeterminations od ON oa.occid=od.occid where relationship = '" . $reverseAssociationType . "' AND "; //isCurrent="1" AND my thought was that we want these results to be as relaxed as possible
 		if(is_numeric($taxonIdOrSciname)){
-			$sql .= 'od.taxonConceptID = ' . $taxonIdOrSciname . ')';
+			$sql .= "od.taxonConceptID = '" . $taxonIdOrSciname . "') ";
 		}
 		if(is_string($taxonIdOrSciname)){
-			$sql .= 'od.sciname = ' . $taxonIdOrSciname . ')';
+			$sql .= "od.sciname = '" . $taxonIdOrSciname . "') ";
 		}
-		var_dump('returning: ' . $sql);
+		// var_dump('returning: ' . $sql);
 		return $sql;
 	}
 
-	public function getAssociatedTaxa($relationshipType, $taxonIdOrSciname){
-		$returnVal = [];
+	// public function getAssociatedTaxa($relationshipType, $taxonIdOrSciname){
+	// 	$returnVal = [];
 
-		// @TODO still have to handle cases where $taxonIdOrSciname is less specific than genus + specific epithet
+	// 	// @TODO still have to handle cases where $taxonIdOrSciname is less specific than genus + specific epithet
 
-		// "Forward" association
-		$sqlBase = 'SELECT DISTINCT occid FROM omoccurassociations WHERE relationship = ? AND ';
-		// $sqlBase = 'IN (SELECT DISTINCT occid FROM omoccurassociations WHERE relationship = ? AND ';
-		if(is_numeric($taxonIdOrSciname)){
-			// var_dump('got here 1');
-			$sql = $sqlBase . 'tid = ?';
-			$returnVal['sql'] = array_key_exists('sql', $returnVal) ? ($returnVal['sql'] . '; ' . $sql) : $sql;
-			if($statement = $this->conn->prepare($sql)){
-				$statement->bind_param('si', $relationshipType, $taxonIdOrSciname);
-				$returnVal = array_merge($returnVal, $this->fetchTargetCriteriaFromStatementWithBoundParams($statement));
-			}
-		}
-		if(is_string($taxonIdOrSciname)){
-			// var_dump('got here 2');
-			$sql = $sqlBase . 'verbatimSciname = ?';
-			$returnVal['sql'] = array_key_exists('sql', $returnVal) ? ($returnVal['sql'] . '; ' . $sql) : $sql;
-			if($statement = $this->conn->prepare($sql)){
-				$statement->bind_param('ss', $relationshipType, $taxonIdOrSciname);
-				$returnVal = array_merge($returnVal, $this->fetchTargetCriteriaFromStatementWithBoundParams($statement));
-			}
-		}
+	// 	// "Forward" association
+	// 	$sqlBase = 'SELECT DISTINCT occid FROM omoccurassociations WHERE relationship = ? AND ';
+	// 	// $sqlBase = 'IN (SELECT DISTINCT occid FROM omoccurassociations WHERE relationship = ? AND ';
+	// 	if(is_numeric($taxonIdOrSciname)){
+	// 		// var_dump('got here 1');
+	// 		$sql = $sqlBase . 'tid = ?';
+	// 		$returnVal['sql'] = array_key_exists('sql', $returnVal) ? ($returnVal['sql'] . '; ' . $sql) : $sql;
+	// 		if($statement = $this->conn->prepare($sql)){
+	// 			$statement->bind_param('si', $relationshipType, $taxonIdOrSciname);
+	// 			$returnVal = array_merge($returnVal, $this->fetchTargetCriteriaFromStatementWithBoundParams($statement));
+	// 		}
+	// 	}
+	// 	if(is_string($taxonIdOrSciname)){
+	// 		// var_dump('got here 2');
+	// 		$sql = $sqlBase . 'verbatimSciname = ?';
+	// 		$returnVal['sql'] = array_key_exists('sql', $returnVal) ? ($returnVal['sql'] . '; ' . $sql) : $sql;
+	// 		if($statement = $this->conn->prepare($sql)){
+	// 			$statement->bind_param('ss', $relationshipType, $taxonIdOrSciname);
+	// 			$returnVal = array_merge($returnVal, $this->fetchTargetCriteriaFromStatementWithBoundParams($statement));
+	// 		}
+	// 	}
 
-		// @TODO handle situation where the associationType is external and there's no occidAssociate; pull resourceUrl instead?
-		$sqlBase = 'SELECT DISTINCT resourceUrl from omoccurassociations WHERE associationType="externalOccurrence" AND occidAssociate IS NULL AND relationship = ? AND ';
-		if(is_numeric($taxonIdOrSciname)){
-			// var_dump('got here 3');
-			$sql = $sqlBase . 'tid = ?';
-			$returnVal['sql'] = array_key_exists('sql', $returnVal) ? ($returnVal['sql'] . '; ' . $sql) : $sql;
-			if($statement = $this->conn->prepare($sql)){
-				$statement->bind_param('si', $relationshipType, $taxonIdOrSciname);
-				$returnVal = array_merge($returnVal, $this->fetchTargetCriteriaFromStatementWithBoundParams($statement));
-			}
-		}
-		if(is_string($taxonIdOrSciname)){
-			// var_dump('got here 4');
-			$sql = $sqlBase . 'verbatimSciname = ?';
-			$returnVal['sql'] = array_key_exists('sql', $returnVal) ? ($returnVal['sql'] . '; ' . $sql) : $sql;
-			if($statement = $this->conn->prepare($sql)){
-				$statement->bind_param('ss', $relationshipType, $taxonIdOrSciname);
-				$returnVal = array_merge($returnVal, $this->fetchTargetCriteriaFromStatementWithBoundParams($statement));
-			}
-		}
+	// 	// @TODO handle situation where the associationType is external and there's no occidAssociate; pull resourceUrl instead?
+	// 	$sqlBase = 'SELECT DISTINCT resourceUrl from omoccurassociations WHERE associationType="externalOccurrence" AND occidAssociate IS NULL AND relationship = ? AND ';
+	// 	if(is_numeric($taxonIdOrSciname)){
+	// 		// var_dump('got here 3');
+	// 		$sql = $sqlBase . 'tid = ?';
+	// 		$returnVal['sql'] = array_key_exists('sql', $returnVal) ? ($returnVal['sql'] . '; ' . $sql) : $sql;
+	// 		if($statement = $this->conn->prepare($sql)){
+	// 			$statement->bind_param('si', $relationshipType, $taxonIdOrSciname);
+	// 			$returnVal = array_merge($returnVal, $this->fetchTargetCriteriaFromStatementWithBoundParams($statement));
+	// 		}
+	// 	}
+	// 	if(is_string($taxonIdOrSciname)){
+	// 		// var_dump('got here 4');
+	// 		$sql = $sqlBase . 'verbatimSciname = ?';
+	// 		$returnVal['sql'] = array_key_exists('sql', $returnVal) ? ($returnVal['sql'] . '; ' . $sql) : $sql;
+	// 		if($statement = $this->conn->prepare($sql)){
+	// 			$statement->bind_param('ss', $relationshipType, $taxonIdOrSciname);
+	// 			$returnVal = array_merge($returnVal, $this->fetchTargetCriteriaFromStatementWithBoundParams($statement));
+	// 		}
+	// 	}
 
 
-		// "Reverse" association
-		$reverseAssociationType = $this->getInverseRelationshipOf($relationshipType); // @TODO still have to do something with this
-		// var_dump('$reverseAssociationType is: ');
-		// var_dump($reverseAssociationType);
-		$sqlBase = 'SELECT DISTINCT oa.occidAssociate FROM omoccurassociations oa INNER JOIN omoccurdeterminations od ON oa.occid=od.occid where relationship = ? AND '; //isCurrent="1" AND my thought was that we want these results to be as relaxed as possible
-		if(is_numeric($taxonIdOrSciname)){
-			// var_dump('got here 5');
-			$sql = $sqlBase . 'od.taxonConceptID = ?';
-			$returnVal['sql'] = array_key_exists('sql', $returnVal) ? ($returnVal['sql'] . '; ' . $sql) : $sql;
-			if($statement = $this->conn->prepare($sql)){
-				$statement->bind_param('si', $reverseAssociationType, $taxonIdOrSciname);
-				$returnVal = array_merge($returnVal, $this->fetchTargetCriteriaFromStatementWithBoundParams($statement));
-			}
-		}
-		if(is_string($taxonIdOrSciname)){
-			// var_dump('got here 6');
-			$sql = $sqlBase . 'od.sciname = ?';
-			$returnVal['sql'] = array_key_exists('sql', $returnVal) ? ($returnVal['sql'] . '; ' . $sql) : $sql;
-			if($statement = $this->conn->prepare($sql)){
-				$statement->bind_param('ss', $reverseAssociationType, $taxonIdOrSciname);
-				// var_dump($reverseAssociationType);
-				// var_dump($taxonIdOrSciname);
-				// var_dump($this->fetchTargetCriteriaFromStatementWithBoundParams($statement));
-				$returnVal = array_merge($returnVal, $this->fetchTargetCriteriaFromStatementWithBoundParams($statement));
-			}
-		}
-		$statement->close();
-		return $returnVal;
-	}
+	// 	// "Reverse" association
+	// 	$reverseAssociationType = $this->getInverseRelationshipOf($relationshipType); // @TODO still have to do something with this
+	// 	// var_dump('$reverseAssociationType is: ');
+	// 	// var_dump($reverseAssociationType);
+	// 	$sqlBase = 'SELECT DISTINCT oa.occidAssociate FROM omoccurassociations oa INNER JOIN omoccurdeterminations od ON oa.occid=od.occid where relationship = ? AND '; //isCurrent="1" AND my thought was that we want these results to be as relaxed as possible
+	// 	if(is_numeric($taxonIdOrSciname)){
+	// 		// var_dump('got here 5');
+	// 		$sql = $sqlBase . 'od.taxonConceptID = ?';
+	// 		$returnVal['sql'] = array_key_exists('sql', $returnVal) ? ($returnVal['sql'] . '; ' . $sql) : $sql;
+	// 		if($statement = $this->conn->prepare($sql)){
+	// 			$statement->bind_param('si', $reverseAssociationType, $taxonIdOrSciname);
+	// 			$returnVal = array_merge($returnVal, $this->fetchTargetCriteriaFromStatementWithBoundParams($statement));
+	// 		}
+	// 	}
+	// 	if(is_string($taxonIdOrSciname)){
+	// 		// var_dump('got here 6');
+	// 		$sql = $sqlBase . 'od.sciname = ?';
+	// 		$returnVal['sql'] = array_key_exists('sql', $returnVal) ? ($returnVal['sql'] . '; ' . $sql) : $sql;
+	// 		if($statement = $this->conn->prepare($sql)){
+	// 			$statement->bind_param('ss', $reverseAssociationType, $taxonIdOrSciname);
+	// 			// var_dump($reverseAssociationType);
+	// 			// var_dump($taxonIdOrSciname);
+	// 			// var_dump($this->fetchTargetCriteriaFromStatementWithBoundParams($statement));
+	// 			$returnVal = array_merge($returnVal, $this->fetchTargetCriteriaFromStatementWithBoundParams($statement));
+	// 		}
+	// 	}
+	// 	$statement->close();
+	// 	return $returnVal;
+	// }
 
 	public function getInverseRelationshipOf($relationship){
 		// var_dump($relationship);

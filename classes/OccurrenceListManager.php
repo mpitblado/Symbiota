@@ -25,6 +25,7 @@ class OccurrenceListManager extends OccurrenceManager{
 		}
 		$occArr = array();
 		$sqlWhere = $this->getSqlWhere();
+		// var_dump('$sqlWhere before setRecordCnt is: ' . $sqlWhere);
 		if(!$this->recordCount || $this->reset) $this->setRecordCnt($sqlWhere);
 		$sql = 'SELECT o.occid, c.collid, c.institutioncode, c.collectioncode, c.collectionname, c.icon, o.institutioncode AS instcodeoverride, o.collectioncode AS collcodeoverride, '.
 			'o.catalognumber, o.family, o.sciname, o.scientificnameauthorship, o.tidinterpreted, o.recordedby, o.recordnumber, o.eventdate, '.
@@ -41,7 +42,7 @@ class OccurrenceListManager extends OccurrenceManager{
 		}
 		$sql .= ' LIMIT ' . $pageRequest . ',' . $cntPerPage;
 		// var_dump($sql);
-		echo '<div>Spec sql: ' . $sql . '</div>'; exit;
+		// echo '<div>Spec sql: ' . $sql . '</div>'; exit;
 		$result = $this->conn->query($sql);
 		if($result){
 			$securityCollArr = array();

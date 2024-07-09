@@ -68,8 +68,8 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 			$voucherVariableArr = $this->voucherManager->getQueryVariableArr();
 			// var_dump($voucherVariableArr);
 			if($voucherVariableArr){
-				// if(isset($voucherVariableArr['association-type'])) $this->$searchTermArr['association-type'] = $voucherVariableArr['association-type'];
-				// if(isset($voucherVariableArr['taxontype-association'])) $this->$searchTermArr['taxontype-association'] = $voucherVariableArr['taxontype-association'];
+				if(isset($voucherVariableArr['association-type'])) $this->searchTermArr['association-type'] = $voucherVariableArr['association-type'];
+				if(isset($voucherVariableArr['taxontype-association'])) $this->searchTermArr['taxontype-association'] = $voucherVariableArr['taxontype-association'];
 				if(isset($voucherVariableArr['associated-taxa'])) $this->searchTermArr['associated-taxa'] = $voucherVariableArr['associated-taxa'];
 				if(isset($voucherVariableArr['collid'])) $this->searchTermArr['db'] = $voucherVariableArr['collid'];
 				if(isset($voucherVariableArr['country'])) $this->searchTermArr['country'] = $voucherVariableArr['country'];
@@ -477,6 +477,7 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 				$this->displaySearchArr[] = $this->LANG['INCLUDE_CULTIVATED'];
 			}
 		}
+		// var_dump('$sqlWhere after includecult: ' . $sqlWhere);
 		if(array_key_exists('attr',$this->searchTermArr)){
 			$traitNameSql = 'SELECT t.traitName, s.stateName FROM tmtraits t JOIN tmstates s ON s.traitid = t.traitid WHERE s.stateid IN(' . $this->searchTermArr['attr'] . ')';
 			$rs = $this->conn->query($traitNameSql);
@@ -501,7 +502,8 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 			//$this->sqlWhere = 'WHERE o.occid IS NULL ';
 		}
 		//echo $this->sqlWhere;
-		var_dump($sqlWhere);
+		// var_dump($sqlWhere);
+		// var_dump('$sqlWhere after substr: ' . $this->sqlWhere);
 	}
 
 	private function getAdditionIdentifiers($identFrag){
@@ -980,7 +982,7 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 			$this->searchTermArr['footprintwkt'] = $this->cleanInputStr($_REQUEST['footprintwkt']);
 		}
 
-		var_dump($this->searchTermArr);
+		// var_dump($this->searchTermArr);
 	}
 
 	private function setChecklistVariables($clid){

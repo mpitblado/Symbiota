@@ -448,7 +448,7 @@ class OccurrenceTaxaManager {
 	public function getAssociatedTaxonWhereFrag(){
 		$sqlWhereTaxa = '';
 		if(isset($this->associationArr['taxa'])){
-			var_dump($this->associationArr);
+			// var_dump($this->associationArr);
 			$tidInArr = array();
 			$taxonType = $this->associationArr['associated-taxa'];
 			foreach($this->associationArr['taxa'] as $searchTaxon => $searchArr){
