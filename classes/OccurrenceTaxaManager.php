@@ -38,7 +38,7 @@ class OccurrenceTaxaManager {
 	protected $taxAuthId = 1;
 	private $exactMatchOnly = false;
 	private $taxaSearchTerms = array();
-	private $associationTaxaSearchTerms = array();
+	protected $associationTaxaSearchTerms = array();
 
 	public function __construct($type='readonly'){
 		$this->conn = MySQLiConnectionFactory::getCon($type);
@@ -716,6 +716,29 @@ class OccurrenceTaxaManager {
 			}
 		}
 		return implode(", ", $returnArr);
+	}
+
+	public function getAssociationSearchStr(){
+		$str = '';
+		// $returnArr = Array();
+		if(isset($this->associationArr['search']) && isset($this->associationArr['relationship'])){
+			// foreach($this->associationArr['search'] as $taxonName => $taxonArr){
+				$str = 'Taxa that have the following association: ';
+				$str .= $this->associationArr['relationship'];
+				$str .= ' with: ';
+				$str .= $this->associationArr['search'];
+				// if(isset($taxonArr['taxontype']) && $this->taxaArr['taxontype'] == TaxaSearchType::ANY_NAME) $str .= TaxaSearchType::anyNameSearchTag($taxonArr['taxontype']).': ';
+				// $str .= $taxonName;
+				// if(array_key_exists("scinames",$taxonArr)){
+				// 	$str .= " => ".implode(",",$taxonArr["scinames"]);
+				// }
+				// if(array_key_exists("synonyms",$taxonArr)){
+				// 	$str .= " (".implode(", ",$taxonArr["synonyms"]).")";
+				// }
+				// $returnArr[] = $str;
+			// }
+		}
+		return $str;
 	}
 
 	public function getTaxaSearchTerm(){

@@ -55,7 +55,7 @@ class AssociationManager extends Manager{
 	public function getAssociatedTaxaSqlFragment($relationshipType, $taxonIdOrSciname){
 		// var_dump('entering getAssociatedTaxaSqlFragment. $relationshipType is: ' . $relationshipType . ' and $taxonIdOrSciname is: ' . $taxonIdOrSciname);
 		// "Forward" association
-		$sql = "1234 o.occid IN (SELECT DISTINCT occid FROM omoccurassociations WHERE relationship ='" . $relationshipType . "' AND ";
+		$sql = "AND o.occid IN (SELECT DISTINCT occid FROM omoccurassociations WHERE relationship ='" . $relationshipType . "' AND ";
 
 		// TODO update taxon stuff to be more labile
 		if(is_numeric($taxonIdOrSciname)){
