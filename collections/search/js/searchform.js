@@ -192,29 +192,55 @@ function handleRemoval(element, inputChip) {
       collection.checked = false;
     });
   }
+  // if (element?.getAttribute("id")?.startsWith("materialsampletype")) {
+  //   // if they close a materialsampletype chip, revert to the none option selected
+  //   const targetIndex = document.getElementById(
+  //     "materialsampletype-none"
+  //   ).selectedIndex;
+  //   document.getElementById("materialsampletype").selectedIndex = targetIndex;
+  // }
+  setAssociationRelationshipTypeToDefault(element);
+  setMaterialSampleToDefault(element);
+  setTaxonTypeToDefault(element);
+  setAssociationTaxonTypeToDefault(element);
+
+  element.dataset.formId ? uncheckAll(element) : "";
+  removeChip(inputChip);
+}
+
+function setMaterialSampleToDefault(element) {
   if (element?.getAttribute("id")?.startsWith("materialsampletype")) {
-    // if they close a materialsampletype chip, revert to the none option selected
     const targetIndex = document.getElementById(
       "materialsampletype-none"
     ).selectedIndex;
     document.getElementById("materialsampletype").selectedIndex = targetIndex;
   }
+}
+
+function setTaxonTypeToDefault(element) {
   if (element?.getAttribute("id")?.startsWith("taxontype")) {
-    // if they close a taxontype chip, revert to the any option selected
     const targetIndex = document.getElementById("taxontype-any")?.selectedIndex;
     document.getElementById("taxontype").selectedIndex = targetIndex;
   }
+}
 
+function setAssociationTaxonTypeToDefault(element) {
   if (element?.getAttribute("id")?.startsWith("taxontype-association-")) {
-    // if they close a taxontype chip, revert to the any option selected
     const targetIndex = document.getElementById(
       "taxontype-association-scientific"
     )?.selectedIndex;
     document.getElementById("taxontype-association").selectedIndex =
       targetIndex;
   }
-  element.dataset.formId ? uncheckAll(element) : "";
-  removeChip(inputChip);
+}
+
+function setAssociationRelationshipTypeToDefault(element) {
+  if (element?.getAttribute("id")?.startsWith("association-type-")) {
+    const targetIndex = document.getElementById(
+      "association-type-none"
+    )?.selectedIndex;
+    document.getElementById("association-type").selectedIndex = targetIndex;
+  }
 }
 
 /**
