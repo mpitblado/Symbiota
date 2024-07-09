@@ -122,11 +122,10 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 			}
 		}
 		if(array_key_exists('datasetid',$this->searchTermArr)){
-			
+
 			$sqlWhere .= 'AND (ds.datasetid IN('.$this->searchTermArr['datasetid'].')) ';
 			$this->displaySearchArr[] = $this->LANG['DATASETS'] . ': ' . $this->getDatasetTitle($this->searchTermArr['datasetid']);
 		}
-		
 		$sqlWhere .= $this->getTaxonWhereFrag();
 		$sqlWhere .= $this->associationManager->getAssociatedTaxaSqlFragment($this->associationArr['relationship'], $this->associationArr['search']);
 		// var_dump($this->associationManager->getAssociatedTaxaSqlFragment($this->associationArr['relationship'], $this->associationArr['search']));
@@ -174,7 +173,7 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 				else{
 					$term = $this->cleanInStr(trim(str_ireplace(' county',' ',$value),'%'));
 					//if(strlen($term) < 4) $term .= ' ';
-					
+
 					$tempArr[] = '(o.county LIKE "'.$term.'%")';
 				}
 			}
@@ -650,10 +649,13 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 		$retStr = '';
 		foreach($this->searchTermArr as $k => $v){
 			if(is_array($v)) $v = implode(',', $v);
-			if($v) $retStr .= '&'. htmlspecialchars($this->cleanOutStr($k), ENT_QUOTES) . '=' . htmlspecialchars($this->cleanOutStr($v), ENT_QUOTES);
+			if($v) $retStr .= '&'. $this->cleanOutStr($k) . '=' . $this->cleanOutStr($v);
 		}
 		if(isset($this->taxaArr['search'])){
-			$retStr .= '&taxa=' . htmlspecialchars($this->cleanOutStr($this->taxaArr['search']), ENT_QUOTES);
+			$patternOfOnlyLettersDigitsAndSpaces = '/^[a-zA-Z0-9\s\-]*$/'; // TOOD accommodate symbols associated with extinct taxa, hybrid crosses, and abbreviations with periods, e.g. "var."?
+			if (preg_match($patternOfOnlyLettersDigitsAndSpaces, $this->getTaxaSearchTerm())==1) {
+				$retStr .= '&taxa=' . $this->getTaxaSearchTerm();
+			}
 			if($this->taxaArr['usethes']) $retStr .= '&usethes=1';
 			if(is_numeric($this->taxaArr['taxontype'])) {
 				$retStr .= '&taxontype=' . intval($this->taxaArr['taxontype']);
@@ -692,8 +694,10 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 			$parsedArr = array();
 			$taxaArr = array();
 			// var_dump($_REQUEST['searchvar']);
-			parse_str($_REQUEST['searchvar'], $parsedArr);
+			// parse_str($_REQUEST['searchvar'], $parsedArr);
 			// var_dump($parsedArr);
+			$searchVar = str_replace('&amp;', '&', $_REQUEST['searchvar']);
+			parse_str($searchVar, $parsedArr);
 
 			if(isset($parsedArr['taxa'])){
 				$taxaArr['taxa'] = $this->cleanInputStr($parsedArr['taxa']);
