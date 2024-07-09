@@ -52,6 +52,43 @@ class AssociationManager extends Manager{
 		}
 	}
 
+	public function getAssociatedTaxaSqlFragment($relationshipType, $taxonIdOrSciname){
+		var_dump('entering getAssociatedTaxaSqlFragment. $relationshipType is: ' . $relationshipType . ' and $taxonIdOrSciname is: ' . $taxonIdOrSciname);
+		// "Forward" association
+		$sql = 'IN (SELECT DISTINCT occid FROM omoccurassociations WHERE relationship =' . $relationshipType . ' AND ';
+
+		// TODO update taxon stuff to be more labile
+		if(is_numeric($taxonIdOrSciname)){
+			$sql = $sql . 'tid = ' . $taxonIdOrSciname . ')';
+		}
+		if(is_string($taxonIdOrSciname)){
+			$sql = $sql . 'verbatimSciname = ' . $taxonIdOrSciname . ')';
+		}
+
+		// @TODO handle situation where the associationType is external and there's no occidAssociate; pull resourceUrl instead? // @TODO remove from the current query
+		// $sql =. 'SELECT DISTINCT resourceUrl from omoccurassociations WHERE associationType="externalOccurrence" AND occidAssociate IS NULL AND relationship = ' . $relationshipType . ' AND ';
+		// if(is_numeric($taxonIdOrSciname)){
+		// 	$sql = $sql . 'tid = ' . $taxonIdOrSciname . ')';
+		// }
+		// if(is_string($taxonIdOrSciname)){
+		// 	$sql = $sql . 'verbatimSciname = ' . $taxonIdOrSciname . ')';
+		// }
+
+
+		// "Reverse" association
+		$reverseAssociationType = $this->getInverseRelationshipOf($relationshipType); // @TODO still have to do something with this
+		var_dump('$reverseAssociationType is: ' . $reverseAssociationType);
+		$sql .= ' OR IN (SELECT DISTINCT oa.occidAssociate FROM omoccurassociations oa INNER JOIN omoccurdeterminations od ON oa.occid=od.occid where relationship = ' . $reverseAssociationType . ' AND '; //isCurrent="1" AND my thought was that we want these results to be as relaxed as possible
+		if(is_numeric($taxonIdOrSciname)){
+			$sql .= 'od.taxonConceptID = ' . $taxonIdOrSciname . ')';
+		}
+		if(is_string($taxonIdOrSciname)){
+			$sql .= 'od.sciname = ' . $taxonIdOrSciname . ')';
+		}
+		var_dump('returning: ' . $sql);
+		return $sql;
+	}
+
 	public function getAssociatedTaxa($relationshipType, $taxonIdOrSciname){
 		$returnVal = [];
 
@@ -59,6 +96,7 @@ class AssociationManager extends Manager{
 
 		// "Forward" association
 		$sqlBase = 'SELECT DISTINCT occid FROM omoccurassociations WHERE relationship = ? AND ';
+		// $sqlBase = 'IN (SELECT DISTINCT occid FROM omoccurassociations WHERE relationship = ? AND ';
 		if(is_numeric($taxonIdOrSciname)){
 			// var_dump('got here 1');
 			$sql = $sqlBase . 'tid = ?';

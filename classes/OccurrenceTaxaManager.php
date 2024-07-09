@@ -56,6 +56,10 @@ class OccurrenceTaxaManager {
 		//sanitize
 		$associationTypeStr = $this->cleanAndAssignGeneric('association-type', $inputArr);
 		$associatedTaxonStr = $this->cleanAndAssignGeneric('associated-taxa', $inputArr);
+		if($associationTypeStr){
+			$this->associationArr['relationship'] = $associationTypeStr;
+		}
+		
 		// $taxonTypeAssociationStr = $this->cleanAndAssignGeneric('taxontype-association', $inputArr);
 
 		// @TODO $associationTypeStr
