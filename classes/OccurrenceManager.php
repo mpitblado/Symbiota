@@ -127,7 +127,9 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 			$this->displaySearchArr[] = $this->LANG['DATASETS'] . ': ' . $this->getDatasetTitle($this->searchTermArr['datasetid']);
 		}
 		$sqlWhere .= $this->getTaxonWhereFrag();
-		$sqlWhere .= $this->associationManager->getAssociatedTaxaSqlFragment($this->associationArr['relationship'], $this->associationArr['search']);
+		if(isset($this->associationArr['relationship']) && isset($this->associationArr['search'])){
+			$sqlWhere .= $this->associationManager->getAssociatedTaxaSqlFragment($this->associationArr['relationship'], $this->associationArr['search']);
+		}
 		// var_dump($this->associationManager->getAssociatedTaxaSqlFragment($this->associationArr['relationship'], $this->associationArr['search']));
 
 		// var_dump($sqlWhere);
