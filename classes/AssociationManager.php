@@ -55,7 +55,7 @@ class AssociationManager extends Manager{
 	public function getAssociatedTaxaSqlFragment($relationshipType, $taxonIdOrSciname){
 		// var_dump('entering getAssociatedTaxaSqlFragment. $relationshipType is: ' . $relationshipType . ' and $taxonIdOrSciname is: ' . $taxonIdOrSciname);
 		// "Forward" association
-		$sql = "AND o.occid IN (SELECT DISTINCT occid FROM omoccurassociations WHERE relationship ='" . $relationshipType . "' AND ";
+		$sql = "AND (o.occid IN (SELECT DISTINCT occid FROM omoccurassociations WHERE relationship ='" . $relationshipType . "' AND ";
 
 		// TODO update taxon stuff to be more labile
 		if(is_numeric($taxonIdOrSciname)){
@@ -80,10 +80,10 @@ class AssociationManager extends Manager{
 		// var_dump('$reverseAssociationType is: ' . $reverseAssociationType);
 		$sql .= " OR o.occid IN (SELECT DISTINCT oa.occidAssociate FROM omoccurassociations oa INNER JOIN omoccurdeterminations od ON oa.occid=od.occid where relationship = '" . $reverseAssociationType . "' AND "; //isCurrent="1" AND my thought was that we want these results to be as relaxed as possible
 		if(is_numeric($taxonIdOrSciname)){
-			$sql .= "od.taxonConceptID = '" . $taxonIdOrSciname . "') ";
+			$sql .= "od.taxonConceptID = '" . $taxonIdOrSciname . "')) ";
 		}
 		if(is_string($taxonIdOrSciname)){
-			$sql .= "od.sciname = '" . $taxonIdOrSciname . "') ";
+			$sql .= "od.sciname = '" . $taxonIdOrSciname . "')) ";
 		}
 		// var_dump('returning: ' . $sql);
 		return $sql;
