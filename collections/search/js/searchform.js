@@ -832,6 +832,14 @@ function setSearchForm(frm) {
         frm["association-type"].value = urlVar["association-type"];
       }
     }
+
+    if (urlVar["associated-taxon-type"]) {
+      if (frm["taxontype-association"]) {
+        frm["taxontype-association"].value = urlVar["associated-taxon-type"];
+      }
+    }
+
+    // @TODO LEFT OFF HERE taxon-type needs to persist
     if (urlVar.country) {
       countryStr = urlVar.country;
       countryArr = countryStr.split(";");
