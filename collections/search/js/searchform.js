@@ -821,6 +821,17 @@ function setSearchForm(frm) {
         frm.taxa.value = urlVar.taxa;
       }
     }
+
+    if (urlVar["associated-taxa"]) {
+      if (frm["associated-taxa"]) {
+        frm["associated-taxa"].value = urlVar["associated-taxa"];
+      }
+    }
+    if (urlVar["association-type"]) {
+      if (frm["association-type"]) {
+        frm["association-type"].value = urlVar["association-type"];
+      }
+    }
     if (urlVar.country) {
       countryStr = urlVar.country;
       countryArr = countryStr.split(";");
