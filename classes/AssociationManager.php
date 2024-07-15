@@ -2,10 +2,10 @@
 
 use function PHPUnit\Framework\returnValue;
 
-include_once($SERVER_ROOT.'/classes/Manager.php');
+include_once($SERVER_ROOT.'/classes/OccurrenceTaxaManager.php');
 include_once($SERVER_ROOT.'/classes/TaxonomyUtilities.php');
 
-class AssociationManager extends Manager{
+class AssociationManager extends OccurrenceTaxaManager{
 
 
 
@@ -52,18 +52,25 @@ class AssociationManager extends Manager{
 		}
 	}
 
-	public function getAssociatedTaxaSqlFragment($relationshipType, $taxonIdOrSciname){
+	public function getAssociatedTaxaSqlFragment($relationshipType, $associationArr){
 		// var_dump('entering getAssociatedTaxaSqlFragment. $relationshipType is: ' . $relationshipType . ' and $taxonIdOrSciname is: ' . $taxonIdOrSciname);
 		// "Forward" association
-		$sql = "AND (o.occid IN (SELECT DISTINCT occid FROM omoccurassociations WHERE relationship ='" . $relationshipType . "' AND ";
+		// $sql = "AND (o.occid IN (SELECT DISTINCT occid FROM omoccurassociations WHERE relationship ='" . $relationshipType . "' AND ";
+		$sql = "AND (o.occid IN (SELECT DISTINCT o.occid FROM omoccurrences o INNER JOIN omoccurassociations oa on o.occid=oa.occid WHERE oa.relationship ='" . $relationshipType . "' ";
 
-		// TODO update taxon stuff to be more labile
-		if(is_numeric($taxonIdOrSciname)){
-			$sql = $sql . "tid = '" . $taxonIdOrSciname . "')";
-		}
-		if(is_string($taxonIdOrSciname)){
-			$sql = $sql . "verbatimSciname = '" . $taxonIdOrSciname . "')";
-		}
+		echo "<div>Count getAssociatedTaxonWhereFrag: " . $this->getAssociatedTaxonWhereFrag($associationArr) . "</div>";
+
+		$sql .= $this->getAssociatedTaxonWhereFrag($associationArr) . ')';
+
+		// // TODO update taxon stuff to be more labile
+		// if(is_numeric($taxonIdOrSciname)){
+		// 	// $sql = $sql . "tid = '" . $taxonIdOrSciname . "')";
+		// 	$sql = $sql . "o.tidInterpreted = '" . $taxonIdOrSciname . "')";
+		// }
+		// if(is_string($taxonIdOrSciname)){
+		// 	// $sql = $sql . "verbatimSciname = '" . $taxonIdOrSciname . "')";
+		// 	$sql = $sql . "o.sciname = '" . $taxonIdOrSciname . "')";
+		// }
 
 		// @TODO handle situation where the associationType is external and there's no occidAssociate; pull resourceUrl instead? // @TODO remove from the current query
 		// $sql =. 'SELECT DISTINCT resourceUrl from omoccurassociations WHERE associationType="externalOccurrence" AND occidAssociate IS NULL AND relationship = ' . $relationshipType . ' AND ';
@@ -78,15 +85,135 @@ class AssociationManager extends Manager{
 		// "Reverse" association
 		$reverseAssociationType = $this->getInverseRelationshipOf($relationshipType); // @TODO still have to do something with this
 		// var_dump('$reverseAssociationType is: ' . $reverseAssociationType);
-		$sql .= " OR o.occid IN (SELECT DISTINCT oa.occidAssociate FROM omoccurassociations oa INNER JOIN omoccurdeterminations od ON oa.occid=od.occid where relationship = '" . $reverseAssociationType . "' AND "; //isCurrent="1" AND my thought was that we want these results to be as relaxed as possible
-		if(is_numeric($taxonIdOrSciname)){
-			$sql .= "od.taxonConceptID = '" . $taxonIdOrSciname . "')) ";
-		}
-		if(is_string($taxonIdOrSciname)){
-			$sql .= "od.sciname = '" . $taxonIdOrSciname . "')) ";
-		}
+		$sql .= " OR o.occid IN (SELECT DISTINCT oa.occidAssociate FROM omoccurrences o INNER JOIN omoccurassociations oa on o.occid=oa.occid INNER JOIN omoccurdeterminations od ON oa.occid=od.occid where oa.relationship = '" . $reverseAssociationType . "' "; //isCurrent="1" AND my thought was that we want these results to be as relaxed as possible
+
+		$sql .= $this->getAssociatedTaxonWhereFrag($associationArr) . ')';
+		// if(is_numeric($taxonIdOrSciname)){
+		// 	$sql .= "od.taxonConceptID = '" . $taxonIdOrSciname . "' OR od.tidInterpreted IN(" . @TODO . "))) ";
+		// }
+		// if(is_string($taxonIdOrSciname)){
+		// 	$sql .= "od.sciname = '" . $taxonIdOrSciname . "' OR od.tidInterpreted IN (" . @TODO . "))) ";
+		// }
 		// var_dump('returning: ' . $sql);
+		echo "<div>Count at the end of getAssociatedTaxaSqlFragment: " . $sql . "</div>";
 		return $sql;
+	}
+
+	public function getAssociatedTaxonWhereFrag($associationArr){
+		echo "<div>getAssociatedTaxonWhereFrag called</div>";
+		$sqlWhereTaxa = '';
+		if(isset($associationArr['taxa'])){
+			// var_dump($associationArr);
+			$tidInArr = array();
+			$taxonType = $associationArr['associated-taxa'];
+			// var_dump($taxonType);
+			foreach($associationArr['taxa'] as $searchTaxon => $searchArr){
+				var_dump($searchArr);
+				if(isset($searchArr['taxontype'])) $taxonType = $searchArr['taxontype'];
+				if($taxonType == TaxaSearchType::TAXONOMIC_GROUP){
+					//Class, order, or other higher rank
+					if(isset($searchArr['tid'])){
+						$tidArr = array_keys($searchArr['tid']);
+						//$sqlWhereTaxa .= 'OR (o.tidinterpreted IN(SELECT DISTINCT tid FROM taxaenumtree WHERE (taxauthid = '.$this->taxAuthId.') AND (parenttid IN('.trim($tidStr,',').') OR (tid = '.trim($tidStr,',').')))) ';
+						$sqlWhereTaxa .= 'OR (e.parenttid IN('.implode(',', $tidArr).') ';
+						$sqlWhereTaxa .= 'OR (e.tid IN('.implode(',', $tidArr).')) ';
+						if(isset($searchArr['synonyms'])) $sqlWhereTaxa .= 'OR (e.tid IN('.implode(',',array_keys($searchArr['synonyms'])).')) ';
+						//$tidInArr = array_merge($tidInArr,$tidArr);
+						//if(isset($searchArr['synonyms'])) $tidInArr = array_merge($tidInArr,array_keys($searchArr['synonyms']));
+						$sqlWhereTaxa .= ') ';
+					}
+					else{
+						//Unable to find higher taxon within taxonomic tree, thus return nothing
+						$sqlWhereTaxa .= 'OR (o.tidinterpreted = 0) ';
+					}
+				}
+				elseif($taxonType == TaxaSearchType::FAMILY_ONLY){
+					//$sqlWhereTaxa .= 'OR ((o.family = "'.$searchTaxon.'") OR (o.sciname = "'.$searchTaxon.'")) ';
+					//$sqlWhereTaxa .= 'OR (((ts.family = "'.$searchTaxon.'") AND (ts.taxauthid = '.$this->taxAuthId.')) OR (o.family = "'.$searchTaxon.'") OR (o.sciname = "'.$searchTaxon.'")) ';
+					//$sqlWhereTaxa .= 'OR (((ts.family = "'.$searchTaxon.'") AND (ts.taxauthid = '.$this->taxAuthId.')) OR o.sciname = "'.$searchTaxon.'") ';
+					if(isset($searchArr['tid'])){
+						$tidArr = array_keys($searchArr['tid']);
+						$sqlWhereTaxa .= 'OR ((ts.family = "'.$searchTaxon.'") OR (ts.tid IN('.implode(',', $tidArr).'))) ';
+					}
+					else{
+						$sqlWhereTaxa .= 'OR ((o.family = "'.$searchTaxon.'") OR (o.sciname = "'.$searchTaxon.'")) ';
+					}
+				}
+				else{
+					if($taxonType == TaxaSearchType::COMMON_NAME){
+						$famArr = $this->setCommonNameWhereTerms($searchArr, $tidInArr);
+						if($famArr) $sqlWhereTaxa .= 'OR (o.family IN("'.implode('","',$famArr).'")) ';
+					}
+					if(isset($searchArr['TID_BATCH'])){
+						$tidInArr = array_merge($tidInArr, array_keys($searchArr['TID_BATCH']));
+						if(isset($searchArr['tid'])) $tidInArr = array_merge($tidInArr, array_keys($searchArr['tid']));
+					}
+					else{
+						$term = $this->cleanInStr(trim($searchTaxon,'%'));
+						//$term = preg_replace('/\s{1}.{1,2}\s{1}/', ' _ ', $term);
+						$term = preg_replace(array('/\s{1}x\s{1}/','/\s{1}X\s{1}/','/\s{1}\x{00D7}\s{1}/u'), ' _ ', $term);
+						if(array_key_exists('tid',$searchArr)){
+							$rankid = current($searchArr['tid']);
+							$tidArr = array_keys($searchArr['tid']);
+							//$sqlWhereTaxa .= "OR (o.tidinterpreted IN(".implode(',',$tidArr).")) ";
+							$tidInArr = array_merge($tidInArr, $tidArr);
+							//Return matches that are not linked to thesaurus
+							if($rankid > 179){
+								if($this->exactMatchOnly) $sqlWhereTaxa .= 'OR (o.sciname = "' . $term . '") ';
+								else $sqlWhereTaxa .= "OR (o.sciname LIKE '" . $term . "%') ";
+							}
+						}
+						else{
+							//Protect against someone trying to download big pieces of the occurrence table through the user interface
+							if(strlen($term) < 4) $term .= ' ';
+							/*
+							if(strpos($term, ' ') || strpos($term, '%')){
+								//Return matches for "Pinus a"
+								$sqlWhereTaxa .= "OR (o.sciname LIKE '" . $term . "%') ";
+							}
+							else{
+								$sqlWhereTaxa .= "OR (o.sciname LIKE '" . $term . " %') ";
+							}
+							*/
+							if($this->exactMatchOnly){
+								$sqlWhereTaxa .= 'OR (o.sciname = "' . $term . '") ';
+							}
+							else{
+								$sqlWhereTaxa .= 'OR (o.sciname LIKE "' . $term . '%") ';
+								if(!strpos($term,' _ ')){
+									//Accommodate for formats of hybrid designations within input and target data (e.g. x, multiplication sign, etc)
+									$term2 = preg_replace('/^([^\s]+\s{1})/', '$1 _ ', $term);
+									$sqlWhereTaxa .= "OR (o.sciname LIKE '" . $term2 . "%') ";
+								}
+							}
+						}
+					}
+					if(array_key_exists('synonyms',$searchArr)){
+						$synArr = $searchArr['synonyms'];
+						if($synArr){
+							if($taxonType == TaxaSearchType::SCIENTIFIC_NAME || $taxonType == TaxaSearchType::COMMON_NAME){
+								foreach($synArr as $synTid => $sciName){
+									if(strpos($sciName,'aceae') || strpos($sciName,'idae')){
+										$sqlWhereTaxa .= 'OR (o.family = "' . $sciName . '") ';
+									}
+								}
+							}
+							//$sqlWhereTaxa .= 'OR (o.tidinterpreted IN('.implode(',',array_keys($synArr)).')) ';
+							$tidInArr = array_merge($tidInArr,array_keys($synArr));
+						}
+					}
+				}
+			}
+			if($tidInArr) $sqlWhereTaxa .= 'OR (o.tidinterpreted IN('.implode(',',array_unique($tidInArr)).')) ';
+			$sqlWhereTaxa = 'AND ('.trim(substr($sqlWhereTaxa,3)).') ';
+			if(strpos($sqlWhereTaxa,'e.parenttid')) $sqlWhereTaxa .= 'AND (e.taxauthid = '.$this->taxAuthId.') ';
+			if(strpos($sqlWhereTaxa,'ts.family')) $sqlWhereTaxa .= 'AND (ts.taxauthid = '.$this->taxAuthId.') ';
+		}else{
+			var_dump('got here a');
+		}
+		var_dump($sqlWhereTaxa);
+		if($sqlWhereTaxa) return $sqlWhereTaxa;
+		else return false;
 	}
 
 	// public function getAssociatedTaxa($relationshipType, $taxonIdOrSciname){
