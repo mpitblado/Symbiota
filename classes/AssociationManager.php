@@ -9,19 +9,7 @@ class AssociationManager extends OccurrenceTaxaManager{
 
 
 
-	// private $taxaArr = Array();
-	// private $targetStr = '';
-	// private $targetTid = 0;
-	// private $targetRankId = 0;
-	// private $taxAuthId = 1;
-	// private $taxonomyMeta = array();
-	// private $displayAuthor = false;
-	// private $displayFullTree = false;
-	// private $displaySubGenera = false;
-	// private $matchOnWholeWords = true;
-	// private $limitToOccurrences = false;
 	private $isEditor = false;
-	// private $nodeCnt = 0;
 
 	function __construct(){
 		parent::__construct();
@@ -37,13 +25,19 @@ class AssociationManager extends OccurrenceTaxaManager{
 	}
 
 	public function getRelationshipTypes(){
-		$sql = 'SELECT DISTINCT relationship from omoccurassociations';
+		$sql = "SELECT DISTINCT relationship from omoccurassociations WHERE relationship IN (SELECT term from ctcontrolvocabterm WHERE cvID='1')";
+		// $sql = "SELECT DISTINCT relationship from omoccurassociations";
 		if($statement = $this->conn->prepare($sql)){
 			$statement->execute();
 			$result = $statement->get_result();
 			$relationshipTypes = [];
 			while ($row = $result->fetch_assoc()) {
 				$relationshipTypes[] = $row['relationship'];
+				$inverseRelationship = $this->getInverseRelationshipOf($row['relationship']);
+				// var_dump($inverseRelationship);
+				if(!in_array($inverseRelationship, $relationshipTypes)){
+					$relationshipTypes[] = $inverseRelationship;
+				}
 			}
 			$statement->close();
 			return $relationshipTypes;
@@ -53,7 +47,6 @@ class AssociationManager extends OccurrenceTaxaManager{
 	}
 
 	public function getAssociatedRecords($relationshipType, $associationArr){
-		// var_dump('entering getAssociatedRecords. $relationshipType is: ' . $relationshipType . ' and $taxonIdOrSciname is: ' . $taxonIdOrSciname);
 		// "Forward" association
 		// $sql = "AND (o.occid IN (SELECT DISTINCT occid FROM omoccurassociations WHERE relationship ='" . $relationshipType . "' AND ";
 		$sql = "AND (o.occid IN (SELECT DISTINCT o.occid FROM omoccurrences o INNER JOIN omoccurassociations oa on o.occid=oa.occid WHERE oa.relationship ='" . $relationshipType . "' ";
@@ -298,7 +291,7 @@ class AssociationManager extends OccurrenceTaxaManager{
 
 	public function getInverseRelationshipOf($relationship){
 		// var_dump($relationship);
-		$sql = 'SELECT inverseRelationship FROM ctcontrolvocabterm where term = ?';
+		$sql = "SELECT inverseRelationship FROM ctcontrolvocabterm where cvID='1' AND term = ?";
 		if($statement = $this->conn->prepare($sql)){
 			$statement->bind_param('s', $relationship);
 			$statement->execute();
