@@ -46,10 +46,14 @@ class AssociationManager extends OccurrenceTaxaManager{
 		}
 	}
 
-	public function getAssociatedRecords($relationshipType, $associationArr){
+	public function getAssociatedRecords($associationArr){
+		// var_dump($associationArr['relationship']);
+		$relationshipType = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ? $associationArr['relationship'] : 'IS NOT NULL';
+		// var_dump($relationshipType);
 		// "Forward" association
 		// $sql = "AND (o.occid IN (SELECT DISTINCT occid FROM omoccurassociations WHERE relationship ='" . $relationshipType . "' AND ";
-		$sql = "AND (o.occid IN (SELECT DISTINCT o.occid FROM omoccurrences o INNER JOIN omoccurassociations oa on o.occid=oa.occid WHERE oa.relationship ='" . $relationshipType . "' ";
+		$relationshipStr = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ?  ("='" . $relationshipType . "'")  : (' IS NOT NULL');
+		$sql = "AND (o.occid IN (SELECT DISTINCT o.occid FROM omoccurrences o INNER JOIN omoccurassociations oa on o.occid=oa.occid WHERE oa.relationship" . $relationshipStr . " ";
 
 		// echo "<div>Count getAssociatedTaxonWhereFrag: " . $this->getAssociatedTaxonWhereFrag($associationArr) . "</div>";
 
@@ -76,9 +80,11 @@ class AssociationManager extends OccurrenceTaxaManager{
 
 
 		// "Reverse" association
-		$reverseAssociationType = $this->getInverseRelationshipOf($relationshipType); // @TODO still have to do something with this
+		$reverseAssociationType = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ? $this->getInverseRelationshipOf($relationshipType) : 'IS NOT NULL';
+		// var_dump($reverseAssociationType);
+		$reverseRelationshipStr = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ?  ("='" . $reverseAssociationType . "'")  : (' IS NOT NULL');
 		// var_dump('$reverseAssociationType is: ' . $reverseAssociationType);
-		$sql .= " OR o.occid IN (SELECT DISTINCT oa.occidAssociate FROM omoccurrences o INNER JOIN omoccurassociations oa on o.occid=oa.occid INNER JOIN omoccurdeterminations od ON oa.occid=od.occid where oa.relationship = '" . $reverseAssociationType . "' "; //isCurrent="1" AND my thought was that we want these results to be as relaxed as possible
+		$sql .= " OR o.occid IN (SELECT DISTINCT oa.occidAssociate FROM omoccurrences o INNER JOIN omoccurassociations oa on o.occid=oa.occid INNER JOIN omoccurdeterminations od ON oa.occid=od.occid where oa.relationship " . $reverseRelationshipStr . " "; //isCurrent="1" AND my thought was that we want these results to be as relaxed as possible
 
 		$sql .= $this->getAssociatedTaxonWhereFrag($associationArr) . ')';
 		// if(is_numeric($taxonIdOrSciname)){

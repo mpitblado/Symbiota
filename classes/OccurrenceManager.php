@@ -131,11 +131,11 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 		$sqlWhere .= $this->getTaxonWhereFrag();
 		// echo "<div>this dot getTaxonWhereFrag() is: " . $this->getTaxonWhereFrag() . "</div>";
 		// echo "<div>sqlWhere before getting the association taxa is: " . $sqlWhere . "</div>";
-		if(isset($this->associationArr['relationship']) && isset($this->associationArr['search'])){
+		if(isset($this->associationArr['relationship']) || isset($this->associationArr['search'])){
 			$sqlWhere = substr_replace($sqlWhere,'',-1);
-			$sqlWhere .= $this->associationManager->getAssociatedRecords($this->associationArr['relationship'], $this->associationArr) . ')';
+			$sqlWhere .= $this->associationManager->getAssociatedRecords($this->associationArr) . ')';
 		}
-		// var_dump($this->associationManager->getAssociatedRecords($this->associationArr['relationship'], $this->associationArr['search']));
+		// var_dump($this->associationManager->getAssociatedRecords($this->associationArr));
 
 		// var_dump($sqlWhere);
 		
@@ -507,7 +507,7 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 			//Make the sql valid, but return nothing
 			//$this->sqlWhere = 'WHERE o.occid IS NULL ';
 		}
-		//echo $this->sqlWhere;
+		// echo $this->sqlWhere; exit;
 		// var_dump($sqlWhere);
 		// var_dump('$sqlWhere after substr: ' . $this->sqlWhere);
 	}
