@@ -839,7 +839,6 @@ function setSearchForm(frm) {
       }
     }
 
-    // @TODO LEFT OFF HERE taxon-type needs to persist
     if (urlVar.country) {
       countryStr = urlVar.country;
       countryArr = countryStr.split(";");

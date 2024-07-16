@@ -133,8 +133,8 @@ $associationManager = new AssociationManager();
 							</div>
 						</div>
 						<div>
-							<input type="checkbox" name="usethes-associations" id="usethes-associations" data-chip="<?php echo $LANG['INCLUDE_SYNONYMS'] ?>" value="1" checked />
-							<label for="usethes-associations">
+							<input type="checkbox" name="usethes" id="usethes" data-chip="<?php echo $LANG['INCLUDE_SYNONYMS'] ?>" value="1" checked />
+							<label for="usethes">
 								<span class="ml-1"><?php echo $LANG['INCLUDE_SYNONYMS'] ?></span>
 							</label>
 						</div>
@@ -570,8 +570,8 @@ $associationManager = new AssociationManager();
 						</div>
 							
 						<div>
-							<input type="checkbox" name="usethes" id="usethes" data-chip="<?php echo $LANG['INCLUDE_SYNONYMS'] ?>" value="1" checked />
-							<label for="usethes">
+							<input type="checkbox" name="usethes-associations" id="usethes-associations" data-chip="<?php echo $LANG['ASSOCIATIONS'] . '-' . $LANG['INCLUDE_SYNONYMS'] ?>" value="1" checked />
+							<label for="usethes-associations">
 								<span class="ml-1"><?php echo $LANG['ASSOCIATIONS'] . '-' . $LANG['INCLUDE_SYNONYMS'] ?></span>
 							</label>
 						</div>
