@@ -52,13 +52,13 @@ class AssociationManager extends OccurrenceTaxaManager{
 		}
 	}
 
-	public function getAssociatedTaxaSqlFragment($relationshipType, $associationArr){
-		// var_dump('entering getAssociatedTaxaSqlFragment. $relationshipType is: ' . $relationshipType . ' and $taxonIdOrSciname is: ' . $taxonIdOrSciname);
+	public function getAssociatedRecords($relationshipType, $associationArr){
+		// var_dump('entering getAssociatedRecords. $relationshipType is: ' . $relationshipType . ' and $taxonIdOrSciname is: ' . $taxonIdOrSciname);
 		// "Forward" association
 		// $sql = "AND (o.occid IN (SELECT DISTINCT occid FROM omoccurassociations WHERE relationship ='" . $relationshipType . "' AND ";
 		$sql = "AND (o.occid IN (SELECT DISTINCT o.occid FROM omoccurrences o INNER JOIN omoccurassociations oa on o.occid=oa.occid WHERE oa.relationship ='" . $relationshipType . "' ";
 
-		echo "<div>Count getAssociatedTaxonWhereFrag: " . $this->getAssociatedTaxonWhereFrag($associationArr) . "</div>";
+		// echo "<div>Count getAssociatedTaxonWhereFrag: " . $this->getAssociatedTaxonWhereFrag($associationArr) . "</div>";
 
 		$sql .= $this->getAssociatedTaxonWhereFrag($associationArr) . ')';
 
@@ -95,12 +95,12 @@ class AssociationManager extends OccurrenceTaxaManager{
 		// 	$sql .= "od.sciname = '" . $taxonIdOrSciname . "' OR od.tidInterpreted IN (" . @TODO . "))) ";
 		// }
 		// var_dump('returning: ' . $sql);
-		echo "<div>Count at the end of getAssociatedTaxaSqlFragment: " . $sql . "</div>";
+		// echo "<div>Count at the end of getAssociatedRecords: " . $sql . "</div>";
 		return $sql;
 	}
 
 	public function getAssociatedTaxonWhereFrag($associationArr){
-		echo "<div>getAssociatedTaxonWhereFrag called</div>";
+		// echo "<div>getAssociatedTaxonWhereFrag called</div>";
 		$sqlWhereTaxa = '';
 		if(isset($associationArr['taxa'])){
 			// var_dump($associationArr);
@@ -108,7 +108,7 @@ class AssociationManager extends OccurrenceTaxaManager{
 			$taxonType = $associationArr['associated-taxa'];
 			// var_dump($taxonType);
 			foreach($associationArr['taxa'] as $searchTaxon => $searchArr){
-				var_dump($searchArr);
+				// var_dump($searchArr);
 				if(isset($searchArr['taxontype'])) $taxonType = $searchArr['taxontype'];
 				if($taxonType == TaxaSearchType::TAXONOMIC_GROUP){
 					//Class, order, or other higher rank
@@ -208,10 +208,11 @@ class AssociationManager extends OccurrenceTaxaManager{
 			$sqlWhereTaxa = 'AND ('.trim(substr($sqlWhereTaxa,3)).') ';
 			if(strpos($sqlWhereTaxa,'e.parenttid')) $sqlWhereTaxa .= 'AND (e.taxauthid = '.$this->taxAuthId.') ';
 			if(strpos($sqlWhereTaxa,'ts.family')) $sqlWhereTaxa .= 'AND (ts.taxauthid = '.$this->taxAuthId.') ';
-		}else{
-			var_dump('got here a');
 		}
-		var_dump($sqlWhereTaxa);
+		// else{
+		// 	var_dump('got here a');
+		// }
+		// var_dump($sqlWhereTaxa);
 		if($sqlWhereTaxa) return $sqlWhereTaxa;
 		else return false;
 	}

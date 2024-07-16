@@ -61,8 +61,8 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 	protected function setSqlWhere(){
 		$sqlWhere = '';
 		// var_dump($this->searchTermArr);
-		$deleteMe = $this->associationManager->getAssociatedTaxonWhereFrag($this->associationArr);
-		var_dump($deleteMe);
+		// $deleteMe = $this->associationManager->getAssociatedTaxonWhereFrag($this->associationArr);
+		// var_dump($deleteMe);
 		if(array_key_exists("targetclid",$this->searchTermArr) && is_numeric($this->searchTermArr["targetclid"])){
 			if(!$this->voucherManager){
 				$this->setChecklistVariables($this->searchTermArr['targetclid']);
@@ -129,13 +129,13 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 			$this->displaySearchArr[] = $this->LANG['DATASETS'] . ': ' . $this->getDatasetTitle($this->searchTermArr['datasetid']);
 		}
 		$sqlWhere .= $this->getTaxonWhereFrag();
-		echo "<div>this dot getTaxonWhereFrag() is: " . $this->getTaxonWhereFrag() . "</div>";
+		// echo "<div>this dot getTaxonWhereFrag() is: " . $this->getTaxonWhereFrag() . "</div>";
 		// echo "<div>sqlWhere before getting the association taxa is: " . $sqlWhere . "</div>";
 		if(isset($this->associationArr['relationship']) && isset($this->associationArr['search'])){
 			$sqlWhere = substr_replace($sqlWhere,'',-1);
-			$sqlWhere .= $this->associationManager->getAssociatedTaxaSqlFragment($this->associationArr['relationship'], $this->associationArr) . ')';
+			$sqlWhere .= $this->associationManager->getAssociatedRecords($this->associationArr['relationship'], $this->associationArr) . ')';
 		}
-		// var_dump($this->associationManager->getAssociatedTaxaSqlFragment($this->associationArr['relationship'], $this->associationArr['search']));
+		// var_dump($this->associationManager->getAssociatedRecords($this->associationArr['relationship'], $this->associationArr['search']));
 
 		// var_dump($sqlWhere);
 		
@@ -671,7 +671,7 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 			}
 		}
 		if(isset($this->associationArr['search']) && isset($this->associationArr['relationship'])){
-			var_dump($this->associationArr);
+			// var_dump($this->associationArr);
 			$patternOfOnlyLettersDigitsAndSpaces = '/^[a-zA-Z0-9\s\-]*$/'; // TOOD accommodate symbols associated with extinct taxa, hybrid crosses, and abbreviations with periods, e.g. "var."?
 			if (preg_match($patternOfOnlyLettersDigitsAndSpaces, $this->associationArr['search'])==1) {
 				$retStr .= '&associated-taxa=' . $this->associationArr['search'];
