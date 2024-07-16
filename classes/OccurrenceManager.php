@@ -680,6 +680,7 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 				$retStr .= '&association-type=' . $this->associationArr['relationship'];
 			}
 			$retStr .= '&associated-taxon-type=' . intval($this->associationArr['associated-taxa']);
+			$retStr .= '&usethes-associations=' . intval($this->associationArr['usethes-associations']);
 		}
 
 		return substr($retStr, 1);
