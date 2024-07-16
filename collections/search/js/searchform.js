@@ -39,6 +39,7 @@ let paramNames = [
   "association-type",
   "associated-taxa",
   "taxontype-association",
+  "usethes-associations",
 ];
 const uLat = document.getElementById("upperlat") || null;
 const uLatNs = document.getElementById("upperlat_NS") || null;
@@ -810,6 +811,13 @@ function setSearchForm(frm) {
       (urlVar.usethes == "" || urlVar.usethes == "0")
     ) {
       frm.usethes.checked = false;
+    }
+    if (
+      typeof urlVar["usethes-associations"] !== "undefined" &&
+      (urlVar["usethes-associations"] == "" ||
+        urlVar["usethes-associations"] == "0")
+    ) {
+      frm["usethes-associations"].checked = false;
     }
     if (urlVar.taxontype) {
       if (frm?.taxontype) {
