@@ -254,7 +254,9 @@ class OccurrenceTaxaManager {
 			$returnStr = $this->cleanInputStr($inputArr[$stringForInputArray]);
 		}
 		else{
-			$returnStr = str_replace(';',',',$this->cleanInputStr($_REQUEST[$stringForInputArray]));
+			if(array_key_exists($stringForInputArray, $_REQUEST)){
+				$returnStr = str_replace(';',',',$this->cleanInputStr($_REQUEST[$stringForInputArray]));
+			}
 		}
 		return $returnStr;
 	}
@@ -720,24 +722,15 @@ class OccurrenceTaxaManager {
 
 	public function getAssociationSearchStr(){
 		$str = '';
-		// $returnArr = Array();
-		if(isset($this->associationArr['search']) && isset($this->associationArr['relationship'])){
-			// foreach($this->associationArr['search'] as $taxonName => $taxonArr){
-				$str = 'Taxa that have the following association: ';
-				$str .= $this->associationArr['relationship'];
+		if(isset($this->associationArr['relationship'])){
+			$str = 'Taxa that have the following association: ';
+			$str .= $this->associationArr['relationship'];
+		}
+		if(isset($this->associationArr['search'])){
 				$str .= ' with: ';
 				$str .= $this->associationArr['search'];
-				// if(isset($taxonArr['taxontype']) && $this->taxaArr['taxontype'] == TaxaSearchType::ANY_NAME) $str .= TaxaSearchType::anyNameSearchTag($taxonArr['taxontype']).': ';
-				// $str .= $taxonName;
-				// if(array_key_exists("scinames",$taxonArr)){
-				// 	$str .= " => ".implode(",",$taxonArr["scinames"]);
-				// }
-				// if(array_key_exists("synonyms",$taxonArr)){
-				// 	$str .= " (".implode(", ",$taxonArr["synonyms"]).")";
-				// }
-				// $returnArr[] = $str;
-			// }
 		}
+
 		return $str;
 	}
 

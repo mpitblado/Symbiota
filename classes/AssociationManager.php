@@ -94,7 +94,7 @@ class AssociationManager extends OccurrenceTaxaManager{
 		// 	$sql .= "od.sciname = '" . $taxonIdOrSciname . "' OR od.tidInterpreted IN (" . @TODO . "))) ";
 		// }
 		// var_dump('returning: ' . $sql);
-		// echo "<div>Count at the end of getAssociatedRecords: " . $sql . "</div>";
+		echo "<div>Sql at the end of getAssociatedRecords: " . $sql . "</div>";
 		return $sql;
 	}
 
@@ -212,8 +212,12 @@ class AssociationManager extends OccurrenceTaxaManager{
 		// 	var_dump('got here a');
 		// }
 		// var_dump($sqlWhereTaxa);
-		if($sqlWhereTaxa) return $sqlWhereTaxa;
-		else return false;
+		// if($sqlWhereTaxa){
+		// 	var_dump('got here c');
+		// 	return $sqlWhereTaxa;
+		// } 
+		// else return false;
+		return $sqlWhereTaxa;
 	}
 
 	// public function getAssociatedTaxa($relationshipType, $taxonIdOrSciname){

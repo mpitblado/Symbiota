@@ -670,16 +670,24 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 				$retStr .= '&taxontype=1';
 			}
 		}
-		if(isset($this->associationArr['search']) && isset($this->associationArr['relationship'])){
-			// var_dump($this->associationArr);
-			$patternOfOnlyLettersDigitsAndSpaces = '/^[a-zA-Z0-9\s\-]*$/'; // TOOD accommodate symbols associated with extinct taxa, hybrid crosses, and abbreviations with periods, e.g. "var."?
+		// var_dump($this->associationArr);
+		$patternOfOnlyLettersDigitsAndSpaces = '/^[a-zA-Z0-9\s\-]*$/'; // TOOD accommodate symbols associated with extinct taxa, hybrid crosses, and abbreviations with periods, e.g. "var."?
+		if(isset($this->associationArr['search'])){
 			if (preg_match($patternOfOnlyLettersDigitsAndSpaces, $this->associationArr['search'])==1) {
 				$retStr .= '&associated-taxa=' . $this->associationArr['search'];
 			}
+		}
+
+		if(isset($this->associationArr['relationship'])){
 			if (preg_match($patternOfOnlyLettersDigitsAndSpaces, $this->associationArr['relationship'])==1) {
 				$retStr .= '&association-type=' . $this->associationArr['relationship'];
 			}
+		}
+
+		if(isset($this->associationArr['associated-taxa'])){
 			$retStr .= '&associated-taxon-type=' . intval($this->associationArr['associated-taxa']);
+		}
+		if(isset($this->associationArr['usethes-associations'])){
 			$retStr .= '&usethes-associations=' . intval($this->associationArr['usethes-associations']);
 		}
 
@@ -768,7 +776,7 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 		if(array_key_exists('taxa',$_REQUEST) && $_REQUEST['taxa']){
 			$this->setTaxonRequestVariable();
 		}
-		$hasEverythingRequiredForAssociationSearch = array_key_exists('association-type',$_REQUEST) && $_REQUEST['association-type'] && array_key_exists('associated-taxa',$_REQUEST) && $_REQUEST['associated-taxa'] && array_key_exists('taxontype-association',$_REQUEST) && $_REQUEST['taxontype-association'];
+		$hasEverythingRequiredForAssociationSearch = (array_key_exists('association-type',$_REQUEST) && $_REQUEST['association-type'] || array_key_exists('associated-taxa',$_REQUEST) && $_REQUEST['associated-taxa']) && array_key_exists('taxontype-association',$_REQUEST) && $_REQUEST['taxontype-association'];
 		if($hasEverythingRequiredForAssociationSearch){
 			$this->setAssociationRequestVariable();
 		}
