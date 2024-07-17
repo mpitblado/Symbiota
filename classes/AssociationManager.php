@@ -94,7 +94,7 @@ class AssociationManager extends OccurrenceTaxaManager{
 		// 	$sql .= "od.sciname = '" . $taxonIdOrSciname . "' OR od.tidInterpreted IN (" . @TODO . "))) ";
 		// }
 		// var_dump('returning: ' . $sql);
-		echo "<div>Sql at the end of getAssociatedRecords: " . $sql . "</div>";
+		// echo "<div>Sql at the end of getAssociatedRecords: " . $sql . "</div>";
 		return $sql;
 	}
 
