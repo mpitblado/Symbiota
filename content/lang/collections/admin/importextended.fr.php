@@ -44,6 +44,7 @@ $LANG['IMAGE_FIELD_MAP'] = 'Carte des champs d\'image';
 $LANG['MATERIAL_SAMPLE'] = 'Échantillon de matériau';
 //Fragments de langage situés dans le fichier de classe OccurrenceImport
 $LANG['PROCESSING_CATNUM'] = 'Identifiant du traitement';
+$LANG['VALUES_SET'] = 'Les valeurs vides "dateIdentified" ont été définies comme "s.d", et les valeurs vides "identifiedBy" ont été définies comme "unknown"';
 $LANG['UPDATING_STATS'] = 'Mise à jour des statistiques';
 $LANG['IMAGE_LOADED'] = 'Image chargée avec succès';
 $LANG['ASSOC_DELETED'] = 'Association supprimée';
@@ -55,5 +56,7 @@ $LANG['ASSOC_ADDED'] = 'Association ajoutée';
 $LANG['ERROR_ADDING'] = "ERREUR lors du chargement de l'association d'occurrence";
 $LANG['MAT_SAMPLE_ADDED'] = 'Échantillon de matériau ajouté';
 $LANG['DETERMINATION_ADDED'] = 'Détermination ajoutée';
+$LANG['CHOOSE_FILE'] = 'Choisir un fichier';
+$LANG['ASSOCIATION_TYPE'] = 'Type d\'association';
 $LANG['HOME'] = 'Accueil';
 ?>

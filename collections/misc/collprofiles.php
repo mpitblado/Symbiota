@@ -8,7 +8,7 @@ unset($_SESSION['editorquery']);
 
 $collManager = new OccurrenceCollectionProfile();
 
-$collid = isset($_REQUEST['collid']) ? $collManager->sanitizeInt($_REQUEST['collid']) : 0;
+$collid = array_key_exists('collid', $_REQUEST) ? filter_var($_REQUEST['collid'], FILTER_SANITIZE_NUMBER_INT) : 0;
 $occIndex = array_key_exists('occindex',$_REQUEST)?$_REQUEST['occindex']:0;
 $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT = $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT ?? false;
 $SHOULD_USE_HARVESTPARAMS = $SHOULD_USE_HARVESTPARAMS ?? false;
@@ -92,6 +92,18 @@ if ($SYMB_UID) {
 				window.location.href = redirectUrl;
 			}
 		}
+		function directSubmitAction(e) {
+			if(!e.submitter || !e.submitter.value) return false;
+
+			if(e.submitter.value === "edit") {
+				return processEditQuickSearch('<?php echo $CLIENT_ROOT ?>')
+			} else if(e.submitter.value === "search") {
+				return submitAndRedirectSearchForm('<?php echo $CLIENT_ROOT ?>/collections/list.php?db=','&catnum=', '&taxa=', '&includecult=' + <?php echo $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT ? '1' : '0' ?> + '&includeothercatnum=1', '&includecult=' + <?php echo $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT ? '1' : '0' ?> + '&usethes=1&taxontype=2 ');
+			}
+
+			e.preventDefault();
+			return false;
+		}
 	</script>
 	<style>
 		.importItem { margin-left:10px; display:none; }
@@ -121,6 +133,25 @@ if ($SYMB_UID) {
 		.bigger-left-margin-rel {
 			margin-left: 3rem;
 		}
+
+		@media (min-width: 1880px) {
+			#quicksearch-box {
+				margin: 0 -26rem 0 0;
+				width: 25rem;
+				top: 1rem;
+				float: right;
+				position:sticky;
+			}
+		}
+		@media (max-width: 1880px) {
+			#quicksearch-box {
+				width:100%;
+				margin: 1rem 0;
+			}
+			#quicksearch-btn-container {
+				justify-content: right
+			}
+		}
 	</style>
 	<link href="<?php echo $CLIENT_ROOT ?>/collections/search/css/searchStyles.css?ver=1" type="text/css" rel="stylesheet" />
 	<link href="<?php echo $CLIENT_ROOT ?>/collections/search/css/searchStylesInner.css" type="text/css" rel="stylesheet" />
@@ -131,55 +162,62 @@ if ($SYMB_UID) {
 	include($SERVER_ROOT . '/includes/header.php');
 	?>
 	<div class="navpath">
-		<a href="../../index.php"><?php echo htmlspecialchars((isset($LANG['HOME']) ? $LANG['HOME'] : 'Home'), HTML_SPECIAL_CHARS_FLAGS); ?></a> &gt;&gt;
-		<a href="../index.php"><?php echo htmlspecialchars((isset($LANG['COLLECTION_SEARCH']) ? $LANG['COLLECTION_SEARCH'] : 'Collection Search Page'), HTML_SPECIAL_CHARS_FLAGS); ?></a> &gt;&gt;
+		<a href="../../index.php"><?php echo htmlspecialchars((isset($LANG['HOME']) ? $LANG['HOME'] : 'Home'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> &gt;&gt;
+		<a href="../index.php"><?php echo htmlspecialchars((isset($LANG['COLLECTION_SEARCH']) ? $LANG['COLLECTION_SEARCH'] : 'Collection Search Page'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> &gt;&gt;
 		<b><?php echo (isset($LANG['COLL_PROFILE']) ? $LANG['COLL_PROFILE'] : 'Collection Profile'); ?></b>
 	</div>
-	<div id="innertext">
-		<section id="quicksearch-box" class="fieldset-like no-left-margin float-rt-no-overlap">
-			<h1><span><?php echo (isset($LANG['QUICK_SEARCH']) ? $LANG['QUICK_SEARCH'] : 'Quick Search'); ?></span></h1>
-			<div id="dialogContainer" style="position: relative;">
-				<form name="quicksearch" action="javascript:void(0);" onsubmit="processEditQuickSearch('<?php echo $CLIENT_ROOT ?>')">
-					<label for="catalog-number"><?php echo (isset($LANG['OCCURENCE_IDENTIFIER']) ? $LANG['OCCURENCE_IDENTIFIER'] : 'Catalog Number'); ?></label>
-					<span class="skip-link">
-						<?php
-							echo (isset($LANG['IDENTIFIER_PLACEHOLDER_LIST']) ? $LANG['IDENTIFIER_PLACEHOLDER_LIST'] : 'Search by Catalog Number, Occurrence ID, or Record ID.') . ' ';
-						?>
-					</span>
-					<input name="catalog-number" id="catalog-number" type="text" />
-					<a href="#" id="q_catalognumberinfo" style="text-decoration:none;">
-						<img src="../../images/info.png" style="width:1.3em;" alt="<?php echo $LANG['MORE_INFO_ALT']; ?>" title="<?php echo $LANG['MORE_INFO']; ?>" aria-label="<?php echo $LANG['MORE_INFO']; ?>"/>
-					</a>
-					<dialog id="dialogEl" aria-live="polite" aria-label="Catalog number search dialog">
-						<?php
-							echo (isset($LANG['IDENTIFIER_PLACEHOLDER_LIST']) ? $LANG['IDENTIFIER_PLACEHOLDER_LIST'] : 'Search by Catalog Number, Occurrence ID, or Record ID.') . ' ';
-						?>
-						<button id="closeDialog">Close</button>
-					</dialog>
-					<br>
-					<input name="collid" type="hidden" value="<?php echo $collid; ?>" />
-					<input name="occindex" type="hidden" value="0" />
-					<label for="taxon-search"><?php echo (isset($LANG['TAXON']) ? $LANG['TAXON'] : 'Taxon'); ?></label>
-					<input name="taxon-search" id="taxon-search" type="text" />
-					<br>
-					<?php
-						if($editCode == 1 || $editCode == 2 || $editCode == 3){
-					?>
-						<button type="submit" id="search-by-catalog-number-admin-btn">
-							<?php echo (isset($LANG['OCCURRENCE_EDITOR']) ? $LANG['OCCURRENCE_EDITOR'] : 'Edit'); ?>
-						</button>
-					<?php
-						}
-					?>
-
-				</form>
-				<form name="quicksearch" action="javascript:void(0);" onsubmit="submitAndRedirectSearchForm('<?php echo $CLIENT_ROOT ?>/collections/list.php?db=','&catnum=', '&taxa=', '&includecult=' + <?php echo $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT ? '1' : '0' ?> + '&includeothercatnum=1', '&includecult=' + <?php echo $SHOULD_INCLUDE_CULTIVATED_AS_DEFAULT ? '1' : '0' ?> + '&usethes=1&taxontype=2 '); return false;">
-					<button class="top-breathing-room-rel" type="submit" id="search-by-catalog-number-btn" title="<?php echo (isset($LANG['IDENTIFIER_PLACEHOLDER_LIST']) ? $LANG['IDENTIFIER_PLACEHOLDER_LIST'] : 'Occurrence ID and Record ID also accepted.'); ?>">
-						<?php echo (isset($LANG['SEARCH']) ? $LANG['SEARCH'] : 'Search'); ?>
-					</button>
-				</form>
-			</div>
-		</section>
+	<div role="main" id="innertext" style="padding-top:0">
+		<?php if ($collid && !$collid == 0){
+		?>
+			<section id="quicksearch-box" class="fieldset-like" >
+				<h3><span><?php echo (isset($LANG['QUICK_SEARCH']) ? $LANG['QUICK_SEARCH'] : 'Quick Search'); ?></span></h3>
+				<div id="dialogContainer" style="position: relative;">
+					<form name="quicksearch" style="display: flex; align-items:center; gap:0.5rem; flex-wrap: wrap" action="javascript:void(0);" onsubmit="directSubmitAction(event)">
+						<div>
+						<label for="catalog-number"><?php echo (isset($LANG['OCCURENCE_IDENTIFIER']) ? $LANG['OCCURENCE_IDENTIFIER'] : 'Catalog Number'); ?></label>
+						<span class="screen-reader-only">
+							<?php
+								echo (isset($LANG['IDENTIFIER_PLACEHOLDER_LIST']) ? $LANG['IDENTIFIER_PLACEHOLDER_LIST'] : 'Search by Catalog Number, Occurrence ID, or Record ID.') . ' ';
+							?>
+						</span>
+						<input style="margin-bottom: 0" name="catalog-number" id="catalog-number" type="text" />
+						<a href="#" id="q_catalognumberinfo" style="text-decoration:none;">
+							<img src="../../images/info.png" style="width:1.3em;" alt="<?php echo $LANG['MORE_INFO_ALT']; ?>" title="<?php echo $LANG['MORE_INFO']; ?>" aria-label="<?php echo $LANG['MORE_INFO']; ?>"/>
+						</a>
+						<dialog id="dialogEl" aria-live="polite" aria-label="Catalog number search dialog">
+							<?php
+								echo (isset($LANG['IDENTIFIER_PLACEHOLDER_LIST']) ? $LANG['IDENTIFIER_PLACEHOLDER_LIST'] : 'Search by Catalog Number, Occurrence ID, or Record ID.') . ' ';
+							?>
+							<button id="closeDialog">Close</button>
+						</dialog>
+						</div>
+						<input name="collid" type="hidden" value="<?php echo $collid; ?>" />
+						<input name="occindex" type="hidden" value="0" />
+						<div>
+						<label for="taxon-search"><?php echo (isset($LANG['TAXON']) ? $LANG['TAXON'] : 'Taxon'); ?></label>
+						<input style="margin-bottom: 0" name="taxon-search" id="taxon-search" type="text" />
+						</div>
+						<div id="quicksearch-btn-container" style="display:flex; gap: 0.5rem; flex-grow:1">
+							<?php
+								if($editCode == 1 || $editCode == 2 || $editCode == 3){
+							?>
+								<button type="submit" id="search-by-catalog-number-admin-btn" value="edit"> 
+									<?php echo (isset($LANG['OCCURRENCE_EDITOR']) ? $LANG['OCCURRENCE_EDITOR'] : 'Edit'); ?>
+								</button>
+							<?php
+								}
+							?>
+							<button type="submit" value='search' id="search-by-catalog-number-btn" title="<?php echo (isset($LANG['IDENTIFIER_PLACEHOLDER_LIST']) ? $LANG['IDENTIFIER_PLACEHOLDER_LIST'] : 'Occurrence ID and Record ID also accepted.'); ?>">
+								<?php echo (isset($LANG['SEARCH']) ? $LANG['SEARCH'] : 'Search'); ?>
+							</button>
+						</div>
+					</form>
+				</div>
+			</section>
+		<?php	
+		} 
+		?>
+		
 		<?php
 		if ($editCode > 1) {
 			if ($action == 'UpdateStatistics') {
@@ -188,20 +226,14 @@ if ($SYMB_UID) {
 				echo '<hr/>';
 			}
 		}
-		if ($editCode && $collid) {
-			?>
-			<div style="float:right;margin:3px;cursor:pointer;" onclick="toggleById('controlpanel');" title="<?php echo (isset($LANG['TOGGLE_MAN']) ? $LANG['TOGGLE_MAN'] : 'Toggle Manager\'s Control Panel'); ?>">
-				<img style='width:1.7em;border:0px;' src='../../images/tochild.png' alt="edit icon" />
-			</div>
-			<?php
-		}
+
 		if ($collid && isset($collData[$collid])) {
 			$collData = $collData[$collid];
 			$codeStr = ' (' . $collData['institutioncode'];
 			if ($collData['collectioncode']) $codeStr .= '-' . $collData['collectioncode'];
 			$codeStr .= ')';
 			$_SESSION['colldata'] = $collData;
-			echo '<h1>' . $collData['collectionname'] . $codeStr . '</h1>';
+			echo '<h1 class="page-heading">' . $LANG['COLL_PROF_FOR'] . ': ' . $collData['collectionname'] . $codeStr . '</h1>';
 			// GBIF citations widget
 			if ($datasetKey) {
 				echo '<div style="margin-left: 10px; margin-bottom: 20px;">';
@@ -220,17 +252,21 @@ if ($SYMB_UID) {
 				}
 				echo '</div>';
 			}
+
 			if ($editCode) {
 				?>
-				<div id="controlpanel" style="margin-top: 9rem; display:<?php echo ($eMode ? 'block' : 'none'); ?>;">
+				<button style="margin-bottom: 0.5rem" type="button" onclick="toggleById('controlpanel');" >
+					<?= $LANG['TOGGLE_MAN'] ?>
+				</button>
+				<div id="controlpanel" style="display:<?php echo ($eMode ? 'block' : 'none'); ?>;">
 					<section class="fieldset-like no-left-margin">
-						<h1><span><?php echo (isset($LANG['DAT_EDIT']) ? $LANG['DAT_EDIT'] : 'Data Editor Control Panel'); ?></span></h1>
+						<h2><span><?php echo (isset($LANG['DAT_EDIT']) ? $LANG['DAT_EDIT'] : 'Data Editor Control Panel'); ?></span></h2>
 						<ul>
 							<?php
 							if (stripos($collData['colltype'], 'observation') !== false) {
 								?>
 								<li>
-									<a href="../editor/observationsubmit.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
+									<a href="../editor/observationsubmit.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
 										<?php echo (isset($LANG['SUBMIT_IMAGE_V']) ? $LANG['SUBMIT_IMAGE_V'] : 'Submit an Image Voucher (observation supported by a photo)'); ?>
 									</a>
 								</li>
@@ -238,44 +274,44 @@ if ($SYMB_UID) {
 							}
 							?>
 							<li>
-								<a href="../editor/occurrenceeditor.php?gotomode=1&collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-									<?php echo htmlspecialchars((isset($LANG['ADD_NEW_OCCUR']) ? $LANG['ADD_NEW_OCCUR'] : 'Add New Occurrence Record'), HTML_SPECIAL_CHARS_FLAGS); ?>
+								<a href="../editor/occurrenceeditor.php?gotomode=1&collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+									<?php echo htmlspecialchars((isset($LANG['ADD_NEW_OCCUR']) ? $LANG['ADD_NEW_OCCUR'] : 'Add New Occurrence Record'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 								</a>
 							</li>
 							<?php
 							if ($collData['colltype'] == 'Preserved Specimens') {
 								?>
 								<li style="margin-left:10px">
-									<a href="../editor/imageoccursubmit.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-										<?php echo htmlspecialchars((isset($LANG['CREATE_NEW_REC']) ? $LANG['CREATE_NEW_REC'] : 'Create New Records Using Image'), HTML_SPECIAL_CHARS_FLAGS); ?>
+									<a href="../editor/imageoccursubmit.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+										<?php echo htmlspecialchars((isset($LANG['CREATE_NEW_REC']) ? $LANG['CREATE_NEW_REC'] : 'Create New Records Using Image'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 									</a>
 								</li>
 								<li style="margin-left:10px">
-									<a href="../editor/skeletalsubmit.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-										<?php echo htmlspecialchars((isset($LANG['SKELETAL']) ? $LANG['SKELETAL'] : 'Add Skeletal Records'), HTML_SPECIAL_CHARS_FLAGS); ?>
+									<a href="../editor/skeletalsubmit.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+										<?php echo htmlspecialchars((isset($LANG['SKELETAL']) ? $LANG['SKELETAL'] : 'Add Skeletal Records'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 									</a>
 								</li>
 								<?php
 							}
 							?>
 							<li>
-								<a href="../editor/occurrencetabledisplay.php?displayquery=1&collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-									<?php echo htmlspecialchars((isset($LANG['EDIT_EXISTING']) ? $LANG['EDIT_EXISTING'] : 'Edit Existing Occurrence Records'), HTML_SPECIAL_CHARS_FLAGS); ?>
+								<a href="../editor/occurrencetabledisplay.php?displayquery=1&collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+									<?php echo htmlspecialchars((isset($LANG['EDIT_EXISTING']) ? $LANG['EDIT_EXISTING'] : 'Edit Existing Occurrence Records'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 								</a>
 							</li>
 							<li>
-								<a href="../editor/batchdeterminations.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-									<?php echo htmlspecialchars((isset($LANG['ADD_BATCH_DETER']) ? $LANG['ADD_BATCH_DETER'] : 'Add Batch Determinations/Nomenclatural Adjustments'), HTML_SPECIAL_CHARS_FLAGS); ?>
+								<a href="../editor/batchdeterminations.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+									<?php echo htmlspecialchars((isset($LANG['ADD_BATCH_DETER']) ? $LANG['ADD_BATCH_DETER'] : 'Add Batch Determinations/Nomenclatural Adjustments'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 								</a>
 							</li>
 							<li>
-								<a href="../reports/labelmanager.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-									<?php echo htmlspecialchars((isset($LANG['PRINT_LABELS']) ? $LANG['PRINT_LABELS'] : 'Print Specimen Labels'), HTML_SPECIAL_CHARS_FLAGS); ?>
+								<a href="../reports/labelmanager.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+									<?php echo htmlspecialchars((isset($LANG['PRINT_LABELS']) ? $LANG['PRINT_LABELS'] : 'Print Specimen Labels'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 								</a>
 							</li>
 							<li>
-								<a href="../reports/annotationmanager.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-									<?php echo htmlspecialchars((isset($LANG['PRINT_ANNOTATIONS']) ? $LANG['PRINT_ANNOTATIONS'] : 'Print Annotations Labels'), HTML_SPECIAL_CHARS_FLAGS); ?>
+								<a href="../reports/annotationmanager.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+									<?php echo htmlspecialchars((isset($LANG['PRINT_ANNOTATIONS']) ? $LANG['PRINT_ANNOTATIONS'] : 'Print Annotations Labels'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 								</a>
 							</li>
 							<?php
@@ -287,29 +323,29 @@ if ($SYMB_UID) {
 									</a>
 								</li>
 								<li class="traitItem" style="margin-left:10px;display:none;">
-									<a href="../traitattr/occurattributes.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-										<?php echo htmlspecialchars((isset($LANG['TRAIT_CODING']) ? $LANG['TRAIT_CODING'] : 'Trait Coding from Images'), HTML_SPECIAL_CHARS_FLAGS); ?>
+									<a href="../traitattr/occurattributes.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+										<?php echo htmlspecialchars((isset($LANG['TRAIT_CODING']) ? $LANG['TRAIT_CODING'] : 'Trait Coding from Images'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 									</a>
 								</li>
 								<li class="traitItem" style="margin-left:10px;display:none;">
-									<a href="../traitattr/attributemining.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-										<?php echo htmlspecialchars((isset($LANG['TRAIT_MINING']) ? $LANG['TRAIT_MINING'] : 'Trait Mining from Verbatim Text'), HTML_SPECIAL_CHARS_FLAGS); ?>
+									<a href="../traitattr/attributemining.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+										<?php echo htmlspecialchars((isset($LANG['TRAIT_MINING']) ? $LANG['TRAIT_MINING'] : 'Trait Mining from Verbatim Text'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 									</a>
 								</li>
 								<?php
 							}
 							?>
 							<li>
-								<a href="../georef/batchgeoreftool.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-									<?php echo htmlspecialchars((isset($LANG['BATCH_GEOREF']) ? $LANG['BATCH_GEOREF'] : 'Batch Georeference Specimens'), HTML_SPECIAL_CHARS_FLAGS); ?>
+								<a href="../georef/batchgeoreftool.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+									<?php echo htmlspecialchars((isset($LANG['BATCH_GEOREF']) ? $LANG['BATCH_GEOREF'] : 'Batch Georeference Specimens'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 								</a>
 							</li>
 							<?php
 							if ($collData['colltype'] == 'Preserved Specimens') {
 								?>
 								<li>
-									<a href="../loans/index.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-										<?php echo htmlspecialchars((isset($LANG['LOAN_MANAGEMENT']) ? $LANG['LOAN_MANAGEMENT'] : 'Loan Management'), HTML_SPECIAL_CHARS_FLAGS); ?>
+									<a href="../loans/index.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+										<?php echo htmlspecialchars((isset($LANG['LOAN_MANAGEMENT']) ? $LANG['LOAN_MANAGEMENT'] : 'Loan Management'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 									</a>
 								</li>
 								<?php
@@ -321,44 +357,44 @@ if ($SYMB_UID) {
 					if ($editCode > 1) {
 						?>
 						<section class="fieldset-like no-left-margin">
-							<h1><span><?php echo (isset($LANG['ADMIN_CONTROL']) ? $LANG['ADMIN_CONTROL'] : 'Administration Control Panel'); ?></span></h1>
+							<h2><span><?php echo (isset($LANG['ADMIN_CONTROL']) ? $LANG['ADMIN_CONTROL'] : 'Administration Control Panel'); ?></span></h2>
 							<ul>
 								<li>
-									<a href="commentlist.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-										<?php echo htmlspecialchars((isset($LANG['VIEW_COMMENTS']) ? $LANG['VIEW_COMMENTS'] : 'View Posted Comments'), HTML_SPECIAL_CHARS_FLAGS); ?>
+									<a href="commentlist.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+										<?php echo htmlspecialchars((isset($LANG['VIEW_COMMENTS']) ? $LANG['VIEW_COMMENTS'] : 'View Posted Comments'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 									</a>
 									<?php if ($commCnt = $collManager->unreviewedCommentsExist()) echo '- <span style="color:orange">' . $commCnt . ' ' . (isset($LANG['UNREVIEWED_COMMENTS']) ? $LANG['UNREVIEWED_COMMENTS'] : 'unreviewed comments') . '</span>'; ?>
 								</li>
 								<li>
-									<a href="collmetadata.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-										<?php echo htmlspecialchars((isset($LANG['EDIT_META']) ? $LANG['EDIT_META'] : 'Edit Metadata'), HTML_SPECIAL_CHARS_FLAGS); ?>
+									<a href="collmetadata.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+										<?php echo htmlspecialchars((isset($LANG['EDIT_META']) ? $LANG['EDIT_META'] : 'Edit Metadata'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 									</a>
 								</li>
 								<!--
 								<li>
 									<a href="" onclick="$('li.metadataItem').show(); return false;"  >
-										<?php echo htmlspecialchars((isset($LANG['OPEN_META']) ? $LANG['OPEN_META'] : 'Open Metadata'), HTML_SPECIAL_CHARS_FLAGS); ?>
+										<?php echo htmlspecialchars((isset($LANG['OPEN_META']) ? $LANG['OPEN_META'] : 'Open Metadata'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 									</a>
 								</li>
 								<li class="metadataItem" style="margin-left:10px;display:none;">
-									<a href="collmetadata.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-										<?php echo htmlspecialchars((isset($LANG['EDIT_META']) ? $LANG['EDIT_META'] : 'Edit Metadata'), HTML_SPECIAL_CHARS_FLAGS); ?>
+									<a href="collmetadata.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+										<?php echo htmlspecialchars((isset($LANG['EDIT_META']) ? $LANG['EDIT_META'] : 'Edit Metadata'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 									</a>
 								</li>
 								<li class="metadataItem" style="margin-left:10px;display:none;">
-									<a href="colladdress.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-										<?php echo htmlspecialchars((isset($LANG['EDIT_ADDRESS']) ? $LANG['EDIT_ADDRESS'] : 'Edit Mailing Address'), HTML_SPECIAL_CHARS_FLAGS); ?>
+									<a href="colladdress.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+										<?php echo htmlspecialchars((isset($LANG['EDIT_ADDRESS']) ? $LANG['EDIT_ADDRESS'] : 'Edit Mailing Address'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 									</a>
 								</li>
 								<li class="metadataItem" style="margin-left:10px;display:none;">
-									<a href="collproperties.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-										<?php echo htmlspecialchars((isset($LANG['EDIT_COLL_PROPS']) ? $LANG['EDIT_COLL_PROPS'] : 'Special Properties'), HTML_SPECIAL_CHARS_FLAGS); ?>
+									<a href="collproperties.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+										<?php echo htmlspecialchars((isset($LANG['EDIT_COLL_PROPS']) ? $LANG['EDIT_COLL_PROPS'] : 'Special Properties'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 									</a>
 								</li>
 								 -->
 								<li>
-									<a href="collpermissions.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-										<?php echo htmlspecialchars((isset($LANG['MANAGE_PERMISSIONS']) ? $LANG['MANAGE_PERMISSIONS'] : 'Manage Permissions'), HTML_SPECIAL_CHARS_FLAGS); ?>
+									<a href="collpermissions.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+										<?php echo htmlspecialchars((isset($LANG['MANAGE_PERMISSIONS']) ? $LANG['MANAGE_PERMISSIONS'] : 'Manage Permissions'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 									</a>
 								</li>
 								<li>
@@ -411,27 +447,27 @@ if ($SYMB_UID) {
 									if ($collData['managementtype'] != 'Aggregate') {
 										?>
 										<li>
-											<a href="../specprocessor/index.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-												<?php echo htmlspecialchars((isset($LANG['PROCESSING_TOOLBOX']) ? $LANG['PROCESSING_TOOLBOX'] : 'Processing Toolbox'), HTML_SPECIAL_CHARS_FLAGS); ?>
+											<a href="../specprocessor/index.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+												<?php echo htmlspecialchars((isset($LANG['PROCESSING_TOOLBOX']) ? $LANG['PROCESSING_TOOLBOX'] : 'Processing Toolbox'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 											</a>
 										</li>
 										<li>
-											<a href="../datasets/datapublisher.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-												<?php echo htmlspecialchars((isset($LANG['DARWIN_CORE_PUB']) ? $LANG['DARWIN_CORE_PUB'] : 'Darwin Core Archive Publishing'), HTML_SPECIAL_CHARS_FLAGS); ?>
+											<a href="../datasets/datapublisher.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+												<?php echo htmlspecialchars((isset($LANG['DARWIN_CORE_PUB']) ? $LANG['DARWIN_CORE_PUB'] : 'Darwin Core Archive Publishing'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 											</a>
 										</li>
 										<?php
 									}
 									?>
 									<li>
-										<a href="../editor/editreviewer.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-											<?php echo htmlspecialchars((isset($LANG['REVIEW_SPEC_EDITS']) ? $LANG['REVIEW_SPEC_EDITS'] : 'Review/Verify Occurrence Edits'), HTML_SPECIAL_CHARS_FLAGS); ?>
+										<a href="../editor/editreviewer.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+											<?php echo htmlspecialchars((isset($LANG['REVIEW_SPEC_EDITS']) ? $LANG['REVIEW_SPEC_EDITS'] : 'Review/Verify Occurrence Edits'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 										</a>
 									</li>
 									<!--
 									<li>
-										<a href="../reports/accessreport.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-											<?php echo htmlspecialchars((isset($LANG['ACCESS_REPORT']) ? $LANG['ACCESS_REPORT'] : 'View Access Statistics'), HTML_SPECIAL_CHARS_FLAGS); ?>
+										<a href="../reports/accessreport.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+											<?php echo htmlspecialchars((isset($LANG['ACCESS_REPORT']) ? $LANG['ACCESS_REPORT'] : 'View Access Statistics'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 										</a>
 									</li>
 									 -->
@@ -440,8 +476,8 @@ if ($SYMB_UID) {
 								if (!empty($ACTIVATE_DUPLICATES)) {
 									?>
 									<li>
-										<a href="../datasets/duplicatemanager.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-											<?php echo htmlspecialchars((isset($LANG['DUP_CLUSTER']) ? $LANG['DUP_CLUSTER'] : 'Duplicate Clustering'), HTML_SPECIAL_CHARS_FLAGS); ?>
+										<a href="../datasets/duplicatemanager.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+											<?php echo htmlspecialchars((isset($LANG['DUP_CLUSTER']) ? $LANG['DUP_CLUSTER'] : 'Duplicate Clustering'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 										</a>
 									</li>
 									<?php
@@ -454,24 +490,24 @@ if ($SYMB_UID) {
 								if ($collData['colltype'] != 'General Observations') {
 									?>
 									<li style="margin-left:10px;">
-										<a href="../cleaning/index.php?obsuid=0&collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-											<?php echo htmlspecialchars((isset($LANG['DATA_CLEANING']) ? $LANG['DATA_CLEANING'] : 'Data Cleaning Tools'), HTML_SPECIAL_CHARS_FLAGS); ?>
+										<a href="../cleaning/index.php?obsuid=0&collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+											<?php echo htmlspecialchars((isset($LANG['DATA_CLEANING']) ? $LANG['DATA_CLEANING'] : 'Data Cleaning Tools'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 										</a>
 									</li>
 									<?php
 								}
 								?>
 								<li style="margin-left:10px;">
-									<a href="#" onclick="newWindow = window.open('collbackup.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>','bucollid','scrollbars=1,toolbar=0,resizable=1,width=600,height=250,left=20,top=20');">
-										<?php echo htmlspecialchars((isset($LANG['BACKUP_DATA_FILE']) ? $LANG['BACKUP_DATA_FILE'] : 'Download Backup Data File'), HTML_SPECIAL_CHARS_FLAGS); ?>
+									<a href="#" onclick="newWindow = window.open('collbackup.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>','bucollid','scrollbars=1,toolbar=0,resizable=1,width=600,height=250,left=20,top=20');">
+										<?php echo htmlspecialchars((isset($LANG['BACKUP_DATA_FILE']) ? $LANG['BACKUP_DATA_FILE'] : 'Download Backup Data File'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 									</a>
 								</li>
 								<?php
 								if ($collData['managementtype'] == 'Live Data') {
 									?>
 									<li style="margin-left:10px;">
-										<a href="../admin/restorebackup.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-											<?php echo htmlspecialchars((isset($LANG['RESTORE_BACKUP']) ? $LANG['RESTORE_BACKUP'] : 'Restore Backup File'), HTML_SPECIAL_CHARS_FLAGS); ?>
+										<a href="../admin/restorebackup.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+											<?php echo htmlspecialchars((isset($LANG['RESTORE_BACKUP']) ? $LANG['RESTORE_BACKUP'] : 'Restore Backup File'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 										</a>
 									</li>
 									<?php
@@ -479,19 +515,19 @@ if ($SYMB_UID) {
 								?>
 								<!--
 								<li style="margin-left:10px;">
-									<a href="../../imagelib/admin/igsnmapper.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-										<?php echo htmlspecialchars((isset($LANG['GUID_MANAGEMENT']) ? $LANG['GUID_MANAGEMENT'] : 'IGSN GUID Management'), HTML_SPECIAL_CHARS_FLAGS); ?>
+									<a href="../../imagelib/admin/igsnmapper.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+										<?php echo htmlspecialchars((isset($LANG['GUID_MANAGEMENT']) ? $LANG['GUID_MANAGEMENT'] : 'IGSN GUID Management'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 									</a>
 								</li>
 								 -->
 								<li style="margin-left:10px;">
-									<a href="../../imagelib/admin/thumbnailbuilder.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>">
-										<?php echo htmlspecialchars((isset($LANG['THUMBNAIL_MAINTENANCE']) ? $LANG['THUMBNAIL_MAINTENANCE'] : 'Thumbnail Maintenance'), HTML_SPECIAL_CHARS_FLAGS); ?>
+									<a href="../../imagelib/admin/thumbnailbuilder.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
+										<?php echo htmlspecialchars((isset($LANG['THUMBNAIL_MAINTENANCE']) ? $LANG['THUMBNAIL_MAINTENANCE'] : 'Thumbnail Maintenance'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 									</a>
 								</li>
 								<li style="margin-left:10px;">
-									<a href="collprofiles.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>&action=UpdateStatistics">
-										<?php echo htmlspecialchars((isset($LANG['UPDATE_STATS']) ? $LANG['UPDATE_STATS'] : 'Update Statistics'), HTML_SPECIAL_CHARS_FLAGS); ?>
+									<a href="collprofiles.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>&action=UpdateStatistics">
+										<?php echo htmlspecialchars((isset($LANG['UPDATE_STATS']) ? $LANG['UPDATE_STATS'] : 'Update Statistics'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>
 									</a>
 								</li>
 							</ul>
@@ -509,7 +545,7 @@ if ($SYMB_UID) {
 					$dataUrl = 'http://www.gbif.org/dataset/' . $datasetKey;
 					?>
 					<div style="margin-top:5px;">
-						<div><b><?php echo (isset($LANG['GBIF_DATASET']) ? $LANG['GBIF_DATASET'] : 'GBIF Dataset page'); ?>:</b> <a href="<?php echo htmlspecialchars($dataUrl, HTML_SPECIAL_CHARS_FLAGS); ?>" target="_blank"><?php echo htmlspecialchars($dataUrl, HTML_SPECIAL_CHARS_FLAGS); ?></a></div>
+						<div><b><?php echo (isset($LANG['GBIF_DATASET']) ? $LANG['GBIF_DATASET'] : 'GBIF Dataset page'); ?>:</b> <a href="<?php echo htmlspecialchars($dataUrl, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>" target="_blank" rel="noopener noreferrer"><?php echo htmlspecialchars($dataUrl, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a></div>
 					</div>
 					<?php
 				}
@@ -520,7 +556,7 @@ if ($SYMB_UID) {
 						$dataUrl = 'https://www.idigbio.org/portal/recordsets/' . $idigbioKey;
 						?>
 						<div style="margin-top:5px;">
-							<div><b><?php echo (isset($LANG['IDIGBIO_DATASET']) ? $LANG['IDIGBIO_DATASET'] : 'iDigBio Dataset page'); ?>:</b> <a href="<?php echo htmlspecialchars($dataUrl, HTML_SPECIAL_CHARS_FLAGS); ?>" target="_blank"><?php echo htmlspecialchars($dataUrl, HTML_SPECIAL_CHARS_FLAGS); ?></a></div>
+							<div><b><?php echo (isset($LANG['IDIGBIO_DATASET']) ? $LANG['IDIGBIO_DATASET'] : 'iDigBio Dataset page'); ?>:</b> <a href="<?php echo htmlspecialchars($dataUrl, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>" target="_blank" rel="noopener noreferrer"><?php echo htmlspecialchars($dataUrl, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a></div>
 						</div>
 						<?php
 					}
@@ -531,6 +567,10 @@ if ($SYMB_UID) {
 					if ($collData['publishtogbif'] && $datasetKey && file_exists($SERVER_ROOT . '/includes/citationgbif.php')) {
 						$gbifUrl = 'http://api.gbif.org/v1/dataset/' . $datasetKey;
 						$responseData = json_decode(file_get_contents($gbifUrl));
+						if ($responseData === null && json_last_error() !== JSON_ERROR_NONE) {
+							error_log('Error in JSON decoding: ' . json_last_error_msg());
+							throw new Exception('Error in JSON decoding');
+						}
 						$collData['gbiftitle'] = $responseData->title;
 						$collData['doi'] = $responseData->doi;
 						$_SESSION['colldata'] = $collData;
@@ -543,11 +583,11 @@ if ($SYMB_UID) {
 				if ($addrArr = $collManager->getAddress()) {
 					?>
 					<section class="fieldset-like no-left-margin">
-						<h1><span><?php echo (isset($LANG['ADDRESS']) ? $LANG['ADDRESS'] : 'Address'); ?>:</span></h1>
+						<h2><span><?php echo (isset($LANG['ADDRESS']) ? $LANG['ADDRESS'] : 'Address'); ?>:</span></h2>
 						<div class="bigger-left-margin-rel">
 							<?php
 							echo "<div>" . $addrArr["institutionname"];
-							if ($editCode > 1) echo ' <a href="institutioneditor.php?emode=1&targetcollid=' . htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS) . '&iid=' . htmlspecialchars($addrArr['iid'], HTML_SPECIAL_CHARS_FLAGS) . '" title="' . htmlspecialchars((isset($LANG['EDIT_INST']) ? $LANG['EDIT_INST'] : 'Edit institution information'), HTML_SPECIAL_CHARS_FLAGS) . '"><img src="../../images/edit.png" style="width:1.3em;" alt="edit icon" /></a>';
+							if ($editCode > 1) echo ' <a href="institutioneditor.php?emode=1&targetcollid=' . htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&iid=' . htmlspecialchars($addrArr['iid'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" title="' . htmlspecialchars((isset($LANG['EDIT_INST']) ? $LANG['EDIT_INST'] : 'Edit institution information'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '"><img src="../../images/edit.png" style="width:1.3em;" alt="edit icon" /></a>';
 							echo '</div>';
 							if ($addrArr["institutionname2"]) echo "<div>" . $addrArr["institutionname2"] . "</div>";
 							if ($addrArr["address1"]) echo "<div>" . $addrArr["address1"] . "</div>";
@@ -555,7 +595,7 @@ if ($SYMB_UID) {
 							if ($addrArr["city"]) echo "<div>" . $addrArr["city"] . ", " . $addrArr["stateprovince"] . "&nbsp;&nbsp;&nbsp;" . $addrArr["postalcode"] . "</div>";
 							if ($addrArr["country"]) echo "<div>" . $addrArr["country"] . "</div>";
 							if ($addrArr["phone"]) echo "<div>" . $addrArr["phone"] . "</div>";
-							if ($addrArr["url"]) echo '<div><a href="' . htmlspecialchars($addrArr['url'], HTML_SPECIAL_CHARS_FLAGS) . '">' . htmlspecialchars($addrArr['url'], HTML_SPECIAL_CHARS_FLAGS) . '</a></div>';
+							if ($addrArr["url"]) echo '<div><a href="' . htmlspecialchars($addrArr['url'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">' . htmlspecialchars($addrArr['url'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a></div>';
 							if ($addrArr["notes"]) echo "<div>" . $addrArr["notes"] . "</div>";
 							?>
 						</div>
@@ -565,10 +605,15 @@ if ($SYMB_UID) {
 				//Collection Statistics
 				$statsArr = $collManager->getBasicStats();
 				$georefPerc = 0;
-				if ($statsArr['georefcnt'] && $statsArr['recordcnt']) $georefPerc = (100 * ($statsArr['georefcnt'] / $statsArr['recordcnt']));
+				if ($statsArr['georefcnt'] && $statsArr['recordcnt'] && $statsArr['recordcnt'] !== 0){
+					$georefPerc = (100 * ($statsArr['georefcnt'] / $statsArr['recordcnt']));
+				}
+				else if ($statsArr['recordcnt'] === 0){
+					throw new Exception("Division by zero error.");
+				}
 				?>
 				<section class="fieldset-like no-left-margin">
-					<h1><span><?php echo (isset($LANG['COLL_STATISTICS']) ? $LANG['COLL_STATISTICS'] : 'Collection Statistics'); ?></span></h1>
+					<h2><span><?php echo (isset($LANG['COLL_STATISTICS']) ? $LANG['COLL_STATISTICS'] : 'Collection Statistics'); ?></span></h2>
 					<div style="clear:both;margin-top:5px;">
 						<ul style="margin-top:5px;">
 							<li><?php echo number_format($statsArr["recordcnt"]) . ' ' . (isset($LANG['SPECIMEN_RECORDS']) ? $LANG['SPECIMEN_RECORDS'] : 'specimen records'); ?></li>
@@ -587,7 +632,12 @@ if ($SYMB_UID) {
 									}
 									if ($imgSpecCnt) {
 										$imgPerc = 0;
-										if ($statsArr['recordcnt']) $imgPerc = (100 * ($imgSpecCnt / $statsArr['recordcnt']));
+										if ($statsArr['recordcnt'] && $statsArr['recordcnt'] !== 0){
+											$imgPerc = (100 * ($imgSpecCnt / $statsArr['recordcnt']));
+										}
+										else if ($statsArr['recordcnt'] === 0){
+											throw new Exception("Division by zero error.");
+										}
 										echo '<li>';
 										echo number_format($imgSpecCnt) . ($imgPerc ? " (" . ($imgPerc > 1 ? round($imgPerc) : round($imgPerc, 2)) . "%)" : '') . ' ' . (isset($LANG['WITH_IMAGES']) ? $LANG['WITH_IMAGES'] : 'with images');
 										if ($imgCnt) echo ' (' . number_format($imgCnt) . ' ' . (isset($LANG['TOTAL_IMAGES']) ? $LANG['TOTAL_IMAGES'] : 'total images') . ')';
@@ -600,9 +650,12 @@ if ($SYMB_UID) {
 								if (isset($extrastatsArr['geneticcnt']) && $extrastatsArr['geneticcnt']) $genRefStr .= number_format($extrastatsArr['geneticcnt']) . ' ' . (isset($LANG['OTHER_GENETIC_REF']) ? $LANG['OTHER_GENETIC_REF'] : 'other');
 								if ($genRefStr) echo '<li>' . trim($genRefStr, ' ,') . ' ' . (isset($LANG['GENETIC_REF']) ? $LANG['GENETIC_REF'] : 'genetic references') . '</li>';
 								if (isset($extrastatsArr['refcnt']) && $extrastatsArr['refcnt']) echo '<li>' . number_format($extrastatsArr['refcnt']) . ' ' . (isset($LANG['PUB_REFS']) ? $LANG['PUB_REFS'] : 'publication references') . '</li>';
-								if (isset($extrastatsArr['SpecimensCountID']) && $extrastatsArr['SpecimensCountID']) {
+								if (isset($extrastatsArr['SpecimensCountID']) && $extrastatsArr['SpecimensCountID'] && $statsArr['recordcnt'] !== 0) {
 									$spidPerc = (100 * ($extrastatsArr['SpecimensCountID'] / $statsArr['recordcnt']));
 									echo '<li>' . number_format($extrastatsArr['SpecimensCountID']) . ($spidPerc ? " (" . ($spidPerc > 1 ? round($spidPerc) : round($spidPerc, 2)) . "%)" : '') . ' ' . (isset($LANG['IDED_TO_SPECIES']) ? $LANG['IDED_TO_SPECIES'] : 'identified to species') . '</li>';
+								}
+								else if ($statsArr['recordcnt'] === 0){
+									throw new Exception("Division by zero error.");
 								}
 							}
 							if (isset($statsArr['familycnt']) && $statsArr['familycnt']) echo '<li>' . number_format($statsArr['familycnt']) . ' ' . (isset($LANG['FAMILIES']) ? $LANG['FAMILIES'] : 'families') . '</li>';
@@ -615,12 +668,12 @@ if ($SYMB_UID) {
 					</div>
 				</section>
 			<section class="fieldset-like no-left-margin">
-				<h1><span><?php echo (isset($LANG['EXTRA_STATS']) ? $LANG['EXTRA_STATS'] : 'Extra Statistics'); ?></span></h1>
+				<h2><span><?php echo (isset($LANG['EXTRA_STATS']) ? $LANG['EXTRA_STATS'] : 'Extra Statistics'); ?></span></h2>
 				<div style="margin:3px;">
-					<a href="collprofiles.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>&stat=geography#geographystats"><?php echo htmlspecialchars((isset($LANG['SHOW_GEOG_DIST']) ? $LANG['SHOW_GEOG_DIST'] : 'Show Geographic Distribution'), HTML_SPECIAL_CHARS_FLAGS); ?></a>
+					<a href="collprofiles.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>&stat=geography#geographystats"><?php echo htmlspecialchars((isset($LANG['SHOW_GEOG_DIST']) ? $LANG['SHOW_GEOG_DIST'] : 'Show Geographic Distribution'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a>
 				</div>
 				<div style="margin:3px;">
-					<a href="collprofiles.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>&stat=taxonomy#taxonomystats"><?php echo htmlspecialchars((isset($LANG['SHOW_FAMILY_DIST']) ? $LANG['SHOW_FAMILY_DIST'] : 'Show Family Distribution'), HTML_SPECIAL_CHARS_FLAGS); ?></a>
+					<a href="collprofiles.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>&stat=taxonomy#taxonomystats"><?php echo htmlspecialchars((isset($LANG['SHOW_FAMILY_DIST']) ? $LANG['SHOW_FAMILY_DIST'] : 'Show Family Distribution'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a>
 				</div>
 			</section>
 			<?php
@@ -637,7 +690,7 @@ if ($SYMB_UID) {
 			</div>
 			<div>
 				<span class="button button-primary">
-					<a id="image-search" href="<?php echo $CLIENT_ROOT?>/imagelib/search.php?submitaction=search&db[]=1<?php echo $collid ?>" ><?php echo (isset($LANG['IMAGE_SEARCH_THIS_COLLECTION'])?$LANG['IMAGE_SEARCH_THIS_COLLECTION']:'Image Search this Collection'); ?></a>
+					<a id="image-search" href="<?php echo $CLIENT_ROOT?>/imagelib/search.php?submitaction=search&db[]=<?php echo $collid ?>" ><?php echo (isset($LANG['IMAGE_SEARCH_THIS_COLLECTION'])?$LANG['IMAGE_SEARCH_THIS_COLLECTION']:'Image Search this Collection'); ?></a>
 				</span>
 			</div>
 			<?php
@@ -645,7 +698,7 @@ if ($SYMB_UID) {
 			?>
 			<h2><?php echo $DEFAULT_TITLE . ' ' . (isset($LANG['COLLECTION_PROJECTS']) ? $LANG['COLLECTION_PROJECTS'] : 'Natural History Collections and Observation Projects'); ?></h2>
 			<div>
-				<a href="../datasets/rsshandler.php" target="_blank"><?php echo (isset($LANG['RSS_FEED']) ? $LANG['RSS_FEED'] : 'RSS feed'); ?></a>
+				<a href="../datasets/rsshandler.php" target="_blank" rel="noopener noreferrer"><?php echo (isset($LANG['RSS_FEED']) ? $LANG['RSS_FEED'] : 'RSS feed'); ?></a>
 				<hr />
 			</div>
 			<div class="gridlike-form">
@@ -682,7 +735,7 @@ if ($SYMB_UID) {
 						</div>
 						<div>
 							<h3>
-								<a class="col-profile-header" href='collprofiles.php?collid=<?php echo htmlspecialchars($cid, HTML_SPECIAL_CHARS_FLAGS); ?>'>
+								<a class="col-profile-header" href='collprofiles.php?collid=<?php echo htmlspecialchars($cid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>'>
 									<?php echo $collArr['collectionname']; ?>
 								</a>
 							</h3>
@@ -693,7 +746,7 @@ if ($SYMB_UID) {
 								?>
 							</div>
 							<div style='margin:5px 0px 15px 10px;'>
-								<a href='collprofiles.php?collid=<?php echo htmlspecialchars($cid, HTML_SPECIAL_CHARS_FLAGS); ?>'><?php echo htmlspecialchars((isset($LANG['MORE_INFO']) ? $LANG['MORE_INFO'] : 'More Information'), HTML_SPECIAL_CHARS_FLAGS); ?></a>
+								<a href='collprofiles.php?collid=<?php echo htmlspecialchars($cid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>'><?php echo htmlspecialchars((isset($LANG['MORE_INFO']) ? $LANG['MORE_INFO'] : 'More Information'), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a>
 							</div>
 						</div>
 					</section>

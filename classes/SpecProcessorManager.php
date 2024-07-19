@@ -219,8 +219,8 @@ class SpecProcessorManager {
 					$rs->free();
 				}
 			} catch (Exception $e) {}
-			//if(!$this->targetPath) $this->targetPath = $GLOBALS['imageRootPath'];
-			//if(!$this->imgUrlBase) $this->imgUrlBase = $GLOBALS['imageRootUrl'];
+			//if(!$this->targetPath) $this->targetPath = $GLOBALS['IMAGE_ROOT_PATH'];
+			//if(!$this->imgUrlBase) $this->imgUrlBase = $GLOBALS['IMAGE_ROOT_URL'];
 			if($this->sourcePath && substr($this->sourcePath,-1) != '/' && substr($this->sourcePath,-1) != '\\') $this->sourcePath .= '/';
 			if($this->targetPath && substr($this->targetPath,-1) != '/' && substr($this->targetPath,-1) != '\\') $this->targetPath .= '/';
 			if($this->imgUrlBase && substr($this->imgUrlBase,-1) != '/') $this->imgUrlBase .= '/';
@@ -355,7 +355,7 @@ class SpecProcessorManager {
 				'WHERE collid = '.$this->collid.' GROUP BY processingstatus';
 			$rs = $this->conn->query($sql);
 			while($r = $rs->fetch_object()){
-				$psArr[strtolower($r->processingstatus)] = $r->cnt;
+				$psArr[strtolower($r->processingstatus ?? '')] = $r->cnt;
 			}
 			$rs->free();
 			//Load into $retArr in a specific order

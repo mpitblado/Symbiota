@@ -5,20 +5,21 @@ include_once($SERVER_ROOT.'/content/lang/collections/misc/collstats.' . $LANG_TA
 header("Content-Type: text/html; charset=" . $CHARSET);
 ini_set('max_execution_time', 1200); //1200 seconds = 20 minutes
 
-$catID = array_key_exists('catid', $_REQUEST) ? $_REQUEST['catid'] : 0;
+$catID = array_key_exists('catid', $_REQUEST) ? filter_var($_REQUEST['catid'], FILTER_SANITIZE_NUMBER_INT) : 0;
 if(!$catID && isset($DEFAULTCATID) && $DEFAULTCATID) $catID = $DEFAULTCATID;
-$collId = array_key_exists('collid', $_REQUEST) ? $_REQUEST['collid'] : 0;
-$cPartentTaxon = array_key_exists('taxon', $_REQUEST) ? $_REQUEST['taxon'] : '';
-$cCountry = array_key_exists('country', $_REQUEST) ? $_REQUEST['country'] : '';
+$collId = array_key_exists('collid', $_REQUEST) ? $_REQUEST['collid'] : 0; // can't sanitize here as int because this could be a comma-delimited set of collIds
+
+$cPartentTaxon = isset($_REQUEST['taxon']) ? htmlspecialchars($_REQUEST['taxon'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : '';
+$cCountry = isset($_REQUEST['country']) ? htmlspecialchars($_REQUEST['country'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : '';
 $days = array_key_exists('days', $_REQUEST) ? filter_var($_REQUEST['days'], FILTER_SANITIZE_NUMBER_INT) : 365;
 $months = array_key_exists('months', $_REQUEST)? filter_var($_REQUEST['months'], FILTER_SANITIZE_NUMBER_INT) : 12;
-$action = array_key_exists('submitaction', $_REQUEST) ? $_REQUEST['submitaction'] : '';
+$action = array_key_exists('submitaction', $_REQUEST) ? htmlspecialchars($_REQUEST['submitaction'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : '';
+
+$collManager = new OccurrenceCollectionProfile();
 
 //Variable sanitation
 if(!preg_match('/^[0-9,]+$/',$catID)) $catID = 0;
 if(!preg_match('/^[0-9,]+$/',$collId)) $collId = 0;
-
-$collManager = new OccurrenceCollectionProfile();
 
 //if($collId) $collManager->setCollectionId($collId);
 $collList = $collManager->getStatCollectionList($catID);
@@ -33,6 +34,7 @@ $results = array();
 $collStr = '';
 if($collId){
 	$collIdArr = explode(",",$collId);
+
 	if($action == "Run Statistics" && (!$cPartentTaxon && !$cCountry)){
 		$resultsTemp = $collManager->runStatistics($collId);
 		$results['FamilyCount'] = $resultsTemp['familycnt'];
@@ -68,7 +70,11 @@ if($collId){
 			}
 
 			if($collArr['dynamicProperties']){
-				$dynPropTempArr = json_decode($collArr['dynamicProperties'],true);
+				try {
+					$dynPropTempArr = json_decode($collArr['dynamicProperties'], true);
+				} catch (Exception $e) {
+					error_log('Exception: ' . $e->getMessage());
+				}
 
 				if(is_array($dynPropTempArr)){
 					$resultsTemp[$k]['speciesID'] = $dynPropTempArr['SpecimensCountID'];
@@ -133,83 +139,88 @@ if($collId){
 	}
     elseif($action == "Run Statistics" && ($cPartentTaxon || $cCountry)){
         $resultsTemp = $collManager->runStatisticsQuery($collId,$cPartentTaxon,$cCountry);
-        $familyArr = $resultsTemp['families'];
-        ksort($familyArr, SORT_STRING | SORT_FLAG_CASE);
-        $countryArr = $resultsTemp['countries'];
-        ksort($countryArr, SORT_STRING | SORT_FLAG_CASE);
-        unset($resultsTemp['families']);
-        unset($resultsTemp['countries']);
-        ksort($resultsTemp, SORT_STRING | SORT_FLAG_CASE);
-        $c = 0;
-        foreach($resultsTemp as $k => $collArr){
-            if($c>0) $collStr .= ", ";
-            $collStr .= $collArr['CollectionName'];
-            if(array_key_exists("SpecimenCount",$results)){
-                $results['SpecimenCount'] = $results['SpecimenCount'] + $collArr['recordcnt'];
-            }
-            else{
-                $results['SpecimenCount'] = $collArr['recordcnt'];
-            }
+		if ($resultsTemp){
+			if (array_key_exists('families', $resultsTemp)){
+				$familyArr = $resultsTemp['families'];
+				ksort($familyArr, SORT_STRING | SORT_FLAG_CASE);
+				unset($resultsTemp['families']);
+			}
+			if (array_key_exists('countries', $resultsTemp)){
+				$countryArr = $resultsTemp['countries'];
+				ksort($countryArr, SORT_STRING | SORT_FLAG_CASE);
+				unset($resultsTemp['countries']);
+			}
+			ksort($resultsTemp, SORT_STRING | SORT_FLAG_CASE);
+			$c = 0;
+			foreach($resultsTemp as $k => $collArr){
+				if($c>0) $collStr .= ", ";
+				$collStr .= $collArr['CollectionName'];
+				if(array_key_exists("SpecimenCount",$results)){
+					$results['SpecimenCount'] = $results['SpecimenCount'] + $collArr['recordcnt'];
+				}
+				else{
+					$results['SpecimenCount'] = $collArr['recordcnt'];
+				}
 
-            if(array_key_exists("GeorefCount",$results)){
-                $results['GeorefCount'] = $results['GeorefCount'] + $collArr['georefcnt'];
-            }
-            else{
-                $results['GeorefCount'] = $collArr['georefcnt'];
-            }
+				if(array_key_exists("GeorefCount",$results)){
+					$results['GeorefCount'] = $results['GeorefCount'] + $collArr['georefcnt'];
+				}
+				else{
+					$results['GeorefCount'] = $collArr['georefcnt'];
+				}
 
-            if(array_key_exists("FamilyCount",$results)){
-                $results['FamilyCount'] = $results['FamilyCount'] + $collArr['familycnt'];
-            }
-            else{
-                $results['FamilyCount'] = $collArr['familycnt'];
-            }
+				if(array_key_exists("FamilyCount",$results)){
+					$results['FamilyCount'] = $results['FamilyCount'] + $collArr['familycnt'];
+				}
+				else{
+					$results['FamilyCount'] = $collArr['familycnt'];
+				}
 
-            if(array_key_exists("GeneraCount",$results)){
-                $results['GeneraCount'] = $results['GeneraCount'] + $collArr['genuscnt'];
-            }
-            else{
-                $results['GeneraCount'] = $collArr['genuscnt'];
-            }
+				if(array_key_exists("GeneraCount",$results)){
+					$results['GeneraCount'] = $results['GeneraCount'] + $collArr['genuscnt'];
+				}
+				else{
+					$results['GeneraCount'] = $collArr['genuscnt'];
+				}
 
-            if(array_key_exists("SpeciesCount",$results)){
-                $results['SpeciesCount'] = $results['SpeciesCount'] + $collArr['speciescnt'];
-            }
-            else{
-                $results['SpeciesCount'] = $collArr['speciescnt'];
-            }
+				if(array_key_exists("SpeciesCount",$results)){
+					$results['SpeciesCount'] = $results['SpeciesCount'] + $collArr['speciescnt'];
+				}
+				else{
+					$results['SpeciesCount'] = $collArr['speciescnt'];
+				}
 
-            if(array_key_exists("TotalTaxaCount",$results)){
-                $results['TotalTaxaCount'] = $results['TotalTaxaCount'] + $collArr['TotalTaxaCount'];
-            }
-            else{
-                $results['TotalTaxaCount'] = $collArr['TotalTaxaCount'];
-            }
+				if(array_key_exists("TotalTaxaCount",$results)){
+					$results['TotalTaxaCount'] = $results['TotalTaxaCount'] + $collArr['TotalTaxaCount'];
+				}
+				else{
+					$results['TotalTaxaCount'] = $collArr['TotalTaxaCount'];
+				}
 
-            if(array_key_exists("TotalImageCount",$results)){
-                $results['TotalImageCount'] = $results['TotalImageCount'] + $collArr['OccurrenceImageCount'];
-            }
-            else{
-                $results['TotalImageCount'] = $collArr['OccurrenceImageCount'];
-            }
+				if(array_key_exists("TotalImageCount",$results)){
+					$results['TotalImageCount'] = $results['TotalImageCount'] + $collArr['OccurrenceImageCount'];
+				}
+				else{
+					$results['TotalImageCount'] = $collArr['OccurrenceImageCount'];
+				}
 
-            if(array_key_exists("SpecimensCountID",$results)){
-                $results['SpecimensCountID'] = $results['SpecimensCountID'] + $collArr['speciesID'];
-            }
-            else{
-                $results['SpecimensCountID'] = $collArr['speciesID'];
-            }
+				if(array_key_exists("SpecimensCountID",$results)){
+					$results['SpecimensCountID'] = $results['SpecimensCountID'] + $collArr['speciesID'];
+				}
+				else{
+					$results['SpecimensCountID'] = $collArr['speciesID'];
+				}
 
-            if(array_key_exists("TypeCount",$results)){
-                $results['TypeCount'] = $results['TypeCount'] + $collArr['types'];
-            }
-            else{
-                $results['TypeCount'] = $collArr['types'];
-            }
-
-            $c++;
-        }
-        $results['SpecimensNullLatitude'] = $results['SpecimenCount'] - $results['GeorefCount'];
+				if(array_key_exists("TypeCount",$results)){
+					$results['TypeCount'] = $results['TypeCount'] + $collArr['types'];
+				}
+				else{
+					$results['TypeCount'] = $collArr['types'];
+				}
+				$c++;
+			}
+			$results['SpecimensNullLatitude'] = $results['SpecimenCount'] - $results['GeorefCount'];
+		}
     }
 	if($action == "Update Statistics"){
 		$collManager->batchUpdateStatistics($collId);
@@ -229,8 +240,8 @@ if($action != "Update Statistics"){
 			<?php
 			include_once($SERVER_ROOT.'/includes/head.php');
 			?>
-			<link href="<?php echo htmlspecialchars($CSS_BASE_PATH, HTML_SPECIAL_CHARS_FLAGS); ?>/symbiota/collections/listdisplay.css" type="text/css" rel="stylesheet" />
-			<link href="<?php echo htmlspecialchars($CSS_BASE_PATH, HTML_SPECIAL_CHARS_FLAGS); ?>/symbiota/collections/sharedCollectionStyling.css" type="text/css" rel="stylesheet" />
+			<link href="<?php echo htmlspecialchars($CSS_BASE_PATH, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>/symbiota/collections/listdisplay.css" type="text/css" rel="stylesheet" />
+			<link href="<?php echo htmlspecialchars($CSS_BASE_PATH, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>/symbiota/collections/sharedCollectionStyling.css" type="text/css" rel="stylesheet" />
             <script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
 			<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-ui.min.js" type="text/javascript"></script>
 			<script src="../../js/symb/collections.index.js" type="text/javascript"></script>
@@ -250,7 +261,7 @@ if($action != "Update Statistics"){
 
                     $( "#taxon" )
                     // don't navigate away from the field on tab when selecting an item
-                        .bind( "keydown", function( event ) {
+						.on( "keydown", function( event ) {
                             if ( event.keyCode === $.ui.keyCode.TAB &&
                                 $( this ).data( "autocomplete" ).menu.active ) {
                                 event.preventDefault();
@@ -284,6 +295,11 @@ if($action != "Update Statistics"){
                             }
                         },{});
 				});
+
+				function toggleDisplayListOfCollectionsAnalyzed(){
+					toggleById("colllist");
+					toggleById("colllistlabel");
+				}
 
 				function toggleStatsPerColl(){
 					toggleById("statspercollbox");
@@ -331,7 +347,7 @@ if($action != "Update Statistics"){
 					if(target != null){
 						var obj = document.getElementById(target);
 						var style = window.getComputedStyle(obj);
-						
+
 						if(style.display=="none" || style.display==""){
 							obj.style.display="block";
 						}
@@ -395,22 +411,22 @@ if($action != "Update Statistics"){
 			else{
 				?>
 				<div class='navpath'>
-					<a href='../../index.php'><?php echo htmlspecialchars($LANG['HOME'], HTML_SPECIAL_CHARS_FLAGS); ?></a> &gt;&gt;
-					<a href='collprofiles.php'><?php echo htmlspecialchars($LANG['COLLECTIONS'], HTML_SPECIAL_CHARS_FLAGS); ?></a> &gt;&gt;
+					<a href='../../index.php'><?php echo htmlspecialchars($LANG['HOME'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> &gt;&gt;
+					<a href='collprofiles.php'><?php echo htmlspecialchars($LANG['COLLECTIONS'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a> &gt;&gt;
 					<b><?php echo $LANG['COL_STATS']; ?></b>
 				</div>
 				<?php
 			}
 			?>
 			<!-- This is inner text! -->
-			<div id="innertext">
-				<h1><?php echo $LANG['SELECT_COLS']; ?></h1>
+			<div role="main" id="innertext">
+				<h1 class="page-heading"><?= $LANG['SELECT_COLS']; ?></h1>
 				<div id="tabs" class="tabby">
 					<ul class="full-tab">
-						<li><a href="#specobsdiv"><?php echo htmlspecialchars($LANG['COLLECTIONS'], HTML_SPECIAL_CHARS_FLAGS); ?></a></li>
+						<li><a href="#specobsdiv"><?php echo htmlspecialchars($LANG['COLLECTIONS'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a></li>
 						<?php
                         if($action == "Run Statistics"){
-							echo '<li><a href="#statsdiv">' . htmlspecialchars($LANG['STATISTICS'], HTML_SPECIAL_CHARS_FLAGS) . '</a></li>';
+							echo '<li><a href="#statsdiv">' . htmlspecialchars($LANG['STATISTICS'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a></li>';
 						}
 						?>
 					</ul>
@@ -444,7 +460,7 @@ if($action != "Update Statistics"){
 									</div>
 									<div>
 										<input id="dballcb" name="db[]" class="specobs" value='all' type="checkbox" onclick="selectAll(this);" />
-										<label for="dballcb"><?php echo $LANG['SEL_OR_DESEL']; ?> <a href="collprofiles.php"><?php echo htmlspecialchars($LANG['COLLECTIONS'], HTML_SPECIAL_CHARS_FLAGS); ?></a></label>
+										<label for="dballcb"><?php echo $LANG['SEL_OR_DESEL']; ?> <a href="collprofiles.php"><?php echo htmlspecialchars($LANG['COLLECTIONS'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a></label>
 									</div>
 									<?php
 									$collArrIndex = 0;
@@ -481,7 +497,7 @@ if($action != "Update Statistics"){
 													?>
 													<section class="gridlike-form-row">
 														<div>
-															<input id="cat-<?php echo $idStr; ?>-Input" name="cat[]" value="<?php echo $catid; ?>" type="checkbox" onclick="selectAllCat(this,'cat-<?php echo $idStr; ?>')" <?php echo ($collIdArr&&($collIdArr==array_keys($catArr))?'checked':''); ?> />
+															<input style="margin:0" id="cat-<?php echo $idStr; ?>-Input" name="cat[]" value="<?php echo $catid; ?>" type="checkbox" onclick="selectAllCat(this,'cat-<?php echo $idStr; ?>')" <?php echo ($collIdArr&&($collIdArr==array_keys($catArr))?'checked':''); ?> />
 															<label for="cat-<?php echo $idStr; ?>-Input">
 																<?php echo $name; ?> (<?php echo isset($LANG['SPECIMEN']) ? $LANG['SPECIMEN'] : "Specimen" ?>) <?php echo $LANG['SELECT_DESELECT'] ?>
 															</label>
@@ -513,9 +529,9 @@ if($action != "Update Statistics"){
 																	foreach($catArr as $collid => $collName2){
 																		?>
 																		<div class="gridlike-form-row bottom-breathing-room-rel">
-																				<input id="db-<?php echo $collid?>" name="db[]" value="<?php echo $collid; ?>" type="checkbox" class="cat-<?php echo $idStr; ?>" onclick="unselectCat('cat-<?php echo $idStr; ?>-Input')" <?php echo ($collIdArr&&in_array($collid,$collIdArr)?'checked':''); ?> />
+																				<input style="margin:0" id="db-<?php echo $collid?>" name="db[]" value="<?php echo $collid; ?>" type="checkbox" class="cat-<?php echo $idStr; ?>" onclick="unselectCat('cat-<?php echo $idStr; ?>-Input')" <?php echo ($collIdArr&&in_array($collid,$collIdArr)?'checked':''); ?> />
 																				<label for="db-<?php echo $collid?>">
-																					<a href='collprofiles.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>'>
+																					<a href='collprofiles.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>'>
 																						<?php
 																						$codeStr = ' ('.$collName2['instcode'];
 																						if($collName2['collcode']) $codeStr .= '-'.$collName2['collcode'];
@@ -543,22 +559,19 @@ if($action != "Update Statistics"){
 											<?php
 										}
 										if(isset($specArr['coll'])){
-											if(!isset($specArr['cat'])){
-												echo '<section class="gridlike-form">';
-											}
 											$collArr = $specArr['coll'];
 											?>
-											<section class="gridlike-form-row">
+											<section class="gridlike-form">
 												<?php
 												foreach($collArr as $collid => $cArr){
 													?>
 													<div class="gridlike-form-row bottom-breathing-room-rel">
 														<div>
-															<input id="current-collid" name="current-collid" value="<?php echo $collid; ?>" type="checkbox" onclick="uncheckAll();" <?php echo ($collIdArr&&in_array($collid,$collIdArr)?'checked':''); ?> />
-															<label for="current-collid">Collection ID TODO</label>
+															<input id="current-collid-<?= $collid; ?>" name="db[]" value="<?php echo $collid; ?>" type="checkbox" onclick="uncheckAll();" <?php echo ($collIdArr&&in_array($collid,$collIdArr)?'checked':''); ?> />
+															<label class="screen-reader-only" for="current-collid-<?= $collid; ?>"><?= $LANG['COLLECTION'] . '-' . $cArr['instcode']; ?></label>
 														</div>
 														<div>
-															<a href='collprofiles.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>'>
+															<a href='collprofiles.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>'>
 																<?php
 																$codeStr = ' ('.$cArr['instcode'];
 																if($cArr['collcode']) $codeStr .= '-'.$cArr['collcode'];
@@ -635,7 +648,7 @@ if($action != "Update Statistics"){
 														</div>
 													</div>
 													<div>
-														<div class="gridlike-form-row bottom-breathing-room-rel" id="cat-<?php echo $idStr; ?>" style="<?php echo (($DEFAULTCATID && $DEFAULTCATID != $catid)?'display:none;':'') ?> margin-left:2rem;">
+														<div class="gridlike-form-row bottom-breathing-room-rel" id="cat-<?php echo $idStr; ?>" style="<?php echo (($DEFAULTCATID && $DEFAULTCATID != $catid)?'display:none;':'') ?>">
 															<section class="gridlike-form">
 																<fieldset class="fieldset-observation-padding-rem">
 																	<legend>
@@ -648,7 +661,7 @@ if($action != "Update Statistics"){
 																					<div>
 																						<input class="input-margin cat-<?php echo $idStr; ?>" id="db-<?php echo $collid ?>" name="db[]" value="<?php echo $collid; ?>" type="checkbox" onclick="unselectCat('cat-<?php echo $idStr; ?>-Input')" <?php echo ($collIdArr&&in_array($collid,$collIdArr)?'checked':''); ?> />
 																						<label for="db-<?php echo $collid ?>">
-																							<a class="rel-fontsize" href = 'collprofiles.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>'>
+																							<a href = 'collprofiles.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>'>
 																								<?php
 																								$codeStr = ' ('.$collName2['instcode'];
 																								if($collName2['collcode']) $codeStr .= '-'.$collName2['collcode'];
@@ -689,7 +702,7 @@ if($action != "Update Statistics"){
 															</div>
 															<div class="gridlike-form-row bottom-breathing-room-rel">
 																<div class="collectiontitle">
-																	<a href = 'collprofiles.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>'>
+																	<a href = 'collprofiles.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>'>
 																		<?php
 																		$codeStr = ' ('.$cArr['instcode'];
 																		if($cArr['collcode']) $codeStr .= '-'.$cArr['collcode'];
@@ -747,7 +760,7 @@ if($action != "Update Statistics"){
 								<div>
 									<h1><?php echo $LANG['SEL_COL_STATS']; ?></h1>
 									<div class="big-fnt-margin">
-										<div id="colllistlabel"><a href="#" onclick="toggle('colllist');toggle('colllistlabel');"><?php echo $LANG['DISPLAY_LIST']; ?></a></div>
+										<div id="colllistlabel"><a href="#" onclick="return toggleDisplayListOfCollectionsAnalyzed();"><?php echo $LANG['DISPLAY_LIST']; ?></a></div>
 										<div id="colllist" class="dsply-none">
 											<?php echo $collStr; ?>
 										</div>
@@ -756,45 +769,59 @@ if($action != "Update Statistics"){
 										<legend><?php echo $LANG['GENERAL_STATISTICS']?></legend>
 										<ul class="stats-display-ul">
 											<?php
-											echo "<li>";
-											echo ($results['SpecimenCount'] ? number_format($results['SpecimenCount']) : 0) . " " . $LANG['OCC_RECORDS'];
-											echo "</li>";
-											echo "<li>";
-											$percGeo = '';
-											if($results['SpecimenCount'] && $results['GeorefCount']){
-												$percGeo = (100* ($results['GeorefCount'] / $results['SpecimenCount']));
-											}
-											echo ($results['GeorefCount'] ? number_format($results['GeorefCount']) : 0) . ($percGeo ? " (" . ($percGeo>1 ? round($percGeo) : round($percGeo,2)) . "%)" : '') . " " . $LANG['GEOREFERENCED'];
-											echo "</li>";
-											echo "<li>";
-											$percImg = '';
-											if($results['SpecimenCount'] && $results['TotalImageCount']){
-												$percImg = (100* ($results['TotalImageCount'] / $results['SpecimenCount']));
-											}
-											echo ($results['TotalImageCount'] ? number_format($results['TotalImageCount']) : 0) . ($percImg ? " (" . ($percImg>1 ? round($percImg) : round($percImg,2)) . "%)" : '') . " " . $LANG['OCCS_IMAGED'];
-											echo "</li>";
-											echo "<li>";
-											$percId = '';
-											if($results['SpecimenCount'] && $results['SpecimensCountID']){
-												$percId = (100* ($results['SpecimensCountID'] / $results['SpecimenCount']));
-											}
-											echo ($results['SpecimensCountID'] ? number_format($results['SpecimensCountID']) : 0) . ($percId?" (" . ($percId>1 ? round($percId) : round($percId,2)) . "%)" : '') . " " . $LANG['IDED_TO_SP'];
-											echo "</li>";
-											echo "<li>";
-											echo ($results['FamilyCount'] ? number_format($results['FamilyCount']) : 0) . " " . $LANG['FAMILIES'];
-											echo "</li>";
-											echo "<li>";
-											echo ($results['GeneraCount'] ? number_format($results['GeneraCount']) : 0) . " " . $LANG['GENERA'];
-											echo "</li>";
-											echo "<li>";
-											echo ($results['SpeciesCount'] ? number_format($results['SpeciesCount']) : 0) . " " . $LANG['SPECIES'];
-											echo "</li>";
-											echo "<li>";
-											echo ($results['TotalTaxaCount'] ? number_format($results['TotalTaxaCount']) : 0) . " " . $LANG['TOTAL_TAXA'];
-											echo "</li>";
-											/*echo "<li>";
-											echo ($results['TypeCount'] ? number_format($results['TypeCount']) : 0)." type specimens";
-											echo "</li>";*/
+												if ($results){
+													echo "<li>";
+													echo ($results['SpecimenCount'] ? number_format($results['SpecimenCount']) : 0) . " " . $LANG['OCC_RECORDS'];
+													echo "</li>";
+													echo "<li>";
+													$percGeo = '';
+													if($results['SpecimenCount'] && $results['GeorefCount'] && $results['SpecimenCount'] !== 0){
+														try {
+															$percGeo = (100* ($results['GeorefCount'] / $results['SpecimenCount']));
+														} catch (Exception $e) {
+															error_log('Exception: ' . $e->getMessage());
+														}
+													}
+													echo ($results['GeorefCount'] ? number_format($results['GeorefCount']) : 0) . ($percGeo ? " (" . ($percGeo>1 ? round($percGeo) : round($percGeo,2)) . "%)" : '') . " " . $LANG['GEOREFERENCED'];
+													echo "</li>";
+													echo "<li>";
+													$percImg = '';
+													if($results['SpecimenCount'] && $results['TotalImageCount'] && $results['SpecimenCount'] !== 0){
+														try {
+															$percImg = (100* ($results['TotalImageCount'] / $results['SpecimenCount']));
+														} catch (Exception $e) {
+															error_log('Exception: ' . $e->getMessage());
+														}
+													}
+													echo ($results['TotalImageCount'] ? number_format($results['TotalImageCount']) : 0) . ($percImg ? " (" . ($percImg>1 ? round($percImg) : round($percImg,2)) . "%)" : '') . " " . $LANG['OCCS_IMAGED'];
+													echo "</li>";
+													echo "<li>";
+													$percId = '';
+													if($results['SpecimenCount'] && $results['SpecimensCountID'] && $results['SpecimenCount'] !== 0){
+														try {
+															$percId = (100* ($results['SpecimensCountID'] / $results['SpecimenCount']));
+														} catch (Exception $e) {
+															error_log('Exception: ' . $e->getMessage());
+														}
+													}
+													echo ($results['SpecimensCountID'] ? number_format($results['SpecimensCountID']) : 0) . ($percId?" (" . ($percId>1 ? round($percId) : round($percId,2)) . "%)" : '') . " " . $LANG['IDED_TO_SP'];
+													echo "</li>";
+													echo "<li>";
+													echo ($results['FamilyCount'] ? number_format($results['FamilyCount']) : 0) . " " . $LANG['FAMILIES'];
+													echo "</li>";
+													echo "<li>";
+													echo ($results['GeneraCount'] ? number_format($results['GeneraCount']) : 0) . " " . $LANG['GENERA'];
+													echo "</li>";
+													echo "<li>";
+													echo ($results['SpeciesCount'] ? number_format($results['SpeciesCount']) : 0) . " " . $LANG['SPECIES'];
+													echo "</li>";
+													echo "<li>";
+													echo ($results['TotalTaxaCount'] ? number_format($results['TotalTaxaCount']) : 0) . " " . $LANG['TOTAL_TAXA'];
+													echo "</li>";
+													/*echo "<li>";
+													echo ($results['TypeCount'] ? number_format($results['TypeCount']) : 0)." type specimens";
+													echo "</li>";*/
+												}
 											?>
 										</ul>
 										<form name="statscsv" id="statscsv" action="collstatscsv.php" method="post" onsubmit="">
@@ -957,16 +984,20 @@ if($action != "Update Statistics"){
 											echo '<div class="gridlike-form-row-align">'.wordwrap($name,52,"<br />\n",true).'</div>';
 											echo '<div class="gridlike-form-row-align">';
 											if(count($resultsTemp) == 1){
-												echo '<a href="../list.php?db[]=' . htmlspecialchars($collId, HTML_SPECIAL_CHARS_FLAGS) . '&reset=1&taxa=' . htmlspecialchars($name, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank">';
+												echo '<a href="../list.php?db[]=' . htmlspecialchars($collId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&reset=1&taxa=' . htmlspecialchars($name, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" target="_blank" rel="noopener noreferrer">';
 											}
 											echo number_format($data['SpecimensPerFamily']);
 											if(count($resultsTemp) == 1){
 												echo '</a>';
 											}
 											echo '</div>';
-											echo '<div class="gridlike-form-row-align">'.($data['GeorefSpecimensPerFamily'] ? round(100*($data['GeorefSpecimensPerFamily']/$data['SpecimensPerFamily'])) : 0).'%</div>';
-											echo '<div class="gridlike-form-row-align">'.($data['IDSpecimensPerFamily'] ? round(100*($data['IDSpecimensPerFamily']/$data['SpecimensPerFamily'])) : 0).'%</div>';
-											echo '<div class="gridlike-form-row-align">'.($data['IDGeorefSpecimensPerFamily'] ? round(100*($data['IDGeorefSpecimensPerFamily']/$data['SpecimensPerFamily'])) : 0).'%</div>';
+											try {
+												echo '<div class="gridlike-form-row-align">'.($data['GeorefSpecimensPerFamily'] ? round(100*($data['GeorefSpecimensPerFamily']/$data['SpecimensPerFamily'])) : 0).'%</div>';
+												echo '<div class="gridlike-form-row-align">'.($data['IDSpecimensPerFamily'] ? round(100*($data['IDSpecimensPerFamily']/$data['SpecimensPerFamily'])) : 0).'%</div>';
+												echo '<div class="gridlike-form-row-align">'.($data['IDGeorefSpecimensPerFamily'] ? round(100*($data['IDGeorefSpecimensPerFamily']/$data['SpecimensPerFamily'])) : 0).'%</div>';
+											} catch (Exception $e) {
+												error_log('Exception: ' . $e->getMessage());
+											}
 											echo '</section>';
 											$total = $total + $data['SpecimensPerFamily'];
 										}
@@ -974,7 +1005,10 @@ if($action != "Update Statistics"){
 									</section>
 									<div class="top-marg">
 										<b><?php echo $LANG['SPEC_W_FAMILY']; ?>:</b> <?php echo number_format($total); ?><br />
-										<?php echo $LANG['SPEC_WO_FAMILY']; ?>: <?php echo number_format($results['SpecimenCount']-$total); ?><br />
+										<?php
+										if ($results){
+											echo $LANG['SPEC_WO_FAMILY']; ?>: <?php echo number_format($results['SpecimenCount']-$total);
+										}?><br />
 									</div>
 								</fieldset>
 								<fieldset id="geodistbox" class="geodistbox">
@@ -1008,16 +1042,20 @@ if($action != "Update Statistics"){
 											echo '<div class="gridlike-form-row-align">'.wordwrap($name,52,"<br />\n",true).'</div>';
 											echo '<div class="gridlike-form-row-align">';
 											if(count($resultsTemp) == 1){
-												echo '<a href="../list.php?db[]=' . htmlspecialchars($collId, HTML_SPECIAL_CHARS_FLAGS) . '&reset=1&country=' . htmlspecialchars($name, HTML_SPECIAL_CHARS_FLAGS) . '" target="_blank">';
+												echo '<a href="../list.php?db[]=' . htmlspecialchars($collId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&reset=1&country=' . htmlspecialchars($name, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" target="_blank" rel="noopener noreferrer">';
 											}
 											echo number_format($data['CountryCount']);
 											if(count($resultsTemp) == 1){
 												echo '</a>';
 											}
 											echo '</div>';
-											echo '<div class="gridlike-form-row-align">'.($data['GeorefSpecimensPerCountry'] ? round(100*($data['GeorefSpecimensPerCountry']/$data['CountryCount'])) : 0).'%</div>';
-											echo '<div class="gridlike-form-row-align">'.($data['IDSpecimensPerCountry'] ? round(100*($data['IDSpecimensPerCountry']/$data['CountryCount'])) : 0).'%</div>';
-											echo '<div class="gridlike-form-row-align">'.($data['IDGeorefSpecimensPerCountry'] ? round(100*($data['IDGeorefSpecimensPerCountry']/$data['CountryCount'])) : 0).'%</div>';
+											try {
+												echo '<div class="gridlike-form-row-align">'.($data['GeorefSpecimensPerCountry'] ? round(100*($data['GeorefSpecimensPerCountry']/$data['CountryCount'])) : 0).'%</div>';
+												echo '<div class="gridlike-form-row-align">'.($data['IDSpecimensPerCountry'] ? round(100*($data['IDSpecimensPerCountry']/$data['CountryCount'])) : 0).'%</div>';
+												echo '<div class="gridlike-form-row-align">'.($data['IDGeorefSpecimensPerCountry'] ? round(100*($data['IDGeorefSpecimensPerCountry']/$data['CountryCount'])) : 0).'%</div>';
+											} catch (Exception $e) {
+												error_log('Exception: ' . $e->getMessage());
+											}
 											echo '</section>';
 											$total = $total + $data['CountryCount'];
 										}
@@ -1025,7 +1063,11 @@ if($action != "Update Statistics"){
 									</section>
 									<div class="top-marg">
 										<b><?php echo $LANG['SPEC_W_COUNTRY']; ?>:</b> <?php echo number_format($total); ?><br />
-										<?php echo $LANG['SPEC_WO_COUNTRY']; ?>: <?php echo number_format(($results['SpecimenCount']-$total)+$results['SpecimensNullLatitude']); ?><br />
+										<?php 
+										if ($results){
+											echo $LANG['SPEC_WO_COUNTRY']; ?>: <?php echo number_format(($results['SpecimenCount']-$total)+$results['SpecimensNullLatitude']);
+										}
+										?><br />
 									</div>
 								</fieldset>
 							</div>

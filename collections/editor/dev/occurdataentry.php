@@ -44,7 +44,7 @@ if($SYMB_UID){
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET; ?>">
 	<title><?php echo $DEFAULT_TITLE; ?> Occurrence Editor</title>
 	<link href="<?php echo $CSS_BASE_PATH; ?>/jquery-ui.css" type="text/css" rel="stylesheet">
-	<link href="../../css/occureditor.css?<?php echo htmlspecialchars($CSS_VERSION, HTML_SPECIAL_CHARS_FLAGS); ?>" type="text/css" rel="stylesheet" id="editorCssLink" />
+	<link href="../../css/occureditor.css?<?php echo htmlspecialchars($CSS_VERSION, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>" type="text/css" rel="stylesheet" id="editorCssLink" />
 	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
 	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-ui.min.js" type="text/javascript"></script>
 	<script type="text/javascript">
@@ -56,13 +56,13 @@ if($SYMB_UID){
 </head>
 <body>
 	<!-- inner text -->
-	<div id="innertext">
+	<div role="main" id="innertext">
 		<?php
 		if($isEditor && $collid){
 			?>
 			<div id="titleDiv">
 				<?php
-				echo $collMap['collectionname'].' ('.$collMap['institutioncode'].($collMap['collectioncode']?':'.$collMap['collectioncode']:'').')';
+				echo '<h1 class="page-heading">' . $collMap['collectionname'].' ('.$collMap['institutioncode'].($collMap['collectioncode']?':'.$collMap['collectioncode']:'').')</h1>';
 				?>
 			</div>
 			<div class='navpath'>
@@ -70,7 +70,7 @@ if($SYMB_UID){
 				<?php
 				if(!$isGenObs || $isEditor){
 					?>
-					<a href="../misc/collprofiles.php?collid=<?php echo htmlspecialchars($collid, HTML_SPECIAL_CHARS_FLAGS); ?>&emode=1" onclick="return verifyLeaveForm()">Collection Management</a> &gt;&gt;
+					<a href="../misc/collprofiles.php?collid=<?php echo htmlspecialchars($collid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>&emode=1" onclick="return verifyLeaveForm()">Collection Management</a> &gt;&gt;
 					<?php
 				}
 				if($isGenObs){
@@ -460,13 +460,13 @@ if($SYMB_UID){
 									<?php echo (defined('REPRODUCTIVECONDITIONLABEL')?REPRODUCTIVECONDITIONLABEL:'Phenology'); ?>
 									<a href="#" onclick="return dwcDoc('reproductiveCondition')"><img class="docimg" src="../../images/qmark.png" /></a><br/>
 									<?php
-									if(isset($reproductiveConditionTerms)){
-										if($reproductiveConditionTerms){
+									if(isset($REPRODUCTIVE_CONDITION_TERMS)){
+										if($REPRODUCTIVE_CONDITION_TERMS){
 											?>
 											<select name="reproductivecondition" tabindex="99" >
 												<option value="">-----------------</option>
 												<?php
-												foreach($reproductiveConditionTerms as $term){
+												foreach($REPRODUCTIVE_CONDITION_TERMS as $term){
 													echo '<option value="'.$term.'" '.(isset($occArr['reproductivecondition']) && $term==$occArr['reproductivecondition']?'SELECTED':'').'>'.$term.'</option>';
 												}
 												?>

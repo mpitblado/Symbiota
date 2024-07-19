@@ -258,7 +258,7 @@ class OccurrenceIndividual extends Manager{
 	}
 
 	private function setImages(){
-		global $imageDomain;
+		global $IMAGE_DOMAIN;
 		$sql = 'SELECT i.imgid, i.url, i.thumbnailurl, i.originalurl, i.sourceurl, i.notes, i.caption, CONCAT_WS(" ",u.firstname,u.lastname) as innerCreator, i.creator
 			FROM media i LEFT JOIN users u ON i.creatorUid = u.uid
 			WHERE (i.occid = ?) ORDER BY i.sortoccurrence,i.sortsequence';
@@ -271,9 +271,9 @@ class OccurrenceIndividual extends Manager{
 					$url = $row->url;
 					$tnUrl = $row->thumbnailurl;
 					$lgUrl = $row->originalurl;
-					if($imageDomain){
-						if(substr($url,0,1)=='/') $url = $imageDomain . $url;
-						if($lgUrl && substr($lgUrl, 0, 1) == '/') $lgUrl = $imageDomain . $lgUrl;
+					if($IMAGE_DOMAIN){
+					    if(substr($url,0,1)=='/') $url = $IMAGE_DOMAIN . $url;
+					    if($lgUrl && substr($lgUrl, 0, 1) == '/') $lgUrl = $IMAGE_DOMAIN . $lgUrl;
 						if($tnUrl && substr($tnUrl, 0, 1) == '/') $tnUrl = $imageDomain . $tnUrl;
 					}
 					if((!$url || $url == 'empty') && $lgUrl) $url = $lgUrl;
@@ -284,6 +284,9 @@ class OccurrenceIndividual extends Manager{
 					$this->occArr['imgs'][$imgId]['sourceurl'] = $row->sourceurl;
 					$this->occArr['imgs'][$imgId]['caption'] = $row->caption;
 					$this->occArr['imgs'][$imgId]['creator'] = $row->creator;
+					$this->occArr['imgs'][$imgId]['rights'] = $row->rights;
+					$this->occArr['imgs'][$imgId]['accessrights'] = $row->accessRights;
+					$this->occArr['imgs'][$imgId]['copyright'] = $row->copyright;
 					if($row->innerCreator) $this->occArr['imgs'][$imgId]['creator'] = $row->innerCreator;
 				}
 				$rs->free();

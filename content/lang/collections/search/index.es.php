@@ -6,7 +6,7 @@ Translated by: Google Translate
 Date Translated: 2024/02/12
 ------------------
 */
-$LANG['SAMPLE_SEARCH'] = 'Búsqueda de Muestra';
+$LANG['SAMPLE_SEARCH'] = 'Búsqueda de Registros';
 $LANG['TAXONOMY'] = 'Taxonomía';
 $LANG['TAXON'] = 'Taxón';
 $LANG['TYPE_CHAR_FOR_SUGGESTIONS'] = 'Escriba al menos 4 caracteres para sugerencias rápidas. Separe varios con comas.';
@@ -35,7 +35,7 @@ $LANG['MAXIMUM_ELEVATION'] = 'Elevación Máxima';
 $LANG['LATITUDE_LONGITUDE'] = 'Latitud y Longitud';
 $LANG['BOUNDING_BOX'] = 'Cuadro Delimitador';
 $LANG['SELECT_IN_MAP'] = 'Seleccionar en el mapa (BB)';
-$LANG['UPPER_LATITUDE'] = '_Latitud Superior';
+$LANG['UPPER_LATITUDE'] = 'Latitud Superior';
 $LANG['VALUE_BETWEEN_NUM'] = 'Valores entre -90 y 90.';
 $LANG['SELECT_UPPER_LAT_DIRECTION_NORTH_SOUTH'] = 'Seleccionar dirección latitud superior N/S';
 $LANG['SELECT_NORTH_SOUTH'] = 'Seleccionar N/S';
@@ -69,16 +69,16 @@ $LANG['SELECT_RADIUS_UNITS'] = 'Seleccionar unidades de radio';
 $LANG['SELECT_UNIT'] = 'Seleccionar unidad';
 $LANG['KILOMETERS'] = 'Kilómetros';
 $LANG['MILES'] = 'Millas';
-$LANG['PREVIOUS_SAMPLE_SEARCH'] = 'página de búsqueda de ejemplo anterior';
+$LANG['PREVIOUS_SAMPLE_SEARCH'] = 'Página Anterior de Búsqueda de Muestras';
 $LANG['SEARCH'] = 'Buscar';
 $LANG['RESET'] = 'Reiniciar';
 $LANG['CRITERIA'] = 'Criterios';
-$LANG['COLLECTING_EVENT'] = 'Evento de Recopilación';
+$LANG['COLLECTING_EVENT'] = 'Evento de Colecta';
 $LANG['COLLECTION_START_DATE'] = 'Fecha de inicio de la colección';
 $LANG['SINGLE_DATE_START_DATE'] = 'Fecha única o fecha de inicio del rango (por ejemplo, AAAA-MM-DD o formato similar).';
 $LANG['COLLECTION_END_DATE'] = 'Fecha de finalización de la colección';
 $LANG['SINGLE_DATE_END_DATE'] = 'Fecha única o fecha de finalización del rango (por ejemplo, AAAA-MM-DD o formato similar).';
-$LANG['COLLECTOR_LAST_NAME'] = 'Apellido del Coleccionista';
+$LANG['COLLECTOR_LAST_NAME'] = 'Apellido del Colector';
 $LANG['COLLECTOR_NUMBER_'] = 'Número de Coleccionista';
 $LANG['COLLECTIONS'] = 'Colecciones';
 
@@ -101,13 +101,13 @@ $LANG['EVENT_DATE_START'] = 'Fecha de inicio del evento';
 $LANG['EVENT_DATE_END'] = 'Fecha de finalización del evento';
 $LANG['COLLECTOR_LAST'] = 'Último Recopilador';
 
-$LANG['NORTHERN_LATITUDE'] = '_Latitud Norte';
-$LANG['SOUTHERN_LATITUDE'] = '_Latitud Sur';
-$LANG['WESTERN_LONGITUDE'] = '_Longitud Occidental';
-$LANG['EASTERN_LONGITUDE'] = '_Longitud Este';
-$LANG['LATITUDE'] = '_Latitud';
-$LANG['LONGITUDE'] = '_Longitud';
-$LANG['RADIUS'] = '_Radio';
+$LANG['NORTHERN_LATITUDE'] = 'Latitud Norte';
+$LANG['SOUTHERN_LATITUDE'] = 'Latitud Sur';
+$LANG['WESTERN_LONGITUDE'] = 'Longitud Occidental';
+$LANG['EASTERN_LONGITUDE'] = 'Longitud Este';
+$LANG['LATITUDE'] = 'Latitud';
+$LANG['LONGITUDE'] = 'Longitud';
+$LANG['RADIUS'] = 'Radio';
 $LANG['ALERT_MSG_PREVIOUS_SEARCH_FORM'] = '¿Está buscando el formulario de búsqueda anterior? Todavía puedes usarlo aquí:';
 $LANG['ALL_COLLECTIONS'] = 'Todas las colecciones';
 $LANG['TRAIT_CRITERIA'] = 'Criterios de Rasgo';

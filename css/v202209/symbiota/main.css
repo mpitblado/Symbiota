@@ -30,7 +30,8 @@
 /* Global styles
    ========================================================================== */
 html {
-  font-size: 10px; /* 1rem = 10px */
+  font-size: 16px; /* This is what 1 rem will be base off of */
+  height: 100%;
 }
 
 body {
@@ -38,9 +39,10 @@ body {
   color: var(--body-text-color);
   margin: 0;
   -webkit-text-size-adjust: 100%;
-  font-size: 1.2rem;
+  font-size: var(--body-font-size, 1rem);
   font-weight: 400;
   font-family: var(--body-font-family);
+  min-height: 100%;
 }
 
 h1,
@@ -51,7 +53,7 @@ h4 {
   font-weight: 700;
   font-family: var(--heading-font-family);
 }
-
+/*
 h1 {
   font-size: 3rem;
 }
@@ -71,6 +73,7 @@ h4 {
 p {
   font-size: 1.4rem;
 }
+*/
 
 a {
   transition: all 0.2s ease-in-out;
@@ -95,11 +98,19 @@ button {
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   white-space: nowrap;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 button:hover {
   background-color: var(--medium-color);
   color: var(--light-color);
+}
+
+button:disabled {
+  background-color: var(--light-color);
+  color: var(--medium-color);
 }
 
 hr {
@@ -108,7 +119,6 @@ hr {
 
 #innertext {
   margin: 0 auto;
-  padding: 3rem 0;
   background-color: var(--body-bg-color);
   width: 90%;
 }
@@ -119,7 +129,7 @@ hr {
 }
 
 #popup-innertext {
-  font-size: 1.2rem;
+  padding: 0 1rem;
 }
 
 .navpath {
@@ -154,6 +164,7 @@ hr {
 
 #tabs {
   font-family: var(--body-font-family);
+  font-size: var(--body-font-size);
 }
 
 #tabs div:first-child {
@@ -166,10 +177,6 @@ hr {
 
 #tabs a:hover {
   color: var(--bright-color);
-}
-
-#tabs table {
-  width: 90%;
 }
 
 /***********************************************************************/
@@ -214,13 +221,16 @@ hr {
 .button {
   border: none;
   border-radius: 5px;
-  padding: 0.6rem 1rem;
+  padding: 0.5rem 1rem;
   font-family: var(--heading-font-family);
   letter-spacing: 1px;
   text-align: center;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   width: fit-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .button > a {
@@ -233,9 +243,23 @@ hr {
   background-color: var(--darkest-color);
 }
 
+.button-danger {
+  background-color: var(--danger-color, var(--darkest-color));
+}
+
 .button-primary:hover,
-.button-secondary:hover {
+.button-secondary:hover,
+.button-danger:hover 
+{
   background-color: var(--medium-color);
+}
+
+.button-primary:disabled,
+.button-secondary:disabled,
+.button-danger:disabled
+{
+	opacity: 50%;
+	pointer-events: none;
 }
 
 .button-primary:hover > a,
@@ -259,11 +283,6 @@ hr {
   background-color: none;
   border: 1px solid var(--bright-color);
   padding: 0.5rem 0.9rem;
-}
-
-.skip-link {
-  position: absolute;
-  left: -10000px;
 }
 
 /* Media queries
@@ -330,6 +349,9 @@ hr {
 .cat-icon-div {
   width: 4rem;
   height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .collection-checkbox {
@@ -347,6 +369,15 @@ hr {
 
 .float-right {
   float: right;
+}
+
+/* JQUERY UI modifications */
+.ui-tabs-panel {
+  font-size: 1rem;
+}
+
+.ui-tabs-tab {
+  font-size: 1rem;
 }
 
 .ui-autocomplete {

@@ -544,10 +544,10 @@ $dupClusterArr = $dupManager->getClusterArr($occid);
 			foreach($checklistArr as $vClid => $vClName){
 				$vClid = filter_var($vClid, FILTER_SANITIZE_NUMBER_INT);
 				echo '<div style="margin:3px">';
-				echo '<a href="../../checklists/checklist.php?showvouchers=1&clid=' . $vClid . '" target="_blank">' . htmlspecialchars($vClName, HTML_SPECIAL_CHARS_FLAGS) . '</a> ';
+				echo '<a href="../../checklists/checklist.php?showvouchers=1&clid=' . htmlspecialchars($vClid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" target="_blank">' . htmlspecialchars($vClName, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a> ';
 				if(array_key_exists($vClid, $userChecklists)){
 					$href = 'occurrenceeditor.php?submitaction=deletevoucher&delclid=' . $vClid . '&occid=' . $occid . '&tabtarget=3';
-					echo '<a href="' . $href .'" title="' . $LANG['DELETE_VOUCHER_LINK'] . '" onclick="return confirm(\'' . $LANG['SURE_REMOVE_VOUCHER'] . '\'">';
+					echo '<a href="' . htmlspecialchars($href, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) .'" title="' . htmlspecialchars($LANG['DELETE_VOUCHER_LINK'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" onclick="return confirm(\'' . htmlspecialchars($LANG['SURE_REMOVE_VOUCHER'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '\'">';
 					echo '<img class="icon-img" src="../../images/drop.png" >';
 					echo '</a>';
 				}
@@ -575,7 +575,7 @@ $dupClusterArr = $dupManager->getClusterArr($occid);
 					echo '<div id="dupediv-'.$occid.'">';
 					echo '<div style="padding:15px;"><b>'.$LANG['CLUSTER_TITLE'].':</b> '.$dupArr['title'];
 					echo '<div style="float:right" title="'.$LANG['UNLINK_BUT_MAINTAIN'].'">';
-					echo '<button name="unlinkthisdupebutton" onclick="deleteDuplicateLink('.$dupid.','.$occid.')">'.$LANG['REM_FROM_CLUSTER'].'</button>';
+					echo '<button class="button-danger" name="unlinkthisdupebutton" onclick="deleteDuplicateLink('.$dupid.','.$occid.')">'.$LANG['REM_FROM_CLUSTER'].'</button>';
 					echo '</div>';
 					$note = trim($dupArr['description'].'; '.$dupArr['notes'],' ;');
 					if($note) echo ' - '.$notes;
@@ -689,7 +689,7 @@ $dupClusterArr = $dupManager->getClusterArr($occid);
 					<div style="margin-left:15px;"><b><?php echo $LANG['IDENTIFIER']; ?>:</b> <?php echo $gArr['id']; ?></div>
 					<div style="margin-left:15px;"><b><?php echo $LANG['LOCUS']; ?>:</b> <?php echo $gArr['locus']; ?></div>
 					<div style="margin-left:15px;">
-						<b><?php echo $LANG['URL']; ?>:</b> <a href="<?php echo htmlspecialchars($gArr['resourceurl'], HTML_SPECIAL_CHARS_FLAGS); ?>" target="_blank"><?php echo htmlspecialchars($gArr['resourceurl'], HTML_SPECIAL_CHARS_FLAGS); ?></a>
+						<b><?php echo $LANG['URL']; ?>:</b> <a href="<?php echo htmlspecialchars($gArr['resourceurl'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>" target="_blank"><?php echo htmlspecialchars($gArr['resourceurl'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a>
 					</div>
 					<div style="margin-left:15px;"><b><?php echo $LANG['NOTES']; ?>:</b> <?php echo $gArr['notes']; ?></div>
 				</div>
@@ -732,7 +732,7 @@ $dupClusterArr = $dupManager->getClusterArr($occid);
 						<form name="delgeneticform" method="post" action="occurrenceeditor.php">
 							<div style="margin:2px;">
 								<input name="submitaction" type="hidden" value="deletegeneticsubmit" />
-								<button name="subbut" type="button" value="Delete Resource" onclick="submitDeleteGeneticResource(this.form)" ><?php echo $LANG['DEL_RES']; ?></button>
+								<button class="button-danger" name="subbut" type="button" value="Delete Resource" onclick="submitDeleteGeneticResource(this.form)" ><?php echo $LANG['DEL_RES']; ?></button>
 								<input name="genid" type="hidden" value="<?php echo $genId; ?>" />
 								<input name="occid" type="hidden" value="<?php echo $occid; ?>" />
 								<input name="csmode" type="hidden" value="<?php echo $crowdSourceMode; ?>" />

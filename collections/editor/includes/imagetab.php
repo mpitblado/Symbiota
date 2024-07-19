@@ -186,15 +186,15 @@ $photographerArr = $occManager->getPhotographerArr();
 							$tnUrl = $imgArr["tnurl"];
 							if((!$imgUrl || $imgUrl == 'empty') && $origUrl) $imgUrl = $origUrl;
 							if(!$tnUrl && $imgUrl) $tnUrl = $imgUrl;
-							if(array_key_exists("imageDomain",$GLOBALS)){
-								if(substr($imgUrl,0,1)=="/"){
-									$imgUrl = $GLOBALS["imageDomain"].$imgUrl;
+							if(array_key_exists('IMAGE_DOMAIN', $GLOBALS)){
+								if(substr($imgUrl, 0, 1) == '/'){
+									$imgUrl = $GLOBALS['IMAGE_DOMAIN'] . $imgUrl;
 								}
-								if($origUrl && substr($origUrl,0,1)=="/"){
-									$origUrl = $GLOBALS["imageDomain"].$origUrl;
+								if($origUrl && substr($origUrl, 0, 1) == '/'){
+									$origUrl = $GLOBALS['IMAGE_DOMAIN'] . $origUrl;
 								}
-								if($tnUrl && substr($tnUrl,0,1)=="/"){
-									$tnUrl = $GLOBALS["imageDomain"].$tnUrl;
+								if($tnUrl && substr($tnUrl, 0, 1) == '/'){
+									$tnUrl = $GLOBALS['IMAGE_DOMAIN'] . $tnUrl;
 								}
 							}
 							echo '<a href="' . $imgUrl . '" target="_blank">';
@@ -209,7 +209,7 @@ $photographerArr = $occManager->getPhotographerArr();
 							if($origUrl) echo '<div><a href="' . $origUrl . '" target="_blank">' . $LANG['OPEN_LARGE'] . '</a></div>';
 							?>
 						</td>
-						<td style="text-align:left;padding:10px;">
+						<td class="imgInfo" style="text-align:left;padding:10px;">
 							<div style="float:right;cursor:pointer;" onclick="toggle('img<?php echo $imgId; ?>editdiv');" title="<?php echo $LANG['EDIT_METADATA']; ?>">
 								<img style="border:0px;width:1.2em;" src="../../images/edit.png" />
 							</div>
@@ -337,7 +337,7 @@ $photographerArr = $occManager->getPhotographerArr();
 										<div>
 											<b><?php echo $LANG['WEB_URL']; ?>: </b><br/>
 											<input name="url" type="text" value="<?php echo $imgArr["url"]; ?>" style="width:95%;" />
-											<?php if(stripos($imgArr["url"],$imageRootUrl) === 0){ ?>
+											<?php if(stripos($imgArr['url'], $IMAGE_ROOT_URL) === 0){ ?>
 												<div style="margin-left:10px;">
 													<input type="checkbox" name="renameweburl" value="1" />
 													<?php echo $LANG['RENAME_FILE']; ?>
@@ -348,7 +348,7 @@ $photographerArr = $occManager->getPhotographerArr();
 										<div>
 											<b><?php echo $LANG['LARGE_IMG_URL']; ?>: </b><br/>
 											<input name="origurl" type="text" value="<?php echo $imgArr["origurl"]; ?>" style="width:95%;" />
-											<?php if(stripos($imgArr["origurl"],$imageRootUrl) === 0){ ?>
+											<?php if(stripos($imgArr['origurl'], $IMAGE_ROOT_URL) === 0){ ?>
 												<div style="margin-left:10px;">
 													<input type="checkbox" name="renameorigurl" value="1" />
 													<?php echo $LANG['RENAME_LARGE']; ?>
@@ -359,7 +359,7 @@ $photographerArr = $occManager->getPhotographerArr();
 										<div>
 											<b><?php echo $LANG['THUMB_URL']; ?>: </b><br/>
 											<input name="tnurl" type="text" value="<?php echo $imgArr["tnurl"]; ?>" style="width:95%;" />
-											<?php if(stripos($imgArr["tnurl"],$imageRootUrl) === 0){ ?>
+											<?php if(stripos($imgArr['tnurl'], $IMAGE_ROOT_URL) === 0){ ?>
 												<div style="margin-left:10px;">
 													<input type="checkbox" name="renametnurl" value="1" />
 													<?php echo $LANG['RENAME_THUMB']; ?>
@@ -405,7 +405,7 @@ $photographerArr = $occManager->getPhotographerArr();
 											<?php echo $LANG['RM_DB_NOT_SERVER']; ?>
 										</div>
 										<div style="margin:10px 20px;">
-											<button type="submit" name="submitaction" value="Delete Image"><?php echo $LANG['DEL_IMG']; ?></button>
+											<button class="button-danger" type="submit" name="submitaction" value="Delete Image"><?php echo $LANG['DEL_IMG']; ?></button>
 										</div>
 									</fieldset>
 								</form>

@@ -44,6 +44,7 @@ $LANG['IMAGE_FIELD_MAP'] = 'Image Field Map';
 $LANG['MATERIAL_SAMPLE'] = 'Material Sample';
 //Language fragments located within OccurrenceImport class file
 $LANG['PROCESSING_CATNUM'] = 'Processing Identifier';
+$LANG['VALUES_SET'] = 'Empty dateIdentified values have been set as "s.d", and empty identifiedBy values have been set to "unknown"';
 $LANG['UPDATING_STATS'] = 'Updating statistics';
 $LANG['IMAGE_LOADED'] = 'Image loaded successfully';
 $LANG['ASSOC_DELETED'] = 'Association deleted';
@@ -55,5 +56,7 @@ $LANG['ASSOC_ADDED'] = 'Association added';
 $LANG['ERROR_ADDING'] = 'ERROR loading Occurrence Association';
 $LANG['MAT_SAMPLE_ADDED'] = 'Material Sample added';
 $LANG['DETERMINATION_ADDED'] = 'Determination added';
+$LANG['CHOOSE_FILE'] = 'Choose a file';
+$LANG['ASSOCIATION_TYPE'] = 'Association Type';
 $LANG['HOME'] = 'Home';
 ?>
