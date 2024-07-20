@@ -191,7 +191,7 @@ class TaxonProfile extends Manager {
 			$rs1->free();
 
 			$tidStr = implode(",",$tidArr);
-			$sql = 'SELECT t.sciname, i.imgid, i.url, i.thumbnailurl, i.originalurl, i.caption, i.occid, i.creator, CONCAT_WS(" ",u.firstname,u.lastname) AS creatorLinked '.
+			$sql = 'SELECT t.sciname, i.media_id, i.url, i.thumbnailurl, i.originalurl, i.caption, i.occid, i.creator, CONCAT_WS(" ",u.firstname,u.lastname) AS creatorLinked '.
 				'FROM media i LEFT JOIN users u ON i.creatorUid = u.uid '.
 				'INNER JOIN taxstatus ts ON i.tid = ts.tid '.
 				'INNER JOIN taxa t ON i.tid = t.tid '.
