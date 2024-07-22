@@ -1,7 +1,5 @@
 <?php
 
-use function PHPUnit\Framework\returnValue;
-
 include_once($SERVER_ROOT.'/classes/OccurrenceTaxaManager.php');
 include_once($SERVER_ROOT.'/classes/TaxonomyUtilities.php');
 
