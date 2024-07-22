@@ -48,53 +48,57 @@ class AssociationManager extends OccurrenceTaxaManager{
 
 	public function getAssociatedRecords($associationArr){
 		// var_dump($associationArr['relationship']);
-		$relationshipType = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ? $associationArr['relationship'] : 'IS NOT NULL';
-		// var_dump($relationshipType);
-		// "Forward" association
-		// $sql = "AND (o.occid IN (SELECT DISTINCT occid FROM omoccurassociations WHERE relationship ='" . $relationshipType . "' AND ";
-		$relationshipStr = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ?  ("='" . $relationshipType . "'")  : (' IS NOT NULL');
-		$sql = "AND (o.occid IN (SELECT DISTINCT o.occid FROM omoccurrences o INNER JOIN omoccurassociations oa on o.occid=oa.occid WHERE oa.relationship" . $relationshipStr . " ";
+		$sql='';
 
-		// echo "<div>Count getAssociatedTaxonWhereFrag: " . $this->getAssociatedTaxonWhereFrag($associationArr) . "</div>";
-
-		$sql .= $this->getAssociatedTaxonWhereFrag($associationArr) . ')';
-
-		// // TODO update taxon stuff to be more labile
-		// if(is_numeric($taxonIdOrSciname)){
-		// 	// $sql = $sql . "tid = '" . $taxonIdOrSciname . "')";
-		// 	$sql = $sql . "o.tidInterpreted = '" . $taxonIdOrSciname . "')";
-		// }
-		// if(is_string($taxonIdOrSciname)){
-		// 	// $sql = $sql . "verbatimSciname = '" . $taxonIdOrSciname . "')";
-		// 	$sql = $sql . "o.sciname = '" . $taxonIdOrSciname . "')";
-		// }
-
-		// @TODO handle situation where the associationType is external and there's no occidAssociate; pull resourceUrl instead? // @TODO remove from the current query
-		// $sql =. 'SELECT DISTINCT resourceUrl from omoccurassociations WHERE associationType="externalOccurrence" AND occidAssociate IS NULL AND relationship = ' . $relationshipType . ' AND ';
-		// if(is_numeric($taxonIdOrSciname)){
-		// 	$sql = $sql . 'tid = ' . $taxonIdOrSciname . ')';
-		// }
-		// if(is_string($taxonIdOrSciname)){
-		// 	$sql = $sql . 'verbatimSciname = ' . $taxonIdOrSciname . ')';
-		// }
-
-
-		// "Reverse" association
-		$reverseAssociationType = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ? $this->getInverseRelationshipOf($relationshipType) : 'IS NOT NULL';
-		// var_dump($reverseAssociationType);
-		$reverseRelationshipStr = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ?  ("='" . $reverseAssociationType . "'")  : (' IS NOT NULL');
-		// var_dump('$reverseAssociationType is: ' . $reverseAssociationType);
-		$sql .= " OR o.occid IN (SELECT DISTINCT oa.occidAssociate FROM omoccurrences o INNER JOIN omoccurassociations oa on o.occid=oa.occid INNER JOIN omoccurdeterminations od ON oa.occid=od.occid where oa.relationship " . $reverseRelationshipStr . " "; //isCurrent="1" AND my thought was that we want these results to be as relaxed as possible
-
-		$sql .= $this->getAssociatedTaxonWhereFrag($associationArr) . ')';
-		// if(is_numeric($taxonIdOrSciname)){
-		// 	$sql .= "od.taxonConceptID = '" . $taxonIdOrSciname . "' OR od.tidInterpreted IN(" . @TODO . "))) ";
-		// }
-		// if(is_string($taxonIdOrSciname)){
-		// 	$sql .= "od.sciname = '" . $taxonIdOrSciname . "' OR od.tidInterpreted IN (" . @TODO . "))) ";
-		// }
-		// var_dump('returning: ' . $sql);
-		// echo "<div>Sql at the end of getAssociatedRecords: " . $sql . "</div>";
+		if(array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'none'){
+			$relationshipType = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ? $associationArr['relationship'] : 'IS NOT NULL';
+			// var_dump($relationshipType);
+			// "Forward" association
+			// $sql = "AND (o.occid IN (SELECT DISTINCT occid FROM omoccurassociations WHERE relationship ='" . $relationshipType . "' AND ";
+			$relationshipStr = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ?  ("='" . $relationshipType . "'")  : (' IS NOT NULL');
+			$sql .= "AND (o.occid IN (SELECT DISTINCT o.occid FROM omoccurrences o INNER JOIN omoccurassociations oa on o.occid=oa.occid WHERE oa.relationship" . $relationshipStr . " ";
+	
+			// echo "<div>Count getAssociatedTaxonWhereFrag: " . $this->getAssociatedTaxonWhereFrag($associationArr) . "</div>";
+	
+			$sql .= $this->getAssociatedTaxonWhereFrag($associationArr) . ')';
+	
+			// // TODO update taxon stuff to be more labile
+			// if(is_numeric($taxonIdOrSciname)){
+			// 	// $sql = $sql . "tid = '" . $taxonIdOrSciname . "')";
+			// 	$sql = $sql . "o.tidInterpreted = '" . $taxonIdOrSciname . "')";
+			// }
+			// if(is_string($taxonIdOrSciname)){
+			// 	// $sql = $sql . "verbatimSciname = '" . $taxonIdOrSciname . "')";
+			// 	$sql = $sql . "o.sciname = '" . $taxonIdOrSciname . "')";
+			// }
+	
+			// @TODO handle situation where the associationType is external and there's no occidAssociate; pull resourceUrl instead? // @TODO remove from the current query
+			// $sql =. 'SELECT DISTINCT resourceUrl from omoccurassociations WHERE associationType="externalOccurrence" AND occidAssociate IS NULL AND relationship = ' . $relationshipType . ' AND ';
+			// if(is_numeric($taxonIdOrSciname)){
+			// 	$sql = $sql . 'tid = ' . $taxonIdOrSciname . ')';
+			// }
+			// if(is_string($taxonIdOrSciname)){
+			// 	$sql = $sql . 'verbatimSciname = ' . $taxonIdOrSciname . ')';
+			// }
+	
+	
+			// "Reverse" association
+			$reverseAssociationType = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ? $this->getInverseRelationshipOf($relationshipType) : 'IS NOT NULL';
+			// var_dump($reverseAssociationType);
+			$reverseRelationshipStr = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ?  ("='" . $reverseAssociationType . "'")  : (' IS NOT NULL');
+			// var_dump('$reverseAssociationType is: ' . $reverseAssociationType);
+			$sql .= " OR o.occid IN (SELECT DISTINCT oa.occidAssociate FROM omoccurrences o INNER JOIN omoccurassociations oa on o.occid=oa.occid INNER JOIN omoccurdeterminations od ON oa.occid=od.occid where oa.relationship " . $reverseRelationshipStr . " "; //isCurrent="1" AND my thought was that we want these results to be as relaxed as possible
+	
+			$sql .= $this->getAssociatedTaxonWhereFrag($associationArr) . ')';
+			// if(is_numeric($taxonIdOrSciname)){
+			// 	$sql .= "od.taxonConceptID = '" . $taxonIdOrSciname . "' OR od.tidInterpreted IN(" . @TODO . "))) ";
+			// }
+			// if(is_string($taxonIdOrSciname)){
+			// 	$sql .= "od.sciname = '" . $taxonIdOrSciname . "' OR od.tidInterpreted IN (" . @TODO . "))) ";
+			// }
+			// var_dump('returning: ' . $sql);
+			// echo "<div>Sql at the end of getAssociatedRecords: " . $sql . "</div>";
+		}
 		return $sql;
 	}
 

@@ -131,7 +131,9 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 		$sqlWhere .= $this->getTaxonWhereFrag();
 		// echo "<div>this dot getTaxonWhereFrag() is: " . $this->getTaxonWhereFrag() . "</div>";
 		// echo "<div>sqlWhere before getting the association taxa is: " . $sqlWhere . "</div>";
-		if(isset($this->associationArr['relationship']) || isset($this->associationArr['search'])){
+		$hasValidRelationship = isset(($this->associationArr['relationship'])) && $this->associationArr['relationship']!=='none';
+		// $hasValidAssociatedTaxon = isset($this->associationArr['search']);
+		if($hasValidRelationship){ // || $hasValidAssociatedTaxon // @TODO
 			$sqlWhere = substr_replace($sqlWhere,'',-1);
 			$sqlWhere .= $this->associationManager->getAssociatedRecords($this->associationArr) . ')';
 		}
