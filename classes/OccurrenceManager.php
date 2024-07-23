@@ -533,7 +533,6 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 	}
 
 	protected function getTableJoins($sqlWhere){
-		echo 'getTableJoins called';
 		$sqlJoin = '';
 		if($sqlWhere){
 			if(array_key_exists('clid',$this->searchTermArr) && $this->searchTermArr['clid']){
