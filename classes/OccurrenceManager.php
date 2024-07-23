@@ -510,8 +510,6 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 			//$this->sqlWhere = 'WHERE o.occid IS NULL ';
 		}
 		// echo $this->sqlWhere; exit;
-		// var_dump($sqlWhere);
-		// var_dump('$sqlWhere after substr: ' . $this->sqlWhere);
 	}
 
 	private function getAdditionIdentifiers($identFrag){
@@ -535,6 +533,7 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 	}
 
 	protected function getTableJoins($sqlWhere){
+		echo 'getTableJoins called';
 		$sqlJoin = '';
 		if($sqlWhere){
 			if(array_key_exists('clid',$this->searchTermArr) && $this->searchTermArr['clid']){
@@ -552,6 +551,7 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 				$sqlJoin .= 'INNER JOIN taxaenumtree e ON o.tidinterpreted = e.tid ';
 			}
 			if(strpos($sqlWhere,'ts.family')){
+				echo 'ts.family entered';
 				$sqlJoin .= 'LEFT JOIN taxstatus ts ON o.tidinterpreted = ts.tid ';
 			}
 			if(strpos($sqlWhere,'ds.datasetid')){

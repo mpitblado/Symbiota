@@ -49,7 +49,8 @@ class AssociationManager extends OccurrenceTaxaManager{
 			// "Forward" association
 			$relationshipType = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ? $associationArr['relationship'] : 'IS NOT NULL';
 			$relationshipStr = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ?  ("='" . $relationshipType . "'")  : (' IS NOT NULL');
-			$sql .= "AND (o.occid IN (SELECT DISTINCT o.occid FROM omoccurrences o INNER JOIN omoccurassociations oa on o.occid=oa.occid WHERE oa.relationship" . $relationshipStr . " ";
+			// $sql .= "AND (o.occid IN (SELECT DISTINCT o.occid FROM omoccurrences o INNER JOIN omoccurassociations oa on o.occid=oa.occid WHERE oa.relationship" . $relationshipStr . " ";
+			$sql .= "AND (o.occid IN (SELECT DISTINCT o.occid FROM omoccurrences o INNER JOIN omoccurassociations oa on o.occid=oa.occid LEFT JOIN taxstatus ts ON o.tidinterpreted = ts.tid WHERE oa.relationship" . $relationshipStr . " ";
 			$sql .= $this->getAssociatedTaxonWhereFrag($associationArr) . ')';
 	
 			// @TODO handle situation where the associationType is external and there's no occidAssociate; pull resourceUrl instead?
@@ -59,7 +60,7 @@ class AssociationManager extends OccurrenceTaxaManager{
 			// "Reverse" association
 			$reverseAssociationType = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ? $this->getInverseRelationshipOf($relationshipType) : 'IS NOT NULL';
 			$reverseRelationshipStr = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ?  ("='" . $reverseAssociationType . "'")  : (' IS NOT NULL');
-			$sql .= " OR o.occid IN (SELECT DISTINCT oa.occidAssociate FROM omoccurrences o INNER JOIN omoccurassociations oa on o.occid=oa.occid INNER JOIN omoccurdeterminations od ON oa.occid=od.occid where oa.relationship " . $reverseRelationshipStr . " "; //isCurrent="1" AND my thought was that we want these results to be as relaxed as possible
+			$sql .= " OR o.occid IN (SELECT DISTINCT oa.occidAssociate FROM omoccurrences o INNER JOIN omoccurassociations oa on o.occid=oa.occid INNER JOIN omoccurdeterminations od ON oa.occid=od.occid LEFT JOIN taxstatus ts ON o.tidinterpreted = ts.tid where oa.relationship " . $reverseRelationshipStr . " "; //isCurrent="1" AND my thought was that we want these results to be as relaxed as possible
 			$sql .= $this->getAssociatedTaxonWhereFrag($associationArr) . ')';
 		}
 		return $sql;
