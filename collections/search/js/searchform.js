@@ -171,7 +171,6 @@ function addChip(element) {
 }
 
 function handleRemoval(element, inputChip) {
-  console.log("deleteMe handleRemoval clicked");
   element.type === "checkbox"
     ? (element.checked = false)
     : (element.value = element.defaultValue);
@@ -193,13 +192,6 @@ function handleRemoval(element, inputChip) {
       collection.checked = false;
     });
   }
-  // if (element?.getAttribute("id")?.startsWith("materialsampletype")) {
-  //   // if they close a materialsampletype chip, revert to the none option selected
-  //   const targetIndex = document.getElementById(
-  //     "materialsampletype-none"
-  //   ).selectedIndex;
-  //   document.getElementById("materialsampletype").selectedIndex = targetIndex;
-  // }
   setAssociationRelationshipTypeToDefault(element);
   setMaterialSampleToDefault(element);
   setTaxonTypeToDefault(element);

@@ -31,6 +31,7 @@ $collList = $collManager->getFullCollectionList($catId);
 $specArr = (isset($collList['spec'])?$collList['spec']:null);
 $obsArr = (isset($collList['obs'])?$collList['obs']:null);
 $associationManager = new AssociationManager();
+$relationshipTypes = $associationManager->getRelationshipTypes();
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $LANG_TAG ?>">
