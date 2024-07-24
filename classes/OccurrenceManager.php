@@ -660,7 +660,6 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 				$retStr .= '&taxontype=1';
 			}
 		}
-		// var_dump($this->associationArr);
 		$patternOfOnlyLettersDigitsAndSpaces = '/^[a-zA-Z0-9\s\-]*$/'; // TOOD accommodate symbols associated with extinct taxa, hybrid crosses, and abbreviations with periods, e.g. "var."?
 		if(isset($this->associationArr['search'])){
 			if (preg_match($patternOfOnlyLettersDigitsAndSpaces, $this->associationArr['search'])==1) {
