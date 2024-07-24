@@ -22,16 +22,18 @@ class AssociationManager extends OccurrenceTaxaManager{
 
 	public function getRelationshipTypes(){
 		$sql = "SELECT DISTINCT relationship from omoccurassociations WHERE relationship IN (SELECT term from ctcontrolvocabterm WHERE cvID='1')";
-		// $sql = "SELECT DISTINCT relationship from omoccurassociations";
 		if($statement = $this->conn->prepare($sql)){
 			$statement->execute();
 			$result = $statement->get_result();
 			$relationshipTypes = [];
 			while ($row = $result->fetch_assoc()) {
-				$relationshipTypes[] = $row['relationship'];
+				$lowercaseRelationshipTypes = array_map('strtolower', $relationshipTypes);
+				if(!in_array(strtolower($row['relationship']), $lowercaseRelationshipTypes)){
+					$relationshipTypes[] = $row['relationship'];
+				}
 				$inverseRelationship = $this->getInverseRelationshipOf($row['relationship']);
-				// var_dump($inverseRelationship);
-				if(!in_array($inverseRelationship, $relationshipTypes)){
+				$lowercaseRelationshipTypes = array_map('strtolower', $relationshipTypes);
+				if(!in_array(strtolower($inverseRelationship), $lowercaseRelationshipTypes)){
 					$relationshipTypes[] = $inverseRelationship;
 				}
 			}
