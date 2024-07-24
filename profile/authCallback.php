@@ -34,7 +34,10 @@ if (array_key_exists('code', $_REQUEST) && $_REQUEST['code']) {
   }  
   if($status){
     $sub = $oidc->requestUserInfo('sub');
-    if($profManager->authenticate($sub, $providerUrls['oid'])){
+    $_SESSION['AUTH_PROVIDER'] = $AUTH_PROVIDER;
+    $_SESSION['AUTH_CLIENT_ID'] = $oidc->getClientID();
+
+    if($profManager->authenticate($sub, $providerUrls[$AUTH_PROVIDER])){
       if($_SESSION['refurl']){
         header("Location:" . $_SESSION['refurl']);
         unset($_SESSION['refurl']);
@@ -51,7 +54,7 @@ if (array_key_exists('code', $_REQUEST) && $_REQUEST['code']) {
           exit();
         }
         if($status){
-          if($profManager->authenticate($sub, $providerUrls['oid'])){
+          if($profManager->authenticate($sub, $providerUrls[$AUTH_PROVIDER])){
             if($_SESSION['refurl']){
               header("Location:" . $_SESSION['refurl']);
               unset($_SESSION['refurl']);
