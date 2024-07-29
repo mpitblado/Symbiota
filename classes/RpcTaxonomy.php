@@ -148,7 +148,7 @@ class RpcTaxonomy extends RpcBase{
 			$sql = 'SELECT MIN(t.RankId) AS RankId FROM taxa t INNER JOIN taxstatus ts ON t.tid = ts.tid WHERE (t.rankid != 0) AND (ts.taxauthid = ?) LIMIT 1 ';
 			//echo $sql.'<br>';
 			if ($statement = $this->conn->prepare($sql)) {
-				$statement->bind_param("s", $this->taxAuthID);
+				$statement->bind_param("i", $this->taxAuthID);
 				$statement->execute();
 				$result = $statement->get_result();
 				while($row = $result->fetch_object()){
@@ -162,15 +162,15 @@ class RpcTaxonomy extends RpcBase{
 
 			if ($statement1 = $this->conn->prepare($sql1)) {
 				$i = 0;
-				$statement1->bind_param("ss", $this->taxAuthID, $lowestRank);
+				$statement1->bind_param("ii", $this->taxAuthID, $lowestRank);
 				$statement1->execute();
 				$result1 = $statement1->get_result();
 				while($row1 = $result1->fetch_object()){
-					$rankName = (isset($taxonUnitArr[$row1->rankid])?$taxonUnitArr[$row1->rankid]:'Unknown');
-					$label = '2-'.$row1->rankid.'-'.$rankName.'-'.$row1->sciname;
+					$rankName = (isset($taxonUnitArr[$row1->rankid]) ? $taxonUnitArr[$row1->rankid] : 'Unknown');
+					$label = '2-' . $row1->rankid . '-' . $rankName.'-' . $row1->sciname;
 					$sciName = $row1->sciname;
-					if($row1->tid == $targetId) $sciName = '<b>'.$sciName.'</b>';
-					$sciName = "<span style='font-size:75%;'>".$rankName.":</span> ".$sciName.($displayAuthor?" ".$row1->author:"");
+					if($row1->tid == $targetId) $sciName = '<b>' . $sciName . '</b>';
+					$sciName = "<span style='font-size:75%;'>" . $rankName . ":</span> " . $sciName . ($displayAuthor ? " " . $row1->author : "");
 					$childArr[$i]['id'] = $row1->tid;
 					$childArr[$i]['label'] = $label;
 					$childArr[$i]['name'] = $sciName;
@@ -178,7 +178,7 @@ class RpcTaxonomy extends RpcBase{
 					$sql3 = 'SELECT tid FROM taxaenumtree WHERE taxauthid = ? AND parenttid = ? LIMIT 1 ';
 					//echo "<div>".$sql3."</div>";
 					if ($statement3 = $this->conn->prepare($sql3)) {
-						$statement3->bind_param("ss", $this->taxAuthID, $row1->tid);
+						$statement3->bind_param("ii", $this->taxAuthID, $row1->tid);
 						$statement3->execute();
 						$result3 = $statement3->get_result();
 						if($row3 = $result3->fetch_object()){
@@ -188,7 +188,7 @@ class RpcTaxonomy extends RpcBase{
 							$sql4 = 'SELECT DISTINCT tid, tidaccepted FROM taxstatus WHERE (taxauthid = ?) AND (tidaccepted = ?) ';
 							//echo "<div>".$sql4."</div>";
 							if ($statement4 = $this->conn->prepare($sql4)) {
-								$statement4->bind_param("ss", $this->taxAuthID, $row1->tid);
+								$statement4->bind_param("ii", $this->taxAuthID, $row1->tid);
 								$statement4->execute();
 								$result4 = $statement4->get_result();
 								while($row4 = $result4->fetch_object()){
@@ -217,12 +217,12 @@ class RpcTaxonomy extends RpcBase{
 			$sql .=	'WHERE (ts.taxauthid = ?) AND (ts.tid = ts.tidaccepted) AND ((ts.parenttid = ?) OR (t.tid = ?)) ';
 			//echo $sql.'<br>';
 			if ($statement = $this->conn->prepare($sql)) {
-				$statement->bind_param("sss", $this->taxAuthID, $objId, $objId);
+				$statement->bind_param("iii", $this->taxAuthID, $objId, $objId);
 				$statement->execute();
 				$result = $statement->get_result();
 				$i = 0;
 				while($r = $result->fetch_object()){
-					$rankName = (isset($taxonUnitArr[$r->rankid])?$taxonUnitArr[$r->rankid]:'Unknown');
+					$rankName = (isset($taxonUnitArr[$r->rankid]) ? $taxonUnitArr[$r->rankid] : 'Unknown');
 					$label = '2-'.$r->rankid.'-'.$rankName.'-'.$r->sciname;
 					$sciNameParts = $this->splitScinameByProvided($r->sciname, $r->cultivarEpithet, $r->tradeName, $r->author);
                     $sciName = $sciNameParts['base'];
@@ -247,7 +247,7 @@ class RpcTaxonomy extends RpcBase{
 						$sql3 = 'SELECT tid FROM taxaenumtree WHERE taxauthid = ? AND parenttid = ? LIMIT 1 ';
 						//echo 'sql3: '.$sql3.'<br/>';
 						if ($statement3 = $this->conn->prepare($sql3)) {
-							$statement3->bind_param("ss", $this->taxAuthID, $r->tid);
+							$statement3->bind_param("ii", $this->taxAuthID, $r->tid);
 							$statement3->execute();
 							$result3 = $statement3->get_result();
 							if($row3 = $result3->fetch_object()){
@@ -257,7 +257,7 @@ class RpcTaxonomy extends RpcBase{
 								$sql4 = 'SELECT DISTINCT tid, tidaccepted FROM taxstatus WHERE taxauthid = ? AND tidaccepted = ? ';
 								//echo 'sql4: '.$sql4.'<br/>';
 								if ($statement4 = $this->conn->prepare($sql4)) {
-									$statement4->bind_param("ss", $this->taxAuthID, $r->tid);
+									$statement4->bind_param("ii", $this->taxAuthID, $r->tid);
 									$statement4->execute();
 									$result4 = $statement4->get_result();
 									while($row4 = $result4->fetch_object()){
@@ -285,19 +285,19 @@ class RpcTaxonomy extends RpcBase{
 				'WHERE (ts.tid <> ts.tidaccepted) AND (ts.taxauthid = ?) AND (ts.tidaccepted = ?)';
 			//echo 'syn: '.$sqlSyns.'<br/>';
 			if ($statementSyns = $this->conn->prepare($sqlSyns)) {
-				$statementSyns->bind_param("ss", $this->taxAuthID, $objId);
+				$statementSyns->bind_param("ii", $this->taxAuthID, $objId);
 				$statementSyns->execute();
 				$resultSyns = $statementSyns->get_result();
 				while($row = $resultSyns->fetch_object()){
-					$rankName = (isset($taxonUnitArr[$row->rankid])?$taxonUnitArr[$row->rankid]:'Unknown');
-					$label = '1-'.$row->rankid.'-'.$rankName.'-'.$row->sciname;
+					$rankName = (isset($taxonUnitArr[$row->rankid]) ? $taxonUnitArr[$row->rankid] : 'Unknown');
+					$label = '1-' . $row->rankid . '-' . $rankName . '-' . $row->sciname;
 					$sciNameParts = $this->splitScinameByProvided($row->sciname, $row->cultivarEpithet, $row->tradeName, $row->author);
                     $sciName = $sciNameParts['base'];
-                    if($row->rankid >= 180) $sciName = '[<i>'.$sciName.'</i>]';
+                    if($row->rankid >= 180) $sciName = '[<i>' . $sciName . '</i>]';
                     $sciName .= $displayAuthor ? " " . $row->author : "";
                     if(isset($sciNameParts['cultivarEpithet'])) $sciName .= " '" . $sciNameParts['cultivarEpithet'] . "'";
                     if(isset($sciNameParts['tradeName'])) $sciName .= " " . $sciNameParts['tradeName'];
-                    if($row->tid == $targetId) $sciName = '<b>'.$sciName.'</b>';
+                    if($row->tid == $targetId) $sciName = '<b>' . $sciName . '</b>';
 					$childArr[$i]['id'] = $row->tid;
 					$childArr[$i]['label'] = $label;
 					$childArr[$i]['name'] = $sciName;

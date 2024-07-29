@@ -202,7 +202,7 @@ $nonItalicizedScinameComponent = trim((!empty($splitSciname['author']) ? ($split
 							$url = '';
 							if(isset($MAP_THUMBNAILS) && $MAP_THUMBNAILS) $url = $taxonManager->getGoogleStaticMap();
 							else $url = $CLIENT_ROOT.'/images/mappoint.png';
-							if($occurrenceModIsActive && $taxonManager->getDisplayLocality()){
+							if($OCCURRENCE_MOD_IS_ACTIVE && $taxonManager->getDisplayLocality()){
 								$gAnchor = "openMapPopup('" . $taxonManager->getTid() . "'," . $clid . ','. (!empty($GOOGLE_MAP_KEY) ? 'false' : 'true') . ")";
 							}
 							if($mapSrc = $taxonManager->getMapArr()){
@@ -310,7 +310,7 @@ $nonItalicizedScinameComponent = trim((!empty($splitSciname['author']) ? ($split
 										$legendStr .= $LANG['SPECIES_CHECKLIST'] . ': <b>' . $checklistName . '</b>';
 									}
 									if($parentChecklistArr = $taxonManager->getParentChecklist($clid)){
-										$titleStr = $LANG['GO_TO_PARENT_CHECKLIST'] . ': ' . current($parentChecklistArr);
+										$titleStr = $LANG['GO_TO'] . ': ' . current($parentChecklistArr);
 										$legendStr .= ' <a href="index.php?tid=' . htmlspecialchars($tid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&clid='. htmlspecialchars(key($parentChecklistArr), ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&pid=' . htmlspecialchars($pid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&taxauthid=' . htmlspecialchars($taxAuthId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" title="' . htmlspecialchars($titleStr, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">';
 										$legendStr .= '<img style="border:0px;width:1.3em;" src="../images/toparent.png"/>';
 										$legendStr .= '</a>';
@@ -368,15 +368,15 @@ $nonItalicizedScinameComponent = trim((!empty($splitSciname['author']) ? ($split
 
 										if(array_key_exists("url",$subArr)){
 											$imgUrl = $subArr["url"];
-											if(array_key_exists("imageDomain",$GLOBALS) && substr($imgUrl,0,1)=="/"){
-												$imgUrl = $GLOBALS["imageDomain"] . $imgUrl;
+											if(array_key_exists('IMAGE_DOMAIN', $GLOBALS) && substr($imgUrl, 0, 1) == '/'){
+												$imgUrl = $GLOBALS['IMAGE_DOMAIN'] . $imgUrl;
 											}
 											echo "<a href='index.php?tid=" . htmlspecialchars($subArr["tid"], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . "&taxauthid=" . htmlspecialchars($taxAuthId, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . "&clid=" . htmlspecialchars($clid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . "'>";
 
 											if($subArr["thumbnailurl"]){
 												$imgUrl = $subArr["thumbnailurl"];
-												if(array_key_exists("imageDomain",$GLOBALS) && substr($subArr["thumbnailurl"],0,1)=="/"){
-													$imgUrl = $GLOBALS["imageDomain"] . $subArr["thumbnailurl"];
+												if(array_key_exists('IMAGE_DOMAIN',$GLOBALS) && substr($subArr["thumbnailurl"],0,1)=="/"){
+													$imgUrl = $GLOBALS['IMAGE_DOMAIN'] . $subArr["thumbnailurl"];
 												}
 											}
 											elseif($image = exif_thumbnail($imgUrl)){
@@ -469,7 +469,7 @@ $nonItalicizedScinameComponent = trim((!empty($splitSciname['author']) ? ($split
 				?>
 				<div style="margin-left: 15px;font-weight:bold;font-size:120%;">
 					<?php echo $LANG['DID_YOU_MEAN'];?>
-					<div style=margin-left:25px;>
+					<div style="margin-left:25px;">
 						<?php
 						foreach($matchArr as $t => $n){
 							echo '<a href="index.php?tid=' . htmlspecialchars($t, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">' . htmlspecialchars($n, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a><br/>';
