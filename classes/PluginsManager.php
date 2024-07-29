@@ -84,12 +84,12 @@ class PluginsManager extends Manager {
 			$ssIdInfo['imagetype'] = $imageType;
 
 			$files = Array();
-			$sql = 'SELECT i.imgid, i.tid, i.occid, i.url, i.creator, i.`owner`, t.sciname, o.sciname AS occsciname, '.
+			$sql = 'SELECT m.media_id, m.tid, m.occid, m.url, m.creator, m.`owner`, t.sciname, o.sciname AS occsciname, '.
 				'CONCAT_WS(" ",u.firstname,u.lastname) AS creatorName, '.
 				'CONCAT_WS("; ",o.sciname, o.catalognumber, CONCAT_WS(" ",o.recordedby,IFNULL(o.recordnumber,o.eventdate))) AS identifier '.
-				'FROM media i LEFT JOIN users u ON i.creatorUid = u.uid '.
-				'LEFT JOIN omoccurrences o ON i.occid = o.occid '.
-				'LEFT JOIN taxa t ON i.tid = t.tid ';
+				'FROM media m LEFT JOIN users u ON m.creatorUid = u.uid '.
+				'LEFT JOIN omoccurrences o ON m.occid = o.occid '.
+				'LEFT JOIN taxa t ON m.tid = t.tid ';
 			if($clid){
 				$sql .= 'INNER JOIN fmchklsttaxalink cl ON i.tid = cl.tid WHERE cl.clid IN('.$clid.') ';
 			}
@@ -122,17 +122,17 @@ class PluginsManager extends Manager {
 				if($size = ImageShared::getImgDim(str_replace(' ', '%20', $file))){
 					$width = $size[0];
 					$height = $size[1];
-					$files[$row->imgid]['url'] = $file;
-					$files[$row->imgid]['width'] = $width;
-					$files[$row->imgid]['height'] = $height;
-					$files[$row->imgid]['tid'] = $row->tid;
-					$files[$row->imgid]['occid'] = $row->occid;
-					$files[$row->imgid]['creator'] = $row->creator;
-					$files[$row->imgid]['owner'] = $row->owner;
-					$files[$row->imgid]['sciname'] = $row->sciname;
-					$files[$row->imgid]['occsciname'] = $row->occsciname;
-					$files[$row->imgid]['creatorName'] = $row->creatorName;
-					$files[$row->imgid]['identifier'] = $row->identifier;
+					$files[$row->media_id]['url'] = $file;
+					$files[$row->media_id]['width'] = $width;
+					$files[$row->media_id]['height'] = $height;
+					$files[$row->media_id]['tid'] = $row->tid;
+					$files[$row->media_id]['occid'] = $row->occid;
+					$files[$row->media_id]['creator'] = $row->creator;
+					$files[$row->media_id]['owner'] = $row->owner;
+					$files[$row->media_id]['sciname'] = $row->sciname;
+					$files[$row->media_id]['occsciname'] = $row->occsciname;
+					$files[$row->media_id]['creatorName'] = $row->creatorName;
+					$files[$row->media_id]['identifier'] = $row->identifier;
 					$cnt++;
 				}
 			}

@@ -265,7 +265,7 @@ class SpecProcessorManager {
 		if($this->collid){
 			$sql = 'SELECT COUNT(DISTINCT o.occid) AS cnt '.
 				'FROM omoccurrences o INNER JOIN media m ON o.occid = m.occid '.
-				'LEFT JOIN specprocessorrawlabels r ON m.imgid = r.imgid '.
+				'LEFT JOIN specprocessorrawlabels r ON m.media_id = r.imgid '.
 				'WHERE o.collid = '.$this->collid.' AND r.imgid IS NULL ';
 			if($procStatus){
 				if($procStatus == 'null'){
@@ -379,8 +379,8 @@ class SpecProcessorManager {
 		$cnt = 0;
 		if($this->collid){
 			$sql = 'SELECT count(o.occid) AS cnt '.
-				'FROM omoccurrences o LEFT JOIN media m ON o.occid = m.occid '.
-				'WHERE o.collid = '.$this->collid.' AND m.imgid IS NULL ';
+				'FROM omoccurrences o LEFT JOIN media m ON o.occid = m.occid AND m.media_type = "image"'.
+				'WHERE o.collid = '.$this->collid.' AND m.media_id IS NULL ';
 			$rs = $this->conn->query($sql);
 			while($r = $rs->fetch_object()){
 				$cnt = $r->cnt;
@@ -395,8 +395,8 @@ class SpecProcessorManager {
 		$cnt = 0;
 		if($this->collid){
 			$sql = 'SELECT count(o.occid) AS cnt '.
-				'FROM omoccurrences o LEFT JOIN media m ON o.occid = m.occid '.
-				'WHERE (o.collid = '.$this->collid.') AND (m.imgid IS NULL) AND (o.processingstatus = "unprocessed") ';
+				'FROM omoccurrences o LEFT JOIN media m ON o.occid = m.occid AND m.media_type = "image"'.
+				'WHERE (o.collid = '.$this->collid.') AND (m.media_id IS NULL) AND (o.processingstatus = "unprocessed") ';
 			$rs = $this->conn->query($sql);
 			while($r = $rs->fetch_object()){
 				$cnt = $r->cnt;
@@ -545,10 +545,10 @@ class SpecProcessorManager {
 		$headerArr = array('occid','catalogNumber','sciname','recordedBy','recordNumber','eventDate','country','stateProvince','county');
 		$sqlFrag = '';
 		if($target == 'dlnoimg'){
-			$sqlFrag .= 'FROM omoccurrences o LEFT JOIN media m ON o.occid = m.occid WHERE o.collid = '.$this->collid.' AND m.imgid IS NULL ';
+			$sqlFrag .= 'FROM omoccurrences o LEFT JOIN media m ON o.occid = m.occid WHERE o.collid = '.$this->collid.' AND m.media_id IS NULL ';
 		}
 		elseif($target == 'unprocnoimg'){
-			$sqlFrag .= 'FROM omoccurrences o LEFT JOIN media m ON o.occid = m.occid WHERE (o.collid = '.$this->collid.') AND (m.imgid IS NULL) AND (o.processingstatus = "unprocessed") ';
+			$sqlFrag .= 'FROM omoccurrences o LEFT JOIN media m ON o.occid = m.occid WHERE (o.collid = '.$this->collid.') AND (m.media_id IS NULL) AND (o.processingstatus = "unprocessed") ';
 		}
 		elseif($target == 'noskel'){
 			$sqlFrag .= 'FROM omoccurrences o WHERE (o.collid = '.$this->collid.') AND (o.processingstatus = "unprocessed") AND (o.sciname IS NULL) AND (o.stateprovince IS NULL)';

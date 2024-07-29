@@ -259,15 +259,15 @@ class OccurrenceIndividual extends Manager{
 
 	private function setImages(){
 		global $IMAGE_DOMAIN;
-		$sql = 'SELECT i.imgid, i.url, i.thumbnailurl, i.originalurl, i.sourceurl, i.notes, i.caption, CONCAT_WS(" ",u.firstname,u.lastname) as innerCreator, i.creator
-			FROM media i LEFT JOIN users u ON i.creatorUid = u.uid
-			WHERE (i.occid = ?) ORDER BY i.sortoccurrence,i.sortsequence';
+		$sql = 'SELECT m.media_id, m.url, m.thumbnailurl, m.originalurl, m.sourceurl, m.notes, m.caption, CONCAT_WS(" ",u.firstname,u.lastname) as innerCreator, m.creator
+			FROM media m LEFT JOIN users u ON m.creatorUid = u.uid
+			WHERE (m.occid = ?) ORDER BY m.sortoccurrence,m.sortsequence';
 		if($stmt = $this->conn->prepare($sql)){
 			$stmt->bind_param('i', $this->occid);
 			$stmt->execute();
 			if($rs = $stmt->get_result()){
 				while($row = $rs->fetch_object()){
-					$imgId = $row->imgid;
+					$media_id = $row->media_id;
 					$url = $row->url;
 					$tnUrl = $row->thumbnailurl;
 					$lgUrl = $row->originalurl;
@@ -278,16 +278,16 @@ class OccurrenceIndividual extends Manager{
 					}
 					if((!$url || $url == 'empty') && $lgUrl) $url = $lgUrl;
 					if(!$tnUrl && $url) $tnUrl = $url;
-					$this->occArr['imgs'][$imgId]['url'] = $url;
-					$this->occArr['imgs'][$imgId]['tnurl'] = $tnUrl;
-					$this->occArr['imgs'][$imgId]['lgurl'] = $lgUrl;
-					$this->occArr['imgs'][$imgId]['sourceurl'] = $row->sourceurl;
-					$this->occArr['imgs'][$imgId]['caption'] = $row->caption;
-					$this->occArr['imgs'][$imgId]['creator'] = $row->creator;
-					$this->occArr['imgs'][$imgId]['rights'] = $row->rights;
-					$this->occArr['imgs'][$imgId]['accessrights'] = $row->accessRights;
-					$this->occArr['imgs'][$imgId]['copyright'] = $row->copyright;
-					if($row->innerCreator) $this->occArr['imgs'][$imgId]['creator'] = $row->innerCreator;
+					$this->occArr['imgs'][$media_id]['url'] = $url;
+					$this->occArr['imgs'][$media_id]['tnurl'] = $tnUrl;
+					$this->occArr['imgs'][$media_id]['lgurl'] = $lgUrl;
+					$this->occArr['imgs'][$media_id]['sourceurl'] = $row->sourceurl;
+					$this->occArr['imgs'][$media_id]['caption'] = $row->caption;
+					$this->occArr['imgs'][$media_id]['creator'] = $row->creator;
+					$this->occArr['imgs'][$media_id]['rights'] = $row->rights;
+					$this->occArr['imgs'][$media_id]['accessrights'] = $row->accessRights;
+					$this->occArr['imgs'][$media_id]['copyright'] = $row->copyright;
+					if($row->innerCreator) $this->occArr['imgs'][$media_id]['creator'] = $row->innerCreator;
 				}
 				$rs->free();
 			}

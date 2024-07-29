@@ -147,7 +147,8 @@ class OccurrenceEditorImages extends OccurrenceEditorManager {
 		if($fieldArr){
 			$fieldArr[] = 'specimen';
 			$fieldArr[] = $imgId;
-			$sql .= 'imagetype=? WHERE (imgid= ?)';
+			// TODO media (Logan) find out a pace in the media table for imagetype
+			$sql .= 'imagetype=? WHERE (media_id= ?)';
 			$types .= 'si';
 			$imgUpdateStatus = false;
 			$stmt = $this->conn->stmt_init();
@@ -156,7 +157,7 @@ class OccurrenceEditorImages extends OccurrenceEditorManager {
 			if($stmt->execute()){
 				$imgUpdateStatus = true;
 				if(array_key_exists('occid', $imgArr) || array_key_exists('tidinterpreted', $imgArr)){
-					$imgSql = 'UPDATE media m INNER JOIN omoccurrences o ON m.occid = o.occid SET m.tid = o.tidinterpreted WHERE (m.imgid = '.$imgId.')';
+					$imgSql = 'UPDATE media m INNER JOIN omoccurrences o ON m.occid = o.occid SET m.tid = o.tidinterpreted WHERE (m.media_id = '.$imgId.')';
 					$this->conn->query($imgSql);
 				}
 				$status = true;

@@ -76,19 +76,13 @@ class GamesManager extends Manager{
 				$ootdInfo['lastDate'] = $currentDate;
 
 				$tidArr = Array();
-				$sql = 'SELECT l.TID, COUNT(m.imgid) AS cnt '.
+				$sql = 'SELECT l.TID, COUNT(m.media_id) AS cnt '.
 					'FROM fmchklsttaxalink l INNER JOIN media m ON l.TID = m.tid '.
 					'LEFT JOIN omoccurrences o ON m.occid = o.occid '.
 					'LEFT JOIN omcollections c ON o.collid = c.collid '.
 					'WHERE (l.CLID IN('.$clid.')) AND (m.occid IS NULL OR c.CollType LIKE "%Observations") '.
 					'GROUP BY l.TID';
-				/*
-				$sql = 'SELECT l.TID, COUNT(m.imgid) AS cnt '.
-					'FROM fmchklsttaxalink l INNER JOIN media m ON l.TID = m.tid '.
-					'WHERE (l.CLID IN('.$clid.')) '.
-					'GROUP BY l.TID';
-				*/
-				//echo '<div>'.$sql.'</div>';
+
 				$rs = $this->conn->query($sql);
 				while($row = $rs->fetch_object()){
 					if(($row->cnt > 2) && (!in_array($row->TID, $previous))){

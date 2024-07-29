@@ -528,7 +528,7 @@ class OCCURRENCE {
    	$sql = 'update media set tid=?, url=?, thumbnailurl=?, originalurl=?, creator=?, creatorUid=?, caption=?, '.
      	'owner=?, sourceurl=?, copyright=?, locality=?, occid=?, notes=?, username=?, sortsequence=?, imagetype=?, anatomy=?, '.
      	'sourceIdentifier=?, rights=?, accessrights=? '.
-     	'where imgid = ? ';
+     	'where media_id = ? ';
    	if ($statement = $this->conn->prepare($sql)) {
    		//If central images are on remote server and new ones stored locally, then we need to use full domain
    		//e.g. this portal is sister portal to central portal
@@ -622,7 +622,7 @@ class OCCURRENCE {
     */
    private function getImgIDForSourceURL($sourceUrl) {
    	$result = "";
-   	$sql = "select imgid from media where sourceurl = ? order by imgid limit 1 ";
+   	$sql = "select media_id from media where sourceurl = ? order by media_id limit 1 ";
    	if ($statement = $this->conn->prepare($sql)) {
    		$statement->bind_param("s",$sourceUrl);
    		$statement->execute();
