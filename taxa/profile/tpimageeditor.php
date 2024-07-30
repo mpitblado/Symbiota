@@ -300,7 +300,7 @@ if($tid){
 											?>
 											<div>
 												<b><?php echo $LANG['PHOTOGRAPHER']; ?>:</b>
-												<?php echo $imgArr["photographerdisplay"];?>
+												<?php echo $imgArr["creatorDisplay"];?>
 											</div>
 											<?php
 											if($imgArr["owner"]){

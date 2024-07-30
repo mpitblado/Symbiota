@@ -39,7 +39,7 @@ class ImageDetailManager extends Manager {
 				$retArr["originalurl"] = $row->originalurl;
 				$retArr["creator"] = $this->cleanOutStr($row->creator);
 				$retArr["creatorDisplay"] = $row->creatorDisplay;
-				$retArr["creatoruid"] = $row->creatorUid;
+				$retArr["creatorUid"] = $row->creatorUid;
 				$retArr["caption"] = $this->cleanOutStr($row->caption);
 				$retArr["owner"] = $this->cleanOutStr($row->owner);
 				$retArr["sourceurl"] = $this->cleanOutStr($row->sourceurl);
