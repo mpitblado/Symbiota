@@ -1102,7 +1102,7 @@ class ImageLocalProcessor {
 				}
 			}
 			if($paramArr){
-				$sql = 'INSERT INTO images('.trim($sql1,', ').') VALUES ('.trim($sql2,', ').')';
+				$sql = 'INSERT INTO ('.trim($sql1,', ').', media_type) VALUES ('.trim($sql2,', ').', "image")';
 				if($stmt = $this->conn->prepare($sql)){
 					$stmt->bind_param($paramType, ...$paramArr);
 					$stmt->execute();
@@ -1735,7 +1735,7 @@ class ImageLocalProcessor {
 	//Misc data functions
 	private function setImageTableMap(){
 		if(!$this->imageTableMap){
-			$sql = 'SHOW COLUMNS FROM images';
+			$sql = 'SHOW COLUMNS FROM media';
 			if($rs = $this->conn->query($sql)){
 				while($r = $rs->fetch_object()){
 					$field = strtolower($r->Field);

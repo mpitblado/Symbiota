@@ -573,10 +573,10 @@ class OCCURRENCE {
     */
    private function databaseImageRecord($imgWebUrl,$imgTnUrl,$imgLgUrl,$tid,$caption,$phototrapher,$creatorUid,$sourceUrl,$copyright,$owner,$locality,$occid,$notes,$sortSequence,$imagetype,$anatomy,$sourceIdentifier,$rights,$accessRights){
    	$status = "";
-   	$sql = 'INSERT INTO images (tid, url, thumbnailurl, originalurl, creator, creatorUid, caption, '.
+   	$sql = 'INSERT INTO media (tid, url, thumbnailurl, originalurl, creator, creatorUid, caption, '.
      	'owner, sourceurl, copyright, locality, occid, notes, username, sortsequence, imagetype, anatomy, '.
-     	'sourceIdentifier, rights, accessrights ) '.
-     	'VALUES (?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?)';
+     	'sourceIdentifier, rights, accessrights, media_type) '.
+     	'VALUES (?,?,?,?,?,?,? ,?,?,?,?,?,?,?,?,?,? ,?,?,?, "image")';
    	if ($statement = $this->conn->prepare($sql)) {
    		//If central images are on remote server and new ones stored locally, then we need to use full domain
    		//e.g. this portal is sister portal to central portal

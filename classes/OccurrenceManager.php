@@ -444,7 +444,7 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 			$this->displaySearchArr[] = $this->LANG['IS_TYPE'];
 		}
 		if(array_key_exists('hasimages', $this->searchTermArr)){
-			$sqlWhere .= 'AND (o.occid IN(SELECT occid FROM images)) ';
+			$sqlWhere .= 'AND (o.occid IN(SELECT occid FROM media)) ';
 			$this->displaySearchArr[] = $this->LANG['HAS_IMAGES'];
 		}
 		if(array_key_exists('hasgenetic', $this->searchTermArr)){

@@ -1604,7 +1604,7 @@ class OccurrenceEditorManager {
 
 			//Remap images
 			$sql = <<<'SQL'
-			UPDATE images SET occid = ? WHERE occid = ?;
+			UPDATE media SET occid = ? WHERE occid = ?;
 			SQL;
 			$stage = $LANG['ERROR_REMAPPING_IMAGES'];
 			$this->conn->execute_query($sql, [$targetOccid, $sourceOccid]);

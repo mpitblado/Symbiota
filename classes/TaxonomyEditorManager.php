@@ -816,11 +816,6 @@ class TaxonomyEditorManager extends Manager{
 		$sql ='UPDATE media SET tid = NULL WHERE occid IS NOT NULL AND tid = '.$this->tid;
 		if(!$this->conn->query($sql)) $this->warningArr[] = (isset($this->langArr['ERROR_SETTING_NULL'])?$this->langArr['ERROR_SETTING_NULL']:'ERROR setting tid to NULL for occurrence images in deleteTaxon method').' ('.$this->conn->error.')';
 
-		/*
-		$sql ='DELETE FROM images WHERE tid = '.$this->tid;
-		if(!$this->conn->query($sql)) $this->warningArr[] = 'ERROR deleting remaining links in deleteTaxon method ('.$this->conn->error.')';
-		*/
-
 		//Vernaculars
 		$sql ='DELETE FROM taxavernaculars WHERE tid = '.$this->tid;
 		if(!$this->conn->query($sql)) $this->warningArr[] = (isset($this->langArr['ERROR_DEL_VERNACULARS'])?$this->langArr['ERROR_DEL_VERNACULARS']:'ERROR deleting vernaculars in deleteTaxon method').' ('.$this->conn->error.')';
