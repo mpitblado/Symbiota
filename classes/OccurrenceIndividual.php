@@ -259,7 +259,7 @@ class OccurrenceIndividual extends Manager{
 
 	private function setImages(){
 		global $IMAGE_DOMAIN;
-		$sql = 'SELECT m.media_id, m.url, m.thumbnailurl, m.originalurl, m.sourceurl, m.notes, m.caption, CONCAT_WS(" ",u.firstname,u.lastname) as innerCreator, m.creator
+		$sql = 'SELECT m.media_id, m.url, m.thumbnailurl, m.originalurl, m.sourceurl, m.notes, m.caption, CONCAT_WS(" ",u.firstname,u.lastname) as innerCreator, m.creator, m.rights, m.accessRights, m.copyright
 			FROM media m LEFT JOIN users u ON m.creatorUid = u.uid
 			WHERE (m.occid = ?) ORDER BY m.sortoccurrence,m.sortsequence';
 		if($stmt = $this->conn->prepare($sql)){

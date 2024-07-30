@@ -42,7 +42,7 @@ class OccurrenceDuplicate {
 				'o.recordedby, o.recordnumber, o.eventdate, d.notes, m.url, m.thumbnailurl '.
 				'FROM omoccurduplicatelink d INNER JOIN omoccurrences o ON d.occid = o.occid '.
 				'INNER JOIN omcollections c ON o.collid = c.collid '.
-			 	'LEFT JOIN media i ON o.occid = m.occid '.
+			 	'LEFT JOIN media m ON o.occid = m.occid '.
 				'WHERE (d.duplicateid IN('.implode(',',array_keys($retArr)).'))';
 			if($rs = $this->conn->query($sql)){
 				while($r = $rs->fetch_object()){
@@ -533,7 +533,7 @@ class OccurrenceDuplicate {
 					'INNER JOIN omoccurrences o ON dl1.occid = o.occid '.
 					'INNER JOIN omoccurduplicatelink dl2 ON d.duplicateid = dl2.duplicateid '.
 					'INNER JOIN omoccurrences o2 ON dl2.occid = o2.occid '.
-					'INNER JOIN omoccurdeterminations i ON o2.occid = i.occid '.
+					'INNER JOIN omoccurdeterminations i ON o2.occid = m.occid '.
 					'WHERE o.collid = '.$collid.($this->obsUid?' AND o.observeruid = '.$this->obsUid:'').' AND o.tidinterpreted <> o2.tidinterpreted '.
 					'AND (o2.dateidentified IS NOT NULL OR o2.identifiedBy IS NOT NULL) ';
 			}

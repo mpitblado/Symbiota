@@ -221,11 +221,11 @@ $photographerArr = $occManager->getPhotographerArr();
 								<div>
 									<b><?php echo $LANG['PHOTOGRAPHER']; ?>:</b>
 									<?php
-									if($imgArr["photographer"]){
-										echo $imgArr["photographer"];
+									if($imgArr["creator"]){
+										echo $imgArr["creator"];
 									}
-									else if($imgArr["photographeruid"]){
-										echo $photographerArr[$imgArr["photographeruid"]];
+									else if($imgArr["creatorUid"]){
+										echo $photographerArr[$imgArr["creatorUid"]];
 									}
 									?>
 								</div>

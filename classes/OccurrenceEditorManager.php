@@ -2090,7 +2090,7 @@ class OccurrenceEditorManager {
 		$retArr = array();
 		if($this->occid){
 			$sql = 'SELECT r.prlid, r.imgid, r.rawstr, r.notes, r.source '.
-				'FROM specprocessorrawlabels r INNER JOIN media m ON r.imgid = m.media_id'.
+				'FROM specprocessorrawlabels r INNER JOIN media m ON r.imgid = m.media_id '.
 				'WHERE m.occid = '.$this->occid;
 			$rs = $this->conn->query($sql);
 			while($r = $rs->fetch_object()){
