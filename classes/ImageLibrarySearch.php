@@ -36,7 +36,7 @@ class ImageLibrarySearch extends OccurrenceTaxaManager{
 		$retArr = Array();
 		$this->setSqlWhere();
 		$this->setRecordCnt();
-		$sql = 'SELECT m.media_id, m.tid, IFNULL(t.sciname,o.sciname) as sciname, m.url, m.thumbnailurl, m.originalurl, m.photographeruid, m.caption, m.occid ';
+		$sql = 'SELECT m.media_id, m.tid, IFNULL(t.sciname,o.sciname) as sciname, m.url, m.thumbnailurl, m.originalurl, m.creatorUid, m.caption, m.occid ';
 		$sqlWhere = $this->sqlWhere;
 		if($this->imageCount == 1) $sqlWhere .= 'GROUP BY sciname ';
 		elseif($this->imageCount == 2) $sqlWhere .= 'GROUP BY m.occid ';
@@ -45,6 +45,7 @@ class ImageLibrarySearch extends OccurrenceTaxaManager{
 		$sql .= $this->getSqlBase().$sqlWhere.'LIMIT '.$bottomLimit.','.$cntPerPage;
 		//echo '<div>Spec sql: '.$sql.'</div>';
 		$occArr = array();
+		error_log($sql);
 		$result = $this->conn->query($sql);
 		$imgId = 0;
 		while($r = $result->fetch_object()){
@@ -57,7 +58,7 @@ class ImageLibrarySearch extends OccurrenceTaxaManager{
 			$retArr[$imgId]['url'] = $r->url;
 			$retArr[$imgId]['thumbnailurl'] = $r->thumbnailurl;
 			$retArr[$imgId]['originalurl'] = $r->originalurl;
-			$retArr[$imgId]['uid'] = $r->photographeruid;
+			$retArr[$imgId]['uid'] = $r->creatorUid;
 			$retArr[$imgId]['caption'] = $r->caption;
 			$retArr[$imgId]['occid'] = $r->occid;
 			//$retArr[$imgId]['stateprovince'] = $r->stateprovince;
@@ -300,10 +301,10 @@ class ImageLibrarySearch extends OccurrenceTaxaManager{
 	//Listing functions
 	public function getPhotographerUidArr(){
 		$retArr = array();
-		$sql1 = 'SELECT DISTINCT photographeruid FROM media WHERE photographeruid IS NOT NULL';
+		$sql1 = 'SELECT DISTINCT creatorUid FROM media WHERE creatorUid IS NOT NULL';
 		$rs1 = $this->conn->query($sql1);
 		while ($r1 = $rs1->fetch_object()) {
-			$retArr[$r1->photographeruid] = '';
+			$retArr[$r1->creatorUid] = '';
 		}
 		$rs1->free();
 		if($retArr){
