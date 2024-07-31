@@ -157,10 +157,10 @@ class AssociationManager extends OccurrenceTaxaManager{
 			// $sql =. 'SELECT DISTINCT resourceUrl from omoccurassociations WHERE associationType="externalOccurrence" AND occidAssociate IS NULL AND relationship = ' . $relationshipType . ' AND ';
 	
 			// "Reverse" association
-			$reverseAssociationType = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ? $this->getInverseRelationshipOf($relationshipType) : 'IS NOT NULL';
-			$reverseRelationshipStr = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ?  ("='" . $reverseAssociationType . "'")  : (' IS NOT NULL');
-			$sql .= " OR o.occid IN (SELECT DISTINCT oa.occidAssociate FROM omoccurrences o INNER JOIN omoccurassociations oa on o.occid=oa.occid INNER JOIN omoccurdeterminations od ON oa.occid=od.occid " . $familyJoinStr . " where oa.relationship " . $reverseRelationshipStr . " "; //isCurrent="1" AND my thought was that we want these results to be as relaxed as possible
-			$sql .= $this->getAssociatedTaxonWhereFrag($associationArr) . ')';
+			// $reverseAssociationType = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ? $this->getInverseRelationshipOf($relationshipType) : 'IS NOT NULL';
+			// $reverseRelationshipStr = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ?  ("='" . $reverseAssociationType . "'")  : (' IS NOT NULL');
+			// $sql .= " OR o.occid IN (SELECT DISTINCT oa.occidAssociate FROM omoccurrences o INNER JOIN omoccurassociations oa on o.occid=oa.occid INNER JOIN omoccurdeterminations od ON oa.occid=od.occid " . $familyJoinStr . " where oa.relationship " . $reverseRelationshipStr . " "; //isCurrent="1" AND my thought was that we want these results to be as relaxed as possible
+			// $sql .= $this->getAssociatedTaxonWhereFrag($associationArr) . ')';
 		}
 		return $sql;
 	}

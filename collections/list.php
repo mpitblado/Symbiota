@@ -250,7 +250,17 @@ $_SESSION['citationvar'] = $searchVar;
 							if (strlen($associationSearchStr) > 300) $associationSearchStr = substr($associationSearchStr, 0, 300) . '<span class="taxa-span">... (<a href="#" onclick="$(\'.association-span\').toggle();return false;">' . htmlspecialchars($LANG['SHOW_ALL'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a>)</span><span class="association-span" style="display:none;">' . substr($taxaSearchStr, 300) . '</span>'; // @TODO wouldn't this truncate in either case?
 							echo '<div><b>' . $LANG['ASSOCIATIONS'] . ':</b> ' . $associationSearchStr . '</div>';
 							// echo '<div><span>' . "Didn't find what you were looking for? Try " . '<form name="establish-inverse-relationships" id="establish-inverse-relationships" action="list.php" method="post" onsubmit="return establishInverseRelationshipRecords()"><button type="submit">populating your database with inverse relationships</button></form>' . ". Note that this may take serveral minutes." . '</span></div>';
-							echo '<div><span>' . "Didn't find what you were looking for? Try " . '<form name="establish-inverse-relationships" id="establish-inverse-relationships" action="list.php" method="post"><input name="comingFrom" type="hidden" value="<?php echo $comingFrom; ?>" /><input type="hidden" name="establishInverseRelationshipRecords" id="establishInverseRelationshipRecords" value="establishInverseRelationshipRecords"></input><button type="submit">populating your database with inverse relationships</button></form>' . ". Note that this may take serveral minutes." . '</span></div>'; // @TODO make easier to read
+							?>
+							<div>
+								<span>Didn't find what you were looking for?</span>
+								<form name="establish-inverse-relationships" id="establish-inverse-relationships" action="list.php" method="post">
+									<input name="comingFrom" type="hidden" value="<?php echo $comingFrom; ?>" />
+									<input type="hidden" name="establishInverseRelationshipRecords" id="establishInverseRelationshipRecords" value="establishInverseRelationshipRecords" />
+									<button type="submit">Populate your Database with Inverse Relationships</button>
+								</form>
+								<span>And try your search again. Note that this may take serveral minutes.</span>
+							</div>
+							<?php
 						}
 						if ($localSearchStr = $collManager->getLocalSearchStr()) {
 							echo '<div><b>' . $LANG['SEARCH_CRITERIA'] . ':</b> ' . $localSearchStr . '</div>';
