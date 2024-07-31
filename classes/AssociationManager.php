@@ -9,6 +9,7 @@ class AssociationManager extends OccurrenceTaxaManager{
 
 	function __construct(){
 		parent::__construct();
+		parent::__construct('write');
 		if($GLOBALS['USER_RIGHTS']){
 			if($GLOBALS['IS_ADMIN'] || array_key_exists("Taxonomy",$GLOBALS['USER_RIGHTS'])){
 				$this->isEditor = true;
@@ -43,6 +44,80 @@ class AssociationManager extends OccurrenceTaxaManager{
 			return [];
 		}
 	}
+
+	public function establishInverseRelationshipRecords(){
+		$sql = "SELECT * FROM omoccurassociations where occid IS NOT NULL AND occidAssociate IS NOT NULL;";
+		if($statement = $this->conn->prepare($sql)){
+			$statement->execute();
+			$result = $statement->get_result();
+			while ($row = $result->fetch_assoc()) {
+				// $returnVal = $row['inverseRelationship'];
+				if(!$this->hasInverseRecord($row)){
+					$this->createInverseRecord($row);
+				}
+				// if that record has an inverse present, do nothing
+				// else, create an inverse record
+			}
+			$statement->close();
+			// return $returnVal;
+		}else{
+			return '';
+		}
+	}
+
+	private function hasInverseRecord($record){
+		// var_dump($record);
+		$sql = "SELECT * FROM omoccurassociations WHERE occidAssociate = ? AND occid = ? and relationship = ?;";
+		$recordOccid = array_key_exists('occid', $record) ? $record['occid'] : '';
+		$recordOccidAssociate = array_key_exists('occidAssociate', $record) ? $record['occidAssociate'] : '';
+		$relationship = array_key_exists('relationship', $record) ? $record['relationship'] : '';
+		$inverseRelationship = $this->getInverseRelationshipOf($relationship);
+		if($statement = $this->conn->prepare($sql)){
+			$statement->bind_param('iis', $recordOccid, $recordOccidAssociate, $inverseRelationship);
+			$statement->execute();
+			$result = $statement->get_result();
+			$returnVal = false;
+			if ($row = $result->fetch_assoc()) {
+				// $returnVal = $row['inverseRelationship'];
+				$returnVal = true;
+			}
+			$statement->close();
+			return $returnVal;
+		}else{
+			return '';
+		}
+	}
+	private function createInverseRecord($record){
+		$recordOccid = array_key_exists('occid', $record) ? $record['occid'] : '';
+		$recordOccidAssociate = array_key_exists('occidAssociate', $record) ? $record['occidAssociate'] : '';
+		$relationship = array_key_exists('relationship', $record) ? $record['relationship'] : '';
+		$inverseRelationship = $this->getInverseRelationshipOf($relationship);
+		$basisOfRecord = 'scriptGenerated';
+		$sql = 'INSERT INTO omoccurassociations(occid, occidAssociate, relationship, basisOfRecord, createdUid)';
+		$sql .= ' VALUES(?,?,?,?,?);';
+		$returnVal = false;
+		// $this->resetConnection();
+		if($statement = $this->conn->prepare($sql)){
+			$statement->bind_param('iissi', $recordOccidAssociate, $recordOccid, $inverseRelationship, $basisOfRecord, $GLOBALS['SYMB_UID']);
+			if($statement->execute()){
+				$returnVal = true;
+			}
+			$statement->close();
+		}else{
+			echo 'deleteMe got here';
+		}
+		// $this->resetConnectionToRead();
+		return $returnVal;
+	}
+
+	// protected function resetConnection(){
+	// 	$this->conn = MySQLiConnectionFactory::getCon('write');
+	// }
+
+	// protected function resetConnectionToRead(){
+	// 	$this->conn = MySQLiConnectionFactory::getCon('readonly');
+	// }
+		
 
 	public function getAssociatedRecords($associationArr){
 		$sql='';

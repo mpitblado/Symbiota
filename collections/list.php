@@ -3,6 +3,7 @@ include_once('../config/symbini.php');
 if ($LANG_TAG != 'en' && file_exists($SERVER_ROOT . '/content/lang/collections/list.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT . '/content/lang/collections/list.' . $LANG_TAG . '.php');
 else include_once($SERVER_ROOT . '/content/lang/collections/list.en.php');
 include_once($SERVER_ROOT . '/classes/OccurrenceListManager.php');
+include_once($SERVER_ROOT.'/classes/AssociationManager.php');
 header("Content-Type: text/html; charset=" . $CHARSET);
 $taxonFilter = array_key_exists('taxonfilter', $_REQUEST) ? filter_var($_REQUEST['taxonfilter'], FILTER_SANITIZE_NUMBER_INT) : 0;
 $targetTid = array_key_exists('targettid', $_REQUEST) ? filter_var($_REQUEST['targettid'], FILTER_SANITIZE_NUMBER_INT) : '';
@@ -12,6 +13,15 @@ $pageNumber = array_key_exists('page', $_REQUEST) ? filter_var($_REQUEST['page']
 $datasetid = array_key_exists('datasetid', $_REQUEST) ? filter_var($_REQUEST['datasetid'], FILTER_SANITIZE_NUMBER_INT) : '';
 $comingFrom = array_key_exists('comingFrom', $_REQUEST) ? htmlspecialchars($_REQUEST['comingFrom'], HTML_SPECIAL_CHARS_FLAGS) : '';
 $_SESSION['datasetid'] = filter_var($datasetid, FILTER_SANITIZE_NUMBER_INT);
+$associationManager = new AssociationManager();
+$shouldEstablishInverseRelationshipRecords = array_key_exists('establishInverseRelationshipRecords', $_REQUEST) ? true : false;
+if($shouldEstablishInverseRelationshipRecords){
+	echo '<div id="loading-div"><span>Establishing Inverse Relationship Records...</span></div>';
+	$associationManager->establishInverseRelationshipRecords();
+	echo '<div id="loading-div">Done!</div>';
+}
+// var_dump($_REQUEST);
+
 
 $collManager = new OccurrenceListManager();
 $searchVar = $collManager->getQueryTermStr();
@@ -62,6 +72,23 @@ $_SESSION['citationvar'] = $searchVar;
 				}
 			});
 		});
+
+		function establishInverseRelationshipRecords() {
+			console.log('deleteMe got here in establishInverseRelationshipRecords');
+			$.ajax({
+				url: 'list.php',
+				type: 'post',
+				data: { action: 'establishInverseRelationshipRecords' },
+				success: function(response) {
+					console.log('deleteMe success');
+					console.log(response);
+				},
+				error: function(xhr, status, error) {
+					console.log('deleteMe failure');
+					console.error(xhr.responseText);
+				}
+			});
+		}
 
 		function validateOccurListForm(f) {
 			if (f.targetdatasetid.value == "") {
@@ -224,6 +251,8 @@ $_SESSION['citationvar'] = $searchVar;
 						if ($associationSearchStr = $collManager->getAssociationSearchStr()) {
 							if (strlen($associationSearchStr) > 300) $associationSearchStr = substr($associationSearchStr, 0, 300) . '<span class="taxa-span">... (<a href="#" onclick="$(\'.association-span\').toggle();return false;">' . htmlspecialchars($LANG['SHOW_ALL'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a>)</span><span class="association-span" style="display:none;">' . substr($taxaSearchStr, 300) . '</span>'; // @TODO wouldn't this truncate in either case?
 							echo '<div><b>' . $LANG['ASSOCIATIONS'] . ':</b> ' . $associationSearchStr . '</div>';
+							// echo '<div><span>' . "Didn't find what you were looking for? Try " . '<form name="establish-inverse-relationships" id="establish-inverse-relationships" action="list.php" method="post" onsubmit="return establishInverseRelationshipRecords()"><button type="submit">populating your database with inverse relationships</button></form>' . ". Note that this may take serveral minutes." . '</span></div>';
+							echo '<div><span>' . "Didn't find what you were looking for? Try " . '<form name="establish-inverse-relationships" id="establish-inverse-relationships" action="list.php" method="post"><input name="comingFrom" type="hidden" value="<?php echo $comingFrom; ?>" /><input type="hidden" name="establishInverseRelationshipRecords" id="establishInverseRelationshipRecords" value="establishInverseRelationshipRecords"></input><button type="submit">populating your database with inverse relationships</button></form>' . ". Note that this may take serveral minutes." . '</span></div>'; // @TODO make easier to read
 						}
 						if ($localSearchStr = $collManager->getLocalSearchStr()) {
 							echo '<div><b>' . $LANG['SEARCH_CRITERIA'] . ':</b> ' . $localSearchStr . '</div>';

@@ -40,7 +40,7 @@ class OccurrenceListManager extends OccurrenceManager{
 			$pageRequest = ($pageRequest - 1)*$cntPerPage;
 		}
 		$sql .= ' LIMIT ' . $pageRequest . ',' . $cntPerPage;
-		// echo '<div>Spec sql: ' . $sql . '</div>'; exit;
+		echo '<div>Spec sql: ' . $sql . '</div>'; exit;
 		$result = $this->conn->query($sql);
 		if($result){
 			$securityCollArr = array();
