@@ -92,13 +92,15 @@ class AssociationManager extends OccurrenceTaxaManager{
 		$recordOccidAssociate = array_key_exists('occidAssociate', $record) ? $record['occidAssociate'] : '';
 		$relationship = array_key_exists('relationship', $record) ? $record['relationship'] : '';
 		$inverseRelationship = $this->getInverseRelationshipOf($relationship);
+		$verbatimsciname = $this->getCorrespondingVerbatimsciname($recordOccid);
+		$createdUid = $GLOBALS['SYMB_UID'];
 		$basisOfRecord = 'scriptGenerated';
-		$sql = 'INSERT INTO omoccurassociations(occid, occidAssociate, relationship, basisOfRecord, createdUid)';
-		$sql .= ' VALUES(?,?,?,?,?);';
+		$sql = 'INSERT INTO omoccurassociations(occid, occidAssociate, relationship, basisOfRecord, createdUid, verbatimsciname)';
+		$sql .= ' VALUES(?,?,?,?,?,?);';
 		$returnVal = false;
 		// $this->resetConnection();
 		if($statement = $this->conn->prepare($sql)){
-			$statement->bind_param('iissi', $recordOccidAssociate, $recordOccid, $inverseRelationship, $basisOfRecord, $GLOBALS['SYMB_UID']);
+			$statement->bind_param('iissis', $recordOccidAssociate, $recordOccid, $inverseRelationship, $basisOfRecord, $createdUid, $verbatimsciname);
 			if($statement->execute()){
 				$returnVal = true;
 			}
@@ -107,6 +109,21 @@ class AssociationManager extends OccurrenceTaxaManager{
 			echo 'deleteMe got here';
 		}
 		// $this->resetConnectionToRead();
+		return $returnVal;
+	}
+
+	private function getCorrespondingVerbatimsciname($targetOccid){
+		$sql = 'SELECT sciname from omoccurrences where occid=?';
+		$returnVal = '';
+		if($statement = $this->conn->prepare($sql)){
+			$statement->bind_param('s', $targetOccid);
+			$statement->execute();
+			$result = $statement->get_result();
+			if ($row = $result->fetch_assoc()) {
+ 				$returnVal = array_key_exists('sciname', $row) ? $row['sciname'] : '';
+			}
+			$statement->close();
+		}
 		return $returnVal;
 	}
 
@@ -197,21 +214,21 @@ class AssociationManager extends OccurrenceTaxaManager{
 							//Return matches that are not linked to thesaurus
 							if($rankid > 179){
 								if($this->exactMatchOnly) $sqlWhereTaxa .= 'OR (o.sciname = "' . $term . '") ';
-								else $sqlWhereTaxa .= "OR (o.sciname LIKE '" . $term . "%') ";
+								else $sqlWhereTaxa .= "OR (o.sciname LIKE '" . $term . "%') OR (oa.verbatimsciname LIKE '" . $term . "%') ";
 							}
 						}
 						else{
 							//Protect against someone trying to download big pieces of the occurrence table through the user interface
 							if(strlen($term) < 4) $term .= ' ';
 							if($this->exactMatchOnly){
-								$sqlWhereTaxa .= 'OR (o.sciname = "' . $term . '") ';
+								$sqlWhereTaxa .= 'OR (o.sciname = "' . $term . '") OR (oa.verbatimsciname LIKE "' . $term . '%") ';
 							}
 							else{
-								$sqlWhereTaxa .= 'OR (o.sciname LIKE "' . $term . '%") ';
+								$sqlWhereTaxa .= 'OR (o.sciname LIKE "' . $term . '%") OR (oa.verbatimsciname LIKE "' . $term . '%") ';
 								if(!strpos($term,' _ ')){
 									//Accommodate for formats of hybrid designations within input and target data (e.g. x, multiplication sign, etc)
 									$term2 = preg_replace('/^([^\s]+\s{1})/', '$1 _ ', $term);
-									$sqlWhereTaxa .= "OR (o.sciname LIKE '" . $term2 . "%') ";
+									$sqlWhereTaxa .= "OR (o.sciname LIKE '" . $term2 . "%')  OR (oa.verbatimsciname LIKE '" . $term . "%') ";
 								}
 							}
 						}

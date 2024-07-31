@@ -18,9 +18,7 @@ $shouldEstablishInverseRelationshipRecords = array_key_exists('establishInverseR
 if($shouldEstablishInverseRelationshipRecords){
 	echo '<div id="loading-div"><span>Establishing Inverse Relationship Records...</span></div>';
 	$associationManager->establishInverseRelationshipRecords();
-	echo '<div id="loading-div">Done!</div>';
 }
-// var_dump($_REQUEST);
 
 
 $collManager = new OccurrenceListManager();
@@ -73,22 +71,22 @@ $_SESSION['citationvar'] = $searchVar;
 			});
 		});
 
-		function establishInverseRelationshipRecords() {
-			console.log('deleteMe got here in establishInverseRelationshipRecords');
-			$.ajax({
-				url: 'list.php',
-				type: 'post',
-				data: { action: 'establishInverseRelationshipRecords' },
-				success: function(response) {
-					console.log('deleteMe success');
-					console.log(response);
-				},
-				error: function(xhr, status, error) {
-					console.log('deleteMe failure');
-					console.error(xhr.responseText);
-				}
-			});
-		}
+		// function establishInverseRelationshipRecords() {
+		// 	console.log('deleteMe got here in establishInverseRelationshipRecords');
+		// 	$.ajax({
+		// 		url: 'list.php',
+		// 		type: 'post',
+		// 		data: { action: 'establishInverseRelationshipRecords' },
+		// 		success: function(response) {
+		// 			console.log('deleteMe success');
+		// 			console.log(response);
+		// 		},
+		// 		error: function(xhr, status, error) {
+		// 			console.log('deleteMe failure');
+		// 			console.error(xhr.responseText);
+		// 		}
+		// 	});
+		// }
 
 		function validateOccurListForm(f) {
 			if (f.targetdatasetid.value == "") {

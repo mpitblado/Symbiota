@@ -274,3 +274,5 @@ CREATE TABLE `usersthirdpartyauth` (
 ALTER TABLE `omoccurresource` 
   RENAME TO  `deprecated_omoccurresource` ;
 
+# We need to relax this if we want inverse relationship entries in omoccurassociations for derivedFromSameIndividual
+ALTER TABLE omoccurassociations DROP INDEX UQ_omoccurassoc_sciname;
