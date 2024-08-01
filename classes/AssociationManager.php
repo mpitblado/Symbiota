@@ -1,5 +1,7 @@
 <?php
 
+use function PHPUnit\Framework\isEmpty;
+
 include_once($SERVER_ROOT.'/classes/OccurrenceTaxaManager.php');
 include_once($SERVER_ROOT.'/classes/TaxonomyUtilities.php');
 
@@ -87,7 +89,7 @@ class AssociationManager extends OccurrenceTaxaManager{
 			return '';
 		}
 	}
-	private function createInverseRecord($record){
+	public function createInverseRecord($record){
 		$recordOccid = array_key_exists('occid', $record) ? $record['occid'] : '';
 		$recordOccidAssociate = array_key_exists('occidAssociate', $record) ? $record['occidAssociate'] : '';
 		$relationship = array_key_exists('relationship', $record) ? $record['relationship'] : '';
@@ -99,14 +101,13 @@ class AssociationManager extends OccurrenceTaxaManager{
 		$sql .= ' VALUES(?,?,?,?,?,?);';
 		$returnVal = false;
 		// $this->resetConnection();
-		if($statement = $this->conn->prepare($sql)){
+		$shouldCreateInverseRecord = !empty($recordOccid) && !empty($recordOccidAssociate) && !empty($relationship) && !empty($inverseRelationship) && !empty($recordOccid);
+		if($shouldCreateInverseRecord && $statement = $this->conn->prepare($sql)){
 			$statement->bind_param('iissis', $recordOccidAssociate, $recordOccid, $inverseRelationship, $basisOfRecord, $createdUid, $verbatimsciname);
 			if($statement->execute()){
 				$returnVal = true;
 			}
 			$statement->close();
-		}else{
-			echo 'deleteMe got here';
 		}
 		// $this->resetConnectionToRead();
 		return $returnVal;

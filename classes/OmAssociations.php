@@ -2,6 +2,7 @@
 include_once('Manager.php');
 include_once('OccurrenceUtilities.php');
 include_once('UuidFactory.php');
+include_once('AssociationManager.php');
 
 class OmAssociations extends Manager{
 
@@ -120,6 +121,7 @@ class OmAssociations extends Manager{
 				$paramArr[] = $value;
 			}
 			$sql .= ') VALUES('.trim($sqlValues, ', ').') ';
+			$insertedRecord = null;
 			if($stmt = $this->conn->prepare($sql)){
 				$stmt->bind_param($this->typeStr, ...$paramArr);
 				try{
@@ -127,6 +129,19 @@ class OmAssociations extends Manager{
 						if($stmt->affected_rows || !$stmt->error){
 							$this->assocID = $stmt->insert_id;
 							$status = true;
+
+							$fetchSql = 'SELECT * FROM omoccurassociations WHERE assocID = ?';
+							if ($fetchStmt = $this->conn->prepare($fetchSql)) {
+								$fetchStmt->bind_param('i', $this->assocID);
+								$fetchStmt->execute();
+								$result = $fetchStmt->get_result();
+								if ($result->num_rows > 0) {
+									$insertedRecord = $result->fetch_assoc();
+								} else {
+									$this->errorMessage = 'Record not found after insertion.';
+								}
+								$fetchStmt->close();
+							} 
 						}
 						else $this->errorMessage = $stmt->error;
 					}
@@ -138,6 +153,11 @@ class OmAssociations extends Manager{
 				$stmt->close();
 			}
 			else $this->errorMessage = 'ERROR preparing statement for omoccurassociations insert: '.$this->conn->error;
+		}
+
+		if($status == true){
+			$associationManager = new AssociationManager;
+			$associationManager->createInverseRecord($insertedRecord);
 		}
 		return $status;
 	}
