@@ -135,35 +135,32 @@ class AssociationManager extends OccurrenceTaxaManager{
 	// 	$this->conn = MySQLiConnectionFactory::getCon('readonly');
 	// }
 		
+	public function getAssociatedRecords($associationArr) {
+    $sql = '';
 
-	public function getAssociatedRecords($associationArr){
-		$sql='';
+    if (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'none') {
+        $familyJoinStr = '';
+        $shouldUseFamily = array_key_exists('associated-taxa', $associationArr) && $associationArr['associated-taxa'] == '3';
+        if ($shouldUseFamily) $familyJoinStr = 'LEFT JOIN taxstatus ts ON o.tidinterpreted = ts.tid';
 
-		if(array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'none'){
-			$familyJoinStr = '';
-			$shouldUseFamily = array_key_exists('associated-taxa', $associationArr) && $associationArr['associated-taxa'] == '3';
-			if($shouldUseFamily) $familyJoinStr = 'LEFT JOIN taxstatus ts ON o.tidinterpreted = ts.tid';
+        // "Forward" association
+        $relationshipType = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ? $associationArr['relationship'] : 'IS NOT NULL';
+        $relationshipStr = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ? ("='" . $relationshipType . "'") : ' IS NOT NULL';
 
+        $forwardSql = "SELECT o.occid FROM omoccurrences o INNER JOIN omoccurassociations oa ON o.occid = oa.occid " . $familyJoinStr . " WHERE oa.relationship " . $relationshipStr . " ";
+        $forwardSql .= $this->getAssociatedTaxonWhereFrag($associationArr);
 
-			// "Forward" association
-			$relationshipType = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ? $associationArr['relationship'] : 'IS NOT NULL';
-			$relationshipStr = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ?  ("='" . $relationshipType . "'")  : (' IS NOT NULL');
-			// $sql .= "AND (o.occid IN (SELECT DISTINCT o.occid FROM omoccurrences o INNER JOIN omoccurassociations oa on o.occid=oa.occid WHERE oa.relationship" . $relationshipStr . " ";
-			$sql .= "AND (o.occid IN (SELECT DISTINCT o.occid FROM omoccurrences o INNER JOIN omoccurassociations oa on o.occid=oa.occid " . $familyJoinStr . " WHERE oa.relationship" . $relationshipStr . " ";
-			$sql .= $this->getAssociatedTaxonWhereFrag($associationArr) . ')';
-	
-			// @TODO handle situation where the associationType is external and there's no occidAssociate; pull resourceUrl instead?
-			//something like:
-			// $sql =. 'SELECT DISTINCT resourceUrl from omoccurassociations WHERE associationType="externalOccurrence" AND occidAssociate IS NULL AND relationship = ' . $relationshipType . ' AND ';
-	
-			// "Reverse" association
-			$reverseAssociationType = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ? $this->getInverseRelationshipOf($relationshipType) : 'IS NOT NULL';
-			$reverseRelationshipStr = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ?  ("='" . $reverseAssociationType . "'")  : (' IS NOT NULL');
-			$sql .= " OR o.occid IN (SELECT DISTINCT oa.occidAssociate FROM omoccurrences o INNER JOIN omoccurassociations oa on o.occid=oa.occid INNER JOIN omoccurdeterminations od ON oa.occid=od.occid " . $familyJoinStr . " where oa.relationship " . $reverseRelationshipStr . " "; //isCurrent="1" AND my thought was that we want these results to be as relaxed as possible
-			$sql .= $this->getAssociatedTaxonWhereFrag($associationArr) . ')';
-		}
-		return $sql;
-	}
+        // "Reverse" association
+        $reverseAssociationType = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ? $this->getInverseRelationshipOf($relationshipType) : 'IS NOT NULL';
+        $reverseRelationshipStr = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ? ("='" . $reverseAssociationType . "'") : ' IS NOT NULL';
+
+        $reverseSql = "SELECT oa.occidAssociate FROM omoccurrences o INNER JOIN omoccurassociations oa ON o.occid = oa.occid INNER JOIN omoccurdeterminations od ON oa.occid = od.occid " . $familyJoinStr . " WHERE oa.relationship " . $reverseRelationshipStr . " ";
+        $reverseSql .= $this->getAssociatedTaxonWhereFrag($associationArr);
+
+        $sql .= "AND (o.occid IN (SELECT occid FROM ( " . $forwardSql . " UNION " . $reverseSql . " ) AS occids)";
+    }
+    return $sql;
+}
 
 	public function getAssociatedTaxonWhereFrag($associationArr){
 		$sqlWhereTaxa = '';
