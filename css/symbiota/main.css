@@ -36,7 +36,6 @@ h4 {
 	position: relative;
 	align-items: center;
 }
-
 /*
 h1 {
   font-size: 3rem;
@@ -370,6 +369,11 @@ button.icon-button {
 
 button.icon-button:hover {
   background: var(--medium-color);
+}
+
+button.inverse-color {
+    background-color: var(--light-color);
+    color: var(--darkest-color);
 }
 
 .button {
