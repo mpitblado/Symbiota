@@ -594,7 +594,7 @@ class OccurrenceTaxaManager {
 
 	public function getAssociationSearchStr(){
 		$str = '';
-		if(isset($this->associationArr['relationship'])){
+		if(isset($this->associationArr['relationship']) && $this->associationArr['relationship'] != 'none'){
 			$str = 'Taxa that have the following association: ';
 			$str .= $this->associationArr['relationship'];
 		}

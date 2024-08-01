@@ -18,6 +18,11 @@ $shouldEstablishInverseRelationshipRecords = array_key_exists('establishInverseR
 if($shouldEstablishInverseRelationshipRecords){
 	echo '<div id="loading-div"><span>Establishing Inverse Relationship Records...</span></div>';
 	$associationManager->establishInverseRelationshipRecords();
+	if($comingFrom === 'search/index.php'){
+		header('Location: search/index.php');
+	} else{
+		header('Location: harvestparams.php');
+	}
 }
 
 
@@ -256,7 +261,7 @@ $_SESSION['citationvar'] = $searchVar;
 								<form name="establish-inverse-relationships" id="establish-inverse-relationships" action="list.php" method="post">
 									<input name="comingFrom" type="hidden" value="<?php echo $comingFrom; ?>" />
 									<input type="hidden" name="establishInverseRelationshipRecords" id="establishInverseRelationshipRecords" value="establishInverseRelationshipRecords" />
-									<button type="submit">Populate your Database with Inverse Relationships</button>
+									<button type="submit" class="top-breathing-room-rel bottom-breathing-room-rel">Populate your Database with Inverse Relationships</button>
 								</form>
 								<span>And try your search again. Note that this may take serveral minutes.</span>
 							</div>
