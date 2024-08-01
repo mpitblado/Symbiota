@@ -14,6 +14,7 @@ $occManager = new OccurrenceEditorImages();
 $occManager->setOccId($occId);
 $specImgArr = $occManager->getImageMap();
 $photographerArr = $occManager->getPhotographerArr();
+
 ?>
 <script type="text/javascript">
 	function verifyImgAddForm(f){
@@ -307,7 +308,7 @@ $photographerArr = $occManager->getPhotographerArr();
 												<option value="">---------------------------------------</option>
 												<?php
 												foreach($photographerArr as $id => $uname){
-													echo "<option value='".$id."' ".($id == $imgArr["photographeruid"]?"SELECTED":"").">";
+													echo "<option value='".$id."' ".($id == $imgArr["creatorUid"]?"SELECTED":"").">";
 													echo $uname;
 													echo "</option>\n";
 												}
@@ -317,7 +318,7 @@ $photographerArr = $occManager->getPhotographerArr();
 												<img src="../../images/editplus.png" style="border:0px;width:1.5em;" />
 											</a>
 										</div>
-										<div id="imgeditoverride<?php echo $imgId; ?>" style="display:<?php echo ($imgArr["photographer"]?'block':'none'); ?>;">
+										<div id="imgeditoverride<?php echo $imgId; ?>" style="display:<?php echo ($imgArr["creator"]?'block':'none'); ?>;">
 											<b><?php echo $LANG['PHOTOG_OVER']; ?>:</b><br/>
 											<input name='photographer' type='text' value="<?php echo $imgArr["photographer"]; ?>" style="width:300px;" maxlength='100'>
 											* <?php echo $LANG['WILL_OVERRIDE']; ?>
