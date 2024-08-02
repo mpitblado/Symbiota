@@ -135,7 +135,7 @@ class OccurrenceEditorImages extends OccurrenceEditorManager {
 			$types .= 's';
 		}
 
-		$additionalFields= array('occid' => 'i', 'tidinterpreted' => 'i', 'caption' => 's', 'photographer' => 's', 'photographeruid' => 'i', 'notes' => 's', 'copyright' => 's', 'sortoccurrence' => 'i', 'sourceurl' => 's');
+		$additionalFields= array('occid' => 'i', 'tidinterpreted' => 'i', 'caption' => 's', 'creator' => 's', 'creatoruid' => 'i', 'notes' => 's', 'copyright' => 's', 'sortoccurrence' => 'i', 'sourceurl' => 's');
 		foreach($additionalFields as $fieldName => $t){
 			if(array_key_exists($fieldName, $imgArr)){
 				if($imgArr[$fieldName]) $fieldArr[] = $imgArr[$fieldName];
@@ -147,7 +147,7 @@ class OccurrenceEditorImages extends OccurrenceEditorManager {
 		if($fieldArr){
 			$fieldArr[] = 'specimen';
 			$fieldArr[] = $imgId;
-			// TODO media (Logan) find out a pace in the media table for imagetype
+			// TODO media (Logan) find out a place in the media table for imagetype
 			$sql .= 'imagetype=? WHERE (media_id= ?)';
 			$types .= 'si';
 			$imgUpdateStatus = false;
