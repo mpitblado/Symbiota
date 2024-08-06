@@ -167,7 +167,7 @@ class ImageShared{
 					return true;
 				}
 				else{
-					$this->errArr[] = 'FATAL ERROR: unable to move image to target ('.$this->targetPath.$fileName.$this->imgExt.')';
+					$this->errArr[] = 'FATAL ERROR: unable to move image to target from '. $_FILES[$imgFile]['tmp_name'] .'('.$this->targetPath.$fileName.$this->imgExt.')';
 				}
 			}
 			else{
@@ -356,7 +356,7 @@ class ImageShared{
 		}
 
 		//Get image variable
-		if(!$this->sourceWidth || !$this->sourceHeight){
+		if((!$this->sourceWidth || !$this->sourceHeight) && ($this->imgExt === 'png' || $this->imgExt === 'jpg')){
 			list($this->sourceWidth, $this->sourceHeight) =  $this->getImgDim(str_replace(' ', '%20', $this->sourcePath));
 		}
 		$this->setSourceFileSize();
