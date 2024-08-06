@@ -421,9 +421,7 @@ $creatorArray = Media::getCreatorArray();
 									</fieldset>
 								</form>
 								<?php
-								//$occManager->isRemappable($imgArr)
-								//$displayRemapForm = Media::isRemappable($specImgArr, $occId)
-								if($displayRemapForm = $occManager->isRemappable($imgArr)){
+								if($displayRemapForm = Media::isRemappable($imgArr, $occId)){
 									?>
 									<form name="img<?php echo $imgId; ?>remapform" action="occurrenceeditor.php" method="post" onsubmit="return verifyImgRemapForm(this);">
 										<fieldset style="padding:15px">

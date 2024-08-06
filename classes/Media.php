@@ -23,21 +23,13 @@ class Media {
 		}
 	}
 
-	private static function mediaRootUrl(): string {
+	private static function getMediaRootUrl(): string {
 		if(self::$mediaRootUrl) {
 			return self::$mediaRootUrl;
 		}else if(substr($GLOBALS['IMAGE_ROOT_URL'],-1) != "/") {
 			return self::$mediaRootUrl = $GLOBALS['IMAGE_ROOT_URL'] . '/';
 		} else {
 			return self::$mediaRootUrl = $GLOBALS['IMAGE_ROOT_URL'];
-		}
-	}
-
-	private function getMediaRootUrl() {
-		if(substr($GLOBALS['IMAGE_ROOT_PATH'],-1) != "/") {
-			self::$mediaRootPath = $GLOBALS['IMAGE_ROOT_PATH'] . '/';
-		} else {
-			self::$mediaRootPath = $GLOBALS['IMAGE_ROOT_PATH'];
 		}
 	}
 
