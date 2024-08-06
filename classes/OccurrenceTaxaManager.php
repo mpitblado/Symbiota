@@ -60,8 +60,6 @@ class OccurrenceTaxaManager {
 			$this->associationArr['relationship'] = $associationTypeStr;
 		}
 		
-		// $taxonTypeAssociationStr = $this->cleanAndAssignGeneric('taxontype-association', $inputArr);
-
 		if($associatedTaxonStr){
 			$this->associationArr['search'] = $associatedTaxonStr;
 			$this->setAssociationUseThes($inputArr, 'usethes-associations');
@@ -82,14 +80,10 @@ class OccurrenceTaxaManager {
 
 
 		}
-		// @TODO $taxonType2Str
-		// var_dump($this->associationArr['taxa']);
-
-		//	LEFT OFF HERE figuring out the remaining TODOs here and testing it out
 	}
 
 	protected function processSingleTerm($searchTerm, $searchTermkey, $defaultTaxaType){
-		$this->associationTaxaSearchTerms[$searchTermkey] = $searchTerm; // @TODO generalize
+		$this->associationTaxaSearchTerms[$searchTermkey] = $searchTerm;
 		$taxaType = $defaultTaxaType;
 		if($defaultTaxaType == TaxaSearchType::ANY_NAME) {
 			$searchTermName = explode(': ',$searchTerm);
@@ -100,7 +94,7 @@ class OccurrenceTaxaManager {
 				$taxaType = TaxaSearchType::SCIENTIFIC_NAME;
 			}
 		}
-		$this->setSciNamesByVerns($searchTerm, $this->associationArr); // @TODO test whether this works
+		$this->setSciNamesByVerns($searchTerm, $this->associationArr);
 		$this->setTaxonRankAndType($searchTerm, $taxaType, 'usethes-associations');
 	}
 
@@ -123,7 +117,7 @@ class OccurrenceTaxaManager {
 			if($this->associationArr[$useThesId]){
 				$sql .= 'INNER JOIN taxstatus ts ON t.tid = ts.tidaccepted
 				INNER JOIN taxa t2 ON ts.tid = t2.tid
-				WHERE (ts.taxauthid = ?) AND (t2.sciname IN(?))'; // @TODO does this work?
+				WHERE (ts.taxauthid = ?) AND (t2.sciname IN(?))';
 				$typeStr .= 'is';
 				array_push($bindingArr, $this->taxAuthId, $this->cleanInStr($searchTerm));
 			} else{
@@ -132,10 +126,7 @@ class OccurrenceTaxaManager {
 				array_push($bindingArr, $this->cleanInStr($searchTerm));
 			}
 		}
-		// var_dump($sql);
 		if ($statement = $this->conn->prepare($sql)) {
-			// var_dump($typeStr);
-			// var_dump(...$bindingArr);
 			$statement->bind_param($typeStr,...$bindingArr);
 			$statement->execute();
 			$result = $statement->get_result();
@@ -162,7 +153,7 @@ class OccurrenceTaxaManager {
 
 	protected function setAssociationSynonyms(){
 		if(isset($this->associationArr['taxa'])){
-			foreach($this->associationArr['taxa'] as $searchStr => $searchArr){ // @TODO LEFT OFF HERE
+			foreach($this->associationArr['taxa'] as $searchStr => $searchArr){
 				if(isset($searchArr['tid']) && $searchArr['tid']){
 					foreach($searchArr['tid'] as $tid => $rankid){
 						$accArr = array();
@@ -195,7 +186,7 @@ class OccurrenceTaxaManager {
 					$accArr[] = $r1['tid'];
 					if(!isset($this->associationArr['taxa'][$r1['sciname']])){
 						if($rankid == 220) $this->associationArr['taxa'][$r1['sciname']]['tid'][$r1['tid']] = $r1['rankid'];
-						else $this->associationArr['taxa'][$searchStr]['TID_BATCH'][$r1['tid']] = ''; // @TODO generalize and use in setSynonyms as well to DRY up code
+						else $this->associationArr['taxa'][$searchStr]['TID_BATCH'][$r1['tid']] = '';
 					}
 				}
 			}
@@ -218,7 +209,7 @@ class OccurrenceTaxaManager {
 			$result = $statement2->get_result();
 			if($result->num_rows > 0){
 				while($r2 = $result->fetch_assoc()){
-					if($rankid >= 220) $this->associationArr['taxa'][$r2['accepted']]['synonyms'][$r2['tid']] = $r2['sciname']; // @TODO generalize and use in setSynonyms as well to DRY up code
+					if($rankid >= 220) $this->associationArr['taxa'][$r2['accepted']]['synonyms'][$r2['tid']] = $r2['sciname'];
 					else $this->associationArr['taxa'][$searchStr]['TID_BATCH'][$r2['tid']] = '';
 				}
 			}
@@ -227,7 +218,7 @@ class OccurrenceTaxaManager {
 	}
 
 	protected function setAssociationUseThes($inputArr = null, $useThesId='usethes'){
-		$this->associationArr[$useThesId] = 0; // @TODO generalize and use in setTaxonRequestVariable as well to DRY up code
+		$this->associationArr[$useThesId] = 0;
 		if(isset($inputArr[$useThesId]) && $inputArr[$useThesId]){
 			$this->associationArr[$useThesId] = 1;
 		}
@@ -236,7 +227,7 @@ class OccurrenceTaxaManager {
 		}
 	}
 
-	protected function setAndGetAssociationDefaultTaxaType($inputArr = null){ // @TOD generalize this work with setTaxonRequestVariable as well
+	protected function setAndGetAssociationDefaultTaxaType($inputArr = null){
 		$defaultTaxaType = TaxaSearchType::SCIENTIFIC_NAME;
 		if(isset($inputArr['associated-taxa']) && is_numeric($inputArr['associated-taxa'])){
 			$defaultTaxaType = $inputArr['associated-taxa'];
@@ -375,20 +366,20 @@ class OccurrenceTaxaManager {
 				while($row = $result->fetch_object()){
 					$vernName = $row->VernacularName;
 					if($row->rankid == 140){
-						if(array_key_exists('taxa', $alternateTaxaArr)){
-							$alternateTaxaArr['taxa'][$vernName]['families'][] = $row->sciname;	// @TODO check that these values update correctly
+						if(is_array($alternateTaxaArr) && array_key_exists('taxa', $alternateTaxaArr)){
+							$alternateTaxaArr['taxa'][$vernName]['families'][] = $row->sciname;
 						} else{
 							$this->taxaArr['taxa'][$vernName]['families'][] = $row->sciname;
 						}
 					}
 					else{
-						if(array_key_exists('taxa', $alternateTaxaArr)){
+						if(is_array($alternateTaxaArr) && array_key_exists('taxa', $alternateTaxaArr)){
 							$alternateTaxaArr['taxa'][$vernName]['scinames'][] = $row->sciname;
 						}else{
 							$this->taxaArr['taxa'][$vernName]['scinames'][] = $row->sciname;
 						}
 					}
-					if(array_key_exists('taxa', $alternateTaxaArr)){
+					if(is_array($alternateTaxaArr) && array_key_exists('taxa', $alternateTaxaArr)){
 						$alternateTaxaArr['taxa'][$vernName]['tid'][$row->tid] = $row->rankid;
 					}else{
 						$this->taxaArr['taxa'][$vernName]['tid'][$row->tid] = $row->rankid;
@@ -446,120 +437,9 @@ class OccurrenceTaxaManager {
 		}
 	}
 
-	// public function getAssociatedTaxonWhereFrag(){
-	// 	$sqlWhereTaxa = '';
-	// 	if(isset($this->associationArr['taxa'])){
-	// 		// var_dump($this->associationArr);
-	// 		$tidInArr = array();
-	// 		$taxonType = $this->associationArr['associated-taxa'];
-	// 		foreach($this->associationArr['taxa'] as $searchTaxon => $searchArr){
-	// 			if(isset($searchArr['taxontype'])) $taxonType = $searchArr['taxontype'];
-	// 			if($taxonType == TaxaSearchType::TAXONOMIC_GROUP){
-	// 				//Class, order, or other higher rank
-	// 				if(isset($searchArr['tid'])){
-	// 					$tidArr = array_keys($searchArr['tid']);
-	// 					//$sqlWhereTaxa .= 'OR (o.tidinterpreted IN(SELECT DISTINCT tid FROM taxaenumtree WHERE (taxauthid = '.$this->taxAuthId.') AND (parenttid IN('.trim($tidStr,',').') OR (tid = '.trim($tidStr,',').')))) ';
-	// 					$sqlWhereTaxa .= 'OR (e.parenttid IN('.implode(',', $tidArr).') ';
-	// 					$sqlWhereTaxa .= 'OR (e.tid IN('.implode(',', $tidArr).')) ';
-	// 					if(isset($searchArr['synonyms'])) $sqlWhereTaxa .= 'OR (e.tid IN('.implode(',',array_keys($searchArr['synonyms'])).')) ';
-	// 					//$tidInArr = array_merge($tidInArr,$tidArr);
-	// 					//if(isset($searchArr['synonyms'])) $tidInArr = array_merge($tidInArr,array_keys($searchArr['synonyms']));
-	// 					$sqlWhereTaxa .= ') ';
-	// 				}
-	// 				else{
-	// 					//Unable to find higher taxon within taxonomic tree, thus return nothing
-	// 					$sqlWhereTaxa .= 'OR (o.tidinterpreted = 0) ';
-	// 				}
-	// 			}
-	// 			elseif($taxonType == TaxaSearchType::FAMILY_ONLY){
-	// 				//$sqlWhereTaxa .= 'OR ((o.family = "'.$searchTaxon.'") OR (o.sciname = "'.$searchTaxon.'")) ';
-	// 				//$sqlWhereTaxa .= 'OR (((ts.family = "'.$searchTaxon.'") AND (ts.taxauthid = '.$this->taxAuthId.')) OR (o.family = "'.$searchTaxon.'") OR (o.sciname = "'.$searchTaxon.'")) ';
-	// 				//$sqlWhereTaxa .= 'OR (((ts.family = "'.$searchTaxon.'") AND (ts.taxauthid = '.$this->taxAuthId.')) OR o.sciname = "'.$searchTaxon.'") ';
-	// 				if(isset($searchArr['tid'])){
-	// 					$tidArr = array_keys($searchArr['tid']);
-	// 					$sqlWhereTaxa .= 'OR ((ts.family = "'.$searchTaxon.'") OR (ts.tid IN('.implode(',', $tidArr).'))) ';
-	// 				}
-	// 				else{
-	// 					$sqlWhereTaxa .= 'OR ((o.family = "'.$searchTaxon.'") OR (o.sciname = "'.$searchTaxon.'")) ';
-	// 				}
-	// 			}
-	// 			else{
-	// 				if($taxonType == TaxaSearchType::COMMON_NAME){
-	// 					$famArr = $this->setCommonNameWhereTerms($searchArr, $tidInArr);
-	// 					if($famArr) $sqlWhereTaxa .= 'OR (o.family IN("'.implode('","',$famArr).'")) ';
-	// 				}
-	// 				if(isset($searchArr['TID_BATCH'])){
-	// 					$tidInArr = array_merge($tidInArr, array_keys($searchArr['TID_BATCH']));
-	// 					if(isset($searchArr['tid'])) $tidInArr = array_merge($tidInArr, array_keys($searchArr['tid']));
-	// 				}
-	// 				else{
-	// 					$term = $this->cleanInStr(trim($searchTaxon,'%'));
-	// 					//$term = preg_replace('/\s{1}.{1,2}\s{1}/', ' _ ', $term);
-	// 					$term = preg_replace(array('/\s{1}x\s{1}/','/\s{1}X\s{1}/','/\s{1}\x{00D7}\s{1}/u'), ' _ ', $term);
-	// 					if(array_key_exists('tid',$searchArr)){
-	// 						$rankid = current($searchArr['tid']);
-	// 						$tidArr = array_keys($searchArr['tid']);
-	// 						//$sqlWhereTaxa .= "OR (o.tidinterpreted IN(".implode(',',$tidArr).")) ";
-	// 						$tidInArr = array_merge($tidInArr, $tidArr);
-	// 						//Return matches that are not linked to thesaurus
-	// 						if($rankid > 179){
-	// 							if($this->exactMatchOnly) $sqlWhereTaxa .= 'OR (o.sciname = "' . $term . '") ';
-	// 							else $sqlWhereTaxa .= 'OR (o.sciname LIKE "' . $term . '%") ';
-	// 						}
-	// 					}
-	// 					else{
-	// 						//Protect against someone trying to download big pieces of the occurrence table through the user interface
-	// 						if(strlen($term) < 4) $term .= ' ';
-	// 						/*
-	// 						if(strpos($term, ' ') || strpos($term, '%')){
-	// 							//Return matches for "Pinus a"
-	// 							$sqlWhereTaxa .= "OR (o.sciname LIKE '" . $term . "%') ";
-	// 						}
-	// 						else{
-	// 							$sqlWhereTaxa .= "OR (o.sciname LIKE '" . $term . " %') ";
-	// 						}
-	// 						*/
-	// 						if($this->exactMatchOnly){
-	// 							$sqlWhereTaxa .= 'OR (o.sciname = "' . $term . '") ';
-	// 						}
-	// 						else{
-	// 							$sqlWhereTaxa .= 'OR (o.sciname LIKE "' . $term . '%") ';
-	// 							if(!strpos($term,' _ ')){
-	// 								//Accommodate for formats of hybrid designations within input and target data (e.g. x, multiplication sign, etc)
-	// 								$term2 = preg_replace('/^([^\s]+\s{1})/', '$1 _ ', $term);
-	// 								$sqlWhereTaxa .= 'OR (o.sciname LIKE "' . $term2 . '%") ';
-	// 							}
-	// 						}
-	// 					}
-	// 				}
-	// 				if(array_key_exists('synonyms',$searchArr)){
-	// 					$synArr = $searchArr['synonyms'];
-	// 					if($synArr){
-	// 						if($taxonType == TaxaSearchType::SCIENTIFIC_NAME || $taxonType == TaxaSearchType::COMMON_NAME){
-	// 							foreach($synArr as $synTid => $sciName){
-	// 								if(strpos($sciName,'aceae') || strpos($sciName,'idae')){
-	// 									$sqlWhereTaxa .= 'OR (o.family = "' . $sciName . '") ';
-	// 								}
-	// 							}
-	// 						}
-	// 						//$sqlWhereTaxa .= 'OR (o.tidinterpreted IN('.implode(',',array_keys($synArr)).')) ';
-	// 						$tidInArr = array_merge($tidInArr,array_keys($synArr));
-	// 					}
-	// 				}
-	// 			}
-	// 		}
-	// 		if($tidInArr) $sqlWhereTaxa .= 'OR (o.tidinterpreted IN('.implode(',',array_unique($tidInArr)).')) ';
-	// 		$sqlWhereTaxa = 'AND ('.trim(substr($sqlWhereTaxa,3)).') ';
-	// 		if(strpos($sqlWhereTaxa,'e.parenttid')) $sqlWhereTaxa .= 'AND (e.taxauthid = '.$this->taxAuthId.') ';
-	// 		if(strpos($sqlWhereTaxa,'ts.family')) $sqlWhereTaxa .= 'AND (ts.taxauthid = '.$this->taxAuthId.') ';
-	// 	}
-	// 	if($sqlWhereTaxa) return $sqlWhereTaxa;
-	// 	else return false;
-	// }
 
 	public function getTaxonWhereFrag(){
 		$sqlWhereTaxa = '';
-		// var_dump($this->taxaArr);
 		if(isset($this->taxaArr['taxa'])){
 			$tidInArr = array();
 			$taxonType = $this->taxaArr['taxontype'];
@@ -570,12 +450,9 @@ class OccurrenceTaxaManager {
 					//Class, order, or other higher rank
 					if(isset($searchArr['tid'])){
 						$tidArr = array_keys($searchArr['tid']);
-						//$sqlWhereTaxa .= 'OR (o.tidinterpreted IN(SELECT DISTINCT tid FROM taxaenumtree WHERE (taxauthid = '.$this->taxAuthId.') AND (parenttid IN('.trim($tidStr,',').') OR (tid = '.trim($tidStr,',').')))) ';
 						$sqlWhereTaxa .= 'OR (e.parenttid IN('.implode(',', $tidArr).') ';
 						$sqlWhereTaxa .= 'OR (e.tid IN('.implode(',', $tidArr).')) ';
 						if(isset($searchArr['synonyms'])) $sqlWhereTaxa .= 'OR (e.tid IN('.implode(',',array_keys($searchArr['synonyms'])).')) ';
-						//$tidInArr = array_merge($tidInArr,$tidArr);
-						//if(isset($searchArr['synonyms'])) $tidInArr = array_merge($tidInArr,array_keys($searchArr['synonyms']));
 						$sqlWhereTaxa .= ') ';
 					}
 					else{
@@ -584,9 +461,6 @@ class OccurrenceTaxaManager {
 					}
 				}
 				elseif($taxonType == TaxaSearchType::FAMILY_ONLY){
-					//$sqlWhereTaxa .= 'OR ((o.family = "'.$searchTaxon.'") OR (o.sciname = "'.$searchTaxon.'")) ';
-					//$sqlWhereTaxa .= 'OR (((ts.family = "'.$searchTaxon.'") AND (ts.taxauthid = '.$this->taxAuthId.')) OR (o.family = "'.$searchTaxon.'") OR (o.sciname = "'.$searchTaxon.'")) ';
-					//$sqlWhereTaxa .= 'OR (((ts.family = "'.$searchTaxon.'") AND (ts.taxauthid = '.$this->taxAuthId.')) OR o.sciname = "'.$searchTaxon.'") ';
 					if(isset($searchArr['tid'])){
 						$tidArr = array_keys($searchArr['tid']);
 						$sqlWhereTaxa .= 'OR ((ts.family = "'.$cleanedSearchTaxon.'") OR (ts.tid IN('.implode(',', $tidArr).'))) ';
@@ -606,12 +480,10 @@ class OccurrenceTaxaManager {
 					}
 					else{
 						$term = $this->cleanInStr(trim($searchTaxon,'%'));
-						//$term = preg_replace('/\s{1}.{1,2}\s{1}/', ' _ ', $term);
 						$term = preg_replace(array('/\s{1}x\s{1}/','/\s{1}X\s{1}/','/\s{1}\x{00D7}\s{1}/u'), ' _ ', $term);
 						if(array_key_exists('tid',$searchArr)){
 							$rankid = current($searchArr['tid']);
 							$tidArr = array_keys($searchArr['tid']);
-							//$sqlWhereTaxa .= "OR (o.tidinterpreted IN(".implode(',',$tidArr).")) ";
 							$tidInArr = array_merge($tidInArr, $tidArr);
 							//Return matches that are not linked to thesaurus
 							if($rankid > 179){
@@ -722,7 +594,7 @@ class OccurrenceTaxaManager {
 
 	public function getAssociationSearchStr(){
 		$str = '';
-		if(isset($this->associationArr['relationship'])){
+		if(isset($this->associationArr['relationship']) && $this->associationArr['relationship'] != 'none'){
 			$str = 'Taxa that have the following association: ';
 			$str .= $this->associationArr['relationship'];
 		}
