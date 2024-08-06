@@ -549,7 +549,7 @@ $relationshipTypes = $associationManager->getRelationshipTypes();
 							<p><?= $LANG['ASSOCIATION_DESCRIPTION_2']; ?>: </p>
 						</div>
 						<div style="display: flex;">
-							<div id="associated-taxa-text" class="input-text-container" style="margin-left: 1rem; margin-right: 1rem; width: 40vw;">
+							<div id="associated-taxa-text" class="input-text-container" style="margin-left: 1rem; margin-right: 1rem; width: 40vw; margin-top: 1.4rem;">
 								<label for="associated-taxa" class="input-text--outlined">
 									<span class="screen-reader-only"><?php echo $LANG['TAXON'] ?></span>
 									<input type="text" name="associated-taxa" id="associated-taxa" data-chip="<?php echo $LANG['ASSOCIATIONS'] . $LANG['TAXON'] . ': ' ?>" />
