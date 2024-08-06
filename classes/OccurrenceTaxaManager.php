@@ -366,20 +366,20 @@ class OccurrenceTaxaManager {
 				while($row = $result->fetch_object()){
 					$vernName = $row->VernacularName;
 					if($row->rankid == 140){
-						if(array_key_exists('taxa', $alternateTaxaArr)){
+						if(is_array($alternateTaxaArr) && array_key_exists('taxa', $alternateTaxaArr)){
 							$alternateTaxaArr['taxa'][$vernName]['families'][] = $row->sciname;
 						} else{
 							$this->taxaArr['taxa'][$vernName]['families'][] = $row->sciname;
 						}
 					}
 					else{
-						if(array_key_exists('taxa', $alternateTaxaArr)){
+						if(is_array($alternateTaxaArr) && array_key_exists('taxa', $alternateTaxaArr)){
 							$alternateTaxaArr['taxa'][$vernName]['scinames'][] = $row->sciname;
 						}else{
 							$this->taxaArr['taxa'][$vernName]['scinames'][] = $row->sciname;
 						}
 					}
-					if(array_key_exists('taxa', $alternateTaxaArr)){
+					if(is_array($alternateTaxaArr) && array_key_exists('taxa', $alternateTaxaArr)){
 						$alternateTaxaArr['taxa'][$vernName]['tid'][$row->tid] = $row->rankid;
 					}else{
 						$this->taxaArr['taxa'][$vernName]['tid'][$row->tid] = $row->rankid;
