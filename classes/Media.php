@@ -7,15 +7,6 @@ enum MediaType {
 	case Audio;
 	case Video; 
 }
-class TestDatabasePooling {
-	use Database;
-    /**
-     * @return void
-     */
-    public static function test_connect(): void {
-		self::connect('write');
-	}
-}
 
 class Media {
 	use Database;
