@@ -276,3 +276,4 @@ ALTER TABLE `omoccurresource`
 
 # We need to relax this if we want inverse relationship entries in omoccurassociations for derivedFromSameIndividual
 ALTER TABLE omoccurassociations DROP INDEX UQ_omoccurassoc_sciname;
+ALTER TABLE omoccurassociations DROP INDEX UQ_omoccurassoc_sciname, ADD INDEX `UQ_omoccurassoc_sciname` (`occid`, `verbatimSciname`, `associationType`) USING BTREE;
