@@ -115,5 +115,6 @@ $LANG['TRAIT_CRITERIA'] = 'Critères de Caractéristiques';
 $LANG['TRAIT'] = 'Trait';
 $LANG['EXPAND_ALL_SECTIONS'] = 'Développer toutes les sections';
 $LANG['COLLAPSE_ALL_SECTIONS'] = 'Réduire toutes les sections';
+$LANG['ASSOCIATIONS'] = 'Les associations';
 
 ?>
