@@ -25,8 +25,6 @@ class OccurrenceListManager extends OccurrenceManager{
 		}
 		$occArr = array();
 		$sqlWhere = $this->getSqlWhere();
-		// var_dump('$sqlWhere before setRecordCnt is: ' . $sqlWhere);
-		// echo "<div>sqlWhere before setRecordCnt is: : " . $sqlWhere . "</div>";
 		if(!$this->recordCount || $this->reset) $this->setRecordCnt($sqlWhere);
 		$sql = 'SELECT o.occid, c.collid, c.institutioncode, c.collectioncode, c.collectionname, c.icon, o.institutioncode AS instcodeoverride, o.collectioncode AS collcodeoverride, '.
 			'o.catalognumber, o.family, o.sciname, o.scientificnameauthorship, o.tidinterpreted, o.recordedby, o.recordnumber, o.eventdate, '.
@@ -42,15 +40,13 @@ class OccurrenceListManager extends OccurrenceManager{
 			$pageRequest = ($pageRequest - 1)*$cntPerPage;
 		}
 		$sql .= ' LIMIT ' . $pageRequest . ',' . $cntPerPage;
-		// var_dump($sql);
-		// echo '<div>Spec sql: ' . $sql . '</div>'; 
+		// echo '<div>Spec sql: ' . $sql . '</div>'; exit;
 		$result = $this->conn->query($sql);
 		if($result){
 			$securityCollArr = array();
 			if(isset($GLOBALS['USER_RIGHTS']['CollEditor'])) $securityCollArr = $GLOBALS['USER_RIGHTS']['CollEditor'];
 			if(isset($GLOBALS['USER_RIGHTS']['RareSppReader'])) $securityCollArr = array_unique(array_merge($securityCollArr, $GLOBALS['USER_RIGHTS']['RareSppReader']));
 			while($row = $result->fetch_object()){
-				// var_dump($row);
 				$securityClearance = false;
 				if($isSecuredReader) $securityClearance = true;
 				elseif(in_array($row->collid,$securityCollArr)) $securityClearance = true;
@@ -128,10 +124,8 @@ class OccurrenceListManager extends OccurrenceManager{
 
 	private function setRecordCnt($sqlWhere){
 		if($sqlWhere){
-			// echo "<div>Count sqlWhere b is: ".$sqlWhere."</div>";
 			$sql = "SELECT COUNT(DISTINCT o.occid) AS cnt FROM omoccurrences o ".$this->getTableJoins($sqlWhere).$sqlWhere;
 			// echo "<div>Count sql: ".$sql."</div>";
-			// exit;
 			$result = $this->conn->query($sql);
 			if($result){
 				if($row = $result->fetch_object()){

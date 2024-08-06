@@ -131,9 +131,11 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 		$sqlWhere .= $this->getTaxonWhereFrag();
 		// echo "<div>this dot getTaxonWhereFrag() is: " . $this->getTaxonWhereFrag() . "</div>";
 		// echo "<div>sqlWhere before getting the association taxa is: " . $sqlWhere . "</div>";
-		if(isset($this->associationArr['relationship']) && isset($this->associationArr['search'])){
+		$hasValidRelationship = isset(($this->associationArr['relationship'])) && $this->associationArr['relationship']!=='none';
+		// $hasValidAssociatedTaxon = isset($this->associationArr['search']);
+		if($hasValidRelationship){ // || $hasValidAssociatedTaxon // @TODO
 			$sqlWhere = substr_replace($sqlWhere,'',-1);
-			$sqlWhere .= $this->associationManager->getAssociatedRecords($this->associationArr['relationship'], $this->associationArr) . ')';
+			$sqlWhere .= $this->associationManager->getAssociatedRecords($this->associationArr) . ')';
 		}
 		
 		if(array_key_exists('country',$this->searchTermArr)){
@@ -504,9 +506,7 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 			//Make the sql valid, but return nothing
 			//$this->sqlWhere = 'WHERE o.occid IS NULL ';
 		}
-		//echo $this->sqlWhere;
-		// var_dump($sqlWhere);
-		// var_dump('$sqlWhere after substr: ' . $this->sqlWhere);
+		// echo $this->sqlWhere; exit;
 	}
 
 	private function getAdditionIdentifiers($identFrag){
@@ -547,6 +547,7 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 				$sqlJoin .= 'INNER JOIN taxaenumtree e ON o.tidinterpreted = e.tid ';
 			}
 			if(strpos($sqlWhere,'ts.family')){
+				echo 'ts.family entered';
 				$sqlJoin .= 'LEFT JOIN taxstatus ts ON o.tidinterpreted = ts.tid ';
 			}
 			if(strpos($sqlWhere,'ds.datasetid')){
@@ -667,16 +668,24 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 				$retStr .= '&taxontype=1';
 			}
 		}
-		if(isset($this->associationArr['search']) && isset($this->associationArr['relationship'])){
-			// var_dump($this->associationArr);
-			$patternOfOnlyLettersDigitsAndSpaces = '/^[a-zA-Z0-9\s\-]*$/'; // TOOD accommodate symbols associated with extinct taxa, hybrid crosses, and abbreviations with periods, e.g. "var."?
+		// var_dump($this->associationArr);
+		$patternOfOnlyLettersDigitsAndSpaces = '/^[a-zA-Z0-9\s\-]*$/'; // TOOD accommodate symbols associated with extinct taxa, hybrid crosses, and abbreviations with periods, e.g. "var."?
+		if(isset($this->associationArr['search'])){
 			if (preg_match($patternOfOnlyLettersDigitsAndSpaces, $this->associationArr['search'])==1) {
 				$retStr .= '&associated-taxa=' . $this->associationArr['search'];
 			}
+		}
+
+		if(isset($this->associationArr['relationship'])){
 			if (preg_match($patternOfOnlyLettersDigitsAndSpaces, $this->associationArr['relationship'])==1) {
 				$retStr .= '&association-type=' . $this->associationArr['relationship'];
 			}
+		}
+
+		if(isset($this->associationArr['associated-taxa'])){
 			$retStr .= '&associated-taxon-type=' . intval($this->associationArr['associated-taxa']);
+		}
+		if(isset($this->associationArr['usethes-associations'])){
 			$retStr .= '&usethes-associations=' . intval($this->associationArr['usethes-associations']);
 		}
 
@@ -763,7 +772,7 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 		if(array_key_exists('taxa',$_REQUEST) && $_REQUEST['taxa']){
 			$this->setTaxonRequestVariable();
 		}
-		$hasEverythingRequiredForAssociationSearch = array_key_exists('association-type',$_REQUEST) && $_REQUEST['association-type'] && array_key_exists('associated-taxa',$_REQUEST) && $_REQUEST['associated-taxa'] && array_key_exists('taxontype-association',$_REQUEST) && $_REQUEST['taxontype-association'];
+		$hasEverythingRequiredForAssociationSearch = (array_key_exists('association-type',$_REQUEST) && $_REQUEST['association-type'] || array_key_exists('associated-taxa',$_REQUEST) && $_REQUEST['associated-taxa']) && array_key_exists('taxontype-association',$_REQUEST) && $_REQUEST['taxontype-association'];
 		if($hasEverythingRequiredForAssociationSearch){
 			$this->setAssociationRequestVariable();
 		}
