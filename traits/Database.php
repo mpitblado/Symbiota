@@ -14,11 +14,11 @@ trait Database {
      */
     public static function connect(string $connection_type, bool $override_connection = false): Object {
 		if(!self::$conn || $override_connection) {
-			echo 'created new connection<br>';
+			//echo 'created new connection<br>';
 			self::$conn = MySQLiConnectionFactory::getCon($connection_type);
 			return self::$conn;
 		} else {
-			echo 'used old one<br>';
+			//echo 'used old one<br>';
 			return self::$conn;
 		}
 	}
