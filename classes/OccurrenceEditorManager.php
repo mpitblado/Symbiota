@@ -2274,7 +2274,7 @@ class OccurrenceEditorManager {
 	public function getImageMap($imgId = 0){
 		$imageMap = Array();
 		if($this->occid){
-			$sql = 'SELECT media_id, url, thumbnailurl, originalurl, caption, creator, creatorUid, sourceurl, copyright, notes, occid, username, sortoccurrence, initialtimestamp FROM media '; if($imgId) $sql .= 'WHERE media_type = "image" AND (media_id = '.$imgId.') ';
+			$sql = 'SELECT media_id, url, thumbnailurl, originalurl, caption, creator, creatorUid, sourceurl, copyright, notes, occid, username, sortoccurrence, initialtimestamp FROM media '; if($imgId) $sql .= 'WHERE AND (media_id = '.$imgId.') ';
 			else $sql .= 'WHERE media_type = "image" AND (occid = '.$this->occid.') ';
 			$sql .= 'ORDER BY sortoccurrence';
 			//echo $sql;
