@@ -154,46 +154,7 @@ function addChip(element) {
     isTextOrNum
       ? (inputChip.textContent = `${element.dataset.chip}: ${element.value}`)
       : (inputChip.textContent = element.dataset.chip);
-    chipBtn.onclick = function () {
-      element.type === "checkbox"
-        ? (element.checked = false)
-        : (element.value = element.defaultValue);
-      if (element.getAttribute("id") === "dballcb") {
-        const targetCategoryCheckboxes =
-          document.querySelectorAll('input[id^="cat-"]');
-        targetCategoryCheckboxes.forEach((collection) => {
-          collection.checked = false;
-        });
-        const targetCheckboxes =
-          document.querySelectorAll('input[id^="coll-"]');
-        targetCheckboxes.forEach((collection) => {
-          collection.checked = false;
-        });
-        //do the same for collections with slightly different format
-        const targetCheckboxAlts = document.querySelectorAll(
-          'input[id^="collection-"]'
-        );
-        targetCheckboxAlts.forEach((collection) => {
-          collection.checked = false;
-        });
-      }
-      if (element?.getAttribute("id")?.startsWith("materialsampletype")) {
-        // if they close a materialsampletype chip, revert to the none option selected
-        const targetIndex = document.getElementById(
-          "materialsampletype-none"
-        ).selectedIndex;
-        document.getElementById("materialsampletype").selectedIndex =
-          targetIndex;
-      }
-      if (element?.getAttribute("id")?.startsWith("taxontype")) {
-        // if they close a taxontype chip, revert to the any option selected
-        const targetIndex =
-          document.getElementById("taxontype-any").selectedIndex;
-        document.getElementById("taxontype").selectedIndex = targetIndex;
-      }
-      element.dataset.formId ? uncheckAll(element) : "";
-      removeChip(inputChip);
-    };
+    chipBtn.onclick = () => handleRemoval(element, inputChip);
   }
   let screenReaderSpan = document.createElement("span");
   const dataChipText = element.getAttribute("data-chip");
@@ -206,6 +167,54 @@ function addChip(element) {
   chipBtn.appendChild(screenReaderSpan);
   inputChip.appendChild(chipBtn);
   document.getElementById("chips").appendChild(inputChip);
+}
+
+function handleRemoval(element, inputChip) {
+  console.log("deleteMe handleRemoval clicked");
+  element.type === "checkbox"
+    ? (element.checked = false)
+    : (element.value = element.defaultValue);
+  if (element.getAttribute("id") === "dballcb") {
+    const targetCategoryCheckboxes =
+      document.querySelectorAll('input[id^="cat-"]');
+    targetCategoryCheckboxes.forEach((collection) => {
+      collection.checked = false;
+    });
+    const targetCheckboxes = document.querySelectorAll('input[id^="coll-"]');
+    targetCheckboxes.forEach((collection) => {
+      collection.checked = false;
+    });
+    //do the same for collections with slightly different format
+    const targetCheckboxAlts = document.querySelectorAll(
+      'input[id^="collection-"]'
+    );
+    targetCheckboxAlts.forEach((collection) => {
+      collection.checked = false;
+    });
+  }
+  if (element?.getAttribute("id")?.startsWith("materialsampletype")) {
+    // if they close a materialsampletype chip, revert to the none option selected
+    const targetIndex = document.getElementById(
+      "materialsampletype-none"
+    ).selectedIndex;
+    document.getElementById("materialsampletype").selectedIndex = targetIndex;
+  }
+  if (element?.getAttribute("id")?.startsWith("taxontype")) {
+    // if they close a taxontype chip, revert to the any option selected
+    const targetIndex = document.getElementById("taxontype-any")?.selectedIndex;
+    document.getElementById("taxontype").selectedIndex = targetIndex;
+  }
+
+  if (element?.getAttribute("id")?.startsWith("taxontype-association-")) {
+    // if they close a taxontype chip, revert to the any option selected
+    const targetIndex = document.getElementById(
+      "taxontype-association-scientific"
+    )?.selectedIndex;
+    document.getElementById("taxontype-association").selectedIndex =
+      targetIndex;
+  }
+  element.dataset.formId ? uncheckAll(element) : "";
+  removeChip(inputChip);
 }
 
 /**
