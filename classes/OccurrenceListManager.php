@@ -26,6 +26,7 @@ class OccurrenceListManager extends OccurrenceManager{
 		$occArr = array();
 		$sqlWhere = $this->getSqlWhere();
 		// var_dump('$sqlWhere before setRecordCnt is: ' . $sqlWhere);
+		echo "<div>sqlWhere before setRecordCnt is: : " . $sqlWhere . "</div>";
 		if(!$this->recordCount || $this->reset) $this->setRecordCnt($sqlWhere);
 		$sql = 'SELECT o.occid, c.collid, c.institutioncode, c.collectioncode, c.collectionname, c.icon, o.institutioncode AS instcodeoverride, o.collectioncode AS collcodeoverride, '.
 			'o.catalognumber, o.family, o.sciname, o.scientificnameauthorship, o.tidinterpreted, o.recordedby, o.recordnumber, o.eventdate, '.
@@ -127,8 +128,10 @@ class OccurrenceListManager extends OccurrenceManager{
 
 	private function setRecordCnt($sqlWhere){
 		if($sqlWhere){
+			echo "<div>Count sqlWhere b is: ".$sqlWhere."</div>";
 			$sql = "SELECT COUNT(DISTINCT o.occid) AS cnt FROM omoccurrences o ".$this->getTableJoins($sqlWhere).$sqlWhere;
-			//echo "<div>Count sql: ".$sql."</div>";
+			echo "<div>Count sql: ".$sql."</div>";
+			// exit;
 			$result = $this->conn->query($sql);
 			if($result){
 				if($row = $result->fetch_object()){

@@ -530,11 +530,12 @@ $associationManager = new AssociationManager();
 							<div class="select-container" style="margin-left: 1rem; position: relative; width: 40vw;">
 								<label for="association-type" class="screen-reader-only"><?php echo $LANG['ASSOCIATION_TYPE'] ?></label>
 								<select name="association-type" id="association-type" style="margin-top:0;padding-top:0; margin-bottom: 0.5rem">
+									<option id="association-type-none" value="none" data-chip="<?php echo $LANG['ASSOCIATIONS'] . '-none'?>">None</option>
 									<?php
 										$relationshipTypes = $associationManager->getRelationshipTypes();
-										foreach($relationshipTypes as $relationshipType){
+										foreach($relationshipTypes as $relationshipKey => $relationshipType){
 											?>
-											<option id="association-type-<?php echo $relationshipType ?>" value="<?php echo $relationshipType ?>" data-chip="<?php echo $LANG['ASSOCIATIONS'] . '-' . $relationshipType ?>"><?php echo $relationshipType; ?></option>
+											<option id="association-type-<?php echo $relationshipKey . '-' . $relationshipType ?>" value="<?php echo $relationshipType ?>" data-chip="<?php echo $LANG['ASSOCIATIONS'] . '-' . $relationshipType ?>"><?php echo $relationshipType; ?></option>
 											<?php
 										}
 									?>
