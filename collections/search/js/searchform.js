@@ -39,6 +39,7 @@ let paramNames = [
   "association-type",
   "associated-taxa",
   "taxontype-association",
+  "usethes-associations",
 ];
 const uLat = document.getElementById("upperlat") || null;
 const uLatNs = document.getElementById("upperlat_NS") || null;
@@ -170,7 +171,6 @@ function addChip(element) {
 }
 
 function handleRemoval(element, inputChip) {
-  console.log("deleteMe handleRemoval clicked");
   element.type === "checkbox"
     ? (element.checked = false)
     : (element.value = element.defaultValue);
@@ -192,13 +192,6 @@ function handleRemoval(element, inputChip) {
       collection.checked = false;
     });
   }
-  // if (element?.getAttribute("id")?.startsWith("materialsampletype")) {
-  //   // if they close a materialsampletype chip, revert to the none option selected
-  //   const targetIndex = document.getElementById(
-  //     "materialsampletype-none"
-  //   ).selectedIndex;
-  //   document.getElementById("materialsampletype").selectedIndex = targetIndex;
-  // }
   setAssociationRelationshipTypeToDefault(element);
   setMaterialSampleToDefault(element);
   setTaxonTypeToDefault(element);
@@ -811,6 +804,13 @@ function setSearchForm(frm) {
     ) {
       frm.usethes.checked = false;
     }
+    if (
+      typeof urlVar["usethes-associations"] !== "undefined" &&
+      (urlVar["usethes-associations"] == "" ||
+        urlVar["usethes-associations"] == "0")
+    ) {
+      frm["usethes-associations"].checked = false;
+    }
     if (urlVar.taxontype) {
       if (frm?.taxontype) {
         frm.taxontype.value = urlVar.taxontype;
@@ -839,7 +839,6 @@ function setSearchForm(frm) {
       }
     }
 
-    // @TODO LEFT OFF HERE taxon-type needs to persist
     if (urlVar.country) {
       countryStr = urlVar.country;
       countryArr = countryStr.split(";");

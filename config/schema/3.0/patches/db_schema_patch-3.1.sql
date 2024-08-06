@@ -288,4 +288,5 @@ ALTER TABLE `uploadtaxa` ADD COLUMN `cultivarEpithet` VARCHAR(50) NULL AFTER `Un
 ALTER TABLE `uploadtaxa` ADD COLUMN `tradeName` VARCHAR(50) NULL AFTER `cultivarEpithet`;
 
 
-
+# We need to relax this if we want inverse relationship entries in omoccurassociations for derivedFromSameIndividual
+ALTER TABLE omoccurassociations DROP INDEX UQ_omoccurassoc_sciname, ADD INDEX `UQ_omoccurassoc_sciname` (`occid`, `verbatimSciname`, `associationType`) USING BTREE;

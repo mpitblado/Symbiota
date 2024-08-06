@@ -30,6 +30,7 @@ $collList = $collManager->getFullCollectionList($catId);
 $specArr = (isset($collList['spec'])?$collList['spec']:null);
 $obsArr = (isset($collList['obs'])?$collList['obs']:null);
 $associationManager = new AssociationManager();
+$relationshipTypes = $associationManager->getRelationshipTypes();
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $LANG_TAG ?>">
@@ -132,8 +133,8 @@ $associationManager = new AssociationManager();
 							</div>
 						</div>
 						<div>
-							<input type="checkbox" name="usethes-associations" id="usethes-associations" data-chip="<?php echo $LANG['INCLUDE_SYNONYMS'] ?>" value="1" checked />
-							<label for="usethes-associations">
+							<input type="checkbox" name="usethes" id="usethes" data-chip="<?php echo $LANG['INCLUDE_SYNONYMS'] ?>" value="1" checked />
+							<label for="usethes">
 								<span class="ml-1"><?php echo $LANG['INCLUDE_SYNONYMS'] ?></span>
 							</label>
 						</div>
@@ -531,6 +532,7 @@ $associationManager = new AssociationManager();
 								<label for="association-type" class="screen-reader-only"><?php echo $LANG['ASSOCIATION_TYPE'] ?></label>
 								<select name="association-type" id="association-type" style="margin-top:0;padding-top:0; margin-bottom: 0.5rem">
 									<option id="association-type-none" value="none" data-chip="<?php echo $LANG['ASSOCIATIONS'] . '-none'?>">None</option>
+									<option id="association-type-any" value="any" data-chip="<?php echo $LANG['ASSOCIATIONS'] . '-any'?>">Any</option>
 									<?php
 										$relationshipTypes = $associationManager->getRelationshipTypes();
 										foreach($relationshipTypes as $relationshipKey => $relationshipType){
@@ -569,8 +571,8 @@ $associationManager = new AssociationManager();
 						</div>
 							
 						<div>
-							<input type="checkbox" name="usethes" id="usethes" data-chip="<?php echo $LANG['INCLUDE_SYNONYMS'] ?>" value="1" checked />
-							<label for="usethes">
+							<input type="checkbox" name="usethes-associations" id="usethes-associations" data-chip="<?php echo $LANG['ASSOCIATIONS'] . '-' . $LANG['INCLUDE_SYNONYMS'] ?>" value="1" checked />
+							<label for="usethes-associations">
 								<span class="ml-1"><?php echo $LANG['ASSOCIATIONS'] . '-' . $LANG['INCLUDE_SYNONYMS'] ?></span>
 							</label>
 						</div>
