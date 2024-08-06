@@ -61,6 +61,8 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 	protected function setSqlWhere(){
 		$sqlWhere = '';
 		// var_dump($this->searchTermArr);
+		$deleteMe = $this->associationManager->getAssociatedTaxonWhereFrag($this->associationArr);
+		var_dump($deleteMe);
 		if(array_key_exists("targetclid",$this->searchTermArr) && is_numeric($this->searchTermArr["targetclid"])){
 			if(!$this->voucherManager){
 				$this->setChecklistVariables($this->searchTermArr['targetclid']);
@@ -127,7 +129,12 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 			$this->displaySearchArr[] = $this->LANG['DATASETS'] . ': ' . $this->getDatasetTitle($this->searchTermArr['datasetid']);
 		}
 		$sqlWhere .= $this->getTaxonWhereFrag();
-		$sqlWhere .= $this->associationManager->getAssociatedTaxaSqlFragment($this->associationArr['relationship'], $this->associationArr['search']);
+		echo "<div>this dot getTaxonWhereFrag() is: " . $this->getTaxonWhereFrag() . "</div>";
+		// echo "<div>sqlWhere before getting the association taxa is: " . $sqlWhere . "</div>";
+		if(isset($this->associationArr['relationship']) && isset($this->associationArr['search'])){
+			$sqlWhere = substr_replace($sqlWhere,'',-1);
+			$sqlWhere .= $this->associationManager->getAssociatedTaxaSqlFragment($this->associationArr['relationship'], $this->associationArr) . ')';
+		}
 		
 		if(array_key_exists('country',$this->searchTermArr)){
 			$countryArr = explode(";",$this->searchTermArr["country"]);
@@ -660,6 +667,18 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 				$retStr .= '&taxontype=1';
 			}
 		}
+		if(isset($this->associationArr['search']) && isset($this->associationArr['relationship'])){
+			var_dump($this->associationArr);
+			$patternOfOnlyLettersDigitsAndSpaces = '/^[a-zA-Z0-9\s\-]*$/'; // TOOD accommodate symbols associated with extinct taxa, hybrid crosses, and abbreviations with periods, e.g. "var."?
+			if (preg_match($patternOfOnlyLettersDigitsAndSpaces, $this->associationArr['search'])==1) {
+				$retStr .= '&associated-taxa=' . $this->associationArr['search'];
+			}
+			if (preg_match($patternOfOnlyLettersDigitsAndSpaces, $this->associationArr['relationship'])==1) {
+				$retStr .= '&association-type=' . $this->associationArr['relationship'];
+			}
+			$retStr .= '&associated-taxon-type=' . intval($this->associationArr['associated-taxa']);
+		}
+
 		return substr($retStr, 1);
 	}
 

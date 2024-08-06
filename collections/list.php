@@ -16,7 +16,7 @@ $_SESSION['datasetid'] = filter_var($datasetid, FILTER_SANITIZE_NUMBER_INT);
 
 $collManager = new OccurrenceListManager();
 $searchVar = $collManager->getQueryTermStr();
-var_dump($searchVar);
+// var_dump($searchVar);
 if ($targetTid && array_key_exists('mode', $_REQUEST)) $searchVar .= '&mode=voucher&targettid=' . $targetTid;
 $occurArr = $collManager->getSpecimenMap($pageNumber, $cntPerPage);
 // var_dump($occurArr);
