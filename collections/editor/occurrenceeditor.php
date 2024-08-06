@@ -694,7 +694,7 @@ else{
 									if($isEditor == 1 || $isEditor == 2){
 										?>
 										<li id="imgTab">
-											<a href="includes/imagetab.php?<?= $anchorVars ?>" style=""><?= $LANG['IMAGES'] ?></a>
+											<a href="includes/imagetab.php?<?= $anchorVars ?>" style=""><?= $LANG['MEDIA'] ?></a>
 										</li>
 										<?php
 										if(isset($collMap['matSampleActivated'])){

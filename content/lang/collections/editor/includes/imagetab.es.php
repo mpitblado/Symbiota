@@ -5,6 +5,9 @@ Language: Español (Spanish)
 Translated by: Samanta Orellana
 Date Translated: 2021-10-29
 ------------------
+Updated by: Google Translate
+Date Translated: 2024-8-5
+------------------
 */
 
 $LANG['SELECT_FILE'] = 'Seleccione un archivo de imagen o ingrese una URL a una imagen existente';
@@ -24,8 +27,8 @@ $LANG['UPLOAD_LOCAL'] = 'Subir Imagen Local';
 $LANG['COPY_TO_SERVER'] = 'Copiar imágenes al servidor (si se deja vacío, se usarán las URL como fuente)';
 $LANG['DO_NOT_MAP_LARGE'] = 'No mapear una versión grande de la imagen (cuando sea aplicable)';
 $LANG['CAPTION'] = 'Descripción';
-$LANG['PHOTOGRAPHER'] = 'Fotógrafo';
-$LANG['SEL_PHOTOG'] = 'Seleccionar Fotógrafo';
+$LANG['CREATOR'] = 'Creador';
+$LANG['SELECT_CREATOR'] = 'Seleccionar Creador';
 $LANG['DISPLAY_PHOTOG_OVER'] = 'Desplegar campo para sobreescribir fotógrafo';
 $LANG['PHOTOG_OVER'] = 'Fotógrafo (sobreescribir)';
 $LANG['WILL_OVERRIDE'] = 'Advertencia: Sobreescribirá la selección';
