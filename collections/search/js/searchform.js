@@ -39,6 +39,7 @@ let paramNames = [
   "association-type",
   "associated-taxa",
   "taxontype-association",
+  "usethes-associations",
 ];
 const uLat = document.getElementById("upperlat") || null;
 const uLatNs = document.getElementById("upperlat_NS") || null;
@@ -811,6 +812,13 @@ function setSearchForm(frm) {
     ) {
       frm.usethes.checked = false;
     }
+    if (
+      typeof urlVar["usethes-associations"] !== "undefined" &&
+      (urlVar["usethes-associations"] == "" ||
+        urlVar["usethes-associations"] == "0")
+    ) {
+      frm["usethes-associations"].checked = false;
+    }
     if (urlVar.taxontype) {
       if (frm?.taxontype) {
         frm.taxontype.value = urlVar.taxontype;
@@ -839,7 +847,6 @@ function setSearchForm(frm) {
       }
     }
 
-    // @TODO LEFT OFF HERE taxon-type needs to persist
     if (urlVar.country) {
       countryStr = urlVar.country;
       countryArr = countryStr.split(";");

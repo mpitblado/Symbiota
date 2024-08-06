@@ -62,10 +62,9 @@ class OccurrenceTaxaManager {
 		
 		// $taxonTypeAssociationStr = $this->cleanAndAssignGeneric('taxontype-association', $inputArr);
 
-		// @TODO $associationTypeStr
 		if($associatedTaxonStr){
 			$this->associationArr['search'] = $associatedTaxonStr;
-			$this->setAssociationUseThes($inputArr);
+			$this->setAssociationUseThes($inputArr, 'usethes-associations');
 			$defaultTaxaType = $this->setAndGetAssociationDefaultTaxaType($inputArr);
 			
 			$this->associationTaxaSearchTerms = explode(',',$associatedTaxonStr);
@@ -77,7 +76,7 @@ class OccurrenceTaxaManager {
 				}
 				$this->processSingleTerm($searchTerm, $searchTermkey, $defaultTaxaType);
 			}
-			if($this->associationArr['usethes']){
+			if($this->associationArr['usethes-associations']){
 				$this->setAssociationSynonyms();
 			}
 
@@ -102,16 +101,16 @@ class OccurrenceTaxaManager {
 			}
 		}
 		$this->setSciNamesByVerns($searchTerm, $this->associationArr); // @TODO test whether this works
-		$this->setTaxonRankAndType($searchTerm, $taxaType);
+		$this->setTaxonRankAndType($searchTerm, $taxaType, 'usethes-associations');
 	}
 
-	protected function setTaxonRankAndType($searchTerm, $taxaType){
+	protected function setTaxonRankAndType($searchTerm, $taxaType, $useThesId='usethes'){
 		$sql = 'SELECT t.sciname, t.tid, t.rankid FROM taxa t ';
 		$typeStr = '';
 		$bindingArr = array();
 		if(is_numeric($searchTerm)){
 			$searchTerm = filter_var($searchTerm, FILTER_SANITIZE_NUMBER_INT);
-			if($this->associationArr['usethes']){
+			if($this->associationArr[$useThesId]){
 				$sql .= 'INNER JOIN taxstatus ts ON t.tid = ts.tidaccepted WHERE (ts.taxauthid = ?) AND (ts.tid = ?)';
 				$typeStr .= 'ii';
 				array_push($bindingArr, $this->taxAuthId, $searchTerm);
@@ -121,7 +120,7 @@ class OccurrenceTaxaManager {
 				array_push($bindingArr, $searchTerm);
 			}
 		} else{
-			if($this->associationArr['usethes']){
+			if($this->associationArr[$useThesId]){
 				$sql .= 'INNER JOIN taxstatus ts ON t.tid = ts.tidaccepted
 				INNER JOIN taxa t2 ON ts.tid = t2.tid
 				WHERE (ts.taxauthid = ?) AND (t2.sciname IN(?))'; // @TODO does this work?
@@ -227,13 +226,13 @@ class OccurrenceTaxaManager {
 		}
 	}
 
-	protected function setAssociationUseThes($inputArr = null){
-		$this->associationArr['usethes'] = 0; // @TODO generalize and use in setTaxonRequestVariable as well to DRY up code
-		if(isset($inputArr['usethes']) && $inputArr['usethes']){
-			$this->associationArr['usethes'] = 1;
+	protected function setAssociationUseThes($inputArr = null, $useThesId='usethes'){
+		$this->associationArr[$useThesId] = 0; // @TODO generalize and use in setTaxonRequestVariable as well to DRY up code
+		if(isset($inputArr[$useThesId]) && $inputArr[$useThesId]){
+			$this->associationArr[$useThesId] = 1;
 		}
-		elseif(array_key_exists('usethes',$_REQUEST) && $_REQUEST['usethes']){
-			$this->associationArr['usethes'] = 1;
+		elseif(array_key_exists($useThesId,$_REQUEST) && $_REQUEST[$useThesId]){
+			$this->associationArr[$useThesId] = 1;
 		}
 	}
 
@@ -260,7 +259,7 @@ class OccurrenceTaxaManager {
 		return $returnStr;
 	}
 
-	public function setTaxonRequestVariable($inputArr = null, $exactMatchOnly = false){
+	public function setTaxonRequestVariable($inputArr = null, $exactMatchOnly = false, $useThesId='usethes'){
 		if($exactMatchOnly) $this->exactMatchOnly = true;
 		//Set taxa search terms
 		if(isset($inputArr['taxa']) && $inputArr['taxa']){
@@ -272,12 +271,12 @@ class OccurrenceTaxaManager {
 		if($taxaStr){
 			$this->taxaArr['search'] = $taxaStr;
 			//Set usage of taxonomic thesaurus
-			$this->taxaArr['usethes'] = 0;
-			if(isset($inputArr['usethes']) && $inputArr['usethes']){
-				$this->taxaArr['usethes'] = 1;
+			$this->taxaArr[$useThesId] = 0;
+			if(isset($inputArr[$useThesId]) && $inputArr[$useThesId]){
+				$this->taxaArr[$useThesId] = 1;
 			}
-			elseif(array_key_exists('usethes',$_REQUEST) && $_REQUEST['usethes']){
-				$this->taxaArr['usethes'] = 1;
+			elseif(array_key_exists($useThesId,$_REQUEST) && $_REQUEST[$useThesId]){
+				$this->taxaArr[$useThesId] = 1;
 			}
 			//Set default taxa type
 			$defaultTaxaType = TaxaSearchType::SCIENTIFIC_NAME;
@@ -312,7 +311,7 @@ class OccurrenceTaxaManager {
 				$sql = 'SELECT t.sciname, t.tid, t.rankid FROM taxa t ';
 				if(is_numeric($searchTerm)){
 					$searchTerm = filter_var($searchTerm, FILTER_SANITIZE_NUMBER_INT);
-					if($this->taxaArr['usethes']){
+					if($this->taxaArr[$useThesId]){
 						$sql .= 'INNER JOIN taxstatus ts ON t.tid = ts.tidaccepted WHERE (ts.taxauthid = '.$this->taxAuthId.') AND (ts.tid = '.$searchTerm.')';
 					}
 					else{
@@ -320,7 +319,7 @@ class OccurrenceTaxaManager {
 					}
 				}
 				else{
-					if($this->taxaArr['usethes']){
+					if($this->taxaArr[$useThesId]){
 						$sql .= 'INNER JOIN taxstatus ts ON t.tid = ts.tidaccepted
 							INNER JOIN taxa t2 ON ts.tid = t2.tid
 							WHERE (ts.taxauthid = '.$this->taxAuthId.') AND (t2.sciname IN("'.$this->cleanInStr($searchTerm).'"))';
@@ -351,7 +350,7 @@ class OccurrenceTaxaManager {
 					$rs->free();
 				}
 			}
-			if($this->taxaArr['usethes']){
+			if($this->taxaArr[$useThesId]){
 				$this->setSynonyms();
 			}
 		}
