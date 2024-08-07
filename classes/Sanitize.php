@@ -19,10 +19,12 @@ class Sanitize {
 	public static function in(Mixed $val): Mixed {
 		if(is_array($val)) {
 			$arr = [];
-			foreach ($arr as $key => $value) {
-				$arr[self::in($key)] = self::in($value);
+			foreach ($val as $key => $array_value) {
+				$arr[self::in($key)] = self::in($array_value);
 			}
 			return $arr;
+		} else if (is_numeric($val)) {
+			return filter_var($val, FILTER_SANITIZE_NUMBER_INT);
 		} else if(is_string($val)){
 			$str = trim($val);
 			if(!$str) return $str;
@@ -31,8 +33,6 @@ class Sanitize {
 				self::connect('readonly'), 
 				preg_replace('/\s\s+/', ' ', $str)
 			);
-		} else if (is_numeric($val)) {
-			return filter_var($val, FILTER_SANITIZE_NUMBER_INT);
 		} else if(is_bool($val)) {
 			return $val;
 		} else {
