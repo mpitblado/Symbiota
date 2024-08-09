@@ -27,7 +27,7 @@ class Sanitize {
 			return filter_var($val, FILTER_SANITIZE_NUMBER_INT);
 		} else if(is_string($val)){
 			$str = trim($val);
-			if(!$str) return $str;
+			if(!$str) return null;
 
 			return mysqli_real_escape_string(
 				self::connect('readonly'), 
