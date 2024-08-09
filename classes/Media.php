@@ -31,7 +31,7 @@ class SymbiotaUploadStrategy extends UploadStrategy {
 	}
 
 	public function getDirPath(): string {
-		return self::getBaseUrlPath() . $this->getPathPattern();
+		return self::getBaseDirPath() . $this->getPathPattern();
 	}
 
 	public function getUrlPath(): string {
@@ -40,7 +40,7 @@ class SymbiotaUploadStrategy extends UploadStrategy {
 
     public static function constructPath(string $institutionCode, string $collectionCode = null, string $catalogNumber = null): string {
 
-		$root = $institutionCode . ($collectionCode? '_'. $collectionCode: '');
+		$root = $institutionCode . ($collectionCode? '_'. $collectionCode: '') . '/';
 
 		if($catalogNumber) {
 			//Clean out Symbols that would interfere with 
@@ -78,7 +78,7 @@ class SymbiotaUploadStrategy extends UploadStrategy {
 	}
 
 	public function upload($file): bool {
-		$dir_path = $this->getBaseDirPath();
+		$dir_path = $this->getDirPath();
 		$file_path = $dir_path . $file['name'];
 
 		// Create Storage Directory If it doesn't exist
@@ -151,7 +151,7 @@ class Media {
      */
     public static function getCollectionMediaRoot(string $institutionCode, string $collectionCode = null, string $catalogNumber = null): string {
 
-		$root = $institutionCode . ($collectionCode? '_'. $collectionCode: '');
+		$root = $institutionCode . ($collectionCode? '_'. $collectionCode: '') . '/';
 
 		if($catalogNumber) {
 			//Clean out Symbols that would interfere with 
