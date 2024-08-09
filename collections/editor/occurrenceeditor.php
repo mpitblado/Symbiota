@@ -23,6 +23,7 @@ if(strpos($action,'Determination') || strpos($action,'Verification')){
 	$occManager = new OccurrenceEditorDeterminations();
 }
 elseif(strpos($action,'Image')){
+	include_once($SERVER_ROOT . "/classes/Media.php");
 	include_once($SERVER_ROOT.'/classes/OccurrenceEditorImages.php');
 	$occManager = new OccurrenceEditorImages();
 }
@@ -243,7 +244,32 @@ if($SYMB_UID){
 				}
 				$tabTarget = 2;
 			}
-			elseif($action == 'Submit New Image'){
+			elseif($action == 'Submit New Image') {
+
+				$collMap = $occManager->getCollMap();
+
+				//Ensures correct order on taxon profile page 
+				if(strpos($collMap['colltype'], 'Observations') !== false) {
+					$_POST['sortsequence'] = 40;
+				} 
+
+				try {
+					$occur_map = $occManager->getOccurMap()[$occId];
+					Media::addMedia(
+						$_POST, 
+						new SymbiotaUploadStrategy(
+							$occur_map['institutioncode'],
+							$occur_map['collectioncode'],
+							$occur_map['catalognumber']
+						)
+					);
+					$statusStr = $LANG['IMAGE_ADD_SUCCESS'];
+					$tabTarget = 2;
+				} catch(Exception $e ) {
+					$statusStr = $e->getMessage();
+				}
+
+				/*
 				if($occManager->addImage($_POST)){
 					$statusStr = (isset($LANG['IMAGE_ADD_SUCCESS'])?$LANG['IMAGE_ADD_SUCCESS']:'Image added successfully');
 					$tabTarget = 2;
@@ -251,6 +277,7 @@ if($SYMB_UID){
 				if($occManager->getErrorStr()){
 					$statusStr .= $occManager->getErrorStr();
 				}
+				*/
 			}
 			elseif($action == 'Delete Image'){
 				$removeImg = (array_key_exists('removeimg',$_POST)?$_POST['removeimg']:0);
