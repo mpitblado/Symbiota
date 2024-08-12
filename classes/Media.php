@@ -8,6 +8,7 @@ abstract class UploadStrategy {
 	abstract public static function getBaseUrlPath(): string;
 	abstract public function getDirPath(): string;
 	abstract public function getUrlPath(): string;
+	abstract public function file_exists($file): bool;
 	abstract public function upload($file): bool;
 }
 
@@ -77,6 +78,10 @@ class SymbiotaUploadStrategy extends UploadStrategy {
 		);
 	}
 
+	public function file_exists($file): bool {
+		return file_exists($this->getDirPath() . $file['name']);
+	}
+
 	public function upload($file): bool {
 		$dir_path = $this->getDirPath();
 		$file_path = $dir_path . $file['name'];
@@ -87,7 +92,7 @@ class SymbiotaUploadStrategy extends UploadStrategy {
 		}
 		
 		if(file_exists($file_path)) {
-			//Handle duplicate file paths	
+			throw new MediaException(MediaExceptionCase::DuplicateMediaFile);
 		}
 
 		//Upload file to server
@@ -109,13 +114,12 @@ enum MediaType: string {
 
 enum MediaExceptionCase: string {
 	case InvalidMediaType = 'Invalid Media Type';
+	case DuplicateMediaFile = 'Duplicate Media File';
 }
 
 class MediaException extends Exception {
     function __construct(private MediaExceptionCase $case){
-        match($case){
-            MediaExceptionCase::InvalidMediaType => parent::__construct($case->value),
-        };
+		parent::__construct($case->value);
     }
 }
 
@@ -200,6 +204,7 @@ class Media {
      */
     public static function addMedia(array $post_arr, UploadStrategy $uploadStrategy): bool {
 		$clean_post_arr = Sanitize::in($post_arr);
+		$file = $_FILES['imgfile'];
 
 		/*$collection_media_path = Self::getCollectionMediaRoot(
 			$occur_map['institutioncode'], 
@@ -222,27 +227,13 @@ class Media {
 		// attempt to write file
 		// if any of this fails rollback media table insert and send the appropriate error
 	//
-		$media_type = explode('/',$_FILES['imgfile']['type'])[0];
+		$media_type = explode('/', $file['type'])[0];
 
 		if(empty($_FILES)) {
-
+			//todo no files to upload
 		}
 
 		//Not type currently sent
-		switch(MediaType::tryFrom($media_type)) {
-			case MediaType::Image:
-				//If Media is a Image we nee
-			break;
-			case MediaType::Audio:
-
-			break;
-			case MediaType::Video:
-				// Currently Not supported
-			break;
-
-			//Do execeptions for Media
-			Default: return false;
-		}
 
 		/** Keys:
 		 * imgurl 
@@ -281,15 +272,29 @@ class Media {
 		if($row = $taxon_result->fetch_object()) {
 			$clean_post_arr['tid'] = $row->tidinterpreted;
 		}
-		$clean_post_arr["sourceurl"] = $uploadStrategy->getUrlPath() . $_FILES['imgfile']['name'];
-		//don't generate thumbnails for now
-		$clean_post_arr["tnurl"] = $clean_post_arr["sourceurl"];
+		$clean_post_arr["sourceurl"] = $uploadStrategy->getUrlPath() . $file['name'];
+
+		switch(MediaType::tryFrom($media_type)) {
+			case MediaType::Image:
+				//Only Gen Thumbnails for images
+				$clean_post_arr["tnurl"] = $clean_post_arr["sourceurl"];
+			break;
+			case MediaType::Audio:
+
+			break;
+			case MediaType::Video:
+				// Currently Not supported
+			break;
+
+			//Do execeptions for Media
+			Default: return false;
+		}
 
 		$keyValuePairs = [
 			"tid" => $clean_post_arr["tid"],
 			"occid" => $clean_post_arr["occid"],
 			"url" => $clean_post_arr["weburl"]?? $clean_post_arr["sourceurl"],
-			"thumbnailUrl" => $clean_post_arr["tnurl"],
+			"thumbnailUrl" => $clean_post_arr["tnurl"]?? null,
 			//This is a very bad name that refers to source or downloaded url
 			"originalUrl" => $clean_post_arr["sourceurl"]?? null,
 			"archiveUrl" => $clean_post_arr["archiverul"]?? null,// Only Occurrence import
@@ -307,7 +312,7 @@ class Media {
 			"sortsequence" => array_key_exists('sortsequence', $clean_post_arr) && is_numeric($clean_post_arr['sortsequence']) ? $clean_post_arr['sortsequence'] : null,
 			//check if its is_numeric?
 			"sortOccurrence" => $clean_post_arr['sortoccurrence']?? null,
-			"sourceIdentifier" => 'filename: ' . $_FILES['imgfile']['name'],
+			"sourceIdentifier" => 'filename: ' . $file['name'],
 			"rights" => null, // Only Occurrence import
 			"accessrights" => null, // Only Occurrence import
 			"copyright" => $clean_post_arr['copyright'],
@@ -320,11 +325,6 @@ class Media {
 		
 		$keys = implode(",", array_keys($keyValuePairs));
 		$parameters = str_repeat('?,', count($keyValuePairs) - 1) . '?';
-
-		/*
-		foreach ($keyValuePairs as $key => $value) {
-			echo '<div style="display:flex"><span>'. $key .'</span>=><span>'. $value .'</span></div>';
-		}*/
 
 		$sql = <<< SQL
 		INSERT INTO media($keys) VALUES ($parameters)
@@ -339,22 +339,45 @@ class Media {
 			//Insert to other tables as needed like imagetags
 			$media_id = $conn->insert_id;
 
-			// Upload media if we need to 
-			// TODO (Logan) implment upload strategy
-			$uploadStrategy->upload($_FILES['imgfile']);
+			//Check if file exists
+			if($uploadStrategy->file_exists($file)) {
+				//Add media_id onto end of file name which should be unique within portal
+				$file['name'] = substr_replace(
+					$file['name'], 
+					'_' . $media_id, 
+					strrpos($file['name'], '.'), 
+					0);
+
+				//Fail case the appended media_id is taken stops after 10 
+				$cnt = 1;
+				while($uploadStrategy->file_exists($file) && $cnt < 10) {
+					$file['name'] = substr_replace(
+						$file['name'], 
+						'_' . $cnt, 
+						strrpos($file['name'], '.'), 
+						0);
+					$cnt++;
+				}
+				$updated_path = $uploadStrategy->getUrlPath() . $file['name'];
+
+				//Update source url to reflect new filename
+				mysqli_execute_query(
+					$conn, 
+					'UPDATE media set url = ?, sourceUrl = ?, originalUrl = ? where media_id = ?', 
+					[$updated_path, $updated_path, $updated_path, $media_id]
+				);
+			}
+
+			$uploadStrategy->upload($file);
 
 			mysqli_commit($conn);
 		} catch(Exception $e) {
 			mysqli_rollback($conn);
-			echo 'Rollback because' . $e->getMessage();
+			echo 'Rollback because ' . $e->getMessage();
 			//TODO (Logan) decide on how this is going to get handled above
+			return false;
 		}
 
-
-		//echo 'uploads file to ' . self::getMediaRootPath() . $collection_media_path . $_FILES['imgfile']['name'];
-		
-		// Upload thumbnailurl to thumbnail path
-		// Upload thumbnailurl to thumbnail path
 		return true;
 	}
 
