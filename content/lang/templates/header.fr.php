@@ -5,6 +5,8 @@ Language: Français (French)
 ------------------
 */
 
+
+//header variables
 $LANG['H_HOME'] = 'Accueil';
 
 $LANG['H_SEARCH'] = 'Rechercher';
@@ -44,29 +46,23 @@ $LANG['H_MY_PROFILE'] = 'Mon Profill';
 $LANG['H_LOGOUT'] = 'Se Déconnecter';
 $LANG['H_LOGIN'] = 'Se connecter';
 $LANG['H_NEW_ACCOUNT'] = 'Nouveau Compte';
-$LANG['TOGGLE_508_OFF'] = "Utiliser la Mise en Page de Formulaire Condensé";
-$LANG['TOGGLE_508_ON'] = "Basculer la Disposition Verticale du Formulaire";
-$LANG['SELECT_LANGUAGE'] = 'Sélectionnez langue';
+$LANG['H_SELECT_LANGUAGE'] = 'Sélectionnez langue';
+$LANG['H_CONTACT_US'] = 'Contactez-Nous';
+$LANG['H_SKIP_NAV'] = 'Sauter la Navigation';
 
-$LANG['CONTACT_US'] = 'Contactez-Nous';
-$LANG['LOGIN'] = 'Se Connecter';
-$LANG['SEARCH_COLLECTIONS'] = 'Rechercher des Collections';
-$LANG['CHECKLISTS'] = 'Listes de Contrôle';
-$LANG['ABOUT_SYMBIOTA'] = 'À Propos de Symbiote';
-$LANG['HELP'] = 'Aide';
-$LANG['SPECIMENS'] = 'Spécimens';
-$LANG['IMG_CONTR'] = 'Contributeurs d\'images';
-$LANG['OBS'] = 'Observations';
+//Footer variables
+$LANG['F_VISIT_NSF'] = 'Visitez le site Web de la National Science Foundation';
+$LANG['F_NSF_LOGO'] = 'Logo de la National Science Foundation';
+$LANG['F_VISIT_IDIGBIO'] = 'Visitez le site iDigBio';
+$LANG['F_IDIGBIO_LOGO'] = 'Logo du iDigBio, or, Integrated Digitized Biocollections';
+$LANG['F_BIOKIC'] = 'Biodiversity Knowledge Integration Center';
+$LANG['F_BIOKIC_LOGO'] = 'Logo du Biodiversity Knowledge Integration Center';
+$LANG['F_NSF_AWARDS'] = 'Ce projet rendu possible grâce aux National Science Foundation Awards';
+$LANG['F_MORE_INFO'] = "Pour plus d'informations sur Symbiota";
+$LANG['F_READ_DOCS'] = 'lire la documentation';
+$LANG['F_CONTACT'] = 'ou contactez le';
+$LANG['F_SSH'] = 'Symbiota Support Hub (SSH)';
+$LANG['F_POWERED_BY'] = 'Alimenté par';
 
-$LANG['NAV_HOME'] = 'Maison';
-$LANG['NAV_IMG_LIB'] = 'Bibliothèque d\'Images';
-$LANG['NAV_IMG_CONTR'] = 'Contributeurs d\'Images';
-$LANG['NAV_IMG_SEARCH'] = 'Recherche d\'Image';
-$LANG['SKIP_NAV'] = 'Sauter la Navigation';
-
-// Footer-specific
-$LANG['ACCESSIBILITY_OPTIONS'] = 'Options d\'accessibilité';
-$LANG['ACCESSIBILITY_OPTIONS_DESCRIPTION'] = 'D\'autres fonctionnalités d\'accessibilité seront ajoutées au fil du temps. Basculez ceux qui correspondent à vos besoins.';
-$LANG['CLOSE'] = 'Fermer';
-
+include('header.fr.override.php');
 ?>

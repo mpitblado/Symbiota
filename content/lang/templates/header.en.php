@@ -5,6 +5,8 @@ Language: English
 ------------------
 */
 
+
+//header variables
 $LANG['H_HOME'] = 'Home';
 
 $LANG['H_SEARCH'] = 'Search';
@@ -44,29 +46,23 @@ $LANG['H_MY_PROFILE'] = 'My Profile';
 $LANG['H_LOGOUT'] = 'Sign Out';
 $LANG['H_LOGIN'] = 'Sign In';
 $LANG['H_NEW_ACCOUNT'] = 'New Account';
+$LANG['H_SELECT_LANGUAGE'] = 'Select Language';
+$LANG['H_CONTACT_US'] = 'Contact Us';
+$LANG['H_SKIP_NAV'] = 'Skip Navigation';
 
-$LANG['TOGGLE_508_OFF'] = "Toggle Condensed Form Layout";
-$LANG['TOGGLE_508_ON'] = "Toggle Vertical Form Layout";
-$LANG['SELECT_LANGUAGE'] = 'Select Language';
+//Footer variables
+$LANG['F_VISIT_NSF'] = 'Visit National Science Foundation website';
+$LANG['F_NSF_LOGO'] = 'Logo for the National Science Foundation';
+$LANG['F_VISIT_IDIGBIO'] = 'Visit iDigBio website';
+$LANG['F_IDIGBIO_LOGO'] = 'Logo for iDigBio, or, Integrated Digitized Biocollections';
+$LANG['F_BIOKIC'] = 'Biodiversity Knowledge Integration Center';
+$LANG['F_BIOKIC_LOGO'] = 'Logo for the Biodiversity Knowledge Integration Center';
+$LANG['F_NSF_AWARDS'] = 'This project made possible by National Science Foundation Awards';
+$LANG['F_MORE_INFO'] = 'For more information about Symbiota';
+$LANG['F_READ_DOCS'] = 'read the docs';
+$LANG['F_CONTACT'] = 'or contact the';
+$LANG['F_SSH'] = 'Symbiota Support Hub';
+$LANG['F_POWERED_BY'] = 'Powered by';
 
-$LANG['CONTACT_US'] = 'Contact Us';
-$LANG['LOGIN'] = 'Log In';
-$LANG['SEARCH_COLLECTIONS'] = 'Search Collections';
-$LANG['CHECKLISTS'] = 'Checklists';
-$LANG['ABOUT_SYMBIOTA'] = 'About Symbiota';
-$LANG['HELP'] = 'Help';
-$LANG['SPECIMENS'] = 'Specimens';
-$LANG['IMG_CONTR'] = 'Image Contributors';
-$LANG['OBS'] = 'Observations';
-
-$LANG['NAV_HOME'] = 'Home';
-$LANG['NAV_IMG_LIB'] = 'Image Library';
-$LANG['NAV_IMG_CONTR'] = 'Image Contributors';
-$LANG['NAV_IMG_SEARCH'] = 'Image Search';
-$LANG['SKIP_NAV'] = 'Skip Navigation';
-
-// Footer-specific
-$LANG['ACCESSIBILITY_OPTIONS'] = 'Accessibility Options';
-$LANG['ACCESSIBILITY_OPTIONS_DESCRIPTION'] = 'More accessibility features will be added over time. Toggle those that suit your needs.';
-$LANG['CLOSE'] = 'Close';
+include('header.en.override.php');
 ?>

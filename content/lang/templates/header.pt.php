@@ -2,11 +2,11 @@
 /*
 ------------------
 Language: Português (Portuguese)
-Translated by: Google Translate
-Date Translated: 2024-02-16
+Translated by: Google Translate (2024-02-16)
 ------------------
 */
 
+//header variables
 $LANG['H_HOME'] = 'Início';
 
 $LANG['H_SEARCH'] = 'Pesquisar';
@@ -46,30 +46,23 @@ $LANG['H_MY_PROFILE'] = 'Meu Perfil';
 $LANG['H_LOGOUT'] = 'Sair';
 $LANG['H_LOGIN'] = 'Entrar';
 $LANG['H_NEW_ACCOUNT'] = 'Nova Conta';
-$LANG['SELECT_LANGUAGE'] = 'Selecionar Idioma';
+$LANG['H_SELECT_LANGUAGE'] = 'Selecionar Idioma';
+$LANG['H_CONTACT_US'] = 'Entre em Contato Conosco';
+$LANG['H_SKIP_NAV'] = 'Pular Navegação';
 
-$LANG['TOGGLE_508_OFF'] = "Modo Condensado";
-$LANG['TOGGLE_508_ON'] = "Modo de Acessibilidade";
+//Footer variables
+$LANG['F_VISIT_NSF'] = 'Visite o site da National Science Foundation';
+$LANG['F_NSF_LOGO'] = 'Logo da National Science Foundation';
+$LANG['F_VISIT_IDIGBIO'] = 'Visite o site do iDigBio';
+$LANG['F_IDIGBIO_LOGO'] = 'Logo da iDigBio, or, Integrated Digitized Biocollections';
+$LANG['F_BIOKIC'] = 'Biodiversity Knowledge Integration Center';
+$LANG['F_BIOKIC_LOGO'] = 'Logo da Biodiversity Knowledge Integration Center';
+$LANG['F_NSF_AWARDS'] = 'Este projeto foi possível graças ao National Science Foundation Awards';
+$LANG['F_MORE_INFO'] = 'Para mais informações sobre Symbiota';
+$LANG['F_READ_DOCS'] = 'leia os documentos';
+$LANG['F_CONTACT'] = 'ou contato o';
+$LANG['F_SSH'] = 'Symbiota Support Hub (SSH)';
+$LANG['F_POWERED_BY'] = 'Distribuído por';
 
-$LANG['CONTACT_US'] = 'Entre em Contato Conosco';
-$LANG['LOGIN'] = 'Login';
-$LANG['SEARCH_COLLECTIONS'] = 'Pesquisar Coleções';
-$LANG['CHECKLISTS'] = 'Inventários Taxonômicos';
-$LANG['ABOUT_SYMBIOTA'] = 'Sobre o Symbiota';
-$LANG['HELP'] = 'Ajuda';
-$LANG['SPECIMENS'] = 'Amostras';
-$LANG['IMG_CONTR'] = 'Contribuidores de imagem';
-$LANG['OBS'] = 'Observações';
-
-$LANG['NAV_HOME'] = 'Início';
-$LANG['NAV_IMG_LIB'] = 'Biblioteca de Imagens';
-$LANG['NAV_IMG_CONTR'] = 'Contribuidores de Imagem';
-$LANG['NAV_IMG_SEARCH'] = 'Pesquisa de Imagens';
-$LANG['SKIP_NAV'] = 'Pular Navegação';
-
-// Footer-specific
-$LANG['ACCESSIBILITY_OPTIONS'] = 'Opções de acessibilidade';
-$LANG['ACCESSIBILITY_OPTIONS_DESCRIPTION'] = 'Mais recursos de acessibilidade serão adicionados ao longo do tempo. Alterne aqueles que atendem às suas necessidades.';
-$LANG['CLOSE'] = 'Fechar';
-
+include('header.pt.override.php');
 ?>
