@@ -255,13 +255,14 @@ if($SYMB_UID){
 
 				try {
 					$occur_map = $occManager->getOccurMap()[$occId];
-					Media::addMedia(
+					Media::add(
 						$_POST, 
 						new SymbiotaUploadStrategy(
 							$occur_map['institutioncode'],
 							$occur_map['collectioncode'],
 							$occur_map['catalognumber']
-						)
+						),
+						$_FILES['imgfile'] ?? null
 					);
 					$statusStr = $LANG['IMAGE_ADD_SUCCESS'];
 					$tabTarget = 2;

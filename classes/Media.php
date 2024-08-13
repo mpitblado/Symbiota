@@ -2,59 +2,80 @@
 include_once($SERVER_ROOT . "/traits/Database.php");
 include_once($SERVER_ROOT . "/classes/Sanitize.php");
 
-
 abstract class UploadStrategy {
-	abstract public static function getBaseDirPath(): string;
-	abstract public static function getBaseUrlPath(): string;
-	abstract public function getDirPath(): string;
-	abstract public function getUrlPath(): string;
-	abstract public function file_exists($file): bool;
-	abstract public function upload($file): bool;
+    /**
+     * If a file is given then return the storage path for that resource otherwise just return the root path.
+	 * @param array $file {name: string, type: string, tmp_name: string, error: int, size: int} 
+     * @return string 
+     */
+	abstract public function getDirPath(array $file): string;
+
+    /**
+     * If a file is given then return the url path to that resource otherwise just return the root url path.
+	 * @param array $file {name: string, type: string, tmp_name: string, error: int, size: int} 
+     * @return string 
+     */
+	abstract public function getUrlPath(array $file): string;
+
+    /**
+     * Function to check if a file exists for the storage location of the upload strategy.
+	 * @param array $file {name: string, type: string, tmp_name: string, error: int, size: int} 
+     * @return bool 
+     */
+	abstract public function file_exists(array $file): bool;
+
+    /**
+     * Function to handle how a file should be uploaded.
+	 * @param array $file {name: string, type: string, tmp_name: string, error: int, size: int} 
+     * @return bool 
+	 * @throws MediaException(MediaExceptionCase::DuplicateMediaFile)
+     */
+	abstract public function upload(array $file): bool;
 }
 
 class SymbiotaUploadStrategy extends UploadStrategy {
 	private string $institutioncode;
-	private string $collectioncode;
-	private string $catalognumber;
+	private string | null $collectioncode;
+	private string | null $catalognumber;
 
-	public function __construct($institutioncode, $collectioncode, $catalognumber) {
+	public function __construct(string $institutioncode, string | null $collectioncode = null, string | null $catalognumber = null) {
 		$this->institutioncode = $institutioncode;
 		$this->collectioncode = $collectioncode;
-		$this->catalognumber = $collectioncode;
+		$this->catalognumber = $catalognumber;
 	}
 
-	public static function getBaseDirPath(): string {
-		return $GLOBALS['IMAGE_ROOT_PATH'] . (substr($GLOBALS['IMAGE_ROOT_PATH'],-1) != "/"? '/': '');
+	public function getDirPath(array $file = null): string {
+		return $GLOBALS['IMAGE_ROOT_PATH'] . 
+			(substr($GLOBALS['IMAGE_ROOT_PATH'],-1) != "/"? '/': '') . 
+			$this->getPathPattern() . ($file? $file['name']: '');
 	}
 
-	public static function getBaseUrlPath(): string {
-		return $GLOBALS['IMAGE_ROOT_URL'] . (substr($GLOBALS['IMAGE_ROOT_URL'],-1) != "/"? '/': '');
+	public function getUrlPath(array $file = null): string {
+		return $GLOBALS['IMAGE_ROOT_URL'] .
+		   	(substr($GLOBALS['IMAGE_ROOT_URL'],-1) != "/"? '/': '') .
+		   	$this->getPathPattern() . ($file? $file['name']: '');
 	}
 
-	public function getDirPath(): string {
-		return self::getBaseDirPath() . $this->getPathPattern();
-	}
+    /**
+     * Private help function for interal use that holds logic for how storage paths are created.
+     * @return string 
+     */
+    function getPathPattern(): string {
 
-	public function getUrlPath(): string {
-		return self::getBaseUrlPath() . $this->getPathPattern();
-	}
+		$root = $this->institutioncode . ($this->collectioncode? '_'. $this->collectioncode: '') . '/';
 
-    public static function constructPath(string $institutionCode, string $collectionCode = null, string $catalogNumber = null): string {
-
-		$root = $institutionCode . ($collectionCode? '_'. $collectionCode: '') . '/';
-
-		if($catalogNumber) {
+		if($this->catalognumber) {
 			//Clean out Symbols that would interfere with 
-			$derived_cat_num = str_replace(array('/','\\',' '), '', $catalogNumber);
+			$derived_cat_num = str_replace(array('/','\\',' '), '', $this->catalognumber);
 
 			//Grab any characters in the range of 0-8 then any amount digits
 			if(preg_match('/^(\D{0,8}\d{4,})/', $derived_cat_num, $matches)){
-				//Parse out everything but last 3 digits
+				// TODO (Logan) figure out why this is here
 				$derived_cat_num = substr($matches[1], 0, -3);
 
 				//If derived catalog number is a number less then five pad front with 0's
 				if(is_numeric($derived_cat_num) && strlen($derived_cat_num) < 5) {
-					str_pad($derived_cat_num, 5, "0", STR_PAD_LEFT);
+					$derived_cat_num = str_pad($derived_cat_num, 5, "0", STR_PAD_LEFT);
 				}
 
 				$root .= $derived_cat_num . '/';
@@ -70,19 +91,14 @@ class SymbiotaUploadStrategy extends UploadStrategy {
 		return $root;
 	}
 
-	public function getPathPattern() : string {
-		return self::constructPath(
-			$this->institutioncode, 
-			$this->collectioncode, 
-			$this->catalognumber
-		);
-	}
-
-	public function file_exists($file): bool {
+	public function file_exists(array $file): bool {
 		return file_exists($this->getDirPath() . $file['name']);
 	}
 
-	public function upload($file): bool {
+    /**
+     * Upload implemenation stores files on the server and expect duplicate files to be handled by the caller
+     */
+	public function upload(array $file): bool {
 		$dir_path = $this->getDirPath();
 		$file_path = $dir_path . $file['name'];
 
@@ -148,40 +164,59 @@ class Media {
 		}
 	}
 
-    /**
-     * @param string $institutionCode
-     * @param string $collectionCode
-     * @param string $catalogNumber
-     */
-    public static function getCollectionMediaRoot(string $institutionCode, string $collectionCode = null, string $catalogNumber = null): string {
+	/**
+	 * Strips out undesired characters from from a pure file name string
+	 *
+	 * @param string $filepath A 
+	 * return string
+	 */
+	public static function parseFileName(string $filepath): array {
+		$file_name = $filepath;
 
-		$root = $institutionCode . ($collectionCode? '_'. $collectionCode: '') . '/';
+		//Filepath maybe a url so clear out url query if it exists
+		$query_pos = strpos($file_name,'?');
+		if($query_pos) $file_name = substr($file_name, 0, $query_pos);
 
-		if($catalogNumber) {
-			//Clean out Symbols that would interfere with 
-			$derived_cat_num = str_replace(array('/','\\',' '), '', $catalogNumber);
+		$file_type_pos = strrpos($file_name,'.');
+		$dir_path_pos = strrpos($file_name,'/');
 
-			//Grab any characters in the range of 0-8 then any amount digits
-			if(preg_match('/^(\D{0,8}\d{4,})/', $derived_cat_num, $matches)){
-				//Parse out everything but last 3 digits
-				$derived_cat_num = substr($matches[1], 0, -3);
+		if($dir_path_pos !== false) $dir_path_pos += 1;
 
-				//If derived catalog number is a number less then five pad front with 0's
-				if(is_numeric($derived_cat_num) && strlen($derived_cat_num) < 5) {
-					str_pad($derived_cat_num, 5, "0", STR_PAD_LEFT);
-				}
+		return [
+			'name' => self::cleanFileName(
+				substr($file_name, $dir_path_pos, $file_type_pos - $dir_path_pos)
+			),
+			'extension' => substr($file_name, $file_type_pos + 1),
+			'path' => $filepath 
+		];
+	}
 
-				$root .= $derived_cat_num . '/';
-			//backup catalogNumber
-			} else {
-				$root .= '00000/';
-			}
-		//Use date as a backup so that main directory doesn't get filled up but can debug
-		} else {
-			$root .= date('Ym') . '/';
+	/**
+	 * Strips out undesired characters from from a pure file name string
+	 *
+	 * @param string $file_name A file name without the extension
+	 * return string
+	 */
+	static function cleanFileName(string $file_name):string {
+		$file_name = str_replace(".","", $file_name);
+		$file_name = str_replace(array("%20","%23"," ","__"),"_",$file_name);
+		$file_name = str_replace("__","_",$file_name);
+		$file_name = str_replace(array(chr(231),chr(232),chr(233),chr(234),chr(260)),"a",$file_name);
+		$file_name = str_replace(array(chr(230),chr(236),chr(237),chr(238)),"e",$file_name);
+		$file_name = str_replace(array(chr(239),chr(240),chr(241),chr(261)),"i",$file_name);
+		$file_name = str_replace(array(chr(247),chr(248),chr(249),chr(262)),"o",$file_name);
+		$file_name = str_replace(array(chr(250),chr(251),chr(263)),"u", $file_name);
+		$file_name = str_replace(array(chr(264),chr(265)),"n",$file_name);
+		$file_name = preg_replace("/[^a-zA-Z0-9\-_]/", "", $file_name);
+		$file_name = trim($file_name,' _-');
+
+		if(strlen($file_name) > 30) {
+			$file_name = substr($file_name, 0, 30);
 		}
 
-		return $root;
+		$file_name .= '_'.time();
+
+		return $file_name;
 	}
 
     /**
@@ -199,39 +234,30 @@ class Media {
 
     /**
      * @param array<int,mixed> $post_arr
-     * @param array<mixed> $occur_map
+     * @param UploadStrategy $upload_strategy
+	 * @param array $file {name: string, type: string, tmp_name: string, error: int, size: int} 
      * @return bool
      */
-    public static function addMedia(array $post_arr, UploadStrategy $uploadStrategy): bool {
+    public static function add(array $post_arr, UploadStrategy $upload_strategy, array $file): bool {
 		$clean_post_arr = Sanitize::in($post_arr);
-		$file = $_FILES['imgfile'];
 
-		/*$collection_media_path = Self::getCollectionMediaRoot(
-			$occur_map['institutioncode'], 
-			$occur_map['collectioncode'],
-			$occur_map['catalognumber']
-		);*/
+		// Clean Incoming Data
+		// Insert into db with the correct values
+		// Upload data
+		
+		if($file && !empty($file)) {
+			//
+		} else if($clean_post_arr['copytoserver']) {
+			strrpos($clean_post_arr['sourceUrl'], '/');
+			$file = ['name' => 'todo parse name', 'tmp_name' => 'url'];
+		} else {
+
+		}
 
 		$copy_to_server = $clean_post_arr['copytoserver']?? false;
 		$mapLargeImg = !($clean_post_arr['nolgimage']?? true);
 
-		//  What we need to do:
-		// 1. we need to create a media path record
-		// 2. We need to figure out if the resourece is being stored on the server if not we are done
-		// 3. If we are storing the media use the upload strategy provided
-		
-		// Basic Upload Stratgety
-		// get path following pattern institutioncode(?_collectioncode)/catalognumber | ym
-		// check if path exists if not create path
-		// make sure path is writable 
-		// attempt to write file
-		// if any of this fails rollback media table insert and send the appropriate error
-	//
 		$media_type = explode('/', $file['type'])[0];
-
-		if(empty($_FILES)) {
-			//todo no files to upload
-		}
 
 		//Not type currently sent
 
@@ -272,7 +298,7 @@ class Media {
 		if($row = $taxon_result->fetch_object()) {
 			$clean_post_arr['tid'] = $row->tidinterpreted;
 		}
-		$clean_post_arr["sourceurl"] = $uploadStrategy->getUrlPath() . $file['name'];
+		$clean_post_arr["sourceurl"] = $upload_strategy->getUrlPath() . $file['name'];
 
 		switch(MediaType::tryFrom($media_type)) {
 			case MediaType::Image:
@@ -340,7 +366,7 @@ class Media {
 			$media_id = $conn->insert_id;
 
 			//Check if file exists
-			if($uploadStrategy->file_exists($file)) {
+			if($upload_strategy->file_exists($file)) {
 				//Add media_id onto end of file name which should be unique within portal
 				$file['name'] = substr_replace(
 					$file['name'], 
@@ -350,7 +376,7 @@ class Media {
 
 				//Fail case the appended media_id is taken stops after 10 
 				$cnt = 1;
-				while($uploadStrategy->file_exists($file) && $cnt < 10) {
+				while($upload_strategy->file_exists($file) && $cnt < 10) {
 					$file['name'] = substr_replace(
 						$file['name'], 
 						'_' . $cnt, 
@@ -358,7 +384,7 @@ class Media {
 						0);
 					$cnt++;
 				}
-				$updated_path = $uploadStrategy->getUrlPath() . $file['name'];
+				$updated_path = $upload_strategy->getUrlPath() . $file['name'];
 
 				//Update source url to reflect new filename
 				mysqli_execute_query(
@@ -368,7 +394,7 @@ class Media {
 				);
 			}
 
-			$uploadStrategy->upload($file);
+			$upload_strategy->upload($file);
 
 			mysqli_commit($conn);
 		} catch(Exception $e) {
@@ -379,6 +405,17 @@ class Media {
 		}
 
 		return true;
+	}
+
+	/**
+	 * For updating metadata in the media table only
+	 *
+	 * @param array $post_arr update
+	 * @return bool
+	 * @throws MediaExceptionCase
+	 **/
+	public static function update_metadata(array $post_arr): bool {
+		# code...
 	}
 
     /**
