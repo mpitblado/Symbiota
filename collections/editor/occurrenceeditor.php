@@ -265,9 +265,10 @@ if($SYMB_UID){
 						$_FILES['imgfile'] ?? null
 					);
 					$statusStr = $LANG['IMAGE_ADD_SUCCESS'];
-					$tabTarget = 2;
 				} catch(Exception $e ) {
 					$statusStr = $e->getMessage();
+				} finally {
+					$tabTarget = 2;
 				}
 
 				/*
