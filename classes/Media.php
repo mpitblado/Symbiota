@@ -171,10 +171,12 @@ class Media {
 	}
 
 	/**
-	 * Strips out undesired characters from from a pure file name string
+	 * Pulls file name out of directory path or url
+	 * 
+	 * Note: The url parsing expects the filename to not be in the query or hash
 	 *
-	 * @param string $filepath
-	 * return array<string> 
+	 * @param string $filepath Can be a file or url path
+	 * return array<string,mixed> 
 	 */
 	public static function parseFileName(string $filepath): array {
 		$file_name = $filepath;
@@ -393,10 +395,11 @@ class Media {
 	}
 
 	/* 
+	 * Curls url for header information and returns a $_FILES like file array
 	 * @param string $url
 	 * return array | bool
 	 */
-	public static function getRemoteFileInfo($url): array|bool {
+	public static function getRemoteFileInfo(string $url): array|bool {
 		//TODO (Logan) Alternative Method exists to curl?
 		if(!function_exists('curl_init')) throw new Exception('Curl is not installed');
 		$ch = curl_init($url);
@@ -512,6 +515,10 @@ class Media {
 		}
 	}
 
+	private static function isValidFile(array | null $file): bool {
+		return $file && !empty($file) && isset($file['error']) && $file['error'] === 0;
+	}
+
     /**
      * @param array<int,mixed> $post_arr
      * @param UploadStrategy $upload_strategy
@@ -526,20 +533,21 @@ class Media {
 		// Upload data
 		$copy_to_server = $clean_post_arr['copytoserver']?? false;
 		$mapLargeImg = !($clean_post_arr['nolgimage']?? true);
-		$should_upload_file = ($file && !empty($file)) || $copy_to_server;
+		$isRemoteMedia = isset($clean_post_arr['imgurl']) && $clean_post_arr['imgurl'];
+		$should_upload_file = $file && !empty($file) && $copy_to_server;
 
 		//If no file is given and downloads from urls are enabled
-		if(!$file || empty($file) || (isset($file['error']) && $file['error'] !== 0)) {
+		if(!self::isValidFile($file) && $isRemoteMedia) {
 			$file = self::getRemoteFileInfo($clean_post_arr['imgurl']);
 		}
 
 		//If that didn't popluate then return;
-		if(!$file || empty($file) || (isset($file['error']) && $file['error'] !== 0)) {
+		if(!self::isValidFile($file)) {
 			throw new Exception('Error: Uploaded/Remote media missing');
 		}
 
 		//If file being uploaded is too big throw error 
-		if($should_upload_file && is_numeric($file['size']) && self::getMaximumFileUploadSize() < $file['size']) {
+		else if($should_upload_file && self::getMaximumFileUploadSize() < intval($file['size'])) {
 			throw new Exception('Error: File is to large to upload');
 		}
 
@@ -557,7 +565,7 @@ class Media {
 		 * occidindex
 		 * csmode
 		 * tabindex
-		 * action = "Submit New Images"
+		 * action = "Submit New Images
 		**/
 
 		$conn = self::connect('write');
@@ -578,10 +586,10 @@ class Media {
 			$clean_post_arr['tid'] = $row->tidinterpreted;
 		}
 
-		$clean_post_arr["sourceurl"] = $upload_strategy->getUrlPath() . $file['name'];
-		$media_type = explode('/', $file['type'])[0];
-
-		switch(MediaType::tryFrom($media_type)) {
+		$media_type_str = explode('/', $file['type'])[0];
+		$media_type = MediaType::tryFrom($media_type_str);
+		
+		switch($media_type) {
 			case MediaType::Image:
 				//Only Gen Thumbnails for images
 				$clean_post_arr["tnurl"] = $clean_post_arr["sourceurl"];
@@ -597,16 +605,16 @@ class Media {
 
 			//Do execeptions for Media
 			Default: throw new MediaException(MediaExceptionCase::InvalidMediaType);
-		}
+		};
 
 		$keyValuePairs = [
 			"tid" => $clean_post_arr["tid"],
 			"occid" => $clean_post_arr["occid"],
-			"url" => $clean_post_arr["weburl"]?? $clean_post_arr["sourceurl"],
+			"url" => null,
 			"thumbnailUrl" => $clean_post_arr["tnurl"]?? null,
 			//This is a very bad name that refers to source or downloaded url
 			"originalUrl" => $clean_post_arr["sourceurl"]?? null,
-			"archiveUrl" => $clean_post_arr["archiverul"]?? null,// Only Occurrence import
+			"archiveUrl" => $clean_post_arr["archiverurl"]?? null,// Only Occurrence import
 			"sourceUrl" => $clean_post_arr["sourceurl"]?? null,// TPImageEditorManager / Occurrence import
 			"referenceUrl" => $clean_post_arr["referenceurl"]?? null,// check keys again might not be one,
 			"creator" => $clean_post_arr["photographer"],
@@ -629,8 +637,19 @@ class Media {
 			"hashValue" => null, // Only Occurrence import
 			"mediaMD5" => null,// Only Occurrence import
 			"recordID" => UuidFactory::getUuidV4(),
-			"media_type" => $media_type,
+			"media_type" => $media_type_str,
 		];
+
+		//What is url for files
+		if($isRemoteMedia && $media_type === MediaType::Image) {
+			//Required to exist
+			$source_url = $clean_post_arr['imgurl'];
+			$keyValuePairs['originalUrl'] =  $source_url;
+			$keyValuePairs['url'] = $clean_post_arr['weburl']?? $source_url;
+
+		} else {
+			$keyValuePairs['url'] = $upload_strategy->getUrlPath() . $file['name'];
+		}
 		
 		$keys = implode(",", array_keys($keyValuePairs));
 		$parameters = str_repeat('?,', count($keyValuePairs) - 1) . '?';
@@ -679,13 +698,80 @@ class Media {
 
 			if($should_upload_file) {
 				$upload_strategy->upload($file);
+
+				//Generate Deriatives if needed
+				if($media_type === MediaType::Image) {
+					$size = getimagesize($upload_strategy->getDirPath() . $file['name']);
+					//Todo Double check this is the write value
+					$height = $size[0];
+					$width = $size[1];
+
+					$thumb_url = $clean_post_arr['tnurl']?? null;
+					if(!$thumb_url) {
+						$thumb_url = $upload_strategy->getDirPath() . substr_replace(
+							$file['name'], 
+							'_tn', 
+							strrpos($file['name'], '.'), 
+							0
+						);
+						self::create_image(
+							$upload_strategy->getDirPath($file),
+							$thumb_url,
+							$GLOBALS['IMG_TN_WIDTH']?? 200,
+							$height
+					   	);
+					}
+
+					$med_url = $clean_post_arr['weburl']?? null;
+					if(!$med_url) {
+						$med_url= $upload_strategy->getDirPath() . substr_replace(
+							$file['name'], 
+							'_lg', 
+							strrpos($file['name'], '.'), 
+							0
+						);
+
+						self::create_image(
+							$upload_strategy->getDirPath($file), 
+							$med_url, 
+							$GLOBALS['IMG_LG_WIDTH']?? 1400,
+							$height,
+						);
+					}
+					//TODO (Logan) add section for checking uploaded image size
+				}
 			}
 
 			mysqli_commit($conn);
 		} catch(Exception $e) {
 			mysqli_rollback($conn);
 			//TODO (Logan) figure out if this is too lazy
+			//TODO (Logan) maybe add file cleanup on failure? 
 			throw new Exception($e->getMessage());
+		} 
+	}
+
+	private static function create_image($source_path, $new_path, $width, $height): void {
+		//under construction
+		return;
+		global $USE_IMAGE_MAGICK;
+		if($USE_IMAGE_MAGICK && extension_loaded('imagick')) {
+			if(extension_loaded('imagick')) {
+				$new_image = new Imagick();
+				$new_image->readImage($source_path);
+				$new_image->resizeImage($height, $width, Imagick::FILTER_LANCZOS, 1);
+				//Option for best fit some testing would be needed 
+				//$new_image->resizeImage($height, $width, Imagick::FILTER_LANCZOS, 1, TRUE);
+				$new_image->writeImage($new_path);
+				$new_image->destroy();
+			} else {
+				//TODO (Logan) transfer system call logic
+			}
+		} elseif(extension_loaded('gd') && function_exists('gd_info')) {
+			// GD is installed and working
+			//$status = $this->createNewImageGD($subExt,$targetWidth,$qualityRating,$targetPathOverride);
+		} else {
+			throw new Exception('No image handler for image conversions');
 		}
 	}
 
