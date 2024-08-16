@@ -747,14 +747,11 @@ class Media {
 	}
 
 	public static function create_image($source_path, $new_path, $new_width, $new_height): void {
-		//under construction
-		
 		global $USE_IMAGE_MAGICK;
 
 		if($USE_IMAGE_MAGICK) {
 			self::create_image_imagick($source_path, $new_path, $new_width, $new_height);
 		} elseif(extension_loaded('gd') && function_exists('gd_info')) {
-			echo 'using gd';
 			self::create_image_gd($source_path, $new_path, $new_width, $new_height);
 		} else {
 			throw new Exception('No image handler for image conversions');
@@ -762,8 +759,7 @@ class Media {
 	}
 
 	private static function create_image_imagick($source_path, $new_path, $new_width, $new_height): void {
-		if(extension_loaded('imagick')) {
-			echo 'using imagick';
+		if(extension_loaded('imagick') && false) {
 			$new_image = new Imagick();
 			$new_image->readImage($source_path);
 			$new_image->resizeImage($new_height, $new_width, Imagick::FILTER_LANCZOS, 1, TRUE);
@@ -771,9 +767,18 @@ class Media {
 			$new_image->destroy();
 		} else {
 			echo 'imagick not loaded';
+			$qualityRating = self::DEFAULT_JPG_COMPRESSION;
 			//TODO (Logan) transfer system call logic
-		}
+			if($new_width < 300) {
+				$ct = system('convert '. $source_path . ' -thumbnail ' . $new_width .' x ' . ($new_width * 1.5).' '.$new_path);
+			} else {
+				$ct = system('convert '. $source_path . ' -resize ' . $new_width.'x' . ($new_width * 1.5) . ($qualityRating?' -quality '.$qualityRating:'').' '.$new_path);
+			}
 
+			if(!file_exists($new_path)){
+				error_log('ERROR: Image failed to be created in Imagick function (target path: '.$new_path.')');
+			}
+		}
 	}
 
 	private static function create_image_gd($source_path, $new_path, $new_width, $new_height) : void {
