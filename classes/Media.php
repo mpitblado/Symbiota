@@ -8,21 +8,21 @@ abstract class UploadStrategy {
 	 * @param array $file {name: string, type: string, tmp_name: string, error: int, size: int} 
      * @return string 
      */
-	abstract public function getDirPath(array $file): string;
+	abstract public function getDirPath(array|string $file): string;
 
     /**
      * If a file is given then return the url path to that resource otherwise just return the root url path.
 	 * @param array $file {name: string, type: string, tmp_name: string, error: int, size: int} 
      * @return string 
      */
-	abstract public function getUrlPath(array $file): string;
+	abstract public function getUrlPath(array|string $file): string;
 
     /**
      * Function to check if a file exists for the storage location of the upload strategy.
 	 * @param array $file {name: string, type: string, tmp_name: string, error: int, size: int} 
      * @return bool 
      */
-	abstract public function file_exists(array $file): bool;
+	abstract public function file_exists(array|string $file): bool;
 
     /**
      * Function to handle how a file should be uploaded.
@@ -31,6 +31,46 @@ abstract class UploadStrategy {
 	 * @throws MediaException(MediaExceptionCase::DuplicateMediaFile)
      */
 	abstract public function upload(array $file): bool;
+}
+
+class MediaFile {
+	public string $name;
+	public string $filepath;
+	public string $extension;
+	public string $mime_type;
+	public MediaType $media_type;
+	public string $is_remote;
+
+	public function __construct(string | array $filepath) {
+		//Array is assumed to be from $_FILES
+		if(is_array($filepath)) {
+			$this->name = $filepath['name'];
+			$this->mime_type = $filepath['type'];
+			$this->extension = Media::mime2ext($filepath['type']);
+
+		} else {
+			$file_name = $filepath;
+
+			//Filepath maybe a url so clear out url query if it exists
+			$query_pos = strpos($file_name,'?');
+			if($query_pos) $file_name = substr($file_name, 0, $query_pos);
+
+			$file_type_pos = strrpos($file_name,'.');
+			$dir_path_pos = strrpos($file_name,'/');
+
+			if($dir_path_pos !== false) $dir_path_pos += 1;
+			if($file_type_pos === false || $file_type_pos < $dir_path_pos) {
+				$file_type_pos = strlen($file_name);
+			}
+
+			$this->name = $Media::cleanFileName(
+				substr($file_name, $dir_path_pos, $file_type_pos - $dir_path_pos)
+			);
+
+			$this->filepath = $filepath;
+			$this->extension = substr($file_name, $file_type_pos + 1);
+		}
+	}
 }
 
 class SymbiotaUploadStrategy extends UploadStrategy {
@@ -44,16 +84,18 @@ class SymbiotaUploadStrategy extends UploadStrategy {
 		$this->catalognumber = $catalognumber;
 	}
 
-	public function getDirPath(array $file = null): string {
+	public function getDirPath(array | string $file = null): string {
+		$file_name = is_array($file)? $file['name']: $file;
 		return $GLOBALS['IMAGE_ROOT_PATH'] . 
 			(substr($GLOBALS['IMAGE_ROOT_PATH'],-1) != "/"? '/': '') . 
-			$this->getPathPattern() . ($file? $file['name']: '');
+			$this->getPathPattern() . $file;
 	}
 
-	public function getUrlPath(array $file = null): string {
+	public function getUrlPath(array | string $file = null): string {
+		$file_name = is_array($file)? $file['name']: $file;
 		return $GLOBALS['IMAGE_ROOT_URL'] .
 		   	(substr($GLOBALS['IMAGE_ROOT_URL'],-1) != "/"? '/': '') .
-		   	$this->getPathPattern() . ($file? $file['name']: '');
+		   	$this->getPathPattern() . $file;
 	}
 
     /**
@@ -91,8 +133,9 @@ class SymbiotaUploadStrategy extends UploadStrategy {
 		return $root;
 	}
 
-	public function file_exists(array $file): bool {
-		return file_exists($this->getDirPath() . $file['name']);
+	public function file_exists(array|string $file): bool {
+		if(is_array($file)) file_exists($this->getDirPath() . $file['name']);
+		else return file_exists($this->getDirPath() . $file);
 	}
 
     /**
@@ -114,9 +157,11 @@ class SymbiotaUploadStrategy extends UploadStrategy {
 		//If Uploaded from $_POST then move file to new path
 		if(is_uploaded_file($file['tmp_name'])) {
 			move_uploaded_file($file['tmp_name'], $file_path);
-		//Otherwise assume tmp_name is an absoulte file path or url;
+		//If temp path is on server then just move to new location;
+		} else if(file_exists($file['tmp_name'])) {
+			rename($file['tmp'], $file_path);
+		//Otherwise assume tmp_name a url and stream file contents over
 		} else {
-			//Stream File Contents
 			file_put_contents($file_path, fopen($file['tmp_name'], 'r'));
 		}
 
@@ -208,13 +253,12 @@ class Media {
 			'name' => self::cleanFileName(
 				substr($file_name, $dir_path_pos, $file_type_pos - $dir_path_pos)
 			),
+			'tmp_name' => $filepath,
 			'extension' => substr($file_name, $file_type_pos + 1),
-			'mime_type' => '',
-			'path' => $filepath 
 		];
 	}
 
-	private static function mime2ext($mime) {
+	public static function mime2ext(string $mime): string | bool {
 		$mime_map = [
 			'video/3gpp2' => '3g2',
 			'video/3gp'=> '3gp',
@@ -530,6 +574,23 @@ class Media {
 		return $file && !empty($file) && isset($file['error']) && $file['error'] === 0;
 	}
 
+	/** $post_arr Keys:
+	 * imgurl 
+	 * weburl
+	 * sourceurl
+	 * tnurl
+	 * photographeruid
+	 * photographer
+	 * notes
+	 * copyright
+	 * sortoccurrence
+	 * occid
+	 * occidindex
+	 * csmode
+	 * tabindex
+	 * action = "Submit New Images
+	**/
+
     /**
      * @param array<int,mixed> $post_arr
      * @param UploadStrategy $upload_strategy
@@ -539,9 +600,6 @@ class Media {
     public static function add(array $post_arr, UploadStrategy $upload_strategy, array $file): void {
 		$clean_post_arr = Sanitize::in($post_arr);
 
-		// Clean Incoming Data
-		// Insert into db with the correct values
-		// Upload data
 		$copy_to_server = $clean_post_arr['copytoserver']?? false;
 		$mapLargeImg = !($clean_post_arr['nolgimage']?? true);
 		$isRemoteMedia = isset($clean_post_arr['imgurl']) && $clean_post_arr['imgurl'];
@@ -561,23 +619,6 @@ class Media {
 		else if($should_upload_file && self::getMaximumFileUploadSize() < intval($file['size'])) {
 			throw new Exception('Error: File is to large to upload');
 		}
-
-		/** Keys:
-		 * imgurl 
-		 * weburl
-		 * sourceurl
-		 * tnurl
-		 * photographeruid
-		 * photographer
-		 * notes
-		 * copyright
-		 * sortoccurrence
-		 * occid
-		 * occidindex
-		 * csmode
-		 * tabindex
-		 * action = "Submit New Images
-		**/
 
 		$conn = self::connect('write');
 
@@ -614,7 +655,7 @@ class Media {
 			"referenceUrl" => $clean_post_arr["referenceurl"]?? null,// check keys again might not be one,
 			"creator" => $clean_post_arr["photographer"],
 			"creatorUid" => OccurrenceUtilities::verifyUser($clean_post_arr["photographeruid"], $conn) ,
-			"format" => $_FILES["imgfile"]["type"],
+			"format" => $file["type"],
 			"caption" => $clean_post_arr["caption"]?? null,
 			"owner" => $clean_post_arr["owner"]??null, //TPImageEditorManager / Occurrence import
 			"locality" => $clean_post_arr["locality"]?? null, //Only in the TPImageEditorManager
@@ -665,30 +706,22 @@ class Media {
 			//Check if file exists
 			if($upload_strategy->file_exists($file)) {
 				//Add media_id onto end of file name which should be unique within portal
-				$file['name'] = substr_replace(
-					$file['name'], 
-					'_' . $media_id, 
-					strrpos($file['name'], '.'), 
-					0);
+				$file['name'] = self::addToFilename($file['name'], '_' . $media_id);
 
 				//Fail case the appended media_id is taken stops after 10 
 				$cnt = 1;
 				while($upload_strategy->file_exists($file) && $cnt < 10) {
-					$file['name'] = substr_replace(
-						$file['name'], 
-						'_' . $cnt, 
-						strrpos($file['name'], '.'), 
-						0);
+					$file['name'] = self::addToFilename($file['name'], '_' . $cnt);
 					$cnt++;
 				}
 				$updated_path = $upload_strategy->getUrlPath() . $file['name'];
 
 				//Update source url to reflect new filename
-				mysqli_execute_query(
-					$conn, 
-					'UPDATE media set url = ?, sourceUrl = ?, originalUrl = ? where media_id = ?', 
-					[$updated_path, $updated_path, $updated_path, $media_id]
-				);
+				self::update_metadata([
+					'url' => $updated_path, 
+					'sourceUrl' => $updated_path, 
+					'originalUrl' => updated_path
+				], $media_id, $conn);
 			}
 
 			if($should_upload_file) {
@@ -696,44 +729,50 @@ class Media {
 
 				//Generate Deriatives if needed
 				if($media_type === MediaType::Image) {
-					$size = getimagesize($upload_strategy->getDirPath() . $file['name']);
-					//Todo Double check this is the write value
-					$height = $size[0];
-					$width = $size[1];
+					//Will download file if its remote. 
+					//This is a naive solution assuming we are upload to our server 
+					$size = getimagesize($upload_strategy->getDirPath($file));
+					$metadata = [
+						'pixelXDimension' => $size[0],
+						'pixelXDimension' => $size[1]
+					];
+
+					$width = $size[0];
+					$height = $size[1];
 
 					$thumb_url = $clean_post_arr['tnurl']?? null;
 					if(!$thumb_url) {
-						$thumb_url = $upload_strategy->getDirPath() . substr_replace(
-							$file['name'], 
-							'_tn', 
-							strrpos($file['name'], '.'), 
-							0
-						);
+						$thumb_name = self::addToFilename($file['name'], '_tn');
 						self::create_image(
-							$upload_strategy->getDirPath($file),
-							$thumb_url,
+							$file['name'],
+							self::addToFilename($file['name'], '_tn'),
+							$upload_strategy,
 							$GLOBALS['IMG_TN_WIDTH']?? 200,
-							$height
+							0
 					   	);
+
+						if($upload_strategy->file_exists($thumb_name)) {
+							$metadata['thumbnailUrl'] = $upload_strategy->getUrlPath($thumb_name);
+						}
 					}
 
 					$med_url = $clean_post_arr['weburl']?? null;
 					if(!$med_url) {
-						$med_url= $upload_strategy->getDirPath() . substr_replace(
-							$file['name'], 
-							'_lg', 
-							strrpos($file['name'], '.'), 
-							0
-						);
-
+						$med_name =	self::addToFilename($file['name'], '_lg');
 						self::create_image(
-							$upload_strategy->getDirPath($file), 
-							$med_url, 
+							$file['name'],
+							$med_name,
+							$upload_strategy,
 							$GLOBALS['IMG_LG_WIDTH']?? 1400,
-							$height,
-						);
+							0
+					   	);
+
+						if($upload_strategy->file_exists($med_name)) {
+							$metadata['url'] = $upload_strategy->getUrlPath($med_name);
+						}
 					}
-					//TODO (Logan) add section for checking uploaded image size
+					
+					self::update_metadata($metadata, $media_id, $conn);
 				}
 			}
 
@@ -746,33 +785,88 @@ class Media {
 		} 
 	}
 
-	public static function create_image($source_path, $new_path, $new_width, $new_height): void {
+	private static function addToFilename(string $filename, string $ext) {
+		return substr_replace(
+			$filename, 
+			$ext, 
+			strrpos($filename, '.'), 
+			0
+		);
+	}
+
+	/*
+	 * While the function does create an image it does so to resize it
+	 *
+	 * This function is a wrapper to call the correct image generation function based on what image handler is configured in a given Symbiota Portal. Most use gd 
+	 *
+	 * @param string $src_file Filename to image base
+	 * @param string $new_file Filename for newly resized image
+	 * @param UploadStrategy $upload_strategy Class that instructs where how how an image should be stored
+	 * @param int $new_width Maximum width for the new image if zero will box to height
+	 * @param int $new_height Maximum height for the new image if zero will box to width
+	 */
+	public static function create_image($src_file, $new_file, UploadStrategy $upload_strategy, $new_width, $new_height): void {
 		global $USE_IMAGE_MAGICK;
 
 		if($USE_IMAGE_MAGICK) {
-			self::create_image_imagick($source_path, $new_path, $new_width, $new_height);
+			self::create_image_imagick($src_file, $new_file, $upload_strategy, $new_width, $new_height);
 		} elseif(extension_loaded('gd') && function_exists('gd_info')) {
-			self::create_image_gd($source_path, $new_path, $new_width, $new_height);
+			self::create_image_gd($src_file, $new_file, $upload_strategy, $new_width, $new_height);
 		} else {
 			throw new Exception('No image handler for image conversions');
 		}
+
+		//If file doesn't according to the upload strategy then upload it to the correct place. This will only run if the media storage is remote to the server
+		if(!$upload_strategy->file_exists($new_file)) {
+			$upload_strategy->upload([
+				'name' => $new_file,
+				'tmp_name' => $upload_strategy->getDirPath($new_file),
+			]);
+		}
 	}
 
-	private static function create_image_imagick($source_path, $new_path, $new_width, $new_height): void {
-		if(extension_loaded('imagick') && false) {
+	/*
+	 * While the function does create an image it does so to resize it
+	 *
+	 * This function is implemenation for Symbiota Portals using imagick.
+	 * Most portals using imagick have ImageMagick installed on server and make system calls in order to use it.
+	 * At the time of making this function no know portals have the imagick pecl package installed but and implemenation was made as we are potentially heading in that direction.
+	 * 
+	 * @param string $src_file Filename to image base
+	 * @param string $new_file Filename for newly resized image
+	 * @param UploadStrategy $upload_strategy Class that instructs where how how an image should be stored
+	 * @param int $new_width Maximum width for the new image if zero will box to height
+	 * @param int $new_height Maximum height for the new image if zero will box to width
+	 */
+	private static function create_image_imagick(
+		string $src_file, string $new_file, 
+		UploadStrategy $upload_strategy, 
+		int $new_width, int $new_height
+	): void {
+		$src_path = $upload_strategy->getDirPath($src_file);
+		$new_path = $upload_strategy->getDirPath($new_file);
+
+		if($new_height === 0 && $new_width === 0) {
+			throw new Exception('Must have width or height as non zero values');
+		} else if($new_height === 0) {
+			$new_height = $new_width;
+		} else if($new_width === 0) {
+			$new_width = $new_height;
+		}
+
+		if(extension_loaded('imagick')) {
 			$new_image = new Imagick();
-			$new_image->readImage($source_path);
+			$new_image->readImage($src_path);
 			$new_image->resizeImage($new_height, $new_width, Imagick::FILTER_LANCZOS, 1, TRUE);
 			$new_image->writeImage($new_path);
 			$new_image->destroy();
 		} else {
-			echo 'imagick not loaded';
 			$qualityRating = self::DEFAULT_JPG_COMPRESSION;
-			//TODO (Logan) transfer system call logic
+
 			if($new_width < 300) {
-				$ct = system('convert '. $source_path . ' -thumbnail ' . $new_width .' x ' . ($new_width * 1.5).' '.$new_path);
+				$ct = system('convert '. $src_path . ' -thumbnail ' . $new_width .' x ' . ($new_width * 1.5).' '.$new_path);
 			} else {
-				$ct = system('convert '. $source_path . ' -resize ' . $new_width.'x' . ($new_width * 1.5) . ($qualityRating?' -quality '.$qualityRating:'').' '.$new_path);
+				$ct = system('convert '. $src_path . ' -resize ' . $new_width.'x' . ($new_width * 1.5) . ($qualityRating?' -quality '.$qualityRating:'').' '.$new_path);
 			}
 
 			if(!file_exists($new_path)){
@@ -781,8 +875,32 @@ class Media {
 		}
 	}
 
-	private static function create_image_gd($source_path, $new_path, $new_width, $new_height) : void {
-		$size = getimagesize($source_path);
+	/*
+	 * While the function does create an image it does so to resize it
+	 *
+	 * This function is implemenation for Symbiota Portals using gd.
+	 * Gd is the typical default configuration for most portals
+	 * 
+	 * @param string $src_file Filename to image base
+	 * @param string $new_file Filename for newly resized image
+	 * @param UploadStrategy $upload_strategy Class that instructs where how how an image should be stored
+	 * @param int $new_width Maximum width for the new image if zero will box to height
+	 * @param int $new_height Maximum height for the new image if zero will box to width
+	 */
+	private static function create_image_gd(
+		string $src_file, string $new_file, 
+		UploadStrategy $upload_strategy, 
+		int $new_width, int $new_height
+	): void {
+
+		$src_path = $upload_strategy->getDirPath($src_file);
+		$new_path = $upload_strategy->getDirPath($new_file);
+
+		if($new_width === 0 && $new_height === 0) {
+			throw new Exception('Must have width or height as non zero values');
+		}
+
+		$size = getimagesize($src_path);
 		$width = $size[0];
 		$height = $size[1];
 		$mime_type = $size['mime'];
@@ -790,12 +908,12 @@ class Media {
 		$orig_width = $width;
 		$orig_height = $height;
 
-		if($height > $new_height) {
+		if($height > $new_height && $new_height !== 0) {
 			$width = intval(($new_height / $height) * $width);
 			$height = $new_height;
 		}
 
-		if($width > $new_width) {
+		if($width > $new_width && $new_width !== 0) {
 			$height = intval(($new_width / $width) * $height);
 			$width = $new_width;
 		}
@@ -803,9 +921,9 @@ class Media {
 		$new_image = imagecreatetruecolor($width, $height);
 
 		$image = match($mime_type) {
-			'image/jpeg' => imagecreatefromjpeg($source_path),
-			'image/png' => imagecreatefrompng($source_path),
-			'image/gif' => imagecreatefromgif($source_path),
+			'image/jpeg' => imagecreatefromjpeg($src_path),
+			'image/png' => imagecreatefrompng($src_path),
+			'image/gif' => imagecreatefromgif($src_path),
 			default => throw new Exception(
 				'Mime Type: ' . $mime_type . ' not supported for creation'
 			)
@@ -832,12 +950,33 @@ class Media {
 	/**
 	 * For updating metadata in the media table only
 	 *
-	 * @param array $post_arr update
-	 * @return bool
-	 * @throws MediaExceptionCase
+	 * This function is assumes clean data because it is interal
+	 *
+	 * @param array $metadata_arr Key value array of Media table attributes
+	 * @return void
+	 * @throws Exception
 	 **/
-	public static function update_metadata(array $post_arr): bool {
-		# code...
+	private static function update_metadata(array $metadata_arr, int $media_id, mysqli $conn = null): void {
+		$values = [];
+		$parameter_str = '';
+
+		foreach ($metadata_arr as $key => $value) {
+			if($parameter_str !== '') $parameter_str .= ', ';
+			$parameter_str .= $key . " = ?";
+			array_push($values, $value);
+		}
+		array_push($values, $media_id);
+
+		$sql = 'UPDATE media set '. $parameter_str . 'where media_id = ?';
+		mysqli_execute_query(
+			$conn ?? self::connect('write'), 
+			$sql, 
+			$values
+		);
+	}
+
+	private static function parse_media_meta_data() {
+
 	}
 
     /**
