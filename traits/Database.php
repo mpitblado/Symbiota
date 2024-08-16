@@ -5,21 +5,21 @@
 include_once($SERVER_ROOT.'/config/dbconnection.php');
 
 // Currently will make a connection evertime new class is used TODO (Logan) change this to a static class?
+// Maybe we want differnt connections per class? It is like this already anyway
 trait Database {
-	protected static $conn = null;
+	protected static $conns = [];
     /**
-     * @param string $connection_type
-     * @param bool $override_connection
+     * @param string $conn_type Type of db connection either 'write' or 'read'
+     * @param bool $override_conn Flag if you want to for reset the connection
 	 * @return mysqli
      */
-    public static function connect(string $connection_type, bool $override_connection = false): Object {
-		if(!self::$conn || $override_connection) {
-			//echo 'created new connection<br>';
-			self::$conn = MySQLiConnectionFactory::getCon($connection_type);
-			return self::$conn;
+    public static function connect(string $conn_type, bool $override_conn = false): Object {
+		if(!isset(self::$conns[$conn_type]) || !self::$conns[$conn_type] || $override_conn) {
+			$conn = MySQLiConnectionFactory::getCon($conn_type);
+			self::$conns[$conn_type] = $conn; 
+			return $conn;
 		} else {
-			//echo 'used old one<br>';
-			return self::$conn;
+			return self::$conns[$conn_type];
 		}
 	}
 }
