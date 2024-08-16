@@ -330,7 +330,7 @@ $creatorArray = Media::getCreatorArray();
 										</div>
 										<div id="imgeditoverride<?php echo $imgId; ?>" style="display:<?php echo ($imgArr["creator"]?'block':'none'); ?>;">
 											<b><?php echo $LANG['PHOTOG_OVER']; ?>:</b><br/>
-											<input name='photographer' type='text' value="<?php echo $imgArr["photographer"]; ?>" style="width:300px;" maxlength='100'>
+											<input name='photographer' type='text' value="<?php echo $imgArr["creator"]; ?>" style="width:300px;" maxlength='100'>
 											* <?php echo $LANG['WILL_OVERRIDE']; ?>
 										</div>
 										<div>
