@@ -150,6 +150,17 @@ class Media {
 	private static $mediaRootPath;
 	private static $mediaRootUrl;
 
+	private const DEFAULT_THUMBNAIL_WIDTH_PX = 200;
+	private const DEFAULT_WEB_WIDTH_PX = 1600;
+	private const DEFAULT_LARGE_WIDTH_PX = 3168;
+	private const WEB_FILE_SIZE_LIMIT = 300000;
+	private const DEFAULT_JPG_COMPRESSION = 70;
+	private const DEFAULT_TEST_ORIENTATION = false;
+
+	private const DEFAULT_GEN_LARGE_IMG = true;
+	private const DEFAULT_GEN_WEB_IMG = true;
+	private const DEFAULT_GEN_THUMBNAIL_IMG = true;
+
 	private static function getMediaRootPath(): string {
 		if(self::$mediaRootPath) {
 			return self::$mediaRootPath;
@@ -588,25 +599,9 @@ class Media {
 
 		$media_type_str = explode('/', $file['type'])[0];
 		$media_type = MediaType::tryFrom($media_type_str);
+
+		if($media_type) throw new MediaException(MediaExceptionCase::InvalidMediaType);
 		
-		switch($media_type) {
-			case MediaType::Image:
-				//Only Gen Thumbnails for images
-				$clean_post_arr["tnurl"] = $clean_post_arr["sourceurl"];
-				//thumbnailurl, imgweburl, and imgLgurl need https:// and https:// checked
-				//Gen thumbnailurl if it doesn't exist and its a photo
-			break;
-			case MediaType::Audio:
-
-			break;
-			case MediaType::Video:
-				// Currently Not supported
-			break;
-
-			//Do execeptions for Media
-			Default: throw new MediaException(MediaExceptionCase::InvalidMediaType);
-		};
-
 		$keyValuePairs = [
 			"tid" => $clean_post_arr["tid"],
 			"occid" => $clean_post_arr["occid"],
@@ -751,28 +746,82 @@ class Media {
 		} 
 	}
 
-	private static function create_image($source_path, $new_path, $width, $height): void {
+	public static function create_image($source_path, $new_path, $new_width, $new_height): void {
 		//under construction
-		return;
+		
 		global $USE_IMAGE_MAGICK;
-		if($USE_IMAGE_MAGICK && extension_loaded('imagick')) {
-			if(extension_loaded('imagick')) {
-				$new_image = new Imagick();
-				$new_image->readImage($source_path);
-				$new_image->resizeImage($height, $width, Imagick::FILTER_LANCZOS, 1);
-				//Option for best fit some testing would be needed 
-				//$new_image->resizeImage($height, $width, Imagick::FILTER_LANCZOS, 1, TRUE);
-				$new_image->writeImage($new_path);
-				$new_image->destroy();
-			} else {
-				//TODO (Logan) transfer system call logic
-			}
+
+		if($USE_IMAGE_MAGICK) {
+			self::create_image_imagick($source_path, $new_path, $new_width, $new_height);
 		} elseif(extension_loaded('gd') && function_exists('gd_info')) {
-			// GD is installed and working
-			//$status = $this->createNewImageGD($subExt,$targetWidth,$qualityRating,$targetPathOverride);
+			echo 'using gd';
+			self::create_image_gd($source_path, $new_path, $new_width, $new_height);
 		} else {
 			throw new Exception('No image handler for image conversions');
 		}
+	}
+
+	private static function create_image_imagick($source_path, $new_path, $new_width, $new_height): void {
+		if(extension_loaded('imagick')) {
+			echo 'using imagick';
+			$new_image = new Imagick();
+			$new_image->readImage($source_path);
+			$new_image->resizeImage($new_height, $new_width, Imagick::FILTER_LANCZOS, 1, TRUE);
+			$new_image->writeImage($new_path);
+			$new_image->destroy();
+		} else {
+			echo 'imagick not loaded';
+			//TODO (Logan) transfer system call logic
+		}
+
+	}
+
+	private static function create_image_gd($source_path, $new_path, $new_width, $new_height) : void {
+		$size = getimagesize($source_path);
+		$width = $size[0];
+		$height = $size[1];
+		$mime_type = $size['mime'];
+
+		$orig_width = $width;
+		$orig_height = $height;
+
+		if($height > $new_height) {
+			$width = intval(($new_height / $height) * $width);
+			$height = $new_height;
+		}
+
+		if($width > $new_width) {
+			$height = intval(($new_width / $width) * $height);
+			$width = $new_width;
+		}
+
+		$new_image = imagecreatetruecolor($width, $height);
+
+		$image = match($mime_type) {
+			'image/jpeg' => imagecreatefromjpeg($source_path),
+			'image/png' => imagecreatefrompng($source_path),
+			'image/gif' => imagecreatefromgif($source_path),
+			default => throw new Exception(
+				'Mime Type: ' . $mime_type . ' not supported for creation'
+			)
+		};
+
+		//This is need to maintain transparency if this is here
+		if($mime_type === 'image/png') {
+			imagealphablending($new_image, false);
+			imagesavealpha($new_image, true);
+		}
+
+		imagecopyresampled($new_image, $image, 0, 0, 0, 0, $width, $height, $orig_width, $orig_height);
+
+		//Handle Specific file types here
+		if($mime_type === 'image/png') {
+			imagepng($new_image, $new_path);
+		} else {
+			imagejpeg($new_image, $new_path);
+		}
+
+		imagedestroy($image);
 	}
 
 	/**
