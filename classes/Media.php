@@ -134,8 +134,11 @@ class SymbiotaUploadStrategy extends UploadStrategy {
 	}
 
 	public function file_exists(array|string $file): bool {
-		if(is_array($file)) file_exists($this->getDirPath() . $file['name']);
-		else return file_exists($this->getDirPath() . $file);
+		if(is_array($file)) {
+			return file_exists($this->getDirPath() . $file['name']);
+		} else { 
+			return file_exists($this->getDirPath() . $file);
+		}
 	}
 
     /**
@@ -603,7 +606,7 @@ class Media {
 		$copy_to_server = $clean_post_arr['copytoserver']?? false;
 		$mapLargeImg = !($clean_post_arr['nolgimage']?? true);
 		$isRemoteMedia = isset($clean_post_arr['imgurl']) && $clean_post_arr['imgurl'];
-		$should_upload_file = $file && !empty($file) && $copy_to_server;
+		$should_upload_file = ($file && !empty($file)) || $copy_to_server;
 
 		//If no file is given and downloads from urls are enabled
 		if(!self::isValidFile($file) && $isRemoteMedia) {
@@ -641,7 +644,7 @@ class Media {
 		$media_type_str = explode('/', $file['type'])[0];
 		$media_type = MediaType::tryFrom($media_type_str);
 
-		if($media_type) throw new MediaException(MediaExceptionCase::InvalidMediaType);
+		if(!$media_type) throw new MediaException(MediaExceptionCase::InvalidMediaType);
 		
 		$keyValuePairs = [
 			"tid" => $clean_post_arr["tid"],
@@ -685,6 +688,7 @@ class Media {
 
 		} else {
 			$keyValuePairs['url'] = $upload_strategy->getUrlPath() . $file['name'];
+			$keyValuePairs['originalUrl'] = $upload_strategy->getUrlPath() . $file['name'];
 		}
 		
 		$keys = implode(",", array_keys($keyValuePairs));
@@ -720,13 +724,15 @@ class Media {
 				self::update_metadata([
 					'url' => $updated_path, 
 					'sourceUrl' => $updated_path, 
-					'originalUrl' => updated_path
+					'originalUrl' => $updated_path
 				], $media_id, $conn);
 			}
+
 
 			if($should_upload_file) {
 				$upload_strategy->upload($file);
 
+				echo 'Did Upload';
 				//Generate Deriatives if needed
 				if($media_type === MediaType::Image) {
 					//Will download file if its remote. 
@@ -785,7 +791,7 @@ class Media {
 		} 
 	}
 
-	private static function addToFilename(string $filename, string $ext) {
+	private static function addToFilename(string $filename, string $ext): string {
 		return substr_replace(
 			$filename, 
 			$ext, 
@@ -967,7 +973,7 @@ class Media {
 		}
 		array_push($values, $media_id);
 
-		$sql = 'UPDATE media set '. $parameter_str . 'where media_id = ?';
+		$sql = 'UPDATE media set '. $parameter_str . ' where media_id = ?';
 		mysqli_execute_query(
 			$conn ?? self::connect('write'), 
 			$sql, 
