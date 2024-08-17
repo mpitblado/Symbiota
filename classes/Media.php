@@ -732,7 +732,6 @@ class Media {
 			if($should_upload_file) {
 				$upload_strategy->upload($file);
 
-				echo 'Did Upload';
 				//Generate Deriatives if needed
 				if($media_type === MediaType::Image) {
 					//Will download file if its remote. 
