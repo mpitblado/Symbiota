@@ -283,13 +283,22 @@ if($SYMB_UID){
 			}
 			elseif($action == 'Delete Image'){
 				$removeImg = (array_key_exists('removeimg',$_POST)?$_POST['removeimg']:0);
+				try {
+					Media::delete($_POST['imgid']);
+					$statusStr = $LANG['IMAGE_DEL_SUCCESS'];
+					$tabTarget = 2;
+				} catch(Exception $e) {
+					$statusStr = $e->getMessage();
+				}
+				/*
+
 				if($occManager->deleteImage($_POST["imgid"], $removeImg)){
 					$statusStr = (isset($LANG['IMAGE_DEL_SUCCESS'])?$LANG['IMAGE_DEL_SUCCESS']:'Image deleted successfully');
 					$tabTarget = 2;
 				}
 				else{
 					$statusStr = $occManager->getErrorStr();
-				}
+				}*/
 			}
 			elseif($action == 'Remap Image'){
 				if($occManager->remapImage($_POST['imgid'], $_POST['targetoccid'])){

@@ -88,14 +88,14 @@ class SymbiotaUploadStrategy extends UploadStrategy {
 		$file_name = is_array($file)? $file['name']: $file;
 		return $GLOBALS['IMAGE_ROOT_PATH'] . 
 			(substr($GLOBALS['IMAGE_ROOT_PATH'],-1) != "/"? '/': '') . 
-			$this->getPathPattern() . $file;
+			$this->getPathPattern() . $file_name;
 	}
 
 	public function getUrlPath(array | string $file = null): string {
 		$file_name = is_array($file)? $file['name']: $file;
 		return $GLOBALS['IMAGE_ROOT_URL'] .
 		   	(substr($GLOBALS['IMAGE_ROOT_URL'],-1) != "/"? '/': '') .
-		   	$this->getPathPattern() . $file;
+		   	$this->getPathPattern() . $file_name;
 	}
 
     /**
@@ -606,7 +606,7 @@ class Media {
 		$copy_to_server = $clean_post_arr['copytoserver']?? false;
 		$mapLargeImg = !($clean_post_arr['nolgimage']?? true);
 		$isRemoteMedia = isset($clean_post_arr['imgurl']) && $clean_post_arr['imgurl'];
-		$should_upload_file = ($file && !empty($file)) || $copy_to_server;
+		$should_upload_file = self::isValidFile($file) || $copy_to_server;
 
 		//If no file is given and downloads from urls are enabled
 		if(!self::isValidFile($file) && $isRemoteMedia) {
@@ -707,29 +707,28 @@ class Media {
 
 			$media_id = $conn->insert_id;
 
-			//Check if file exists
-			if($upload_strategy->file_exists($file)) {
-				//Add media_id onto end of file name which should be unique within portal
-				$file['name'] = self::addToFilename($file['name'], '_' . $media_id);
-
-				//Fail case the appended media_id is taken stops after 10 
-				$cnt = 1;
-				while($upload_strategy->file_exists($file) && $cnt < 10) {
-					$file['name'] = self::addToFilename($file['name'], '_' . $cnt);
-					$cnt++;
-				}
-				$updated_path = $upload_strategy->getUrlPath() . $file['name'];
-
-				//Update source url to reflect new filename
-				self::update_metadata([
-					'url' => $updated_path, 
-					'sourceUrl' => $updated_path, 
-					'originalUrl' => $updated_path
-				], $media_id, $conn);
-			}
-
-
 			if($should_upload_file) {
+				//Check if file exists
+				if($upload_strategy->file_exists($file)) {
+					//Add media_id onto end of file name which should be unique within portal
+					$file['name'] = self::addToFilename($file['name'], '_' . $media_id);
+
+					//Fail case the appended media_id is taken stops after 10 
+					$cnt = 1;
+					while($upload_strategy->file_exists($file) && $cnt < 10) {
+						$file['name'] = self::addToFilename($file['name'], '_' . $cnt);
+						$cnt++;
+					}
+					$updated_path = $upload_strategy->getUrlPath() . $file['name'];
+
+					//Update source url to reflect new filename
+					self::update_metadata([
+						'url' => $updated_path, 
+						'sourceUrl' => $updated_path, 
+						'originalUrl' => $updated_path
+					], $media_id, $conn);
+				}
+
 				$upload_strategy->upload($file);
 
 				//Generate Deriatives if needed
@@ -980,8 +979,41 @@ class Media {
 		);
 	}
 
-	private static function parse_media_meta_data() {
+	public static function delete($media_id): void {
+		$conn = self::connect('write');
+		$result = mysqli_execute_query(
+			$conn, 
+			'SELECT url, thumbnailUrl, originalUrl from media where media_id = ?', 
+			[$media_id]
+		);
+		$media_urls = $result->fetch_assoc();
 
+		var_dump($media_urls);
+
+		$queries = [
+			'DELETE FROM specprocessorrawlabels WHERE imgid = ?',
+			'DELETE FROM imagetag WHERE imgid = ?',
+			'DELETE FROM media WHERE media_id = ?'
+		];
+		mysqli_begin_transaction($conn);
+		try {
+			foreach ($queries as $query) {
+				mysqli_execute_query($conn, $query, [$media_id]);
+			}
+
+			//Unlink all files
+			foreach($media_urls as $url) {
+				if($url && file_exists($GLOBALS['SERVER_ROOT'] . $url)) {
+					if(!unlink($GLOBALS['SERVER_ROOT'] . $url)) {
+						error_log("WARNING: File (path: " . $url . ") failed to delete from server");
+					}
+				}
+			}
+			mysqli_commit($conn);
+		} catch(Exception $e) {
+			error_log("Error: couldnt' remove media of media_id " . $media_id .": " . $e->getMessage());
+			mysqli_rollback($conn);
+		}
 	}
 
     /**
