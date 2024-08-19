@@ -282,9 +282,9 @@ if($SYMB_UID){
 				*/
 			}
 			elseif($action == 'Delete Image'){
-				$removeImg = (array_key_exists('removeimg',$_POST)?$_POST['removeimg']:0);
+				//$removeImg = (array_key_exists('removeimg',$_POST)?$_POST['removeimg']:0);
 				try {
-					Media::delete($_POST['imgid']);
+					Media::delete($_POST['imgid'], $_POST['removeimg']?? false);
 					$statusStr = $LANG['IMAGE_DEL_SUCCESS'];
 					$tabTarget = 2;
 				} catch(Exception $e) {
