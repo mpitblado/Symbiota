@@ -979,7 +979,7 @@ class Media {
 		);
 	}
 
-	public static function delete($media_id): void {
+	public static function delete($media_id, $remove_files = true): void {
 		$conn = self::connect('write');
 		$result = mysqli_execute_query(
 			$conn, 
@@ -987,8 +987,6 @@ class Media {
 			[$media_id]
 		);
 		$media_urls = $result->fetch_assoc();
-
-		var_dump($media_urls);
 
 		$queries = [
 			'DELETE FROM specprocessorrawlabels WHERE imgid = ?',
@@ -1002,10 +1000,12 @@ class Media {
 			}
 
 			//Unlink all files
-			foreach($media_urls as $url) {
-				if($url && file_exists($GLOBALS['SERVER_ROOT'] . $url)) {
-					if(!unlink($GLOBALS['SERVER_ROOT'] . $url)) {
-						error_log("WARNING: File (path: " . $url . ") failed to delete from server");
+			if($remove_files) {
+				foreach($media_urls as $url) {
+					if($url && file_exists($GLOBALS['SERVER_ROOT'] . $url)) {
+						if(!unlink($GLOBALS['SERVER_ROOT'] . $url)) {
+							error_log("WARNING: File (path: " . $url . ") failed to delete from server");
+						}
 					}
 				}
 			}
