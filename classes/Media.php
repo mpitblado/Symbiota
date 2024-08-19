@@ -1051,11 +1051,12 @@ class Media {
 
 		$sql .= ' ORDER BY sortoccurrence ASC';
 
-		$results = mysqli_execute_query(self::connect('write'), $sql, $parameters);
+		$results = mysqli_execute_query(self::connect('readonly'), $sql, $parameters);
 
 		$media_items = Array();
 
 		while($row = $results->fetch_object()){
+			$media_items[$row->media_id]['media_id'] = $row->media_id;
 			$media_items[$row->media_id]['url'] = $row->url;
 			$media_items[$row->media_id]['tnurl'] = $row->thumbnailurl;
 			$media_items[$row->media_id]['media_type'] = $row->media_type;
@@ -1071,7 +1072,34 @@ class Media {
 			$media_items[$row->media_id]['sort'] = $row->sortoccurrence;
 		}
 		$results->free();
-		return $media_items;
+		return Sanitize::out($media_items);
+	}
+	
+	public static function getMediaTags(int|array $media_id, mysqli $conn = null): array {
+		$sql = 'SELECT t.imgid, k.tagkey, k.shortlabel, k.description_en FROM imagetag t INNER JOIN imagetagkey k ON t.keyvalue = k.tagkey WHERE t.imgid ';
+
+		if(is_array($media_id)) {
+			$count = count($media_id);
+			if($count <= 0) {
+				return [];
+			}
+			$sql .= 'IN (' . str_repeat('?,', $count - 1) . '?)';
+		} else {
+			$sql .= '= ?';
+		}
+
+		$res = mysqli_execute_query(
+			$conn?? self::connect('readonly'), 
+			$sql, 
+			is_array($media_id)? $media_id: [$media_id]
+		);
+		$tags = [];
+		while($row = $res->fetch_object()) {
+			$tags[$row->imgid][$row->tagkey] = $row->shortlabel;
+		}
+		$res->free();
+
+		return Sanitize::out($tags);
 	}
 
     /**

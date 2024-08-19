@@ -13,8 +13,20 @@ $crowdSourceMode = filter_var($_GET['csmode'], FILTER_SANITIZE_NUMBER_INT);
 $occManager = new OccurrenceEditorImages();
 
 $occManager->setOccId($occId);
+$specImgArr = [];
+try {
+	$specImgArr = Media::fetchOccurrenceMedia($occId);
+	$mediaTags = Media::getMediaTags(array_keys($specImgArr));
 
-$specImgArr = Media::fetchOccurrenceMedia($occId);
+	foreach($specImgArr as $key => $v) {
+		if(array_key_exists($key, $mediaTags)) {
+			$specImgArr[$key]["tags"] = $mediaTags[$key];
+		}
+	} 
+} catch(Exception $e) {
+	error_log($e->getMessage());
+}
+
 $creatorArray = Media::getCreatorArray();
 ?>
 <script type="text/javascript">
