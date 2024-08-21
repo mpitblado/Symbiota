@@ -121,7 +121,7 @@ class SymbiotaUploadStrategy extends UploadStrategy {
 			//Grab any characters in the range of 0-8 then any amount digits
 			if(preg_match('/^(\D{0,8}\d{4,})/', $derived_cat_num, $matches)){
 				// TODO (Logan) figure out why this is here
-				$derived_cat_num = substr($matches[1], 0, -3);
+				//$derived_cat_num = substr($matches[1], 0, -3);
 
 				//If derived catalog number is a number less then five pad front with 0's
 				if(is_numeric($derived_cat_num) && strlen($derived_cat_num) < 5) {
@@ -170,22 +170,66 @@ class SymbiotaUploadStrategy extends UploadStrategy {
 			move_uploaded_file($file['tmp_name'], $file_path);
 		//If temp path is on server then just move to new location;
 		} else if(file_exists($file['tmp_name'])) {
-			rename($file['tmp'], $file_path);
+			rename($file['tmp_name'], $file_path);
 		//Otherwise assume tmp_name a url and stream file contents over
 		} else {
+			error_log("Moving" . $file['tmp_name'] . ' to ' . $file_path );
 			file_put_contents($file_path, fopen($file['tmp_name'], 'r'));
 		}
 
 		return true;
 	}
 
-	public function remove(string $filename): bool {
-		//If if doesn't exist then bail
-		if(!$this->file_exists($filename)) return true;
+	static private function on_system($path) {
+		//Check if path is absoulte path
+		if(file_exists($path)) {
+			return true;
+		}
+		//Convert url path to dir_path
+		$dir_path = str_replace(
+			$GLOBALS['IMAGE_ROOT_URL'], 
+			$GLOBALS['IMAGE_ROOT_PATH'], 
+			$path
+		);
 
-		if(!unlink($this->getDirPath($filename))) {
-			error_log("WARNING: File (path: " . $this->getDirPath($filename) . ") failed to delete from server in SymbiotaUploadStrategy->remove");
-		};
+		return file_exists($dir_path);
+	}
+
+	//url -> some_domain/ srat_path / filename
+	//remap 1 to 2 which could be
+	//	- remote upload from somewhere
+	//	- moving a file
+	//		- file exists on same system
+	//	- nothing
+	//		- file exists on same path
+
+	public function remove(string $filename): bool {
+		//Check Relative Path
+		if($this->file_exists($filename)) {
+			if(!unlink($this->getDirPath($filename))) {
+				error_log("WARNING: File (path: " . $this->getDirPath($filename) . ") failed to delete from server in SymbiotaUploadStrategy->remove");
+				return false;
+			};
+			return true;
+		}
+
+		//Get Absoulte Path
+		$dir_path = str_replace(
+			$GLOBALS['IMAGE_ROOT_URL'], 
+			$GLOBALS['IMAGE_ROOT_PATH'], 
+			$filename
+		);
+
+		//Check Absolute path
+		if($dir_path !== $filename && file_exists($dir_path)) {
+			if(!unlink($dir_path)) {
+				error_log("WARNING: File (path: " . $dir_path. ") failed to delete from server in SymbiotaUploadStrategy->remove");
+				return false;
+			}
+			return true;
+		}
+
+		return false;
 	}
 } 
 
@@ -268,11 +312,8 @@ class Media {
 		if($file_type_pos === false || $file_type_pos < $dir_path_pos) {
 			$file_type_pos = strlen($file_name);
 		}
-
 		return [
-			'name' => self::cleanFileName(
-				substr($file_name, $dir_path_pos, $file_type_pos - $dir_path_pos)
-			),
+			'name' => substr($file_name, $dir_path_pos, $file_type_pos - $dir_path_pos),
 			'tmp_name' => $filepath,
 			'extension' => substr($file_name, $file_type_pos + 1),
 		];
@@ -510,6 +551,7 @@ class Media {
 		curl_close($ch);
 
 		$parsed_file = self::parseFileName($url);
+		$parsed_file['name'] = self::cleanFileName($parsed_file['name']);
 
 		if(!$parsed_file['extension'] && $file_type_mime) {
 			$parsed_file['extension'] = self::mime2ext($file_type_mime);
@@ -530,7 +572,7 @@ class Media {
 	 * @param string $file_name A file name without the extension
 	 * return string
 	 */
-	static function cleanFileName(string $file_name):string {
+	private static function cleanFileName(string $file_name):string {
 		$file_name = str_replace(".","", $file_name);
 		$file_name = str_replace(array("%20","%23"," ","__"),"_",$file_name);
 		$file_name = str_replace("__","_",$file_name);
@@ -547,7 +589,8 @@ class Media {
 			$file_name = substr($file_name, 0, 30);
 		}
 
-		$file_name .= '_'.time();
+		//TODO (Logan) Make sure this is not needed
+		//$file_name .= '_'.time();
 
 		return $file_name;
 	}
@@ -664,7 +707,7 @@ class Media {
 		if(!$media_type) throw new MediaException(MediaExceptionCase::InvalidMediaType);
 		
 		$keyValuePairs = [
-			"tid" => $clean_post_arr["tid"],
+			"tid" => $clean_post_arr["tid"] ?? null,
 			"occid" => $clean_post_arr["occid"],
 			"url" => null,
 			"thumbnailUrl" => $clean_post_arr["tnurl"]?? null,
@@ -839,7 +882,12 @@ class Media {
 		foreach($remap_urls as $url) {
 			if($media_arr[$url]) {
 				$file = self::parseFileName($media_arr[$url]);
-				$filename = $file['name'] . $file['extension'];
+				$filename = $file['name'] . '.' . $file['extension'];
+
+				var_dump($filename);
+				echo $old_strategy->file_exists($filename)?'Old Exists':'Old Missing';
+				echo 'Old path: ' . $old_strategy->getDirPath();
+				echo 'New path: ' . $new_strategy->getDirPath();
 
 				//Check if stored in our system if so move to path
 				if($old_strategy->file_exists($filename) && $old_strategy->getDirPath() !== $new_strategy->getDirPath()) {
