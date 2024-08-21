@@ -909,6 +909,11 @@ class Media {
 		}
 	}
 
+	//TODO (Logan) Just make a public interface for update_metadata
+	public static function disassociate($media_id) {
+		self::update_metadata(['occid' => null], $media_id);
+	}
+
 	/*
 	 * While the function does create an image it does so to resize it
 	 *

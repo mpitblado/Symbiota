@@ -351,12 +351,21 @@ if($SYMB_UID){
 			}
 			*/
 			elseif($action == "Disassociate Image"){
+				try {
+					$media_id = intval($_POST["imgid"]);
+					Media::disassociate($media_id);
+
+					$statusStr = $LANG['DISASS_SUCCESS'] . ' <a href="../../imagelib/imgdetails.php?imgid=' . htmlspecialchars($media_id, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" target="_blank">#' . htmlspecialchars($media_id, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a>';
+				} catch(Exception $e) {
+					$statusStr = $LANG['DISASS_ERORR'] .': '.$e->getMessage();
+				}
+				/*
 				if($occManager->remapImage($_POST["imgid"])){
 					$statusStr = (isset($LANG['DISASS_SUCCESS'])?$LANG['DISASS_SUCCESS']:'SUCCESS disassociating image').' <a href="../../imagelib/imgdetails.php?imgid=' . htmlspecialchars($_POST["imgid"], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" target="_blank">#' . htmlspecialchars($_POST["imgid"], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a>';
 				}
 				else{
 					$statusStr = (isset($LANG['DISASS_ERORR'])?$LANG['DISASS_ERORR']:'ERROR disassociating image').': '.$occManager->getErrorStr();
-				}
+				}*/
 
 			}
 			elseif($action == "Apply Determination"){
