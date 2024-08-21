@@ -301,6 +301,18 @@ class OccurrenceEditorImages extends OccurrenceEditorManager {
 		return $bool;
 	}
 
+	public function createOccurrenceFrom(): int {
+		$sql = 'INSERT INTO omoccurrences(collid, observeruid,processingstatus) SELECT collid, observeruid, "unprocessed" FROM omoccurrences WHERE occid = ?';
+			
+		try {
+			mysqli_execute_query($this->conn, $sql, [$this->occid]);
+			return $this->conn->insert_id;
+		} catch(Exception $e) {
+			$this->errorArr[] = $LANG['UNABLE_RELINK_BLANK'].': '.$this->conn->error;
+			return -1;
+		}
+	}
+
 	public function remapImage($imgId, $targetOccid = 0){
 		global $LANG;
 		$status = true;

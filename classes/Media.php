@@ -886,13 +886,17 @@ class Media {
 
 				//Check if stored in our system if so move to path
 				if($old_strategy->file_exists($filename) && $old_strategy->getDirPath() !== $new_strategy->getDirPath()) {
-					//TODO (Logan) currently assuming no duplicates at targetpath
-					$update_arr[$url] = $new_strategy->getUrlPath($filename);
-					$file = [
-						'name' => $filename, 
-						'tmp_name' => $old_strategy->getDirPath($filename)
-					];
-					array_push($move_files, $file);
+					$url_path = $new_strategy->getUrlPath($filename);
+
+					if(!in_array($url_path, $update_arr)) {
+						$file = [
+							'name' => $filename, 
+							'tmp_name' => $old_strategy->getDirPath($filename)
+						];
+						array_push($move_files, $file);
+					}
+
+					$update_arr[$url] = $url_path;
 				}
 			}
 		}
