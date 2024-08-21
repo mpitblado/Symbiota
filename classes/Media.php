@@ -884,11 +884,6 @@ class Media {
 				$file = self::parseFileName($media_arr[$url]);
 				$filename = $file['name'] . '.' . $file['extension'];
 
-				var_dump($filename);
-				echo $old_strategy->file_exists($filename)?'Old Exists':'Old Missing';
-				echo 'Old path: ' . $old_strategy->getDirPath();
-				echo 'New path: ' . $new_strategy->getDirPath();
-
 				//Check if stored in our system if so move to path
 				if($old_strategy->file_exists($filename) && $old_strategy->getDirPath() !== $new_strategy->getDirPath()) {
 					//TODO (Logan) currently assuming no duplicates at targetpath
