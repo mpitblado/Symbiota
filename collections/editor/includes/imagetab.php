@@ -191,14 +191,14 @@ $creatorArray = Media::getCreatorArray();
 			<table>
 				<?php
 				foreach($specImgArr as $imgId => $imgArr){
+					$imgUrl = $imgArr["url"];
+					$origUrl = $imgArr["originalUrl"];
+					$tnUrl = $imgArr["thumbnailUrl"];
 					?>
 					<tr>
 					<?php if($imgArr['media_type'] === 'image'):?>
 						<td style="width:300px;text-align:center;padding:20px;">
 							<?php
-							$imgUrl = $imgArr["url"];
-							$origUrl = $imgArr["origurl"];
-							$tnUrl = $imgArr["tnurl"];
 							if((!$imgUrl || $imgUrl == 'empty') && $origUrl) $imgUrl = $origUrl;
 							if(!$tnUrl && $imgUrl) $tnUrl = $imgUrl;
 							if(array_key_exists('IMAGE_DOMAIN', $GLOBALS)){
@@ -227,7 +227,7 @@ $creatorArray = Media::getCreatorArray();
 						<?php elseif($imgArr['media_type'] === 'audio'):?>
 						<td style="vertical-align: middle">
 							<audio controls>
-							<source src="<?= $imgArr["origurl"]?>" type="audio/mpeg">
+							<source src="<?= $origUrl ?>" type="audio/mpeg">
 								Your browser does not support the audio element.
 							</audio> 
 						</td>
@@ -247,8 +247,8 @@ $creatorArray = Media::getCreatorArray();
 									if($imgArr["creator"]){
 										echo $imgArr["creator"];
 									}
-									else if($imgArr["creatorUid"]){
-										echo $creatorArray[$imgArr["creatorUid"]];
+									else if($imgArr["creatoruid"]){
+										echo $creatorArray[$imgArr["creatoruid"]];
 									}
 									?>
 								</div>
@@ -288,27 +288,24 @@ $creatorArray = Media::getCreatorArray();
 								</div>
 								<div>
 									<b><?php echo $LANG['LARGE_IMG_URL']; ?>: </b>
-									<a href="<?php echo $imgArr["origurl"]; ?>" title="<?php echo $imgArr["origurl"]; ?>" target="_blank">
+									<a href="<?= $origUrl ?>" title="<?= $origUrl ?>" target="_blank">
 										<?php
-										$origUrlDisplay = $imgArr["origurl"];
-										if($origUrlDisplay && strlen($origUrlDisplay) > 60) $origUrlDisplay = '...'.substr($origUrlDisplay,-60);
-										echo $origUrlDisplay;
+										echo $origUrl && strlen($origUrl) > 60? 
+										'...'.substr($origUrl,-60):
+										$origUrl;
 										?>
 									</a>
 								</div>
 								<div>
 									<b><?php echo $LANG['THUMB_URL']; ?>: </b>
-									<a href="<?php echo $imgArr["tnurl"]; ?>" title="<?php echo $imgArr["tnurl"]; ?>" target="_blank">
-										<?php
-										$tnUrlDisplay = $imgArr["tnurl"];
-										if($tnUrlDisplay && strlen($tnUrlDisplay) > 60) $tnUrlDisplay = '...'.substr($tnUrlDisplay,-60);
-										echo $tnUrlDisplay;
-										?>
+									<a href="<?= $tnUrl ?>" title="<?= $tnUrl ?>" target="_blank">
+										<?= $tnUrl && strlen($tnUrl) > 60 ? 
+											'...'.substr($tnUrl,-60) : $tnUrl?>
 									</a>
 								</div>
 								<div>
 									<b><?php echo $LANG['SORT']; ?>:</b>
-									<?php echo $imgArr['sort']; ?>
+									<?= $imgArr['sortOccurrence']; ?>
 								</div>
 							</div>
 						</td>
@@ -330,7 +327,7 @@ $creatorArray = Media::getCreatorArray();
 												<option value="">---------------------------------------</option>
 												<?php
 												foreach($creatorArray as $id => $uname){
-													echo "<option value='".$id."' ".($id == $imgArr["creatorUid"]?"SELECTED":"").">";
+													echo "<option value='".$id."' ".($id == $imgArr["creatoruid"]?"SELECTED":"").">";
 													echo $uname;
 													echo "</option>\n";
 												}
@@ -370,29 +367,29 @@ $creatorArray = Media::getCreatorArray();
 										</div>
 										<div>
 											<b><?php echo $LANG['LARGE_IMG_URL']; ?>: </b><br/>
-											<input name="origurl" type="text" value="<?php echo $imgArr["origurl"]; ?>" style="width:95%;" />
-											<?php if(stripos($imgArr['origurl'], $IMAGE_ROOT_URL) === 0){ ?>
+											<input name="origurl" type="text" value="<?php echo $imgArr["originalUrl"]; ?>" style="width:95%;" />
+											<?php if(stripos($imgArr['originalUrl'], $IMAGE_ROOT_URL) === 0){ ?>
 												<div style="margin-left:10px;">
 													<input type="checkbox" name="renameorigurl" value="1" />
 													<?php echo $LANG['RENAME_LARGE']; ?>
 												</div>
-												<input name='oldorigurl' type='hidden' value='<?php echo $imgArr["origurl"];?>' />
+												<input name='originalUrl' type='hidden' value='<?php echo $imgArr["originalUrl"];?>' />
 											<?php } ?>
 										</div>
 										<div>
 											<b><?php echo $LANG['THUMB_URL']; ?>: </b><br/>
-											<input name="tnurl" type="text" value="<?php echo $imgArr["tnurl"]; ?>" style="width:95%;" />
-											<?php if($imgArr['tnurl'] && stripos($imgArr['tnurl'], $IMAGE_ROOT_URL) === 0){ ?>
+											<input name="tnurl" type="text" value="<?php echo $imgArr["thumbnailUrl"]; ?>" style="width:95%;" />
+											<?php if($imgArr['thumbnailUrl'] && stripos($imgArr['thumbnailUrl'], $IMAGE_ROOT_URL) === 0){ ?>
 												<div style="margin-left:10px;">
 													<input type="checkbox" name="renametnurl" value="1" />
 													<?php echo $LANG['RENAME_THUMB']; ?>
 												</div>
-												<input name='oldtnurl' type='hidden' value='<?php echo $imgArr["tnurl"];?>' />
+												<input name='oldtnurl' type='hidden' value='<?php echo $imgArr["thumbnailUrl"];?>' />
 											<?php } ?>
 										</div>
 										<div>
 											<b><?php echo $LANG['SORT']; ?>:</b><br/>
-											<input name="sortoccurrence" type="text" value="<?php echo $imgArr['sort']; ?>" style="width:10%;" />
+											<input name="sortoccurrence" type="text" value="<?php echo $imgArr['sortOccurrence']; ?>" style="width:10%;" />
 										</div>
 										<div>
 										   <b><?php echo $LANG['TAGS']; ?>:</b>

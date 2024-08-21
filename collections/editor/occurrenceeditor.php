@@ -286,9 +286,10 @@ if($SYMB_UID){
 				try {
 					Media::delete($_POST['imgid'], $_POST['removeimg']?? false);
 					$statusStr = $LANG['IMAGE_DEL_SUCCESS'];
-					$tabTarget = 2;
 				} catch(Exception $e) {
 					$statusStr = $e->getMessage();
+				} finally {
+					$tabTarget = 2;
 				}
 				/*
 
@@ -301,12 +302,38 @@ if($SYMB_UID){
 				}*/
 			}
 			elseif($action == 'Remap Image'){
+				$target_occid = intval($_POST['targetoccid']);
+				$target_occur_manager = new OccurrenceEditorImages();
+				$target_occur_manager->setOccId($target_occid);
+				$target_occur_map = $target_occur_manager->getOccurMap()[$target_occid];
+				$remap_strat = new SymbiotaUploadStrategy(
+					$target_occur_map['institutioncode'],
+					$target_occur_map['collectioncode'],
+					$target_occur_map['catalognumber']
+				);
+
+				$occur_map = $occManager->getOccurMap()[$occId];
+				$current_strategy = new SymbiotaUploadStrategy(
+					$occur_map['institutioncode'],
+					$occur_map['collectioncode'],
+					$occur_map['catalognumber']
+	);
+				$media_id = intval($_POST['imgid']);
+
+				try {
+					Media::remap($media_id, $target_occid, $current_strategy, $remap_strat);
+
+					$statusStr = (isset($LANG['IMAGE_REMAP_SUCCESS'])?$LANG['IMAGE_REMAP_SUCCESS']:'SUCCESS: Image remapped to record').' <a href="occurrenceeditor.php?occid=' . htmlspecialchars($_POST["targetoccid"], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" target="_blank">' . htmlspecialchars($_POST["targetoccid"], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a>';
+				} catch(Exception $e) {
+					$statusStr = (isset($LANG['IMAGE_REMAP_ERROR'])?$LANG['IMAGE_REMAP_ERROR']:'ERROR linking image to new specimen').': '.$occManager->getErrorStr();
+				}
+/*
 				if($occManager->remapImage($_POST['imgid'], $_POST['targetoccid'])){
 					$statusStr = (isset($LANG['IMAGE_REMAP_SUCCESS'])?$LANG['IMAGE_REMAP_SUCCESS']:'SUCCESS: Image remapped to record').' <a href="occurrenceeditor.php?occid=' . htmlspecialchars($_POST["targetoccid"], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" target="_blank">' . htmlspecialchars($_POST["targetoccid"], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a>';
 				}
 				else{
 					$statusStr = (isset($LANG['IMAGE_REMAP_ERROR'])?$LANG['IMAGE_REMAP_ERROR']:'ERROR linking image to new specimen').': '.$occManager->getErrorStr();
-				}
+				}*/
 			}
 			elseif($action == 'remapImageToNewRecord'){
 				$newOccid = $occManager->remapImage($_POST['imgid'], 'new');

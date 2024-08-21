@@ -31,6 +31,14 @@ abstract class UploadStrategy {
 	 * @throws MediaException(MediaExceptionCase::DuplicateMediaFile)
      */
 	abstract public function upload(array $file): bool;
+
+    /**
+     * Function to handle how a file should be removed.
+	 * @param array $file {name: string, type: string, tmp_name: string, error: int, size: int} 
+     * @return bool 
+	 * @throws MediaException(MediaExceptionCase::DuplicateMediaFile)
+     */
+	abstract public function remove(string $file): bool;
 }
 
 class MediaFile {
@@ -169,6 +177,15 @@ class SymbiotaUploadStrategy extends UploadStrategy {
 		}
 
 		return true;
+	}
+
+	public function remove(string $filename): bool {
+		//If if doesn't exist then bail
+		if(!$this->file_exists($filename)) return true;
+
+		if(!unlink($this->getDirPath($filename))) {
+			error_log("WARNING: File (path: " . $this->getDirPath($filename) . ") failed to delete from server in SymbiotaUploadStrategy->remove");
+		};
 	}
 } 
 
@@ -798,6 +815,53 @@ class Media {
 		);
 	}
 
+	public static function remap(
+		int $media_id, int $new_occid, 
+		UploadStrategy $old_strategy,
+		UploadStrategy $new_strategy
+	) {
+		$media_arr = self::getMedia($media_id);
+		$update_arr = ['occid' => $new_occid];
+		$move_files = [];
+
+		if($media_arr['url']) {
+			$file = self::parseFileName($media_arr['url']);
+			$filename = $file['name'] . $file['extension'];
+
+			//Check if stored in our system if so move to path
+			if($old_strategy->file_exists($filename)) {
+				$update_arr['url'] = $new_strategy->getUrlPath($filename);
+				array_push($move_files, $filename);
+			}
+		}
+
+		$remap_urls = ['url', 'originalUrl', 'thumbnailUrl'];
+		foreach($remap_urls as $url) {
+			if($media_arr[$url]) {
+				$file = self::parseFileName($media_arr[$url]);
+				$filename = $file['name'] . $file['extension'];
+
+				//Check if stored in our system if so move to path
+				if($old_strategy->file_exists($filename) && $old_strategy->getDirPath() !== $new_strategy->getDirPath()) {
+					//TODO (Logan) currently assuming no duplicates at targetpath
+					$update_arr[$url] = $new_strategy->getUrlPath($filename);
+					$file = [
+						'name' => $filename, 
+						'tmp_name' => $old_strategy->getDirPath($filename)
+					];
+					array_push($move_files, $file);
+				}
+			}
+		}
+
+		self::update_metadata($update_arr, $media_id);
+		
+		foreach($move_files as $file) {
+			$new_strategy->upload($file);
+			$old_strategy->remove($file['name']);
+		}
+	}
+
 	/*
 	 * While the function does create an image it does so to resize it
 	 *
@@ -979,6 +1043,7 @@ class Media {
 		);
 	}
 
+	//TODO (Logan) rework to use new remove function in upload strategy
 	public static function delete($media_id, $remove_files = true): void {
 		$conn = self::connect('write');
 		$result = mysqli_execute_query(
@@ -1020,29 +1085,35 @@ class Media {
      * @param int $occid
      * @param MediaType $media_type
      */
+    public static function getMedia(int $media_id, MediaType $media_type = null): Array {
+		if(!$media_id) return [];
+		$parameters = [$media_id];
+		$sql ='SELECT * FROM media WHERE media_id = ?';
+
+		if($media_type) {
+			$sql .= ' AND media_type = ?';
+			array_push($parameters, self::getMediaTypeString($media_type));
+		}
+
+		$sql .= ' ORDER BY sortoccurrence ASC';
+
+		$results = mysqli_execute_query(self::connect('readonly'), $sql, $parameters);
+		$media = self::get_media_items($results);
+		if(count($media) <= 0) {
+			return [];
+		} else {
+			return Sanitize::out($media[$media_id]);
+		}
+	}
+
+    /**
+     * @param int $occid
+     * @param MediaType $media_type
+     */
     public static function fetchOccurrenceMedia(int $occid, MediaType $media_type = null): Array {
 		if(!$occid) return [];
 		$parameters = [$occid];
-		$sql = <<< SQL
-		SELECT 
-			media_id, 
-			media_type, 
-			url, 
-			thumbnailurl, 
-			originalurl, 
-			caption, 
-			creator, 
-			creatorUid, 
-			sourceurl,
-			copyright, 
-			notes, 
-			occid, 
-			username, 
-			sortoccurrence, 
-			initialtimestamp 
-		FROM media 
-		WHERE occid = ? 
-		SQL;
+		$sql = 'SELECT * FROM media WHERE occid = ?';
 
 		if($media_type) {
 			$sql .= ' AND media_type = ?';
@@ -1053,26 +1124,18 @@ class Media {
 
 		$results = mysqli_execute_query(self::connect('readonly'), $sql, $parameters);
 
+		return Sanitize::out(self::get_media_items($results));
+	}
+
+	private static function get_media_items($results): array {
 		$media_items = Array();
 
-		while($row = $results->fetch_object()){
-			$media_items[$row->media_id]['media_id'] = $row->media_id;
-			$media_items[$row->media_id]['url'] = $row->url;
-			$media_items[$row->media_id]['tnurl'] = $row->thumbnailurl;
-			$media_items[$row->media_id]['media_type'] = $row->media_type;
-			$media_items[$row->media_id]['origurl'] = $row->originalurl;
-			$media_items[$row->media_id]['caption'] = $row->caption;
-			$media_items[$row->media_id]['creator'] = $row->creator;
-			$media_items[$row->media_id]['creatorUid'] = $row->creatorUid;
-			$media_items[$row->media_id]['sourceurl'] = $row->sourceurl;
-			$media_items[$row->media_id]['copyright'] = $row->copyright;
-			$media_items[$row->media_id]['notes'] = $row->notes;
-			$media_items[$row->media_id]['occid'] = $row->occid;
-			$media_items[$row->media_id]['username'] = $row->username;
-			$media_items[$row->media_id]['sort'] = $row->sortoccurrence;
+		while($row = $results->fetch_assoc()){
+			$media_items[$row['media_id']] = $row;
 		}
 		$results->free();
-		return Sanitize::out($media_items);
+
+		return $media_items;
 	}
 	
 	public static function getMediaTags(int|array $media_id, mysqli $conn = null): array {
@@ -1146,9 +1209,9 @@ class Media {
     private static function imagesAreWritable($media_arr): bool{
 		$bool = false;
 		$testArr = array();
-		if($media_arr['origurl']) $testArr[] = $media_arr['origurl'];
+		if($media_arr['originalUrl']) $testArr[] = $media_arr['originalUrl'];
 		if($media_arr['url']) $testArr[] = $media_arr['url'];
-		if($media_arr['tnurl']) $testArr[] = $media_arr['tnurl'];
+		if($media_arr['thumbnailUrl']) $testArr[] = $media_arr['thumbnailUrl'];
 
 		$rootPath = self::getMediaRootPath();
 		$rootUrl = self::getMediaRootUrl();
@@ -1171,9 +1234,9 @@ class Media {
     private static function imageNotCatalogNumberLimited(array $media_arr, int $occid): bool{
 		$bool = true;
 		$testArr = array();
-		if($media_arr['origurl']) $testArr[] = $media_arr['origurl'];
+		if($media_arr['originalUrl']) $testArr[] = $media_arr['originalUrl'];
 		if($media_arr['url']) $testArr[] = $media_arr['url'];
-		if($media_arr['tnurl']) $testArr[] = $media_arr['tnurl'];
+		if($media_arr['thumbnailUrl']) $testArr[] = $media_arr['thumbnailUrl'];
 		//Load identifiers
 		$idArr = array();
 		$sql = 'SELECT o.catalogNumber, o.otherCatalogNumbers, i.identifierValue FROM omoccurrences o LEFT JOIN omoccuridentifiers i ON o.occid = i.occid WHERE o.occid = ?';
