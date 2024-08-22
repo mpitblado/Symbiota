@@ -914,6 +914,79 @@ class Media {
 		self::update_metadata(['occid' => null], $media_id);
 	}
 
+	public static function update($media_id, $media_arr) {
+		//$clean_arr = Sanitize::in($post_arr);
+	
+		$meta_data = [
+			"tid",
+			"occid",
+			"url",
+			"thumbnailUrl",
+			"originalUrl",
+			"archiveUrl",
+			"sourceUrl",
+			"referenceUrl",
+			"creator",
+			"creatorUid",
+			"format",
+			"caption",
+			"owner",
+			"locality",
+			"anatomy",
+			"notes",
+			"username",
+			"sortsequence",
+			"sortOccurrence",
+			"sourceIdentifier",
+			"rights",
+			"accessrights",
+			"copyright",
+			"hashFunction",
+			"hashValue",
+			"mediaMD5",
+			"recordID",
+			"media_type",
+		];
+
+		$data = [];
+
+		//Map keys to values
+		foreach ($meta_data as $key) {
+			if(array_key_exists($key, $media_arr)) {
+				$update_metadata[$key] = $media_arr[$key];
+			}
+		}
+		$conn = self::connect('write');
+		mysqli_begin_transaction($conn);
+		try {
+			self::update_metadata($data, $media_id, $conn);
+
+			//url
+			if(array_key_exists("renameweburl", $media_arr)) {
+				//self::remap()
+			}
+
+			//thumbnailUrl
+			if(array_key_exists("renametnurl", $media_arr)) {
+				//self::remap()
+			}
+
+			//originalUrl
+			if(array_key_exists("renameorigurl", $media_arr)) {
+				//self::remap()
+			}
+
+			mysqli_commit($conn);
+			return true;
+		} catch(Exception $e) {
+			mysqli_rollback($conn);
+			error_log('ERROR: Media update failed on media_id ' 
+				. $media_id . ' ' .$e->getMessage()
+			);
+			return false;
+		}
+	}
+
 	/*
 	 * While the function does create an image it does so to resize it
 	 *
@@ -1140,7 +1213,18 @@ class Media {
     public static function getMedia(int $media_id, MediaType $media_type = null): Array {
 		if(!$media_id) return [];
 		$parameters = [$media_id];
-		$sql ='SELECT * FROM media WHERE media_id = ?';
+		$select = [
+			'm.*',
+			"IFNULL(m.creator,CONCAT_WS(' ',u.firstname,u.lastname)) AS creatorDisplay",
+			't.sciname',
+			't.author',
+			't.rankid'
+		];
+
+		$sql ='SELECT ' . implode(', ', $select) .' FROM media m ' .
+		'LEFT JOIN taxa t ON t.tid = m.tid ' .
+		'LEFT JOIN users u on u.uid = m.creatorUid ' .
+		'WHERE media_id = ?';
 
 		if($media_type) {
 			$sql .= ' AND media_type = ?';
@@ -1148,7 +1232,6 @@ class Media {
 		}
 
 		$sql .= ' ORDER BY sortoccurrence ASC';
-
 		$results = mysqli_execute_query(self::connect('readonly'), $sql, $parameters);
 		$media = self::get_media_items($results);
 		if(count($media) <= 0) {
