@@ -227,7 +227,7 @@ $creatorArray = Media::getCreatorArray();
 						<?php elseif($imgArr['media_type'] === 'audio'):?>
 						<td style="vertical-align: middle">
 							<audio controls>
-							<source src="<?= $origUrl ?>" type="audio/mpeg">
+								<source src="<?= $origUrl ?>" type="<?=$imgArr['format']?>">
 								Your browser does not support the audio element.
 							</audio> 
 						</td>

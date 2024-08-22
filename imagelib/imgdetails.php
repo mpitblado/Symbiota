@@ -1,6 +1,8 @@
 <?php
 include_once('../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/ImageDetailManager.php');
+include_once($SERVER_ROOT.'/classes/Media.php');
+
 if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/imagelib/imgdetails.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT.'/content/lang/imagelib/imgdetails.' . $LANG_TAG . '.php');
 else include_once($SERVER_ROOT . '/content/lang/imagelib/imgdetails.en.php');
 
@@ -13,8 +15,10 @@ $eMode = array_key_exists('emode',$_REQUEST)?filter_var($_REQUEST['emode'], FILT
 $imgManager = new ImageDetailManager($imgId,($action?'write':'readonly'));
 
 $imgArr = $imgManager->getImageMetadata();
+//$imgArr = Media::getMedia($imgId);
+
 $isEditor = false;
-if($IS_ADMIN || ($imgArr && ($imgArr['username'] === $USERNAME || ($imgArr['photographeruid'] && $imgArr['photographeruid'] == $SYMB_UID)))){
+if($IS_ADMIN || ($imgArr && ($imgArr['username'] === $USERNAME || ($imgArr['creatoruid'] && $imgArr['creatoruid'] == $SYMB_UID)))){
     $isEditor = true;
 }
 
@@ -224,16 +228,16 @@ if($imgArr){
 								<select name="photographeruid" name="photographeruid">
 									<option value=""><?php echo $LANG['SELECT_PHOTOGRAPHER'] ?></option>
 									<option value="">---------------------------------------</option>
-									<?php $imgManager->echoPhotographerSelect($imgArr["photographeruid"]); ?>
+									<?php $imgManager->echoPhotographerSelect($imgArr["creatoruid"]); ?>
 								</select>
 								* <?php echo $LANG['USER_REGISTERED_SYSTEM'] ?>
 								<a href="#" onclick="toggle('iepor');return false;" title="<?php echo $LANG['DISPLAY_PHOTOGRAPHER_FIELD'] ?>">
 									<img src="../images/editplus.png" style="border:0px;width:1.5em;" />
 								</a>
 							</div>
-							<div id="iepor" style="margin-top:2px;display:<?php echo ($imgArr["photographer"]?'block':'none'); ?>;">
+							<div id="iepor" style="margin-top:2px;display:<?php echo ($imgArr["creator"]?'block':'none'); ?>;">
 								<b><?php echo $LANG['PHOTOGRAPHER_OVERRIDE'] ?>:</b>
-								<input name="photographer" type="text" value="<?php echo $imgArr["photographer"];?>" style="width:250px;" />
+								<input name="photographer" type="text" value="<?php echo $imgArr["creator"];?>" style="width:250px;" />
 								* <?php echo $LANG['OVERRIDE_SELECTION'] ?>
 							</div>
 							<div style="margin-top:2px;">
@@ -289,7 +293,7 @@ if($imgArr){
 								<b><?php echo $LANG['THUMBNAIL'] ?>:</b><br/>
 								<input name="thumbnailurl" type="text" value="<?php echo $imgArr["thumbnailurl"];?>" style="width:90%;" />
 								<?php
-								if(stripos($imgArr["thumbnailurl"],$IMAGE_ROOT_URL) === 0){
+								if($imgArr["thumbnailurl"] && stripos($imgArr["thumbnailurl"],$IMAGE_ROOT_URL) === 0){
 									?>
 									<div style="margin-left:70px;">
 										<input type="checkbox" name="renametnurl" value="1" />
@@ -356,14 +360,22 @@ if($imgArr){
 				<div style="width:350px;padding:10px;float:left;">
 					<?php
 					$imgDisplay = $imgUrl;
+					$media_type = MediaType::tryFrom($imgArr['media_type']);
 					if((!$imgDisplay || $imgDisplay == 'empty') && $origUrl) $imgDisplay = $origUrl;
 					?>
+					<?php if($media_type === MediaType::Image):?>
 					<a href="<?php echo htmlspecialchars($imgDisplay, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);?>">
 						<img src="<?php echo htmlspecialchars($imgDisplay, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);?>" style="width:300px;" />
 					</a>
 					<?php
 					if($origUrl) echo '<div><a href="' . htmlspecialchars($origUrl, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">' . $LANG['CLICK_IMAGE'] . '</a></div>';
 					?>
+					<?php elseif($media_type === MediaType::Audio):?>
+						<audio controls style="margin-top: 5rem">
+							<source src="<?= $origUrl ?>" type="<?=$imgArr['format']?>">
+							Your browser does not support the audio element.
+						</audio>
+					<?php endif ?>
 				</div>
 				<div style="padding:10px;float:left;">
 					<div style="clear:both;margin-top:40px;">
@@ -371,14 +383,14 @@ if($imgArr){
 					</div>
 					<?php
 					if($imgArr['caption']) echo '<div><b>' . $LANG['CAPTION'] . ':</b> '.$imgArr['caption'].'</div>';
-					if($imgArr['photographerdisplay']){
+					if($imgArr['creatorDisplay']){
 						echo '<div><b>' . $LANG['PHOTOGRAPHER'] . ':</b> ';
-						if(!$imgArr['photographer']){
-							$phLink = 'search.php?imagetype=all&phuid='.$imgArr['photographeruid'].'&submitaction=search';
+						if(!$imgArr['creator']){
+							$phLink = 'search.php?imagetype=all&phuid='.$imgArr['creatoruid'].'&submitaction=search';
 							echo '<a href="' . htmlspecialchars($phLink, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">';
 						}
-						echo $imgArr['photographerdisplay'];
-						if(!$imgArr['photographer']) echo '</a>';
+						echo $imgArr['creatordisplay'];
+						if(!$imgArr['creator']) echo '</a>';
 						echo '</div>';
 					}
 					if($imgArr['owner']) echo '<div><b>' . $LANG['MANAGER'] . ':</b> ' . $imgArr['owner'] . '</div>';

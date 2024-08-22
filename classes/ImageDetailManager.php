@@ -23,10 +23,10 @@ class ImageDetailManager extends Manager {
 			$sql = "SELECT m.media_id, m.tid, m.url, m.thumbnailurl, m.originalurl, m.creatorUid, m.creator, ".
 				"IFNULL(m.creator,CONCAT_WS(' ',u.firstname,u.lastname)) AS creatorDisplay, ".
 				"m.caption, m.owner, m.sourceurl, m.copyright, m.rights, m.locality, m.notes, m.occid, m.sortsequence, m.username, ".
-				"t.sciname, t.author, t.rankid ".
+				"t.sciname, t.author, t.rankid, m.format, m.media_type ".
 				"FROM media m LEFT JOIN taxa t ON m.tid = t.tid ".
 				"LEFT JOIN users u ON m.creatorUid = u.uid ".
-				'WHERE (m.media_id = '.$this->imgId.') m.media_type = "image"';
+				'WHERE (m.media_id = '.$this->imgId.')';
 			//echo "<div>$sql</div>";
 			$rs = $this->conn->query($sql);
 			if($row = $rs->fetch_object()){
@@ -50,6 +50,8 @@ class ImageDetailManager extends Manager {
 				$retArr["sortsequence"] = $row->sortsequence;
 				$retArr["occid"] = $row->occid;
 				$retArr["username"] = $row->username;
+				$retArr["media_type"] = $row->media_type;
+				$retArr["format"] = $row->format;
 			}
 			$rs->free();
 		}
