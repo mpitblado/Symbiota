@@ -1207,7 +1207,7 @@ class Media {
 	}
 
     /**
-     * @param int $occid
+     * @param int $media_id
      * @param MediaType $media_type
      */
     public static function getMedia(int $media_id, MediaType $media_type = null): Array {
@@ -1239,6 +1239,27 @@ class Media {
 		} else {
 			return Sanitize::out($media[$media_id]);
 		}
+	}
+
+    /**
+     * @param int $tid
+     * @param MediaType $media_type
+     */
+    public static function getByTid(int $tid, MediaType $media_type = null): Array {
+		if(!$tid) return [];
+		$parameters = [$tid];
+
+		$sql ='SELECT * FROM media WHERE tid = ?';
+
+		if($media_type) {
+			$sql .= ' AND media_type = ?';
+			array_push($parameters, self::getMediaTypeString($media_type));
+		}
+
+		$sql .= ' ORDER BY sortoccurrence ASC';
+		$results = mysqli_execute_query(self::connect('readonly'), $sql, $parameters);
+
+		return Sanitize::out(self::get_media_items($results));
 	}
 
     /**
