@@ -321,9 +321,10 @@ if ($SYMB_UID) {
 				$deactivateTag = '';
 				$deactivateMsg = '';
 				if ($collData['managementtype'] != 'Live Data'){
-					$deactivateStyle = 'style="pointer-events: none"';
-					$deactivateTag = '&nbsp;(*' . $LANG['DEACTIVATED'] . ')';
-					$deactivateMsg = '<div>* ' . $LANG['DEACTIVATED_MESSAGE'] . '</div>';
+					//Deactivated until these changes can be better reviewed - shooting to re-activate for 3.2
+					//$deactivateStyle = 'style="pointer-events: none"';
+					//$deactivateTag = '&nbsp;(*' . $LANG['DEACTIVATED'] . ')';
+					//$deactivateMsg = '<div>* ' . $LANG['DEACTIVATED_MESSAGE'] . '</div>';
 				}
 				?>
 				<button style="margin-bottom: 0.5rem" type="button" onclick="toggleById('controlpanel');" >
@@ -376,14 +377,14 @@ if ($SYMB_UID) {
 								</a>
 							</li>
 							<li>
-								<a href="../reports/labelmanager.php?collid=<?= $collid ?>" <?= $deactivateStyle ?>>
+								<a href="../reports/labelmanager.php?collid=<?= $collid ?>">
 									<?= $LANG['PRINT_LABELS'] ?>
-								</a><?= $deactivateTag ?>
+								</a>
 							</li>
 							<li>
-								<a href="../reports/annotationmanager.php?collid=<?= $collid ?>" <?= $deactivateStyle ?>>
+								<a href="../reports/annotationmanager.php?collid=<?= $collid ?>">
 									<?= $LANG['PRINT_ANNOTATIONS'] ?>
-								</a><?= $deactivateTag ?>
+								</a>
 							</li>
 							<?php
 							if ($collManager->traitCodingActivated()) {
@@ -637,7 +638,7 @@ if ($SYMB_UID) {
 					if(!empty($contactArr)){
 						?>
 						<section style="margin-left: 0;">
-							<h1 style="font: 1.5rem normal;"><span><?= $LANG['CONTACT'] ?>: </span></h1>
+							<h1><span><?= $LANG['CONTACT'] ?>: </span></h1>
 							<ul>
 								<?php
 								foreach($contactArr as $cArr){
