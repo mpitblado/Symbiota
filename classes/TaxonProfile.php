@@ -149,6 +149,10 @@ class TaxonProfile extends Manager {
 		foreach($iArr as $imgId => $imgObj){
 			if($start == 0 && $trueLength == 1) echo '<div id="centralimage">';
 			else echo '<div class="imgthumb">';
+
+			if($imgObj["media_type"] === 'audio') {
+				$imgObj["thumbnailurl"] = $GLOBALS['CLIENT_ROOT'] . '/images/speaker_thumbnail.png';
+			}
 			$imgUrl = $imgObj['url'];
 			$imgAnchor = '../imagelib/imgdetails.php?imgid='.$imgId;
 			$imgThumbnail = $imgObj['thumbnailurl'];
@@ -191,11 +195,11 @@ class TaxonProfile extends Manager {
 			$rs1->free();
 
 			$tidStr = implode(",",$tidArr);
-			$sql = 'SELECT t.sciname, m.media_id, m.url, m.thumbnailurl, m.originalurl, m.caption, m.occid, m.creator, CONCAT_WS(" ",u.firstname,u.lastname) AS creatorLinked '.
+			$sql = 'SELECT t.sciname, m.media_id, m.media_type, m.format, m.url, m.thumbnailurl, m.originalurl, m.caption, m.occid, m.creator, CONCAT_WS(" ",u.firstname,u.lastname) AS creatorLinked '.
 				'FROM media m LEFT JOIN users u ON m.creatorUid = u.uid '.
 				'INNER JOIN taxstatus ts ON m.tid = ts.tid '.
 				'INNER JOIN taxa t ON m.tid = t.tid '.
-				'WHERE (ts.taxauthid = 1 AND ts.tidaccepted IN ('.$tidStr.')) AND m.SortSequence < 500 AND m.thumbnailurl IS NOT NULL ';
+				'WHERE (ts.taxauthid = 1 AND ts.tidaccepted IN ('.$tidStr.')) AND m.SortSequence < 500 AND (media_type != "image" || m.thumbnailurl IS NOT NULL)';
 			if(!$this->displayLocality) $sql .= 'AND m.occid IS NULL ';
 			$sql .= 'ORDER BY m.sortsequence, m.sortOccurrence LIMIT 100';
 
@@ -212,6 +216,8 @@ class TaxonProfile extends Manager {
 				$this->imageArr[$row->media_id]['caption'] = $row->caption;
 				$this->imageArr[$row->media_id]['occid'] = $row->occid;
 				$this->imageArr[$row->media_id]['sciname'] = $row->sciname;
+				$this->imageArr[$row->media_id]['media_type'] = $row->media_type;
+				$this->imageArr[$row->media_id]['format'] = $row->format;
 			}
 			$result->free();
 		}
