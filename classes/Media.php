@@ -915,7 +915,7 @@ class Media {
 	}
 
 	public static function update($media_id, $media_arr) {
-		//$clean_arr = Sanitize::in($post_arr);
+		$clean_arr = Sanitize::in($media_arr);
 	
 		$meta_data = [
 			"tid",
@@ -952,8 +952,8 @@ class Media {
 
 		//Map keys to values
 		foreach ($meta_data as $key) {
-			if(array_key_exists($key, $media_arr)) {
-				$update_metadata[$key] = $media_arr[$key];
+			if(array_key_exists($key, $clean_arr)) {
+				$data[$key] = $clean_arr[$key];
 			}
 		}
 		$conn = self::connect('write');
@@ -962,17 +962,17 @@ class Media {
 			self::update_metadata($data, $media_id, $conn);
 
 			//url
-			if(array_key_exists("renameweburl", $media_arr)) {
+			if(array_key_exists("renameweburl", $clean_arr)) {
 				//self::remap()
 			}
 
 			//thumbnailUrl
-			if(array_key_exists("renametnurl", $media_arr)) {
+			if(array_key_exists("renametnurl", $clean_arr)) {
 				//self::remap()
 			}
 
 			//originalUrl
-			if(array_key_exists("renameorigurl", $media_arr)) {
+			if(array_key_exists("renameorigurl", $clean_arr)) {
 				//self::remap()
 			}
 
