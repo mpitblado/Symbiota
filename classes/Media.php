@@ -319,6 +319,33 @@ class Media {
 		];
 	}
 
+	public static function render_media_item(array $media_arr, $thumbnail=false) {
+		if($media_arr['media_type'] === 'audio' && !$thumbnail) {
+			$html =<<< HTML 
+			<audio>
+				<source src="$media_arr['originalUrl']" type="$media_arr['format']">
+				Your browser does not support the audio element.
+			</audio>
+			HTML;
+
+			return $html;
+		} else {
+			$html =<<< HTML 
+			<a href="$imgArr['url']" target="_blank">
+				<img 
+					border="1" 
+					src="$thumbUrl" 
+					title="$media_arr['caption']" 
+					style="max-width:21.9rem;" 
+					alt="thumbnail image of current specimen" 
+				/>
+			</a>
+			HTML;
+
+			return $html;
+		}
+	}
+
 	public static function mime2ext(string $mime): string | bool {
 		$mime_map = [
 			'video/3gpp2' => '3g2',
