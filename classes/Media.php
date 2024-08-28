@@ -320,22 +320,27 @@ class Media {
 	}
 
 	public static function render_media_item(array $media_arr, $thumbnail=false) {
-		if($media_arr['media_type'] === 'audio' && !$thumbnail) {
-			$html =<<< HTML 
+		if(false && !$thumbnail) {
+			$src = $media_arr['originalUrl'];
+			$format = $media_arr['format'];
+			$html = <<< HTML
 			<audio>
-				<source src="$media_arr['originalUrl']" type="$media_arr['format']">
+				<source src="$src" type="$format">
 				Your browser does not support the audio element.
 			</audio>
 			HTML;
 
 			return $html;
 		} else {
-			$html =<<< HTML 
-			<a href="$imgArr['url']" target="_blank">
+			$thumbnail = $media_arr['tnurl'];
+			$url = $media_arr['url'];
+			$caption = $media_arr['caption'];
+			$html = <<< HTML
+			<a href="$url" target="_blank">
 				<img 
 					border="1" 
-					src="$thumbUrl" 
-					title="$media_arr['caption']" 
+					src="$thumbnail" 
+					title="$caption" 
 					style="max-width:21.9rem;" 
 					alt="thumbnail image of current specimen" 
 				/>
@@ -1296,7 +1301,10 @@ class Media {
     public static function fetchOccurrenceMedia(int $occid, MediaType $media_type = null): Array {
 		if(!$occid) return [];
 		$parameters = [$occid];
-		$sql = 'SELECT * FROM media WHERE occid = ?';
+		$sql = 'SELECT * FROM media' .
+			'LEFT JOIN taxa t ON t.tid = m.tid ' .
+			'LEFT JOIN users u on u.uid = m.creatorUid ' .
+			'WHERE occid = ?';
 
 		if($media_type) {
 			$sql .= ' AND media_type = ?';
