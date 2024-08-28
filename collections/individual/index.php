@@ -3,6 +3,7 @@ include_once('../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceIndividual.php');
 include_once($SERVER_ROOT.'/classes/DwcArchiverCore.php');
 include_once($SERVER_ROOT.'/classes/RdfUtility.php');
+include_once($SERVER_ROOT.'/classes/Media.php');
 if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/individual/index.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/collections/individual/index.'.$LANG_TAG.'.php');
 else include_once($SERVER_ROOT.'/content/lang/collections/individual/index.en.php');
 if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/fieldterms/materialSampleVars.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/collections/fieldterms/materialSampleVars.'.$LANG_TAG.'.php');
@@ -997,6 +998,10 @@ $traitArr = $indManager->getTraitArr();
 								<?php
 								foreach($iArr as $imgArr){
 									$thumbUrl = $imgArr['tnurl'];
+									echo '<div id="thumbnail-div" class="thumbnail-div">';
+									echo Media::render_media_item($imgArr);
+									echo '</div>';
+									/*
 									if(!$thumbUrl || substr($thumbUrl, 0, 7) == 'process'){
 										if($imgArr['lgurl']){
 											if($image = exif_thumbnail($imgArr['lgurl'])){
@@ -1007,7 +1012,7 @@ $traitArr = $indManager->getTraitArr();
 											if($imgArr['url'] && substr($imgArr['url'], 0, 7) != 'process') $thumbUrl = $imgArr['url'];
 											else $thumbUrl = $imgArr['lgurl'];
 										}
-									}
+							}
 									?>
 									<div id="thumbnail-div" class="thumbnail-div">
 										<a href='<?= $imgArr['url'] ?>' target="_blank">
@@ -1025,7 +1030,7 @@ $traitArr = $indManager->getTraitArr();
 										if($imgArr['accessrights']) $collMetadata['accessrights'] = $imgArr['accessrights'];
 										?>
 									</div>
-									<?php
+							<?php */
 								}
 								?>
 							</fieldset>
