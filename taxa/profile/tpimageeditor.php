@@ -1,6 +1,7 @@
 <?php
 include_once('../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/TPImageEditorManager.php');
+include_once($SERVER_ROOT . '/classes/Media.php');
 if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/taxa/profile/tpimageeditor.' . $LANG_TAG . '.php'))
 include_once($SERVER_ROOT.'/content/lang/taxa/profile/tpimageeditor.' . $LANG_TAG . '.php');
 else include_once($SERVER_ROOT.'/content/lang/taxa/profile/tpimageeditor.en.php');
@@ -226,7 +227,8 @@ if($tid){
 				<?php
 			}
 			else{
-				if($images = $imageEditor->getImages()){
+				//if($images = $imageEditor->getImages()){
+				if($images = Media::getByTid($tid)){
 					?>
 					<div style='clear:both;'>
 						<section class="gridlike-form">
@@ -237,23 +239,20 @@ if($tid){
 									<div>
 										<div style="margin:20px;float:left;text-align:center;">
 											<?php
-											$webUrl = $imgArr["url"];
-											$tnUrl = $imgArr["thumbnailurl"];
-											if($GLOBALS['IMAGE_DOMAIN']){
-												if(substr($imgArr["url"], 0, 1) == "/") $webUrl = $GLOBALS['IMAGE_DOMAIN'] . $imgArr["url"];
-												if(substr($imgArr["thumbnailurl"], 0, 1) == "/") $tnUrl = $GLOBALS['IMAGE_DOMAIN'] . $imgArr["thumbnailurl"];
+											try {
+												echo '<a>';
+												echo Media::render_media_item($imgArr);
+												echo '</a>';
+											} catch(Exception $e) {
+												error_log($e->getMessage());
 											}
-											if(!$tnUrl) $tnUrl = $webUrl;
-											?>
-											<a href="../../imagelib/imgdetails.php?imgid=<?php echo htmlspecialchars($imgArr['imgid'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>">
-												<img src="<?php echo $tnUrl;?>" style="width:200px;"/>
-											</a>
-											<?php
-											if($imgArr["originalurl"]){
-												$origUrl = (array_key_exists('IMAGE_DOMAIN', $GLOBALS) && substr($imgArr["originalurl"], 0, 1) == '/' ? $GLOBALS['IMAGE_DOMAIN'] : '') . $imgArr["originalurl"];
-												?>
-												<br /><a href="<?php echo htmlspecialchars($origUrl, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);?>"><?php echo htmlspecialchars($LANG['OPEN_LARGE_IMAGE'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?></a>
-												<?php
+
+											if($imgArr["originalUrl"]) {
+												echo'<br>';
+												echo Media::render_media_link(
+														$imgArr["originalUrl"],
+														$LANG['OPEN_LARGE_IMAGE']
+													);
 											}
 											?>
 										</div>
@@ -272,7 +271,7 @@ if($tid){
 										else{
 											?>
 											<div style='float:right;margin-right:10px;'>
-												<a href="../../imagelib/imgdetails.php?imgid=<?php echo htmlspecialchars($imgArr["imgid"], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);?>&emode=1">
+												<a href="../../imagelib/imgdetails.php?imgid=<?php echo htmlspecialchars($imgArr["media_id"], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);?>&emode=1">
 													<img src="../../images/edit.png" style="width:1.3em;border:0px;" />
 												</a>
 											</div>

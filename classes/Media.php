@@ -332,23 +332,38 @@ class Media {
 
 			return $html;
 		} else {
-			$thumbnail = $media_arr['tnurl'];
+			$thumbnail = $media_arr['tnurl']?? $media_arr['thumbnailUrl'];
 			$url = $media_arr['url'];
 			$caption = $media_arr['caption'];
+			if(!$thumbnail && $url) {
+				$thumbnail = $url;
+			} else if(!$thumbnail &&  $media_arr['originalUrl']) {
+				$thumbnail = $media_arr['originalUrl'];
+			}
 			$html = <<< HTML
-			<a href="$url" target="_blank">
-				<img 
-					border="1" 
-					src="$thumbnail" 
-					title="$caption" 
-					style="max-width:21.9rem;" 
-					alt="thumbnail image of current specimen" 
-				/>
-			</a>
+			<img 
+				style="max-width: 200px"
+				border="1" 
+				src="$thumbnail" 
+				title="$caption" 
+				style="max-width:21.9rem;" 
+				alt="Thumbnail image of current specimen" 
+			/>
 			HTML;
 
 			return $html;
 		}
+	}
+
+	static function render_media_link($url, $text) {
+		$slash_route = substr($url, 0, 1) == '/';
+		if(array_key_exists('IMAGE_DOMAIN',$GLOBALS) && $slash_route) {
+			$url = $GLOBALS['IMAGE_DOMAIN'] . $url;
+		}
+		$clean_url = htmlspecialchars($url, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);
+		$clean_text = htmlspecialchars($text, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);
+
+		return '<a href="' . $clean_url . '">'. $clean_text . '</a>';
 	}
 
 	public static function mime2ext(string $mime): string | bool {
@@ -1281,7 +1296,18 @@ class Media {
 		if(!$tid) return [];
 		$parameters = [$tid];
 
-		$sql ='SELECT * FROM media WHERE tid = ?';
+		$select = [
+			'm.*',
+			"IFNULL(m.creator,CONCAT_WS(' ',u.firstname,u.lastname)) AS creatorDisplay",
+			't.sciname',
+			't.author',
+			't.rankid'
+		];
+
+		$sql ='SELECT ' . implode(',', $select) . ' FROM media m '.
+			'LEFT JOIN taxa t ON t.tid = m.tid ' .
+			'LEFT JOIN users u on u.uid = m.creatorUid ' .
+			'WHERE m.tid = ?';
 
 		if($media_type) {
 			$sql .= ' AND media_type = ?';
