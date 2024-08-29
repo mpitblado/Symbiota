@@ -1000,6 +1000,15 @@ $traitArr = $indManager->getTraitArr();
 									$thumbUrl = $imgArr['tnurl'];
 									echo '<div id="thumbnail-div" class="thumbnail-div">';
 									echo Media::render_media_item($imgArr);
+										if($imgArr['caption']) echo '<div><i>'.$imgArr['caption'].'</i></div>';
+										if($imgArr['creator']) echo '<div>'.(isset($LANG['AUTHOR'])?$LANG['AUTHOR']:'Author').': '.$imgArr['creator'].'</div>';
+										if($imgArr['url'] && substr($thumbUrl,0,7)!='process' && $imgArr['url'] != $imgArr['lgurl']) echo '<div><a href="' . $imgArr['url'] . '" target="_blank">' . $LANG['OPEN_MEDIUM'] . '</a></div>';
+										if($imgArr['lgurl']) echo '<div><a href="' . $imgArr['lgurl'] . '" target="_blank">' . $LANG['OPEN_LARGE'] . '</a></div>';
+										if($imgArr['sourceurl']) echo '<div><a href="' . $imgArr['sourceurl'] . '" target="_blank">' . $LANG['OPEN_SOURCE'] . '</a></div>';
+										//Use image rights settings as the default for current record
+										if($imgArr['rights']) $collMetadata['rights'] = $imgArr['rights'];
+										if($imgArr['copyright']) $collMetadata['rightsholder'] = $imgArr['copyright'];
+										if($imgArr['accessrights']) $collMetadata['accessrights'] = $imgArr['accessrights'];
 									echo '</div>';
 									/*
 									if(!$thumbUrl || substr($thumbUrl, 0, 7) == 'process'){

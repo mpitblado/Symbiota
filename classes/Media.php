@@ -320,12 +320,12 @@ class Media {
 	}
 
 	public static function render_media_item(array $media_arr, $thumbnail=false) {
-		if(false && !$thumbnail) {
-			$src = $media_arr['originalUrl'];
+		if($media_arr['media_type'] !== 'image' && !$thumbnail) {
+			$src = $media_arr['url'];
 			$format = $media_arr['format'];
 			$html = <<< HTML
-			<audio>
-				<source src="$src" type="$format">
+			<audio controls>
+				<source src="$src" type="$format"/>
 				Your browser does not support the audio element.
 			</audio>
 			HTML;
@@ -1301,13 +1301,13 @@ class Media {
     public static function fetchOccurrenceMedia(int $occid, MediaType $media_type = null): Array {
 		if(!$occid) return [];
 		$parameters = [$occid];
-		$sql = 'SELECT * FROM media' .
+		$sql = 'SELECT * FROM media m ' .
 			'LEFT JOIN taxa t ON t.tid = m.tid ' .
 			'LEFT JOIN users u on u.uid = m.creatorUid ' .
-			'WHERE occid = ?';
+			'WHERE m.occid = ?';
 
 		if($media_type) {
-			$sql .= ' AND media_type = ?';
+			$sql .= ' AND m.media_type = ?';
 			array_push($parameters, self::getMediaTypeString($media_type));
 		}
 
