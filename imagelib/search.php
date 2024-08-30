@@ -17,6 +17,10 @@ $imageType = isset($_REQUEST['imagetype']) ? filter_var($_REQUEST['imagetype'], 
 $pageNumber = array_key_exists('page', $_REQUEST) ? filter_var($_REQUEST['page'], FILTER_SANITIZE_NUMBER_INT) : 1;
 $cntPerPage = array_key_exists('cntperpage', $_REQUEST) && is_numeric($_REQUEST['cntperpage']) ? filter_var($_REQUEST['cntperpage'], FILTER_SANITIZE_NUMBER_INT) : 200;
 
+$media_type = null;
+if($_REQUEST['media_type'] === 'image') $media_type = 'image';
+elseif($_REQUEST['media_type'] === 'audio') $media_type = 'audio';
+
 $action = $_REQUEST['submitaction'] ?? '';
 
 if(!$useThes && !$action) $useThes = 1;
@@ -34,6 +38,8 @@ $imgLibManager->setTag($tag);
 $imgLibManager->setKeywords($keywords);
 $imgLibManager->setImageCount($imageCount);
 $imgLibManager->setImageType($imageType);
+//Setter only takes 'image' and 'audio' as valid values so no need to sanitize
+$imgLibManager->setMediaType($_REQUEST['media_type']);
 if(isset($_REQUEST['db'])) $imgLibManager->setCollectionVariables($_REQUEST);
 
 $statusStr = '';
@@ -240,6 +246,30 @@ if($action == 'batchAssignTag'){
 								</span><br>
 								<input id="typeField" type="radio" name="imagetype" value="3" <?= ($imgLibManager->getImageType() == 3 ? 'CHECKED' : '') ?> onclick="deactivateCollectionControl()">
 								<label for="typeField"><?= $LANG['TYPE_FIELD'] ?></label>
+							</fieldset>
+						</div>
+						<div class="row-div flex-form">
+							<fieldset>
+								<?php 
+									$is_image = false;
+									$is_audio = false;
+									$is_all = false;
+									$m_type = $imgLibManager->getMediaType();
+									if($m_type === 'image') {
+										$is_image = true;
+									} elseif($m_type === 'audio') {
+										$is_audio = true;
+									} else {
+										$is_all = true;
+									}
+								?>
+								<legend> <?= 'Media Type' ?> </legend>
+								<input id="m_image" type="radio" name="media_type" value="image" <?= $is_image? 'CHECKED': ''?>>
+								<label for="m_image"> <?= 'Image' ?></label><br>
+								<input id="m_audio" type="radio" name="media_type" value="audio" <?= $is_audio? 'CHECKED': ''?>>
+								<label for="m_audio"> <?= 'Audio' ?></label><br>
+									<input id="m_all" type="radio" name="media_type" value="" <?= $is_all? 'CHECKED': ''?>>
+								<label for="m_all"> <?= 'All' ?></label><br>
 							</fieldset>
 						</div>
 						<div class="row-div flex-form">

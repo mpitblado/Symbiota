@@ -14,6 +14,7 @@ class ImageLibrarySearch extends OccurrenceTaxaManager{
 	private $keywords;
 	private $imageCount = 0;
 	private $imageType = 0;
+	private $media_type = null;
 
 	private $recordCount = 0;
 	private $tidFocus;
@@ -198,6 +199,10 @@ class ImageLibrarySearch extends OccurrenceTaxaManager{
 				//Field Images (lacking specific locality details)
 				$sqlWhere .= 'AND (m.occid IS NULL) ';
 			}
+		}
+		if($this->media_type){
+			//Note media_type is cleaned to only be 'image' and 'audio' strings
+			$sqlWhere .= 'AND (m.media_type = "' . $this->media_type . '") ';
 		}
 		if(strpos($sqlWhere,'ts.taxauthid')) $sqlWhere = str_replace('m.tid', 'ts.tid', $sqlWhere);
 		if($sqlWhere) $this->sqlWhere = 'WHERE '.substr($sqlWhere,4);
@@ -444,6 +449,16 @@ class ImageLibrarySearch extends OccurrenceTaxaManager{
 
 	public function getErrorStr(){
 		return $this->errorStr;
+	}
+
+	public function setMediaType($type) {
+		if($type === 'image' || $type === 'audio') {
+			$this->media_type = $type;
+		}
+	}
+
+	public function getMediaType() {
+		return $this->media_type;
 	}
 }
 ?>
