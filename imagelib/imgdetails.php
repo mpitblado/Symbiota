@@ -406,7 +406,7 @@ if($imgArr){
 							$phLink = 'search.php?imagetype=all&phuid='.$imgArr['creatoruid'].'&submitaction=search';
 							echo '<a href="' . htmlspecialchars($phLink, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '">';
 						}
-						echo $imgArr['creatordisplay'];
+						echo $imgArr['creatorDisplay'];
 						if(!$imgArr['creator']) echo '</a>';
 						echo '</div>';
 					}
