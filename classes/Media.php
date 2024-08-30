@@ -81,42 +81,12 @@ class MediaFile {
 	}
 }
 
-class SymbiotaUploadStrategy extends UploadStrategy {
-	private string $institutioncode;
-	private string | null $collectioncode;
-	private string | null $catalognumber;
+function get_occurrence_upload_path($institutioncode, $collectioncode, $catalognumber) {
+		$root = $institutioncode . ($collectioncode? '_'. $collectioncode: '') . '/';
 
-	public function __construct(string $institutioncode, string | null $collectioncode = null, string | null $catalognumber = null) {
-		$this->institutioncode = $institutioncode;
-		$this->collectioncode = $collectioncode;
-		$this->catalognumber = $catalognumber;
-	}
-
-	public function getDirPath(array | string $file = null): string {
-		$file_name = is_array($file)? $file['name']: $file;
-		return $GLOBALS['IMAGE_ROOT_PATH'] . 
-			(substr($GLOBALS['IMAGE_ROOT_PATH'],-1) != "/"? '/': '') . 
-			$this->getPathPattern() . $file_name;
-	}
-
-	public function getUrlPath(array | string $file = null): string {
-		$file_name = is_array($file)? $file['name']: $file;
-		return $GLOBALS['IMAGE_ROOT_URL'] .
-		   	(substr($GLOBALS['IMAGE_ROOT_URL'],-1) != "/"? '/': '') .
-		   	$this->getPathPattern() . $file_name;
-	}
-
-    /**
-     * Private help function for interal use that holds logic for how storage paths are created.
-     * @return string 
-     */
-    function getPathPattern(): string {
-
-		$root = $this->institutioncode . ($this->collectioncode? '_'. $this->collectioncode: '') . '/';
-
-		if($this->catalognumber) {
+		if($catalognumber) {
 			//Clean out Symbols that would interfere with 
-			$derived_cat_num = str_replace(array('/','\\',' '), '', $this->catalognumber);
+			$derived_cat_num = str_replace(array('/','\\',' '), '', $catalognumber);
 
 			//Grab any characters in the range of 0-8 then any amount digits
 			if(preg_match('/^(\D{0,8}\d{4,})/', $derived_cat_num, $matches)){
@@ -139,7 +109,34 @@ class SymbiotaUploadStrategy extends UploadStrategy {
 		}
 
 		return $root;
+
+}
+
+class LocalUploadStrategy extends UploadStrategy {
+	private string $path;
+
+	public function __construct(string $path) {
+		$this->path = $path;
 	}
+
+	public function getDirPath(array | string $file = null): string {
+		$file_name = is_array($file)? $file['name']: $file;
+		return $GLOBALS['IMAGE_ROOT_PATH'] . 
+			(substr($GLOBALS['IMAGE_ROOT_PATH'],-1) != "/"? '/': '') . 
+			$this->path . $file_name;
+	}
+
+	public function getUrlPath(array | string $file = null): string {
+		$file_name = is_array($file)? $file['name']: $file;
+		return $GLOBALS['IMAGE_ROOT_URL'] .
+		   	(substr($GLOBALS['IMAGE_ROOT_URL'],-1) != "/"? '/': '') .
+		   	$this->path . $file_name;
+	}
+
+    /**
+     * Private help function for interal use that holds logic for how storage paths are created.
+     * @return string 
+     */
 
 	public function file_exists(array|string $file): bool {
 		if(is_array($file)) {
@@ -195,19 +192,11 @@ class SymbiotaUploadStrategy extends UploadStrategy {
 		return file_exists($dir_path);
 	}
 
-	//url -> some_domain/ srat_path / filename
-	//remap 1 to 2 which could be
-	//	- remote upload from somewhere
-	//	- moving a file
-	//		- file exists on same system
-	//	- nothing
-	//		- file exists on same path
-
 	public function remove(string $filename): bool {
 		//Check Relative Path
 		if($this->file_exists($filename)) {
 			if(!unlink($this->getDirPath($filename))) {
-				error_log("WARNING: File (path: " . $this->getDirPath($filename) . ") failed to delete from server in SymbiotaUploadStrategy->remove");
+				error_log("WARNING: File (path: " . $this->getDirPath($filename) . ") failed to delete from server in LocalUploadStrategy->remove");
 				return false;
 			};
 			return true;
@@ -223,7 +212,7 @@ class SymbiotaUploadStrategy extends UploadStrategy {
 		//Check Absolute path
 		if($dir_path !== $filename && file_exists($dir_path)) {
 			if(!unlink($dir_path)) {
-				error_log("WARNING: File (path: " . $dir_path. ") failed to delete from server in SymbiotaUploadStrategy->remove");
+				error_log("WARNING: File (path: " . $dir_path. ") failed to delete from server in LocalUploadStrategy->remove");
 				return false;
 			}
 			return true;
@@ -1314,7 +1303,7 @@ class Media {
 			array_push($parameters, self::getMediaTypeString($media_type));
 		}
 
-		$sql .= ' ORDER BY sortoccurrence ASC';
+		$sql .= ' ORDER BY sortsequence IS NULL ASC, sortsequence ASC';
 		$results = mysqli_execute_query(self::connect('readonly'), $sql, $parameters);
 
 		return Sanitize::out(self::get_media_items($results));

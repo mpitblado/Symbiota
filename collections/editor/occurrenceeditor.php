@@ -255,13 +255,14 @@ if($SYMB_UID){
 
 				try {
 					$occur_map = $occManager->getOccurMap()[$occId];
+					$path = get_occurrence_upload_path(
+						$occur_map['institutioncode'],
+						$occur_map['collectioncode'],
+						$occur_map['catalognumber']
+					);
 					Media::add(
 						$_POST, 
-						new SymbiotaUploadStrategy(
-							$occur_map['institutioncode'],
-							$occur_map['collectioncode'],
-							$occur_map['catalognumber']
-						),
+						new LocalUploadStrategy($path),
 						$_FILES['imgfile'] ?? null
 					);
 					$statusStr = $LANG['IMAGE_ADD_SUCCESS'];
@@ -310,20 +311,24 @@ if($SYMB_UID){
 					$target_occur_manager = new OccurrenceEditorImages();
 					$target_occur_manager->setOccId($target_occid);
 					$target_occur_map = $target_occur_manager->getOccurMap()[$target_occid];
-					$remap_strat = new SymbiotaUploadStrategy(
+					$remap_path	= get_occurrence_upload_path(
 						$target_occur_map['institutioncode'],
 						$target_occur_map['collectioncode'],
 						$target_occur_map['catalognumber']
 					);
 
 					$occur_map = $occManager->getOccurMap()[$occId];
-					$current_strategy = new SymbiotaUploadStrategy(
+					$current_path = get_occurrence_upload_path(
 						$occur_map['institutioncode'],
 						$occur_map['collectioncode'],
 						$occur_map['catalognumber']
 					);
-					$media_id = intval($_POST['imgid']);
-					Media::remap($media_id, $target_occid, $current_strategy, $remap_strat);
+					Media::remap(
+						intval($_POST['imgid']), 
+						$target_occid, 
+						new LocalUploadStrategy($current_path), 
+						new LocalUploadStrategy($remap_path)
+					);
 
 					$statusStr = $LANG['IMAGE_REMAP_SUCCESS'] .' <a href="occurrenceeditor.php?occid=' . htmlspecialchars($target_occid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" target="_blank">' . htmlspecialchars($target_occid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a>';
 				} catch(Exception $e) {

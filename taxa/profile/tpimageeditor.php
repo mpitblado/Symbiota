@@ -40,7 +40,8 @@ if($tid){
 		<?php
 		if($isEditor && $tid){
 			if($category == "imagequicksort"){
-				if($images = $imageEditor->getImages()){
+				//if($images = $imageEditor->getImages()){
+				if($images = Media::getByTid($tid)){
 					?>
 					<div style='clear:both;'>
 						<form action='tpeditor.php' method='post' target='_self'>
@@ -49,12 +50,15 @@ if($tid){
 									<?php
 									$imgCnt = 0;
 									foreach($images as $imgArr){
-										$tnUrl = $imgArr["thumbnailurl"];
+										$tnUrl = $imgArr["thumbnailUrl"];
+										if($imgArr['media_type'] === 'audio') {
+											$tnUrl = $CLIENT_ROOT . '/images/speaker_thumbnail.png';
+										}
 										if($tnUrl && substr($tnUrl,0,10) != 'processing'){
 											$webUrl = $imgArr["url"];
 											if($GLOBALS['IMAGE_DOMAIN']){
 												if(substr($imgArr["url"],0,1)=="/") $webUrl = $GLOBALS['IMAGE_DOMAIN'] . $imgArr["url"];
-												if(substr($imgArr["thumbnailurl"],0,1)=="/") $tnUrl = $GLOBALS['IMAGE_DOMAIN'] . $imgArr["thumbnailurl"];
+												if(substr($imgArr["thumbnailUrl"],0,1)=="/") $tnUrl = $GLOBALS['IMAGE_DOMAIN'] . $imgArr["thumbnailUrl"];
 											}
 											?>
 											<td align='center' valign='bottom'>
@@ -65,10 +69,10 @@ if($tid){
 
 												</div>
 												<?php
-												if($imgArr["photographerdisplay"]){
+												if($imgArr["creatorDisplay"]){
 													?>
 													<div>
-														<?php echo $imgArr["photographerdisplay"];?>
+														<?php echo $imgArr["creatorDisplay"];?>
 													</div>
 													<?php
 												}
@@ -85,7 +89,7 @@ if($tid){
 												</div>
 												<div>
 													<?php echo $LANG['NEW_VALUE']; ?>:
-													<input name="imgid-<?php echo $imgArr["imgid"];?>" type="text" size="5" maxlength="5" />
+													<input name="imgid-<?php echo $imgArr["media_id"];?>" type="text" size="5" maxlength="5" />
 												</div>
 											</td>
 											<?php
