@@ -1326,7 +1326,7 @@ class Media {
 			array_push($parameters, self::getMediaTypeString($media_type));
 		}
 
-		$sql .= ' ORDER BY sortoccurrence ASC';
+		$sql .= ' ORDER BY sortoccurrence IS NULL ASC, sortoccurrence ASC';
 
 		$results = mysqli_execute_query(self::connect('readonly'), $sql, $parameters);
 
