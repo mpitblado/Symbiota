@@ -36,7 +36,7 @@ class ImageLibrarySearch extends OccurrenceTaxaManager{
 		$retArr = Array();
 		$this->setSqlWhere();
 		$this->setRecordCnt();
-		$sql = 'SELECT m.media_id, m.tid, IFNULL(t.sciname,o.sciname) as sciname, m.url, m.thumbnailurl, m.originalurl, m.creatorUid, m.caption, m.occid ';
+		$sql = 'SELECT m.media_id, m.tid, IFNULL(t.sciname,o.sciname) as sciname, m.url, m.thumbnailurl, m.originalurl, m.creatorUid, m.caption, m.occid, m.media_type ';
 		$sqlWhere = $this->sqlWhere;
 		if($this->imageCount == 1) $sqlWhere .= 'GROUP BY sciname ';
 		elseif($this->imageCount == 2) $sqlWhere .= 'GROUP BY m.occid ';
@@ -61,6 +61,7 @@ class ImageLibrarySearch extends OccurrenceTaxaManager{
 			$retArr[$imgId]['uid'] = $r->creatorUid;
 			$retArr[$imgId]['caption'] = $r->caption;
 			$retArr[$imgId]['occid'] = $r->occid;
+			$retArr[$imgId]['media_type'] = $r->media_type;
 			//$retArr[$imgId]['stateprovince'] = $r->stateprovince;
 			//$retArr[$imgId]['catalognumber'] = $r->catalognumber;
 			//$retArr[$imgId]['instcode'] = $r->instcode;

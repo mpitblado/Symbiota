@@ -367,10 +367,13 @@ if($action == 'batchAssignTag'){
 								if($imgTn){
 									$imgUrl = $imgTn;
 									if($IMAGE_DOMAIN && substr($imgTn,0,1) == '/') $imgUrl = $IMAGE_DOMAIN . $imgTn;
+								} else if($imgArr['media_type'] == 'audio') {
+									$imgUrl = $CLIENT_ROOT . '/images/speaker_thumbnail.png';
 								}
 								elseif($IMAGE_DOMAIN && substr($imgUrl,0,1) == '/'){
 									$imgUrl = $IMAGE_DOMAIN . $imgUrl;
 								}
+
 								?>
 								<div class="tndiv" style="margin-bottom:15px;margin-top:15px;">
 									<div class="tnimg">
