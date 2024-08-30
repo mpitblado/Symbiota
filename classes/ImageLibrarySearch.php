@@ -46,7 +46,6 @@ class ImageLibrarySearch extends OccurrenceTaxaManager{
 		$sql .= $this->getSqlBase().$sqlWhere.'LIMIT '.$bottomLimit.','.$cntPerPage;
 		//echo '<div>Spec sql: '.$sql.'</div>';
 		$occArr = array();
-		error_log($sql);
 		$result = $this->conn->query($sql);
 		$imgId = 0;
 		while($r = $result->fetch_object()){
