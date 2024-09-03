@@ -8,8 +8,6 @@ if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/indi
 else include_once($SERVER_ROOT.'/content/lang/collections/individual/index.en.php');
 if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/fieldterms/materialSampleVars.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/collections/fieldterms/materialSampleVars.'.$LANG_TAG.'.php');
 else include_once($SERVER_ROOT.'/content/lang/collections/fieldterms/materialSampleVars.en.php');
-if($LANG_TAG == 'en' || !file_exists($SERVER_ROOT.'/content/lang/header.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT . '/content/lang/header.en.php');
-else include_once($SERVER_ROOT . '/content/lang/header.' . $LANG_TAG . '.php');
 header('Content-Type: text/html; charset=' . $CHARSET);
 
 $submit = array_key_exists('formsubmit', $_REQUEST) ? $_REQUEST['formsubmit'] : '';
@@ -321,11 +319,11 @@ $traitArr = $indManager->getTraitArr();
 </head>
 <body>
 	<?php
-		if($shouldUseMinimalMapHeader) include_once($SERVER_ROOT . '/includes/minimal_header_template.php');
+	if($shouldUseMinimalMapHeader) include_once($SERVER_ROOT . '/includes/minimalheader.php');
 	?>
 	<header style="background-image: none;">
 		<a class="screen-reader-only" href="#end-nav"><?php echo $LANG['SKIP_NAV'] ?></a>
-		<h1 class="page-heading minimal-header-margin">
+		<h1 class="page-heading screen-reader-only">
 			<?php echo $LANG['FULL_RECORD_DETAILS']; ?>
 		</h1>
 		<div id="end-nav"></div>
@@ -712,7 +710,7 @@ $traitArr = $indManager->getTraitArr();
 						if($occArr['decimallatitude']){
 							?>
 							<div id="latlng-div" class="bottom-breathing-room-rel-sm">
-								<?php echo $LANG['LAT_LNG'] ?>:
+								<?php echo '<label>'.$LANG['LAT_LNG'].':</label> '; ?>
 								<?php
 								echo $occArr['decimallatitude'].'&nbsp;&nbsp;'.$occArr['decimallongitude'];
 								if($occArr['coordinateuncertaintyinmeters']) echo ' +-'.$occArr['coordinateuncertaintyinmeters'].'m.';
