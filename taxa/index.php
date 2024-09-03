@@ -381,7 +381,7 @@ include($SERVER_ROOT.'/includes/header.php');
 											}
 											echo '<img src="' . $imgUrl . '" title="' . $subArr['caption'] . '" alt="' . $LANG['IMAGE_OF'] . ' ' . $sciNameKey . '" style="z-index:-1" />';
 											echo '</a>';
-											echo '<div style="text-align:right;position:relative;top:-26px;left:5px;" title="' . $LANG['PHOTOGRAPHER'] . ': ' . $subArr['photographer'] . '">';
+											echo '<div style="text-align:right;position:relative;top:-26px;left:5px;" title="' . $LANG['CREATOR'] . ': ' . $subArr['photographer'] . '">';
 											echo '</div>';
 										}
 										elseif($isEditor){

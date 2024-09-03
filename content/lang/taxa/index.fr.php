@@ -30,6 +30,7 @@ $LANG['VIEW_ALL_IMAGES'] = 'Voir Toutes Images';
 $LANG['GO_TO_PARENT'] = 'Aller au Taxon Parent';
 $LANG['EDIT_TAXON_DATA'] = 'Modifier Données de Taxon';
 $LANG['PHOTOGRAPHER'] = 'Photographe';
+$LANG['CREATOR'] = 'Créateur';
 $LANG['MAP_NOT_AVAILABLE'] = 'Carte non<be />disponible';
 $LANG['RESOURCES'] = 'Ressources';
 $LANG['INTERNAL_RESOURCES'] = 'Ressources internes';
