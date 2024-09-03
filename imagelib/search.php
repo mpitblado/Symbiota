@@ -174,7 +174,7 @@ if($action == 'batchAssignTag'){
 							</div>
 						</div>
 						<div class="row-div flex-form">
-							<label for="phuid"><?= $LANG['PHOTOGRAPHER'] ?></label>:
+							<label for="phuid"><?= $LANG['CREATOR'] ?></label>:
 							<select id="phuid" name="phuid">
 								<option value="">-----------------------------</option>
 								<?php
@@ -269,13 +269,13 @@ if($action == 'batchAssignTag'){
 										$is_all = true;
 									}
 								?>
-								<legend> <?= 'Media Type' ?> </legend>
+								<legend> <?= $LANG['MEDIA_TYPE'] ?> </legend>
 								<input id="m_image" type="radio" name="media_type" value="image" <?= $is_image? 'CHECKED': ''?>>
-								<label for="m_image"> <?= 'Image' ?></label><br>
+								<label for="m_image"> <?= $LANG['MEDIA_TYPE_IMAGE'] ?></label><br>
 								<input id="m_audio" type="radio" name="media_type" value="audio" <?= $is_audio? 'CHECKED': ''?>>
-								<label for="m_audio"> <?= 'Audio' ?></label><br>
+								<label for="m_audio"> <?= $LANG['MEDIA_TYPE_AUDIO']?></label><br>
 									<input id="m_all" type="radio" name="media_type" value="" <?= $is_all? 'CHECKED': ''?>>
-								<label for="m_all"> <?= 'All' ?></label><br>
+								<label for="m_all"> <?= $LANG['MEDIA_TYPE_ALL'] ?></label><br>
 							</fieldset>
 						</div>
 						<div class="row-div flex-form">
