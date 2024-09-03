@@ -18,8 +18,14 @@ $pageNumber = array_key_exists('page', $_REQUEST) ? filter_var($_REQUEST['page']
 $cntPerPage = array_key_exists('cntperpage', $_REQUEST) && is_numeric($_REQUEST['cntperpage']) ? filter_var($_REQUEST['cntperpage'], FILTER_SANITIZE_NUMBER_INT) : 200;
 
 $media_type = null;
-if($_REQUEST['media_type'] === 'image') $media_type = 'image';
-elseif($_REQUEST['media_type'] === 'audio') $media_type = 'audio';
+if(isset($_REQUEST['media_type'])) {
+	if($_REQUEST['media_type'] === 'image') {
+		$media_type = 'image';
+	}
+	elseif($_REQUEST['media_type'] === 'audio') {
+		$media_type = 'audio';
+	}
+}
 
 $action = $_REQUEST['submitaction'] ?? '';
 
@@ -39,7 +45,7 @@ $imgLibManager->setKeywords($keywords);
 $imgLibManager->setImageCount($imageCount);
 $imgLibManager->setImageType($imageType);
 //Setter only takes 'image' and 'audio' as valid values so no need to sanitize
-$imgLibManager->setMediaType($_REQUEST['media_type']);
+$imgLibManager->setMediaType($media_type);
 if(isset($_REQUEST['db'])) $imgLibManager->setCollectionVariables($_REQUEST);
 
 $statusStr = '';
