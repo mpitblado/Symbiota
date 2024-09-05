@@ -2,8 +2,7 @@
 /*
 ------------------
 Language: Português (Portuguese)
-Translated by: Google Translate
-Date Translated: 2024-04-22
+Translated by: Google Translate (2024-09-05)
 ------------------
 */
 
@@ -22,7 +21,6 @@ $LANG['IMPORT_IMG_LOCAL'] = 'Importar mídia para servidor local';
 $LANG['UPLOAD_LOCAL'] = 'Carregar mídia local';
 $LANG['CAPTION'] = 'Legenda';
 $LANG['PHOTOGRAPHER'] = 'Fotógrafo';
-$LANG['CREATOR'] = 'criador';
 $LANG['SEL_PHOTOGRAPHER'] = 'Selecionar Fotógrafo';
 $LANG['DISP_PHOTOGRAPHER_OVERRIDE'] = 'Exibir campo de substituição do fotógrafo';
 $LANG['PHOTOGRAPHER_OVERRIDE'] = 'Substituição do Fotógrafo';
@@ -40,5 +38,7 @@ $LANG['OPEN_LARGE_IMAGE'] = 'Abrir Imagem Grande';
 $LANG['MUST_HAVE_EDIT_PERM'] = 'Deve ter privilégios de edição para a coleção que gerencia este arquivo de mídia';
 $LANG['IMAGE_LINKED_FROM'] = 'Mídia vinculada de';
 $LANG['TP_IMAGE_EDITOR'] = 'Editor de mídia de perfil de táxon';
+$LANG['CREATOR'] = 'criador';
+
 
 ?>
