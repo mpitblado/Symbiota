@@ -155,7 +155,12 @@ class AssociationManager extends OccurrenceTaxaManager{
         $reverseAssociationType = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ? $this->getInverseRelationshipOf($relationshipType) : 'IS NOT NULL';
         $reverseRelationshipStr = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ? ("='" . $reverseAssociationType . "'") : ' IS NOT NULL';
 
-        $reverseSql = "SELECT oa.occidAssociate FROM omoccurrences o INNER JOIN omoccurassociations oa ON o.occid = oa.occid INNER JOIN omoccurdeterminations od ON oa.occid = od.occid " . $familyJoinStr . " WHERE oa.relationship " . $reverseRelationshipStr . " ";
+        // $reverseSql = "SELECT oa.occidAssociate FROM omoccurrences o INNER JOIN omoccurassociations oa ON o.occid = oa.occid INNER JOIN omoccurdeterminations od ON oa.occid = od.occid " . $familyJoinStr . " WHERE oa.relationship " . $reverseRelationshipStr . " ";
+		$reverseSql = "SELECT oa.occidAssociate FROM omoccurrences o INNER JOIN omoccurassociations oa ON o.occid = oa.occid LEFT JOIN omoccurdeterminations od ON oa.occid = od.occid " . $familyJoinStr . " WHERE oa.relationship " . $reverseRelationshipStr . " ";
+		// IFNULL(d.sciname, o.sciname) as sciname // TODO look into this and note the left join in the above line
+		// @TODO make sure they're (isCurrent = 1 OR (detID IS NULL AND )) determinations ... let's punt until determination stuff is stabilized?
+		// (d.isCurrent = 1 || (d.detid IS NULL AND o.sciname = "Pinus longifolia")) ... let's punt until determination stuff is stabilized?
+		// specimens indexed to taxonomic thes.
         $reverseSql .= $this->getAssociatedTaxonWhereFrag($associationArr);
 
         $sql .= "AND (o.occid IN (SELECT occid FROM ( " . $forwardSql . " UNION " . $reverseSql . " ) AS occids)";
