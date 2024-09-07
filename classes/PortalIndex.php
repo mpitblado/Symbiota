@@ -241,7 +241,7 @@ class PortalIndex extends OmCollections{
 			$portalArr = $this->getPortalIndexArr($portalID);
 			if($portalArr) $portalID = key($portalArr);
 			if(!is_numeric($portalID)){
-				$this->errorMessage = 'unable to tranlate portalID ('.$portalID.')';
+				$this->errorMessage = 'unable to translate portalID ('.$portalID.')';
 				return false;
 			}
 		}

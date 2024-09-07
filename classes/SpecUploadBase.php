@@ -419,18 +419,18 @@ class SpecUploadBase extends SpecUpload{
 			else{
 				if($this->uploadType == $this->NFNUPLOAD && substr($fieldName,0,8) == 'subject_') continue;
 				$isAutoMapped = false;
-				$tranlatedFieldName = str_replace(array('_',' ','.','(',')'),'',$fieldName);
+				$translatedFieldName = str_replace(array('_',' ','.','(',')'),'',$fieldName);
 				if($autoMap){
-					if(array_key_exists($tranlatedFieldName,$translationMap)) $tranlatedFieldName = strtolower($translationMap[$tranlatedFieldName]);
-					if(in_array($tranlatedFieldName,$symbFields) && !in_array($fieldName,$autoMapExclude)){
+					if(array_key_exists($translatedFieldName,$translationMap)) $translatedFieldName = strtolower($translationMap[$translatedFieldName]);
+					if(in_array($translatedFieldName,$symbFields) && !in_array($fieldName,$autoMapExclude)){
 						$isAutoMapped = true;
 					}
 					elseif(in_array('specify:'.$fieldName,$symbFields)){
-						$tranlatedFieldName = strtolower('specify:'.$fieldName);
+						$translatedFieldName = strtolower('specify:'.$fieldName);
 						$isAutoMapped = true;
 					}
 					elseif(in_array('associatedOccurrence:'.$fieldName,$symbFields)){
-						$tranlatedFieldName = strtolower('associatedOccurrence:'.$fieldName);
+						$dFieldName = strtolower('associatedOccurrence:'.$fieldName);
 						$isAutoMapped = true;
 					}
 				}
@@ -456,7 +456,7 @@ class SpecUploadBase extends SpecUpload{
 					//Source Field = Symbiota Field
 					foreach($symbFields as $sFieldDisplay => $sField){
 						$selStr = '';
-						if($tranlatedFieldName==$sField && !in_array($sField,$autoMapExclude)) $selStr = 'SELECTED';
+						if($translatedFieldName==$sField && !in_array($sField,$autoMapExclude)) $selStr = 'SELECTED';
 						echo '<option '.$selStr.'>'.$sFieldDisplay.'</option>';
 					}
 				}
