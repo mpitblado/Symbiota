@@ -31,16 +31,15 @@ $router->group(['prefix' => 'v2'], function () use ($router) {
 	$router->get('collection',  ['uses' => 'CollectionController@showAllCollections']);
 	$router->get('collection/{id}', ['uses' => 'CollectionController@showOneCollection']);
 
+	$router->get('occurrence/duplicate', ['uses' => 'OccurrenceDuplicateController@showDuplicateMatches']);
 	$router->get('occurrence/search',  ['uses' => 'OccurrenceController@showAllOccurrences']);
-	//Temporarily keep following route until new documentation is created. The one above will be keep so that I follows GBIF API layout
-	$router->get('occurrence',  ['uses' => 'OccurrenceController@showAllOccurrences']);
-	$router->get('occurrence/{id}', ['uses' => 'OccurrenceController@showOneOccurrence']);
+	$router->get('occurrence/annotation/search', ['uses' => 'OccurrenceAnnotationController@showAllAnnotations']);
+	$router->post('occurrence/skeletal', ['uses' => 'OccurrenceController@skeletalImport']);
 	$router->get('occurrence/{id}/media', ['uses' => 'OccurrenceController@showOneOccurrenceMedia']);
 	$router->get('occurrence/{id}/identification', ['uses' => 'OccurrenceController@showOneOccurrenceIdentifications']);
 	$router->get('occurrence/{id}/annotation', ['uses' => 'OccurrenceAnnotationController@showOccurrenceAnnotations']);
 	$router->get('occurrence/{id}/reharvest', ['uses' => 'OccurrenceController@oneOccurrenceReharvest']);
-	$router->get('occurrence/annotation/search', ['uses' => 'OccurrenceAnnotationController@showAllAnnotations']);
-	$router->post('occurrence/skeletal', ['uses' => 'OccurrenceController@skeletalImport']);
+	$router->get('occurrence/{id}', ['uses' => 'OccurrenceController@showOneOccurrence']);
 
 	$router->get('installation',  ['uses' => 'InstallationController@showAllPortals']);
 	$router->get('installation/ping', ['uses' => 'InstallationController@pingPortal']);

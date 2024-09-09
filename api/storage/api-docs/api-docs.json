@@ -1341,6 +1341,92 @@
                 }
             }
         },
+        "/api/v2/occurrence/duplicate": {
+            "get": {
+                "tags": [
+                    ""
+                ],
+                "operationId": "/api/v2/occurrence/duplicate",
+                "parameters": [
+                    {
+                        "name": "recordedBy",
+                        "in": "query",
+                        "description": "Collector/observer of occurrence",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "recordedByLastName",
+                        "in": "query",
+                        "description": "Last name of collector/observer of occurrence",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "recordNumber",
+                        "in": "query",
+                        "description": "Personal number of the collector or observer of the occurrence",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "eventDate",
+                        "in": "query",
+                        "description": "Collection date. Multiple standards formats are allowed, but must be a valid date that can be converted to YYYY-MM-DD.",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "ometid",
+                        "in": "query",
+                        "description": "Primary key for exsiccati title ",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "exsiccatiNumber",
+                        "in": "query",
+                        "description": "Number assigned to the exsiccati series",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "subjectIdentifier",
+                        "in": "query",
+                        "description": "Identifier (occurrenceID, recordID, or occid) of subject occurrence",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns list of occurrences",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error: Bad request. "
+                    }
+                }
+            }
+        },
         "/api/v2/taxonomy": {
             "get": {
                 "tags": [
