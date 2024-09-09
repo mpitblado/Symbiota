@@ -141,7 +141,8 @@ class AssociationManager extends OccurrenceTaxaManager{
 
     if (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'none') {
         $familyJoinStr = '';
-        $shouldUseFamily = array_key_exists('associated-taxa', $associationArr) && $associationArr['associated-taxa'] == '3';
+        // $shouldUseFamily = array_key_exists('associated-taxa', $associationArr) && $associationArr['associated-taxa'] == '3';
+		$shouldUseFamily = true; // fixes bug that occurs when user selects "Scientific name" taxon type instead of family and then searches for a family. Silly user.
         if ($shouldUseFamily) $familyJoinStr = 'LEFT JOIN taxstatus ts ON o.tidinterpreted = ts.tid';
 
         // "Forward" association
