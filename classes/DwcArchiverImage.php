@@ -32,15 +32,23 @@ class DwcArchiverImage{
 		$termArr['format'] = 'http://purl.org/dc/terms/format';		//jpg
 		$fieldArr['format'] = 'm.format';
 		$termArr['associatedSpecimenReference'] = 'http://rs.tdwg.org/ac/terms/associatedSpecimenReference';	//reference url in portal
-		$fieldArr['associatedSpecimenReference'] = '';
-		$termArr['type'] = 'http://purl.org/dc/terms/type';		//StillImage
-		$fieldArr['type'] = '';
-		$termArr['subtype'] = 'http://rs.tdwg.org/ac/terms/subtype';		//Photograph
-		$fieldArr['subtype'] = '';
+
+		//This select statement must be here for the csv columns to be correct 
+		$fieldArr['associatedSpecimenReference'] = 'null as associatedSpecimenReference';
+		$termArr['type'] = 'http://purl.org/dc/terms/type';		//StillImage or Sound
+		$fieldArr['type'] = 'CASE 
+		WHEN m.media_type = "audio" THEN "Sound" 
+		ELSE "StillImage" END as type';
+
+		$termArr['subtype'] = 'http://rs.tdwg.org/ac/terms/subtype';		//Photograph or Recorded Organism
+		$fieldArr['subtype'] = 'CASE 
+		WHEN m.media_type = "audio" THEN "Recorded Organism" 
+		ELSE "Photograph" END as subtype';
+
 		$termArr['metadataLanguage'] = 'http://rs.tdwg.org/ac/terms/metadataLanguage';	//en
 		$fieldArr['metadataLanguage'] = '';
 		$termArr['imgID'] = 'https://symbiota.org/terms/imgID';	//en
-		$fieldArr['imgID'] = 'm.imgID';
+		$fieldArr['imgID'] = 'm.media_id';
 
 		if($schemaType == 'backup') $fieldArr['rights'] = 'm.copyright';
 

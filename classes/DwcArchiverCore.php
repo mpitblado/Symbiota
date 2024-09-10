@@ -1896,9 +1896,9 @@ class DwcArchiverCore extends Manager{
 			}
 			$previousImgID = 0;
 			while ($r = $rs->fetch_assoc()) {
-				if ($previousImgID == $r['imgID']) continue;
-				$previousImgID = $r['imgID'];
-				unset($r['imgID']);
+				if ($previousImgID == $r['media_id']) continue;
+				$previousImgID = $r['media_id'];
+				unset($r['media_id']);
 				if ($r['identifier'] && substr($r['identifier'], 0, 1) == '/') $r['identifier'] = $localDomain . $r['identifier'];
 				if ($r['accessURI'] && substr($r['accessURI'], 0, 1) == '/') $r['accessURI'] = $localDomain . $r['accessURI'];
 				if ($r['thumbnailAccessURI'] && substr($r['thumbnailAccessURI'], 0, 1) == '/') $r['thumbnailAccessURI'] = $localDomain . $r['thumbnailAccessURI'];
@@ -1932,8 +1932,15 @@ class DwcArchiverCore extends Manager{
 				}
 				$r['providermanagedid'] = 'urn:uuid:' . $r['providermanagedid'];
 				$r['associatedSpecimenReference'] = $urlPathPrefix . 'collections/individual/index.php?occid=' . $r['occid'];
-				$r['type'] = 'StillImage';
-				$r['subtype'] = 'Photograph';
+				/*
+				if($r['type'] '') {
+					$r['type'] = 'StillImage';
+					$r['subtype'] = 'Photograph';
+				} else {
+					$r['type'] = 'Sound';
+					$r['subtype'] = 'Recorded Organism';
+				}
+				*/
 				if($r['accessURI']){
 					$extStr = strtolower(substr($r['accessURI'], strrpos($r['accessURI'], '.') + 1));
 					if ($r['format'] == '') {
