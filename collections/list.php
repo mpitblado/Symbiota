@@ -306,10 +306,10 @@ $_SESSION['citationvar'] = $searchVar;
 										echo '<a href="#" onclick="addVoucherToCl(' . $occid . ',' . $targetClid . ',' . $targetTid . ');return false" title="' . $LANG['VOUCHER_LINK_TITLE'] . ' ' . $collManager->getClName() . ';">';
 										echo '<img src="../images/voucheradd.png" style="border:solid 1px gray;height:1.3em;margin-right:5px;" alt="' . (isset($LANG['IMG_ADD_VOUCHER']) ? $LANG['IMG_ADD_VOUCHER'] : 'Add Voucher') . '"/></a></div>';
 									}
-									if (isset($fieldArr['img'])) {
+									if (isset($fieldArr['media']) && isset($fieldArr['media']['thumbnailurl'])) {
 										echo '<div style="float:right;margin:5px 25px;">';
 										echo '<a href="#" onclick="return openIndPU(' . $occid . ',' . ($targetClid ? $targetClid : "0") . ');">';
-										echo '<img src="' . $fieldArr['img'] . '" style="height:70px" alt="' . (isset($LANG['IMG_OCC']) ? $LANG['IMG_OCC'] : 'Image Associated With the Occurence') . '"/></a></div>';
+										echo '<img src="' . $fieldArr['media']['thumbnailurl'] . '" style="height:70px" alt="' . (isset($LANG['IMG_OCC']) ? $LANG['IMG_OCC'] : 'Image Associated With the Occurence') . '"/></a></div>';
 									}
 									echo '<div style="margin:4px;">';
 									if (isset($fieldArr['sciname'])) {
