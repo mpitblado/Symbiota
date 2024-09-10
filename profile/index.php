@@ -27,6 +27,7 @@ $emailAddr = array_key_exists('email', $_POST) ? $_POST['email'] : '';
 $resetPwd = ((array_key_exists("resetpwd", $_REQUEST) && is_numeric($_REQUEST["resetpwd"])) ? $_REQUEST["resetpwd"] : 0);
 $action = array_key_exists("action", $_POST) ? $_POST["action"] : "";
 if (!$action && array_key_exists('submit', $_REQUEST)) $action = $_REQUEST['submit'];
+$refUrl = '';
 
 $pHandler = new ProfileManager();
 
@@ -54,7 +55,7 @@ if ($action == 'logout') {
 } elseif ($action == 'login') {
 	if ($pHandler->authenticate($_POST['password'])) {
 
-		$refUrl = '';
+		
 		if ($action && $_SESSION['refurl']) {
 			$refUrl = $_SESSION['refurl'];
 			unset($_SESSION['refurl']);
