@@ -30,26 +30,10 @@ $action = array_key_exists("action",$_POST)?$_POST["action"]:"";
 if(!$action && array_key_exists('submit',$_REQUEST)) $action = $_REQUEST['submit'];
 
 $refUrl = '';
-if(array_key_exists('refurl',$_REQUEST)){
-	$refGetStr = '';
-	foreach($_GET as $k => $v){
-		$k = htmlspecialchars($k, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);
-		if($k != 'refurl'){
-			if($k == 'attr' && is_array($v)){
-				foreach($v as $v2){
-					$v2 = htmlspecialchars($v2, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);
-					$refGetStr .= '&attr[]='.$v2;
-				}
-			}
-			else{
-				$v = htmlspecialchars($v, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);
-				$refGetStr .= '&'.$k.'='.$v;
-			}
-		}
-	}
-	$refUrl = str_replace('&amp;','&',htmlspecialchars($_REQUEST['refurl'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE));
-	if(substr($refUrl,-4) == '.php') $refUrl .= '?'.substr($refGetStr,1);
-	else $refUrl .= $refGetStr;
+if($action && $_SESSION['refurl']){
+	$refUrl = $_SESSION['refurl'];
+	unset($_SESSION['refurl']);
+
 }
 
 $pHandler = new ProfileManager();
