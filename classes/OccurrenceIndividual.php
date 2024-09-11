@@ -1,5 +1,6 @@
 <?php
 include_once('Manager.php');
+include_once('OmDeterminations.php');
 include_once('OccurrenceAccessStats.php');
 include_once('ChecklistVoucherAdmin.php');
 
@@ -109,7 +110,7 @@ class OccurrenceIndividual extends Manager{
 		if($this->occid){
 			if(!$this->occArr) $this->setOccurData();
 			if($fieldKey){
-				if(array_key_exists($fieldKey,$this->occArr)) return $this->occArr($fieldKey);
+				if(array_key_exists($fieldKey, $this->occArr)) return $this->occArr[$fieldKey];
 				return false;
 			}
 		}
@@ -119,7 +120,7 @@ class OccurrenceIndividual extends Manager{
 	public function setOccurData(){
 		$status = false;
 		/*
-		$sql = 'SELECT o.occid, o.collid, o.institutioncode, o.collectioncode,
+			$sql = 'SELECT o.occid, o.collid, o.institutioncode, o.collectioncode,
 			o.occurrenceid, o.catalognumber, o.occurrenceremarks, o.tidinterpreted, o.family, o.sciname,
 			o.scientificnameauthorship, o.identificationqualifier, o.identificationremarks, o.identificationreferences, o.taxonremarks,
 			o.identifiedby, o.dateidentified, o.eventid, o.recordedby, o.associatedcollectors, o.recordnumber, o.eventdate, o.eventdate2, MAKEDATE(YEAR(o.eventDate),o.enddayofyear) AS eventdateend,
@@ -192,26 +193,18 @@ class OccurrenceIndividual extends Manager{
 		return $status;
 	}
 
-	public function applyProtections($isSecuredReader){
+	public function applyProtections(){
 		if($this->occArr){
-			$protectTaxon = false;
-			/*
-			 if(isset($this->occArr['scinameprotected']) && $this->occArr['scinameprotected'] && !$isSecuredReader){
-			 $protectTaxon = true;
-			 $this->occArr['taxonsecure'] = 1;
-			 $this->occArr['sciname'] = $this->occArr['scinameprotected'];
-			 $this->occArr['family'] = $this->occArr['familyprotected'];
-			 $this->occArr['tidinterpreted'] = $this->occArr['tidprotected'];
-			 //$this->occArr['informationWithheld'] .= 'identification and images redacted';
-			 }
-			 */
-			$protectLocality = false;
-			if($this->occArr['localitysecurity'] == 1 && !$isSecuredReader){
-				$protectLocality = true;
+			$isProtected = false;
+			$infoWithheldArr = array();
+
+			//Locality protections
+			if($this->occArr['localitysecurity'] == 1){
+				$isProtected = true;
 				$this->occArr['localsecure'] = 1;
 				$redactArr = array('recordnumber','eventdate','verbatimeventdate','locality','locationid','decimallatitude','decimallongitude','verbatimcoordinates',
-					'locationremarks', 'georeferenceremarks', 'geodeticdatum', 'coordinateuncertaintyinmeters', 'minimumelevationinmeters', 'maximumelevationinmeters',
-					'verbatimelevation', 'habitat', 'associatedtaxa');
+						'locationremarks', 'georeferenceremarks', 'geodeticdatum', 'coordinateuncertaintyinmeters', 'minimumelevationinmeters', 'maximumelevationinmeters',
+						'verbatimelevation', 'habitat', 'associatedtaxa');
 				$infoWithheld = '';
 				foreach($redactArr as $term){
 					if($this->occArr[$term]){
@@ -222,43 +215,82 @@ class OccurrenceIndividual extends Manager{
 				if($this->occArr['informationwithheld']) $infoWithheld = $this->occArr['informationwithheld'] . '; ' . $infoWithheld;
 				$this->occArr['informationwithheld'] = trim($infoWithheld, ', ');
 			}
-			if(!$protectTaxon) $this->setDeterminations();
-			if(!$protectLocality && !$protectTaxon) $this->setImages();
-			if(!$protectLocality) $this->setExsiccati();
+
+			//Taxon protections
+			$redactTaxaFieldArr = array('identifiedBy', 'dateIdentified', 'family', 'sciname', 'scientificNameAuthorship', 'tidInterpreted', 'identificationQualifier',
+				'genus', 'specificEpithet', 'taxonRank', 'infraSpecificEpithet', 'identificationReferences', 'identificationRemarks', 'taxonRemarks');
+			$approvedArr = array();
+			if(isset($this->occArr['dets']) && $this->occArr['dets']){
+				//$reason = '';
+				foreach($this->occArr['dets'] as $detID => $detArr){
+					if($detArr['securityStatus']){
+						$isProtected = true;
+						unset($this->occArr['dets'][$detID]);
+						//if(!empty($detArr['securityStatusReason']) && $detArr['securityStatusReason'] != 'Locked - NEON redaction list') $reason = $detArr['securityStatusReason'];
+					}
+					elseif($detArr['isCurrent']){
+						$approvedArr = $detArr;
+					}
+				}
+				if($isProtected){
+					$this->occArr['protectedTaxon'] = 1;
+					foreach($redactTaxaFieldArr as $field){
+						$field = strtolower($field);
+						if(isset($this->occArr[$field]) && $this->occArr[$field]){
+							unset($this->occArr[$field]);
+							$infoWithheldArr['fuzzed'][] = $field;
+						}
+					}
+					//if(isset($infoWithheldArr['fuzzed'])) $infoWithheldArr['fuzzed'][] = 'reason: '.$reason;
+					foreach($approvedArr as $field => $value){
+						$this->occArr[strtolower($field)] = $value;
+					}
+				}
+				if($isProtected){
+					if(!empty($this->occArr['imgs'])){
+						$infoWithheldArr['redacted'][] = 'images';
+						unset($this->occArr['imgs']);
+					}
+					if(!empty($this->occArr['exs'])){
+						$infoWithheldArr['redacted'][] = 'exsiccati';
+						unset($this->occArr['exs']);
+					}
+				}
+				if($infoWithheldArr){
+					$infoWithheld = '';
+					if($this->occArr['informationwithheld']) $infoWithheld = $this->occArr['informationwithheld'];
+					if(isset($infoWithheldArr['redacted'])) $infoWithheld .= ', redacted: '.implode(', ', $infoWithheldArr['redacted']);
+					if(isset($infoWithheldArr['fuzzed'])) $infoWithheld .= ', fuzzed: '.implode(', ', $infoWithheldArr['fuzzed']);
+					$this->occArr['informationwithheld'] = trim($infoWithheld,', ');
+				}
+			}
 		}
 	}
 
 	private function setDeterminations(){
-		$sql = 'SELECT detid, dateidentified, identifiedby, sciname, scientificnameauthorship, identificationqualifier, identificationreferences, identificationremarks, iscurrent
-			FROM omoccurdeterminations
-			WHERE (occid = ?) AND appliedstatus = 1
-			ORDER BY sortsequence';
-		if($stmt = $this->conn->prepare($sql)){
-			$stmt->bind_param('i', $this->occid);
-			$stmt->execute();
-			if($rs = $stmt->get_result()){
-				while($row = $rs->fetch_object()){
-					$detId = $row->detid;
-					$this->occArr['dets'][$detId]['date'] = $row->dateidentified;
-					$this->occArr['dets'][$detId]['identifiedby'] = $row->identifiedby;
-					$this->occArr['dets'][$detId]['sciname'] = $row->sciname;
-					$this->occArr['dets'][$detId]['author'] = $row->scientificnameauthorship;
-					$this->occArr['dets'][$detId]['qualifier'] = $row->identificationqualifier;
-					$this->occArr['dets'][$detId]['ref'] = $row->identificationreferences;
-					$this->occArr['dets'][$detId]['notes'] = $row->identificationremarks;
-					$this->occArr['dets'][$detId]['iscurrent'] = $row->iscurrent;
+		$conditionArr = array('appliedStatus' => 1);
+		$detManager = new OmDeterminations($this->conn);
+		$detManager->setOccid($this->occid);
+		if($detArr = $detManager->getDeterminationArr($conditionArr)){
+			$this->occArr['dets'] = $detArr;
+			$currentDisplay = array('identifiedBy', 'dateIdentified', 'family', 'sciname', 'scientificNameAuthorship', 'tidInterpreted', 'identificationQualifier',
+				'genus', 'specificEpithet', 'taxonRank', 'infraSpecificEpithet', 'identificationReferences', 'identificationRemarks', 'taxonRemarks');
+			foreach($detArr as $detArr){
+				if($detArr['isCurrent']){
+					foreach($currentDisplay as $field){
+						$fieldLowerCase = strtolower($field);
+						if(array_key_exists($fieldLowerCase, $this->occArr)) $this->occArr[$fieldLowerCase] = $detArr[$field];
+					}
 				}
-				$rs->free();
 			}
-			else{
-				$this->warningArr[] = $stmt->error;
-			}
-			$stmt->close();
+		}
+		else{
+			$this->errorMessage = $detManager->getErrorMessage();
 		}
 	}
 
 	private function setImages(){
-	    global $IMAGE_DOMAIN;
+		global $IMAGE_DOMAIN;
 		$sql = 'SELECT i.imgid, i.url, i.thumbnailurl, i.originalurl, i.sourceurl, i.notes, i.caption,
             CONCAT_WS(" ",u.firstname,u.lastname) as innerPhotographer, i.photographer, i.rights, i.accessRights, i.copyright
 			FROM images i LEFT JOIN users u ON i.photographeruid = u.uid
@@ -273,9 +305,9 @@ class OccurrenceIndividual extends Manager{
 					$tnUrl = $row->thumbnailurl;
 					$lgUrl = $row->originalurl;
 					if($IMAGE_DOMAIN){
-					    if(substr($url,0,1)=='/') $url = $IMAGE_DOMAIN . $url;
-					    if($lgUrl && substr($lgUrl, 0, 1) == '/') $lgUrl = $IMAGE_DOMAIN . $lgUrl;
-					    if($tnUrl && substr($tnUrl, 0, 1) == '/') $tnUrl = $IMAGE_DOMAIN . $tnUrl;
+						if(substr($url,0,1)=='/') $url = $IMAGE_DOMAIN . $url;
+						if($lgUrl && substr($lgUrl, 0, 1) == '/') $lgUrl = $IMAGE_DOMAIN . $lgUrl;
+						if($tnUrl && substr($tnUrl, 0, 1) == '/') $tnUrl = $IMAGE_DOMAIN . $tnUrl;
 					}
 					if((!$url || $url == 'empty') && $lgUrl) $url = $lgUrl;
 					if(!$tnUrl && $url) $tnUrl = $url;
@@ -288,7 +320,7 @@ class OccurrenceIndividual extends Manager{
 					$this->occArr['imgs'][$imgId]['rights'] = $row->rights;
 					$this->occArr['imgs'][$imgId]['accessrights'] = $row->accessRights;
 					$this->occArr['imgs'][$imgId]['copyright'] = $row->copyright;
-          if($row->innerPhotographer) $this->occArr['imgs'][$imgId]['photographer'] = $row->innerPhotographer;
+					if($row->innerPhotographer) $this->occArr['imgs'][$imgId]['photographer'] = $row->innerPhotographer;
 				}
 				$rs->free();
 			}
@@ -724,7 +756,7 @@ class OccurrenceIndividual extends Manager{
 	public function addComment($commentStr){
 		$status = false;
 		if(is_numeric($GLOBALS['SYMB_UID'])){
-	 		$commentStr = strip_tags($commentStr);
+			$commentStr = strip_tags($commentStr);
 			$sql = 'INSERT INTO omoccurcomments(occid, comment, uid, reviewstatus) VALUES(?, ?, ?, 1)';
 			if($stmt = $this->conn->prepare($sql)){
 				$stmt->bind_param('isi', $this->occid, $commentStr, $GLOBALS['SYMB_UID']);
