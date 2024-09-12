@@ -258,7 +258,7 @@ class OccurrenceIndividual extends Manager{
 	}
 
 	private function setImages(){
-		global $IMAGE_DOMAIN;
+		global $MEDIA_DOMAIN;
 		$sql = 'SELECT m.media_id, m.url, m.thumbnailurl, m.originalurl, m.sourceurl, m.notes, m.caption, m.media_type, m.format,
 			CONCAT_WS(" ",u.firstname,u.lastname) as innerCreator, m.creator, m.rights, m.accessRights, m.copyright
 			FROM media m LEFT JOIN users u ON m.creatorUid = u.uid
@@ -272,10 +272,10 @@ class OccurrenceIndividual extends Manager{
 					$url = $row->url;
 					$tnUrl = $row->thumbnailurl;
 					$lgUrl = $row->originalurl;
-					if($IMAGE_DOMAIN){
-					    if(substr($url,0,1)=='/') $url = $IMAGE_DOMAIN . $url;
-					    if($lgUrl && substr($lgUrl, 0, 1) == '/') $lgUrl = $IMAGE_DOMAIN . $lgUrl;
-					    if($tnUrl && substr($tnUrl, 0, 1) == '/') $tnUrl = $IMAGE_DOMAIN . $tnUrl;
+					if($MEDIA_DOMAIN){
+					    if(substr($url,0,1)=='/') $url = $MEDIA_DOMAIN . $url;
+					    if($lgUrl && substr($lgUrl, 0, 1) == '/') $lgUrl = $MEDIA_DOMAIN . $lgUrl;
+					    if($tnUrl && substr($tnUrl, 0, 1) == '/') $tnUrl = $MEDIA_DOMAIN . $tnUrl;
 					}
 					if((!$url || $url == 'empty') && $lgUrl) $url = $lgUrl;
 					if(!$tnUrl && $url) $tnUrl = $url;

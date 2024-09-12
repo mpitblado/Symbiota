@@ -402,12 +402,12 @@ if($action == 'batchAssignTag'){
 								$imgTn = $imgArr['thumbnailurl'];
 								if($imgTn){
 									$imgUrl = $imgTn;
-									if($IMAGE_DOMAIN && substr($imgTn,0,1) == '/') $imgUrl = $IMAGE_DOMAIN . $imgTn;
+									if($MEDIA_DOMAIN && substr($imgTn,0,1) == '/') $imgUrl = $MEDIA_DOMAIN . $imgTn;
 								} else if($imgArr['media_type'] == 'audio') {
 									$imgUrl = $CLIENT_ROOT . '/images/speaker_thumbnail.png';
 								}
-								elseif($IMAGE_DOMAIN && substr($imgUrl,0,1) == '/'){
-									$imgUrl = $IMAGE_DOMAIN . $imgUrl;
+								elseif($MEDIA_DOMAIN && substr($imgUrl,0,1) == '/'){
+									$imgUrl = $MEDIA_DOMAIN . $imgUrl;
 								}
 
 								?>

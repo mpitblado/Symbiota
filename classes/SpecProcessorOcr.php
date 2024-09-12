@@ -221,10 +221,10 @@ class SpecProcessorOcr extends Manager{
 		$status = false;
 		if($imgUrl){
 			if(substr($imgUrl,0,1) == '/'){
-				if(!empty($GLOBALS['IMAGE_DOMAIN'])){
+				if(!empty($GLOBALS['MEDIA_DOMAIN'])){
 					//If there is an image domain name is set in symbini.php and url is relative,
 					//then it's assumed that image is located on another server, thus add domain to url
-					$imgUrl = $GLOBALS['IMAGE_DOMAIN'] . $imgUrl;
+					$imgUrl = $GLOBALS['MEDIA_DOMAIN'] . $imgUrl;
 				}
 				else{
 					$imgUrl = $this->getDomain().$imgUrl;

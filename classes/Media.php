@@ -121,15 +121,15 @@ class LocalUploadStrategy extends UploadStrategy {
 
 	public function getDirPath(array | string $file = null): string {
 		$file_name = is_array($file)? $file['name']: $file;
-		return $GLOBALS['IMAGE_ROOT_PATH'] . 
-			(substr($GLOBALS['IMAGE_ROOT_PATH'],-1) != "/"? '/': '') . 
+		return $GLOBALS['MEDIA_ROOT_PATH'] . 
+			(substr($GLOBALS['MEDIA_ROOT_PATH'],-1) != "/"? '/': '') . 
 			$this->path . $file_name;
 	}
 
 	public function getUrlPath(array | string $file = null): string {
 		$file_name = is_array($file)? $file['name']: $file;
-		return $GLOBALS['IMAGE_ROOT_URL'] .
-		   	(substr($GLOBALS['IMAGE_ROOT_URL'],-1) != "/"? '/': '') .
+		return $GLOBALS['MEDIA_ROOT_URL'] .
+		   	(substr($GLOBALS['MEDIA_ROOT_URL'],-1) != "/"? '/': '') .
 		   	$this->path . $file_name;
 	}
 
@@ -184,8 +184,8 @@ class LocalUploadStrategy extends UploadStrategy {
 		}
 		//Convert url path to dir_path
 		$dir_path = str_replace(
-			$GLOBALS['IMAGE_ROOT_URL'], 
-			$GLOBALS['IMAGE_ROOT_PATH'], 
+			$GLOBALS['MEDIA_ROOT_URL'], 
+			$GLOBALS['MEDIA_ROOT_PATH'], 
 			$path
 		);
 
@@ -204,8 +204,8 @@ class LocalUploadStrategy extends UploadStrategy {
 
 		//Get Absoulte Path
 		$dir_path = str_replace(
-			$GLOBALS['IMAGE_ROOT_URL'], 
-			$GLOBALS['IMAGE_ROOT_PATH'], 
+			$GLOBALS['MEDIA_ROOT_URL'], 
+			$GLOBALS['MEDIA_ROOT_PATH'], 
 			$filename
 		);
 
@@ -262,20 +262,20 @@ class Media {
 	private static function getMediaRootPath(): string {
 		if(self::$mediaRootPath) {
 			return self::$mediaRootPath;
-		}else if(substr($GLOBALS['IMAGE_ROOT_PATH'],-1) != "/") {
-			return self::$mediaRootPath = $GLOBALS['IMAGE_ROOT_PATH'] . '/';
+		}else if(substr($GLOBALS['MEDIA_ROOT_PATH'],-1) != "/") {
+			return self::$mediaRootPath = $GLOBALS['MEDIA_ROOT_PATH'] . '/';
 		} else {
-			return self::$mediaRootPath = $GLOBALS['IMAGE_ROOT_PATH'];
+			return self::$mediaRootPath = $GLOBALS['MEDIA_ROOT_PATH'];
 		}
 	}
 
 	private static function getMediaRootUrl(): string {
 		if(self::$mediaRootUrl) {
 			return self::$mediaRootUrl;
-		}else if(substr($GLOBALS['IMAGE_ROOT_URL'],-1) != "/") {
-			return self::$mediaRootUrl = $GLOBALS['IMAGE_ROOT_URL'] . '/';
+		}else if(substr($GLOBALS['MEDIA_ROOT_URL'],-1) != "/") {
+			return self::$mediaRootUrl = $GLOBALS['MEDIA_ROOT_URL'] . '/';
 		} else {
-			return self::$mediaRootUrl = $GLOBALS['IMAGE_ROOT_URL'];
+			return self::$mediaRootUrl = $GLOBALS['MEDIA_ROOT_URL'];
 		}
 	}
 
@@ -346,8 +346,8 @@ class Media {
 
 	static function render_media_link($url, $text) {
 		$slash_route = substr($url, 0, 1) == '/';
-		if(array_key_exists('IMAGE_DOMAIN',$GLOBALS) && $slash_route) {
-			$url = $GLOBALS['IMAGE_DOMAIN'] . $url;
+		if(array_key_exists('MEDIA_DOMAIN',$GLOBALS) && $slash_route) {
+			$url = $GLOBALS['MEDIA_DOMAIN'] . $url;
 		}
 		$clean_url = htmlspecialchars($url, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);
 		$clean_text = htmlspecialchars($text, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);

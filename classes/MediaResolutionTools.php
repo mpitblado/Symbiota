@@ -45,7 +45,7 @@ class MediaResolutionTools extends Manager {
 			$this->logOrEcho('ABORTED: Image ids (imgid) not supplied');
 			return false;
 		}
-		$this->archiveDir = $GLOBALS['IMAGE_ROOT_PATH'].'/archive_'.date('Y-m-d');
+		$this->archiveDir = $GLOBALS['MEDIA_ROOT_PATH'].'/archive_'.date('Y-m-d');
 		if(!file_exists($this->archiveDir)){
 			if(!mkdir($this->archiveDir)) {
 				$this->logOrEcho('ABORTED: unalbe to create archive directory ('.$this->archiveDir.')');
@@ -146,7 +146,7 @@ class MediaResolutionTools extends Manager {
 			if(substr($imgFilePath,0,4) == 'http') {
 				$imgFilePath = substr($imgFilePath,strpos($imgFilePath,"/",9));
 			}
-			$path = str_replace($GLOBALS['IMAGE_ROOT_URL'], $GLOBALS['IMAGE_ROOT_PATH'], $imgFilePath);
+			$path = str_replace($GLOBALS['MEDIA_ROOT_URL'], $GLOBALS['MEDIA_ROOT_PATH'], $imgFilePath);
 			if(is_writable($path)){
 				if($this->archiveImages){
 					$fileName = substr($path, strrpos($path, '/'));
@@ -344,17 +344,17 @@ class MediaResolutionTools extends Manager {
 
 	private function getLocalPath($imageUrl){
 		if($this->sourcePathPrefix){
-			$adjustedUrl = str_replace($this->sourcePathPrefix, $GLOBALS['IMAGE_ROOT_PATH'], $imageUrl);
+			$adjustedUrl = str_replace($this->sourcePathPrefix, $GLOBALS['MEDIA_ROOT_PATH'], $imageUrl);
 			if(file_exists($adjustedUrl)) return $adjustedUrl;
 		}
 		if(file_exists($imageUrl)){
 			return $imageUrl;
 		}
-		if(strpos($imageUrl, $GLOBALS['IMAGE_ROOT_URL']) !== false){
-			$adjustedUrl = str_replace($GLOBALS['IMAGE_ROOT_URL'], $GLOBALS['IMAGE_ROOT_PATH'], $imageUrl);
+		if(strpos($imageUrl, $GLOBALS['MEDIA_ROOT_URL']) !== false){
+			$adjustedUrl = str_replace($GLOBALS['MEDIA_ROOT_URL'], $GLOBALS['MEDIA_ROOT_PATH'], $imageUrl);
 			if(file_exists($adjustedUrl)) return $adjustedUrl;
 		}
-		$prefix = substr($GLOBALS['IMAGE_ROOT_PATH'], 0, strlen($GLOBALS['IMAGE_ROOT_PATH']) - strlen($GLOBALS['IMAGE_ROOT_URL']));
+		$prefix = substr($GLOBALS['MEDIA_ROOT_PATH'], 0, strlen($GLOBALS['MEDIA_ROOT_PATH']) - strlen($GLOBALS['MEDIA_ROOT_URL']));
 		if(file_exists($prefix.$imageUrl)){
 			$this->sourcePathPrefix = $prefix;
 			return $prefix.$imageUrl;

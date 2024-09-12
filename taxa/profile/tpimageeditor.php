@@ -56,9 +56,9 @@ if($tid){
 										}
 										if($tnUrl && substr($tnUrl,0,10) != 'processing'){
 											$webUrl = $imgArr["url"];
-											if($GLOBALS['IMAGE_DOMAIN']){
-												if(substr($imgArr["url"],0,1)=="/") $webUrl = $GLOBALS['IMAGE_DOMAIN'] . $imgArr["url"];
-												if(substr($imgArr["thumbnailUrl"],0,1)=="/") $tnUrl = $GLOBALS['IMAGE_DOMAIN'] . $imgArr["thumbnailUrl"];
+											if($GLOBALS['MEDIA_DOMAIN']){
+												if(substr($imgArr["url"],0,1)=="/") $webUrl = $GLOBALS['MEDIA_DOMAIN'] . $imgArr["url"];
+												if(substr($imgArr["thumbnailUrl"],0,1)=="/") $tnUrl = $GLOBALS['MEDIA_DOMAIN'] . $imgArr["thumbnailUrl"];
 											}
 											?>
 											<td align='center' valign='bottom'>

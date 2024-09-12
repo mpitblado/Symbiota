@@ -115,7 +115,7 @@ class PluginsManager extends Manager {
 				$file = $row->url;
 				if (substr($row->url, 0, 1) == '/'){
 					//If imageDomain variable is set within symbini file, image
-					if(!empty($GLOBALS['IMAGE_DOMAIN'])) $file = $GLOBALS['IMAGE_DOMAIN'] . $row->url;
+					if(!empty($GLOBALS['MEDIA_DOMAIN'])) $file = $GLOBALS['MEDIA_DOMAIN'] . $row->url;
 					else $file = $localDomain.$row->url;
 				}
 

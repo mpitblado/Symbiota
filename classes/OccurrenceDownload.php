@@ -342,8 +342,8 @@ class OccurrenceDownload{
 
 			$tnUrl = $r->thumbnailurl;
 			if(substr($tnUrl,0,1) == '/'){
-				if(isset($GLOBALS['IMAGE_DOMAIN']) && $GLOBALS['IMAGE_DOMAIN']){
-					$tnUrl = $GLOBALS['IMAGE_DOMAIN'].$tnUrl;
+				if(isset($GLOBALS['MEDIA_DOMAIN']) && $GLOBALS['MEDIA_DOMAIN']){
+					$tnUrl = $GLOBALS['MEDIA_DOMAIN'].$tnUrl;
 				}
 				else{
 					$tnUrl = $serverDomain.$tnUrl;

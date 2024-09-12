@@ -494,7 +494,7 @@ if($SYMB_UID){
 	//Images and other things needed for OCR
 	$specImgArr = $occManager->getImageMap();
 	if($specImgArr){
-		$imgUrlPrefix = (isset($IMAGE_DOMAIN)?$IMAGE_DOMAIN:'');
+		$imgUrlPrefix = (isset($MEDIA_DOMAIN)?$MEDIA_DOMAIN:'');
 		$imgCnt = 1;
 		foreach($specImgArr as $imgId => $i2){
 			$iUrl = $i2['url'];

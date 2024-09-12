@@ -156,10 +156,10 @@ class TaxonProfile extends Manager {
 			$imgUrl = $imgObj['url'];
 			$imgAnchor = '../imagelib/imgdetails.php?imgid='.$imgId;
 			$imgThumbnail = $imgObj['thumbnailurl'];
-			if(array_key_exists('IMAGE_DOMAIN',$GLOBALS)){
+			if(array_key_exists('MEDIA_DOMAIN',$GLOBALS)){
 				//Images with relative paths are on another server
-				if(substr($imgUrl,0,1)=="/") $imgUrl = $GLOBALS['IMAGE_DOMAIN'].$imgUrl;
-				if(substr($imgThumbnail,0,1)=="/") $imgThumbnail = $GLOBALS['IMAGE_DOMAIN'].$imgThumbnail;
+				if(substr($imgUrl,0,1)=="/") $imgUrl = $GLOBALS['MEDIA_DOMAIN'].$imgUrl;
+				if(substr($imgThumbnail,0,1)=="/") $imgThumbnail = $GLOBALS['MEDIA_DOMAIN'].$imgThumbnail;
 			}
 			if($imgObj['occid']) $imgAnchor = '../collections/individual/index.php?occid='.$imgObj['occid'];
 			if($useThumbnail) if($imgObj['thumbnailurl']) $imgUrl = $imgThumbnail;
@@ -244,8 +244,8 @@ class TaxonProfile extends Manager {
 			$result = $this->conn->query($sql);
 			if($row = $result->fetch_object()){
 				$imgUrl = $row->url;
-				if(array_key_exists("IMAGE_DOMAIN",$GLOBALS) && substr($imgUrl,0,1)=="/"){
-					$imgUrl = $GLOBALS["IMAGE_DOMAIN"].$imgUrl;
+				if(array_key_exists("MEDIA_DOMAIN",$GLOBALS) && substr($imgUrl,0,1)=="/"){
+					$imgUrl = $GLOBALS["MEDIA_DOMAIN"].$imgUrl;
 				}
 				$maps[] = $imgUrl;
 			}

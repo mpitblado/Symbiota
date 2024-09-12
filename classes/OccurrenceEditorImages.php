@@ -14,9 +14,9 @@ class OccurrenceEditorImages extends OccurrenceEditorManager {
 
 	public function __construct(){
  		parent::__construct();
- 		$this->imageRootPath = $GLOBALS['IMAGE_ROOT_PATH'];
+ 		$this->imageRootPath = $GLOBALS['MEDIA_ROOT_PATH'];
  		if(substr($this->imageRootPath,-1) != "/") $this->imageRootPath .= "/";
- 		$this->imageRootUrl = $GLOBALS['IMAGE_ROOT_URL'];
+ 		$this->imageRootUrl = $GLOBALS['MEDIA_ROOT_URL'];
  		if(substr($this->imageRootUrl,-1) != "/") $this->imageRootUrl .= "/";
 	}
 
@@ -93,7 +93,7 @@ class OccurrenceEditorImages extends OccurrenceEditorManager {
 			else $this->errorArr['web'] = 0;
 		}
 		if($url !== null){
-			if($GLOBALS['IMAGE_DOMAIN'] && substr($url,0,1) == '/') $url = $GLOBALS['IMAGE_DOMAIN'].$url;
+			if($GLOBALS['MEDIA_DOMAIN'] && substr($url,0,1) == '/') $url = $GLOBALS['MEDIA_DOMAIN'].$url;
 			$sql .= 'url=?, ';
 			$fieldArr[] = ($url?$url:NULL);
 			$types .= 's';
@@ -111,7 +111,7 @@ class OccurrenceEditorImages extends OccurrenceEditorManager {
 			else $this->errorArr['tn'] = 0;
 		}
 		if($tnUrl !== null){
-			if($GLOBALS['IMAGE_DOMAIN'] && substr($tnUrl,0,1) == '/') $tnUrl = $GLOBALS['IMAGE_DOMAIN'].$tnUrl;
+			if($GLOBALS['MEDIA_DOMAIN'] && substr($tnUrl,0,1) == '/') $tnUrl = $GLOBALS['MEDIA_DOMAIN'].$tnUrl;
 			$fieldArr[] = ($tnUrl?$tnUrl:NULL);
 			$sql .= 'thumbnailurl=?, ';
 			$types .= 's';
@@ -129,7 +129,7 @@ class OccurrenceEditorImages extends OccurrenceEditorManager {
 			else $this->errorArr['orig'] = 0;
 		}
 		if($origUrl !== null){
-			if($GLOBALS['IMAGE_DOMAIN'] && substr($origUrl,0,1) == '/') $origUrl = $GLOBALS['IMAGE_DOMAIN'].$origUrl;
+			if($GLOBALS['MEDIA_DOMAIN'] && substr($origUrl,0,1) == '/') $origUrl = $GLOBALS['MEDIA_DOMAIN'].$origUrl;
 			$fieldArr[] = $origUrl?$origUrl:NULL;
 			$sql .= 'originalurl=?, ';
 			$types .= 's';

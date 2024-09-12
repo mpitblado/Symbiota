@@ -201,15 +201,15 @@ $creatorArray = Media::getCreatorArray();
 							<?php
 							if((!$imgUrl || $imgUrl == 'empty') && $origUrl) $imgUrl = $origUrl;
 							if(!$tnUrl && $imgUrl) $tnUrl = $imgUrl;
-							if(array_key_exists('IMAGE_DOMAIN', $GLOBALS)){
+							if(array_key_exists('MEDIA_DOMAIN', $GLOBALS)){
 								if(substr($imgUrl, 0, 1) == '/'){
-									$imgUrl = $GLOBALS['IMAGE_DOMAIN'] . $imgUrl;
+									$imgUrl = $GLOBALS['MEDIA_DOMAIN'] . $imgUrl;
 								}
 								if($origUrl && substr($origUrl, 0, 1) == '/'){
-									$origUrl = $GLOBALS['IMAGE_DOMAIN'] . $origUrl;
+									$origUrl = $GLOBALS['MEDIA_DOMAIN'] . $origUrl;
 								}
 								if($tnUrl && substr($tnUrl, 0, 1) == '/'){
-									$tnUrl = $GLOBALS['IMAGE_DOMAIN'] . $tnUrl;
+									$tnUrl = $GLOBALS['MEDIA_DOMAIN'] . $tnUrl;
 								}
 							}
 							echo '<a href="' . $imgUrl . '" target="_blank">';
@@ -357,7 +357,7 @@ $creatorArray = Media::getCreatorArray();
 										<div>
 											<b><?php echo $LANG['WEB_URL']; ?>: </b><br/>
 											<input name="url" type="text" value="<?php echo $imgArr["url"]; ?>" style="width:95%;" />
-											<?php if(stripos($imgArr['url'], $IMAGE_ROOT_URL) === 0){ ?>
+											<?php if(stripos($imgArr['url'], $MEDIA_ROOT_URL) === 0){ ?>
 												<div style="margin-left:10px;">
 													<input type="checkbox" name="renameweburl" value="1" />
 													<?php echo $LANG['RENAME_FILE']; ?>
@@ -368,7 +368,7 @@ $creatorArray = Media::getCreatorArray();
 										<div>
 											<b><?php echo $LANG['LARGE_IMG_URL']; ?>: </b><br/>
 											<input name="origurl" type="text" value="<?php echo $imgArr["originalUrl"]; ?>" style="width:95%;" />
-											<?php if(stripos($imgArr['originalUrl'], $IMAGE_ROOT_URL) === 0){ ?>
+											<?php if(stripos($imgArr['originalUrl'], $MEDIA_ROOT_URL) === 0){ ?>
 												<div style="margin-left:10px;">
 													<input type="checkbox" name="renameorigurl" value="1" />
 													<?php echo $LANG['RENAME_LARGE']; ?>
@@ -379,7 +379,7 @@ $creatorArray = Media::getCreatorArray();
 										<div>
 											<b><?php echo $LANG['THUMB_URL']; ?>: </b><br/>
 											<input name="tnurl" type="text" value="<?php echo $imgArr["thumbnailUrl"]; ?>" style="width:95%;" />
-											<?php if($imgArr['thumbnailUrl'] && stripos($imgArr['thumbnailUrl'], $IMAGE_ROOT_URL) === 0){ ?>
+											<?php if($imgArr['thumbnailUrl'] && stripos($imgArr['thumbnailUrl'], $MEDIA_ROOT_URL) === 0){ ?>
 												<div style="margin-left:10px;">
 													<input type="checkbox" name="renametnurl" value="1" />
 													<?php echo $LANG['RENAME_THUMB']; ?>

@@ -1244,7 +1244,7 @@ $traitArr = $indManager->getTraitArr();
 									if(!isset($occArr['taxonsecure']) && !isset($occArr['localsecure'])){
 										if($dupArr['url']){
 											$url = $dupArr['url'];
-											if($IMAGE_DOMAIN) if(substr($url,0,1) == '/') $url = $IMAGE_DOMAIN.$url;
+											if($MEDIA_DOMAIN) if(substr($url,0,1) == '/') $url = $MEDIA_DOMAIN.$url;
 											echo '<div style="float:right;margin:10px;"><img src="'.$url.'" style="width:70px;border:1px solid grey" /></div>';
 										}
 									}

@@ -70,9 +70,9 @@ class ImageShared{
 			$this->connShared = true;
 		}
 		else $this->conn = MySQLiConnectionFactory::getCon('write');
-		$this->imageRootPath = $GLOBALS['IMAGE_ROOT_PATH'];
+		$this->imageRootPath = $GLOBALS['MEDIA_ROOT_PATH'];
 		if(substr($this->imageRootPath,-1) != "/") $this->imageRootPath .= "/";
-		$this->imageRootUrl = $GLOBALS['IMAGE_ROOT_URL'];
+		$this->imageRootUrl = $GLOBALS['MEDIA_ROOT_URL'];
 		if(substr($this->imageRootUrl,-1) != "/") $this->imageRootUrl .= "/";
 		if(array_key_exists('IMG_TN_WIDTH',$GLOBALS)){
 			$this->tnPixWidth = $GLOBALS['IMG_TN_WIDTH'];
@@ -83,8 +83,8 @@ class ImageShared{
 		if(array_key_exists('IMG_LG_WIDTH',$GLOBALS)){
 			$this->lgPixWidth = $GLOBALS['IMG_LG_WIDTH'];
 		}
-		if(array_key_exists('IMG_FILE_SIZE_LIMIT',$GLOBALS)){
-			$this->webFileSizeLimit = $GLOBALS['IMG_FILE_SIZE_LIMIT'];
+		if(array_key_exists('MEDIA_FILE_SIZE_LIMIT',$GLOBALS)){
+			$this->webFileSizeLimit = $GLOBALS['MEDIA_FILE_SIZE_LIMIT'];
 		}
 		//Needed to avoid 403 errors
 		ini_set('user_agent','Mozilla/4.0 (compatible; MSIE 6.0)');
@@ -235,8 +235,8 @@ class ImageShared{
 		$url = str_replace(' ','%20',$url);
 		//If image is relative, add proper domain
 		if(substr($url,0,1) == '/'){
-			if(!empty($GLOBALS['IMAGE_DOMAIN'])){
-				$url = $GLOBALS['IMAGE_DOMAIN'] . $url;
+			if(!empty($GLOBALS['MEDIA_DOMAIN'])){
+				$url = $GLOBALS['MEDIA_DOMAIN'] . $url;
 			}
 			else{
 				$url = $this->getDomainUrl().$url;
@@ -574,7 +574,7 @@ class ImageShared{
 		$urlBase = $this->urlBase;
 		//If central images are on remote server and new ones stored locally, then we need to use full domain
 		//e.g. this portal is sister portal to central portal
-		if($GLOBALS['IMAGE_DOMAIN']) $urlBase = $this->getDomainUrl().$urlBase;
+		if($GLOBALS['MEDIA_DOMAIN']) $urlBase = $this->getDomainUrl().$urlBase;
 		return $urlBase;
 	}
 
@@ -1002,12 +1002,12 @@ class ImageShared{
 			$uri = substr($uri,strlen($urlPrefix));
 		}
 		if(substr($uri,0,1) == '/'){
-			if($GLOBALS['IMAGE_ROOT_URL'] && strpos($uri,$GLOBALS['IMAGE_ROOT_URL']) === 0){
-				$fileName = str_replace($GLOBALS['IMAGE_ROOT_URL'],$GLOBALS['IMAGE_ROOT_PATH'],$uri);
+			if($GLOBALS['MEDIA_ROOT_URL'] && strpos($uri,$GLOBALS['MEDIA_ROOT_URL']) === 0){
+				$fileName = str_replace($GLOBALS['MEDIA_ROOT_URL'],$GLOBALS['MEDIA_ROOT_PATH'],$uri);
 				if(file_exists($fileName)) return true;
 			}
-			if(!empty($GLOBALS['IMAGE_DOMAIN'])){
-				$uri = $GLOBALS['IMAGE_DOMAIN'].$uri;
+			if(!empty($GLOBALS['MEDIA_DOMAIN'])){
+				$uri = $GLOBALS['MEDIA_DOMAIN'].$uri;
 			}
 			else{
 				$uri = $urlPrefix.$uri;
@@ -1081,12 +1081,12 @@ class ImageShared{
 		$urlPrefix .= $_SERVER['SERVER_NAME'];
 		if($_SERVER['SERVER_PORT'] && $_SERVER['SERVER_PORT'] != 80 && $_SERVER['SERVER_PORT'] != 443) $urlPrefix .= ':'.$_SERVER['SERVER_PORT'];
 
-		if(strpos($imgUrl,$urlPrefix.$GLOBALS['IMAGE_ROOT_URL']) === 0){
+		if(strpos($imgUrl,$urlPrefix.$GLOBALS['MEDIA_ROOT_URL']) === 0){
 			$imgUrl = substr($imgUrl, strlen($urlPrefix));
 		}
 		if(substr($imgUrl,0,1) == '/'){
-			if($GLOBALS['IMAGE_ROOT_URL'] && strpos($imgUrl,$GLOBALS['IMAGE_ROOT_URL']) === 0){
-				$imgUrl = str_replace($GLOBALS['IMAGE_ROOT_URL'],$GLOBALS['IMAGE_ROOT_PATH'],$imgUrl);
+			if($GLOBALS['MEDIA_ROOT_URL'] && strpos($imgUrl,$GLOBALS['MEDIA_ROOT_URL']) === 0){
+				$imgUrl = str_replace($GLOBALS['MEDIA_ROOT_URL'],$GLOBALS['MEDIA_ROOT_PATH'],$imgUrl);
 			}
 			$imgDim = @getimagesize($imgUrl);
 		}

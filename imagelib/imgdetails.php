@@ -58,13 +58,13 @@ if($imgArr){
 	$imgUrl = $imgArr['url'];
 	$origUrl = $imgArr['originalUrl'];
 	$metaUrl = $imgArr['url'];
-	if(array_key_exists('IMAGE_DOMAIN', $GLOBALS)){
+	if(array_key_exists('MEDIA_DOMAIN', $GLOBALS)){
 		if(substr($imgUrl, 0, 1) == '/'){
-			$imgUrl = $GLOBALS['IMAGE_DOMAIN'] . $imgUrl;
-			$metaUrl = $GLOBALS['IMAGE_DOMAIN'] . $metaUrl;
+			$imgUrl = $GLOBALS['MEDIA_DOMAIN'] . $imgUrl;
+			$metaUrl = $GLOBALS['MEDIA_DOMAIN'] . $metaUrl;
 		}
 		if($origUrl && substr($origUrl,0,1)=='/'){
-			$origUrl = $GLOBALS['IMAGE_DOMAIN'].$origUrl;
+			$origUrl = $GLOBALS['MEDIA_DOMAIN'].$origUrl;
 		}
 	}
 	if(substr($metaUrl,0,1)=='/'){
@@ -294,7 +294,7 @@ if($imgArr){
 								<b><?php echo $LANG['WEB_IMAGE'] ?>:</b><br/>
 								<input name="url" type="text" value="<?php echo $imgArr["url"];?>" style="width:90%;" />
 								<?php
-								if(stripos($imgArr["url"],$IMAGE_ROOT_URL) === 0){
+								if(stripos($imgArr["url"],$MEDIA_ROOT_URL) === 0){
 									?>
 									<div style="margin-left:70px;">
 										<input type="checkbox" name="renameweburl" value="1" />
@@ -309,7 +309,7 @@ if($imgArr){
 								<b><?php echo $LANG['THUMBNAIL'] ?>:</b><br/>
 								<input name="thumbnailurl" type="text" value="<?php echo $imgArr["thumbnailUrl"];?>" style="width:90%;" />
 								<?php
-								if($imgArr["thumbnailUrl"] && stripos($imgArr["thumbnailUrl"],$IMAGE_ROOT_URL) === 0){
+								if($imgArr["thumbnailUrl"] && stripos($imgArr["thumbnailUrl"],$MEDIA_ROOT_URL) === 0){
 									?>
 									<div style="margin-left:70px;">
 										<input type="checkbox" name="renametnurl" value="1" />
@@ -324,7 +324,7 @@ if($imgArr){
 								<b><?php echo $LANG['LARGE_IMAGE'] ?>:</b><br/>
 								<input name="originalUrl" type="text" value="<?php echo $imgArr["originalUrl"];?>" style="width:90%;" />
 								<?php
-								if(stripos($imgArr["originalUrl"],$IMAGE_ROOT_URL) === 0){
+								if(stripos($imgArr["originalUrl"],$MEDIA_ROOT_URL) === 0){
 									?>
 									<div style="margin-left:80px;">
 										<input type="checkbox" name="renameorigurl" value="1" />

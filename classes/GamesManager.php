@@ -127,7 +127,7 @@ class GamesManager extends Manager{
 					while(($row = $rs->fetch_object()) && ($cnt < 6)){
 						$file = '';
 						if (substr($row->url, 0, 1) == '/'){
-							if(!empty($GLOBALS['IMAGE_DOMAIN'])) $file = $GLOBALS['IMAGE_DOMAIN'] . $row->url;
+							if(!empty($GLOBALS['MEDIA_DOMAIN'])) $file = $GLOBALS['MEDIA_DOMAIN'] . $row->url;
 							else $file = $domain.$row->url;
 						}
 						else{
@@ -217,8 +217,8 @@ class GamesManager extends Manager{
 				if(array_key_exists('url',$retArr[$rImg->tidaccepted])) $iCnt = count($retArr[$rImg->tidaccepted]['url']);
 				if($iCnt < 5){
 					$url = $rImg->url;
-					if(array_key_exists("IMAGE_DOMAIN",$GLOBALS) && substr($url,0,1)=="/"){
-						$url = $GLOBALS["IMAGE_DOMAIN"].$url;
+					if(array_key_exists("MEDIA_DOMAIN",$GLOBALS) && substr($url,0,1)=="/"){
+						$url = $GLOBALS["MEDIA_DOMAIN"].$url;
 					}
 					$retArr[$rImg->tidaccepted]['url'][] = $url;
 				}
@@ -240,8 +240,8 @@ class GamesManager extends Manager{
 					if(array_key_exists('url',$retArr[$rImg2->parenttid])) $iCnt = count($retArr[$rImg2->parenttid]['url']);
 					if($iCnt < 5){
 						$url = $rImg2->url;
-						if(array_key_exists("IMAGE_DOMAIN",$GLOBALS) && substr($url,0,1)=="/"){
-							$url = $GLOBALS["IMAGE_DOMAIN"].$url;
+						if(array_key_exists("MEDIA_DOMAIN",$GLOBALS) && substr($url,0,1)=="/"){
+							$url = $GLOBALS["MEDIA_DOMAIN"].$url;
 						}
 						$retArr[$rImg2->parenttid]['url'][] = $url;
 					}

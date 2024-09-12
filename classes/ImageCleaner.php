@@ -154,7 +154,7 @@ class ImageCleaner extends Manager{
 			if(preg_match('/imageid=(\d+)$/', $recUrlOrig, $m)){
 				$newImgPath = $this->imgManager->getTargetPath().'mo_'.$m[1].'.jpg';
 				if(copy($recUrlOrig, $newImgPath)){
-					$imgUrl = str_replace($GLOBALS['IMAGE_ROOT_PATH'],$GLOBALS['IMAGE_ROOT_URL'],$newImgPath);
+					$imgUrl = str_replace($GLOBALS['MEDIA_ROOT_PATH'],$GLOBALS['MEDIA_ROOT_URL'],$newImgPath);
 					if((!$recUrlWeb || $recUrlWeb == 'empty')){
 						$webIsEmpty = true;
 					}
@@ -241,7 +241,7 @@ class ImageCleaner extends Manager{
 			$status = false;
 		}
 		if(preg_match('/\/mo_\d+.jpg/', $imgUrl)){
-			$imgUrl = str_replace($GLOBALS['IMAGE_ROOT_URL'],$GLOBALS['IMAGE_ROOT_PATH'],$imgUrl);
+			$imgUrl = str_replace($GLOBALS['MEDIA_ROOT_URL'],$GLOBALS['MEDIA_ROOT_PATH'],$imgUrl);
 			unlink($imgUrl);
 		}
 		$this->imgManager->reset();
@@ -395,20 +395,20 @@ class ImageCleaner extends Manager{
 
 	private function unlinkImageFile($url,$origTs){
 		$status = false;
-		if(!$GLOBALS['IMAGE_ROOT_PATH']){
-			$this->logOrEcho('FATAL ERROR: IMAGE_ROOT_PATH not configured within portal configuration file',1);
+		if(!$GLOBALS['MEDIA_ROOT_PATH']){
+			$this->logOrEcho('FATAL ERROR: MEDIA_ROOT_PATH not configured within portal configuration file',1);
 			exit;
 		}
-		if(!$GLOBALS['IMAGE_ROOT_URL']){
-			$this->logOrEcho('FATAL ERROR: IMAGE_ROOT_URL not configured within portal configuration file',1);
+		if(!$GLOBALS['MEDIA_ROOT_URL']){
+			$this->logOrEcho('FATAL ERROR: MEDIA_ROOT_URL not configured within portal configuration file',1);
 			exit;
 		}
 		if(substr($url, 0, 4) == 'http'){
 			//Remove domain name
 			$url = parse_url($url, PHP_URL_PATH);
 		}
-		if(strpos($url, $GLOBALS['IMAGE_ROOT_URL']) === 0){
-			$path = $GLOBALS['IMAGE_ROOT_PATH'].substr($url,strlen($GLOBALS['IMAGE_ROOT_URL']));
+		if(strpos($url, $GLOBALS['MEDIA_ROOT_URL']) === 0){
+			$path = $GLOBALS['MEDIA_ROOT_PATH'].substr($url,strlen($GLOBALS['MEDIA_ROOT_URL']));
 			if($p = strpos($path,'?')) $path = substr($path,0,$p);
 			if(!file_exists($path)) return true;
 			if(is_writable($path)){
@@ -568,13 +568,13 @@ class ImageCleaner extends Manager{
 					elseif(substr($imgUrl, 0, 4) == 'http'){
 						$imgUrl = parse_url($imgUrl, PHP_URL_PATH);
 					}
-					if(strpos($imgUrl, $GLOBALS['IMAGE_ROOT_URL']) === 0){
-						$imgUrl = $GLOBALS['IMAGE_ROOT_PATH'].substr($imgUrl,strlen($GLOBALS['IMAGE_ROOT_URL']));
+					if(strpos($imgUrl, $GLOBALS['MEDIA_ROOT_URL']) === 0){
+						$imgUrl = $GLOBALS['MEDIA_ROOT_PATH'].substr($imgUrl,strlen($GLOBALS['MEDIA_ROOT_URL']));
 					}
 					if(is_writable($imgUrl)){
 						$pathParts = pathinfo($imgUrl);
 						$path = $pathParts['dirname'];
-						if(strpos($path, $GLOBALS['IMAGE_ROOT_PATH']) === 0) $path = substr($path,strlen($GLOBALS['IMAGE_ROOT_PATH']));
+						if(strpos($path, $GLOBALS['MEDIA_ROOT_PATH']) === 0) $path = substr($path,strlen($GLOBALS['MEDIA_ROOT_PATH']));
 						$targetPath = $this->imgRecycleBin.$path;
 						if(!file_exists($targetPath)) mkdir($targetPath,0777,true);
 						$targetPath .= '/'.$pathParts['basename'];
@@ -602,13 +602,13 @@ class ImageCleaner extends Manager{
 			}
 		}
 		else{
-			if($GLOBALS['IMAGE_ROOT_PATH']){
-				$path = $GLOBALS['IMAGE_ROOT_PATH'];
+			if($GLOBALS['MEDIA_ROOT_PATH']){
+				$path = $GLOBALS['MEDIA_ROOT_PATH'];
 				if(substr($path, -1) != '/') $path .= '/';
 				$path .= 'trash';
 				if(!file_exists($path)){
 					if(!mkdir($path)){
-						$this->errorMessage = 'Failed to create trash folder in IMAGE_ROOT_PATH';
+						$this->errorMessage = 'Failed to create trash folder in MEDIA_ROOT_PATH';
 						return false;
 					}
 				}

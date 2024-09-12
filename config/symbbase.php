@@ -46,6 +46,18 @@ $USERNAME = (array_key_exists('un',$PARAMS_ARR)?$PARAMS_ARR['un']:0);
 $SYMB_UID = (array_key_exists('uid',$PARAMS_ARR)?$PARAMS_ARR['uid']:0);
 $IS_ADMIN = (array_key_exists('SuperAdmin',$USER_RIGHTS)?1:0);
 
+function alias(&$new, &$old) {
+	if(!isset($new) && isset($old)) {
+		$new = $old;
+	}
+}
+
+alias($PUBLIC_MEDIA_UPLOAD_ROOT, $PUBLIC_IMAGE_UPLOAD_ROOT);
+alias($MEDIA_DOMAIN, $IMAGE_DOMAIN);
+alias($MEDIA_ROOT_URL, $IMAGE_ROOT_URL);
+alias($MEDIA_ROOT_PATH, $IMAGE_ROOT_PATH);
+alias($MEDIA_FILE_SIZE_LIMIT, $IMG_FILE_SIZE_LIMIT);
+
 //Set accessibilty variables
 $ACCESSIBILITY_ACTIVE = false;
 if($SYMB_UID){

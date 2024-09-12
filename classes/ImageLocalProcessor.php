@@ -73,7 +73,7 @@ class ImageLocalProcessor {
 		if(!empty($GLOBALS['IMG_WEB_WIDTH'])) $this->webPixWidth = $GLOBALS['IMG_WEB_WIDTH'];
 		if(!empty($GLOBALS['IMG_TN_WIDTH'])) $this->tnPixWidth = $GLOBALS['IMG_TN_WIDTH'];
 		if(!empty($GLOBALS['IMG_LG_WIDTH'])) $this->lgPixWidth = $GLOBALS['IMG_LG_WIDTH'];
-		if(!empty($GLOBALS['IMG_FILE_SIZE_LIMIT'])) $this->webFileSizeLimit = $GLOBALS['IMG_FILE_SIZE_LIMIT'];
+		if(!empty($GLOBALS['MEDIA_FILE_SIZE_LIMIT'])) $this->webFileSizeLimit = $GLOBALS['MEDIA_FILE_SIZE_LIMIT'];
 	}
 
 	function __destruct(){
@@ -246,7 +246,7 @@ class ImageLocalProcessor {
 		//Set target base path
 		if(!$this->targetPathBase){
 			//Assume that we should use the portal's default image root path
-			$this->targetPathBase = $GLOBALS['IMAGE_ROOT_PATH'];
+			$this->targetPathBase = $GLOBALS['MEDIA_ROOT_PATH'];
 		}
 		if($this->targetPathBase && substr($this->targetPathBase,-1) != '/' && substr($this->targetPathBase,-1) != "\\"){
 			$this->targetPathBase .= '/';
@@ -255,9 +255,9 @@ class ImageLocalProcessor {
 		//Set image base URL
 		if(!$this->imgUrlBase){
 			//Assume that we should use the portal's default image url prefix
-			$this->imgUrlBase = $GLOBALS['IMAGE_ROOT_URL'];
+			$this->imgUrlBase = $GLOBALS['MEDIA_ROOT_URL'];
 		}
-		if(!empty($GLOBALS['IMAGE_DOMAIN'])){
+		if(!empty($GLOBALS['MEDIA_DOMAIN'])){
 			//Since imageDomain is set, portal is not central portal thus add portals domain to url base
 			if(substr($this->imgUrlBase,0,7) != 'http://' && substr($this->imgUrlBase,0,8) != 'https://'){
 				$urlPrefix = "http://";
@@ -2115,11 +2115,11 @@ class ImageLocalProcessor {
 
 		$localUrl = '';
 		if(substr($url,0,1) == '/'){
-			if(!empty($GLOBALS['IMAGE_DOMAIN'])){
-				$url = $GLOBALS['IMAGE_DOMAIN'].$url;
+			if(!empty($GLOBALS['MEDIA_DOMAIN'])){
+				$url = $GLOBALS['MEDIA_DOMAIN'].$url;
 			}
-			elseif($GLOBALS['IMAGE_ROOT_URL'] && strpos($url,$GLOBALS['IMAGE_ROOT_URL']) === 0){
-				$localUrl = str_replace($GLOBALS['IMAGE_ROOT_URL'],$GLOBALS['IMAGE_ROOT_PATH'],$url);
+			elseif($GLOBALS['MEDIA_ROOT_URL'] && strpos($url,$GLOBALS['MEDIA_ROOT_URL']) === 0){
+				$localUrl = str_replace($GLOBALS['MEDIA_ROOT_URL'],$GLOBALS['MEDIA_ROOT_PATH'],$url);
 			}
 			else{
 				$urlPrefix = "http://";

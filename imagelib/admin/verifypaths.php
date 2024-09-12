@@ -77,9 +77,9 @@ class VerifyPaths{
 	private $thumbnailArr = Array();
 
 	function __construct() {
-		$this->rootPath = $GLOBALS['IMAGE_ROOT_PATH'];
+		$this->rootPath = $GLOBALS['MEDIA_ROOT_PATH'];
 		if(substr($this->rootPath,-1) != "/") $this->rootPath .= "/";
-		$this->urlPath = $GLOBALS['IMAGE_ROOT_URL'];
+		$this->urlPath = $GLOBALS['MEDIA_ROOT_URL'];
 		if(substr($this->urlPath,-1) != "/") $this->urlPath .= "/";
 		$this->tempRoot = $GLOBALS['TEMP_DIR_ROOT'];
 		if(!$this->tempRoot){

@@ -1888,8 +1888,8 @@ class DwcArchiverCore extends Manager{
 			$urlPathPrefix = $this->serverDomain . $GLOBALS['CLIENT_ROOT'] . (substr($GLOBALS['CLIENT_ROOT'], -1) == '/' ? '' : '/');
 
 			$localDomain = '';
-			if (isset($GLOBALS['IMAGE_DOMAIN']) && $GLOBALS['IMAGE_DOMAIN']) {
-				$localDomain = $GLOBALS['IMAGE_DOMAIN'];
+			if (isset($GLOBALS['MEDIA_DOMAIN']) && $GLOBALS['MEDIA_DOMAIN']) {
+				$localDomain = $GLOBALS['MEDIA_DOMAIN'];
 			}
 			else {
 				$localDomain = $this->serverDomain;

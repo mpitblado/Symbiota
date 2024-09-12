@@ -367,8 +367,8 @@ class ImageProcessor {
 		if(stripos($imgUrl, 'http') === 0 || stripos($imgUrl, 'https') === 0){
 			$imgUrl = parse_url($imgUrl, PHP_URL_PATH);
 		}
-		if($GLOBALS['IMAGE_ROOT_URL'] && strpos($imgUrl,$GLOBALS['IMAGE_ROOT_URL']) === 0){
-			$imgPath = $GLOBALS['IMAGE_ROOT_PATH'].substr($imgUrl,strlen($GLOBALS['IMAGE_ROOT_URL']));
+		if($GLOBALS['MEDIA_ROOT_URL'] && strpos($imgUrl,$GLOBALS['MEDIA_ROOT_URL']) === 0){
+			$imgPath = $GLOBALS['MEDIA_ROOT_PATH'].substr($imgUrl,strlen($GLOBALS['MEDIA_ROOT_URL']));
 			unlink($imgPath);
 		}
 	}
