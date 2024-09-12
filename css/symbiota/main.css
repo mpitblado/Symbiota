@@ -4,7 +4,6 @@
 @import "normalize.slim.css";
 @import "variables.css";
 
-
 /* Global styles
    ========================================================================== */
 html {
@@ -34,8 +33,8 @@ h4 {
 
 .fieldset-like h2.subheader,
 .fieldset-like h3.subheader {
-	position: relative;
-	align-items: center;
+  position: relative;
+  align-items: center;
 }
 /*
 h1 {
@@ -147,8 +146,8 @@ span[class="link"]:hover {
 }
 
 /* User rights elements associated with occurrences, images, collections, data, etc */
-.rights-span img{
-	width: 100px;
+.rights-span img {
+  width: 100px;
 }
 
 /*
@@ -352,7 +351,7 @@ button {
   text-indent: 0px;
   text-shadow: none;
   line-height: normal;
-  box-sizing: border-box;  
+  box-sizing: border-box;
 }
 
 button:hover {
@@ -382,8 +381,8 @@ button.icon-button:hover {
 }
 
 button.inverse-color {
-    background-color: var(--light-color);
-    color: var(--darkest-color);
+  background-color: var(--light-color);
+  color: var(--darkest-color);
 }
 
 .button {
