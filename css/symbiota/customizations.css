@@ -150,6 +150,14 @@ body {
   margin: 0;
 }
 
+/* Occurrence Editor Label Processor image render fix */
+
+img[id^="activeimg-"] {
+  max-width: unset;
+  max-height: unset;
+}
+
+
 .spinner {
   margin-top: -21px;
   /* position: absolute; */
