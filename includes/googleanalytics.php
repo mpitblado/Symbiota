@@ -4,7 +4,7 @@ if(isset($FEDERAL_DAP_AGENCY) && $FEDERAL_DAP_AGENCY){
 	* https://github.com/digital-analytics-program/gov-wide-code/wiki/DAP-Quick-Technical-Guide#dap-centrally-hosted-url-implementation-instructions
 	*/
 	?>
-	<script async type="text/javascript" src="https://dap.digitalgov.gov/Universal-Federated-Analytics-Min.js?agency=<?= $FEDERAL_DAP_AGENCY ?>"  id="_fed_an_ua_tag"></script>
+	<script async type="text/javascript" src="https://dap.digitalgov.gov/Universal-Federated-Analytics-Min.js?agency=<?= $FEDERAL_DAP_AGENCY ?><?= ($FEDERAL_DAP_SUBAGENCY ? '&subagency=' . $FEDERAL_DAP_SUBAGENCY : '') ?>" id="_fed_an_ua_tag"></script>
 	<?php
 }
 else{
