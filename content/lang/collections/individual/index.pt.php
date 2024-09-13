@@ -2,7 +2,7 @@
 /*
 ------------------
 Language: Português (Portuguese)
-Translated by: Google Translate (2024-09-06)
+Translated by: Google Translate (2024-09-13)
 ------------------
 */
 
@@ -90,9 +90,9 @@ $LANG['MATERIAL_SAMPLES'] = 'Amostras de materiais';
 $LANG['DISPLAY_ALL_MATERIAL_SAMPLES'] = 'Exibir todas as unidades de amostra de material';
 $LANG['SPECIMEN_IMAGES'] = 'Espécime Multimídia';
 $LANG['AUTHOR'] = 'Autor';
-$LANG['OPEN_MEDIUM'] = 'Abrir arquivo multimídia médio';
-$LANG['OPEN_LARGE'] = 'Abra um arquivo multimídia grande';
-$LANG['OPEN_SOURCE'] = 'Arquivo multimídia de código aberto';
+$LANG['OPEN_MEDIUM'] = 'Abrir arquivo médio';
+$LANG['OPEN_LARGE'] = 'Abrir arquivo grande';
+$LANG['OPEN_SOURCE'] = 'Arquivo de código aberto';
 $LANG['USAGE_RIGHTS'] = 'Direitos de uso';
 $LANG['RIGHTS_HOLDER'] = 'Detentor de direitos';
 $LANG['ACCESS_RIGHTS'] = 'Direitos de acesso';

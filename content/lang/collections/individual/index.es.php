@@ -3,7 +3,7 @@
 ------------------
 Language: Español (Spanish)
 Translated by: Samanta Orellana (2021-06-23)
-Translated by: Google Translate (2024-09-06)
+Translated by: Google Translate (2024-09-13)
 ------------------
 */
 
@@ -91,9 +91,9 @@ $LANG['MATERIAL_SAMPLES'] = 'Material Samples';
 $LANG['DISPLAY_ALL_MATERIAL_SAMPLES'] = 'Display all Material Sample units';
 $LANG['SPECIMEN_IMAGES'] = 'Muestra multimedia';
 $LANG['AUTHOR'] = 'Autor';
-$LANG['OPEN_MEDIUM'] = 'Abrir archivo multimedia mediano';
-$LANG['OPEN_LARGE'] = 'Abrir archivo multimedia grande';
-$LANG['OPEN_SOURCE'] = 'Archivo multimedia de código abierto';
+$LANG['OPEN_MEDIUM'] = 'Abrir archivo mediano';
+$LANG['OPEN_LARGE'] = 'Abrir archivo grande';
+$LANG['OPEN_SOURCE'] = 'Abrir archivo fuente';
 $LANG['USAGE_RIGHTS'] = 'Derechos de Uso';
 $LANG['RIGHTS_HOLDER'] = 'Titular de los Derechos';
 $LANG['ACCESS_RIGHTS'] = 'Derechos de Acceso';
