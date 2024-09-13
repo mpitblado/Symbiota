@@ -309,16 +309,13 @@ include($SERVER_ROOT.'/includes/header.php');
 							<!-- <button type="submit" value="login"><?php echo (isset($LANG['OID_LOGIN'])?$LANG['OID_LOGIN']:'Login with OID'); ?></button> -->
 							<div _ngcontent-sum-c78="" role="button" tabindex="0" class="custom-icam-button" data-id="login-option-azure">
 								<div _ngcontent-sum-c78="" class="custom-icam-button--icon" data-image="azure"></div>
-								<button type="submit" value="login" style="background: none; color: inherit; border: none; padding: 0; font: inherit; cursor: pointer; outline: inherit;">
-									<div _ngcontent-sum-c78="" class="custom-icam-button--meta">
-										<strong _ngcontent-sum-c78="" style="font-weight: bolder;">USDA Work Account</strong>
-										<div _ngcontent-sum-c78="">Employees and contractors use Microsoft login</div>
-									</div>
-								</button>
-								<!-- <div _ngcontent-sum-c78="" class="custom-icam-button--meta">
-									<strong _ngcontent-sum-c78="">USDA Work Account</strong>
-									<div _ngcontent-sum-c78="">Employees and contractors use Microsoft login</div>
-								</div> -->
+								<!-- <button type="submit" value="login" style="background: none; color: inherit; border: none; padding: 0; font: inherit; cursor: pointer; outline: inherit;"> -->
+									<button type="submit" value="login" style="background: none; color: inherit; border: none; padding: 0; font: inherit; cursor: pointer;">
+										<div _ngcontent-sum-c78="" class="custom-icam-button--meta">
+											<strong _ngcontent-sum-c78="" style="font-weight: bolder; text-align: left;">USDA Work Account</strong>
+											<div _ngcontent-sum-c78="">Employees and contractors use Microsoft login</div>
+										</div>
+									</button>
 							</div>
 						</div>
 					</fieldset>
