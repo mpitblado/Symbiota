@@ -2,7 +2,7 @@
 /*
 ------------------
 Language: Français (French)
-Translated by: Google Translate (2024-09-05)
+Translated by: Google Translate (2024-09-16)
 ------------------
 */
 
@@ -13,7 +13,7 @@ $LANG['SUBMIT_SORT_EDITS'] = 'Soumettre des modifications de tri multimédia';
 $LANG['NO_IMAGES'] = 'Aucun multimédia disponible';
 $LANG['ADD_NEW_IMAGE'] = 'Ajouter un nouveau multimédia';
 $LANG['SELECT_IMAGE_TO_UPLOAD'] = 'Sélectionnez un fichier multimédia situé sur votre ordinateur que vous souhaitez télécharger';
-$LANG['KEEP_LARGE_IMG'] = 'Conserver une version agrandie de l\'image, le cas échéant';
+$LANG['KEEP_LARGE_IMG'] = 'Conserver une version volumineuse du fichier, le cas échéant';
 $LANG['IMG_SIZE_NO_GREATER'] = 'Remarque: la taille du téléchargée ne peut pas être supérieure à 4 Mo';
 $LANG['LINK_TO_EXTERNAL'] = 'Lien vers un multimédia externe';
 $LANG['ENTER_URL_IMG'] = 'Saisissez une URL vers un fichier multimédia déjà situé sur un serveur Web';
@@ -34,11 +34,10 @@ $LANG['LINK_TO_OCC'] = 'Lien vers l\'enregistrement d\'occurrence';
 $LANG['LOCALITY'] = 'Localité';
 $LANG['NOTES'] = 'Notes';
 $LANG['UPLOAD_IMAGE'] = 'Télécharger du multimédia';
-$LANG['OPEN_LARGE_IMAGE'] = 'Ouvrir Grande Image';
+$LANG['OPEN_LARGE_IMAGE'] = 'Ouvrir un fichier volumineux';
 $LANG['MUST_HAVE_EDIT_PERM'] = 'Doit disposer de privilèges d\'édition pour la collection gérant ce fichier multimédia';
 $LANG['IMAGE_LINKED_FROM'] = 'Multimédia lié depuis';
 $LANG['TP_IMAGE_EDITOR'] = 'Éditeur multimédia de profil de taxon';
 $LANG['CREATOR'] = 'Créateur';
-
 
 ?>
