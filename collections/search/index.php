@@ -44,7 +44,7 @@ $obsArr = (isset($collList['obs'])?$collList['obs']:null);
 	<link href="<?= $CSS_BASE_PATH ?>/symbiota/collections/sharedCollectionStyling.css" type="text/css" rel="stylesheet">
 	<script src="<?= $CLIENT_ROOT ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
 	<script src="<?php echo $CLIENT_ROOT . '/js/jquery-ui.min.js'; ?>" type="text/javascript"></script>
-	<script src="../../js/symb/localitySuggest.js" type="text/javascript"></script>
+	<script src="<?= $CLIENT_ROOT ?>/js/symb/localitySuggest.js" type="text/javascript"></script>
 	<script>
 		const clientRoot = '<?php echo $CLIENT_ROOT; ?>';
 		const handleAccordionExpand = () => {
@@ -521,7 +521,7 @@ $obsArr = (isset($collList['obs'])?$collList['obs']:null);
 							<!-- Open Collections modal -->
 							<div id="specobsdiv">
 								<?php
-								include_once('./collectionContent.php');
+								include_once(__DIR__. '/collectionContent.php');
 								?>
 							</div>
 						</div>
