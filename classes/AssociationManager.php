@@ -149,15 +149,26 @@ class AssociationManager extends OccurrenceTaxaManager{
         $relationshipType = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ? $associationArr['relationship'] : 'IS NOT NULL';
         $relationshipStr = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ? ("='" . $relationshipType . "'") : ' IS NOT NULL';
 
-        $forwardSql = "SELECT o.occid FROM omoccurrences o INNER JOIN omoccurassociations oa ON o.occid = oa.occid " . $familyJoinStr . " WHERE oa.relationship " . $relationshipStr . " ";
-        $forwardSql .= $this->getAssociatedTaxonWhereFrag($associationArr);
+        // $forwardSql = "SELECT o.occid FROM omoccurrences o INNER JOIN omoccurassociations oa ON o.occid = oa.occid " . $familyJoinStr . " WHERE oa.relationship " . $relationshipStr . " ";
+		$forwardSql = "SELECT o.occid FROM omoccurrences o INNER JOIN omoccurassociations oa ON o.occid = oa.occid  LEFT JOIN omoccurdeterminations od ON oa.occid = od.occid " . $familyJoinStr . " WHERE oa.relationship " . $relationshipStr . " ";
+		$forwardSql .= $this->getAssociatedTaxonWhereFrag($associationArr);
 
         // "Reverse" association
         $reverseAssociationType = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ? $this->getInverseRelationshipOf($relationshipType) : 'IS NOT NULL';
         $reverseRelationshipStr = (array_key_exists('relationship', $associationArr) && $associationArr['relationship'] !== 'any') ? ("='" . $reverseAssociationType . "'") : ' IS NOT NULL';
 
         // $reverseSql = "SELECT oa.occidAssociate FROM omoccurrences o INNER JOIN omoccurassociations oa ON o.occid = oa.occid INNER JOIN omoccurdeterminations od ON oa.occid = od.occid " . $familyJoinStr . " WHERE oa.relationship " . $reverseRelationshipStr . " ";
+
+		// Best so
 		$reverseSql = "SELECT oa.occidAssociate FROM omoccurrences o INNER JOIN omoccurassociations oa ON o.occid = oa.occid LEFT JOIN omoccurdeterminations od ON oa.occid = od.occid " . $familyJoinStr . " WHERE oa.relationship " . $reverseRelationshipStr . " ";
+		
+		
+		// $occurencesJoinedWithOccidOrWithOccidAssociate = "SELECT o.*, oa.occid, oa.occidAssociate FROM omoccurrences o INNER JOIN omoccurassociations oa ON o.occid = oa.occid UNION SELECT o.* FROM omoccurrences o INNER JOIN omoccurassociations oa ON o.occid = oa.occidAssociate";
+		// $reverseSql = "SELECT oa.occidAssociate FROM (" . $occurencesJoinedWithOccidOrWithOccidAssociate. ") LEFT JOIN omoccurdeterminations od ON oa.occid = od.occid " . $familyJoinStr . " WHERE oa.relationship " . $reverseRelationshipStr . " ";
+		
+		// $occurencesJoinedWithOccidOrWithOccidAssociate = "SELECT o.*, oa.occid AS assoc_occid, oa.occidAssociate AS assoc_occidAssociate FROM omoccurrences o INNER JOIN omoccurassociations oa ON o.occid = oa.occid UNION SELECT o.*, oa.occid AS assoc_occid, oa.occidAssociate AS assoc_occidAssociate FROM omoccurrences o INNER JOIN omoccurassociations oa ON o.occid = oa.occidAssociate";
+		// $reverseSql = "SELECT assoc_occidAssociate FROM (" . $occurencesJoinedWithOccidOrWithOccidAssociate . ") AS occids LEFT JOIN omoccurdeterminations od ON occids.assoc_occid = od.occid " . $familyJoinStr . " WHERE occids.relationship " . $reverseRelationshipStr . "";
+		
 		// IFNULL(d.sciname, o.sciname) as sciname // TODO look into this and note the left join in the above line
 		// @TODO make sure they're (isCurrent = 1 OR (detID IS NULL AND )) determinations ... let's punt until determination stuff is stabilized?
 		// (d.isCurrent = 1 || (d.detid IS NULL AND o.sciname = "Pinus longifolia")) ... let's punt until determination stuff is stabilized?
@@ -196,13 +207,14 @@ class AssociationManager extends OccurrenceTaxaManager{
 						$sqlWhereTaxa .= 'OR ((ts.family = "'.$searchTaxon.'") OR (ts.tid IN('.implode(',', $tidArr).'))) ';
 					}
 					else{
-						$sqlWhereTaxa .= 'OR ((o.family = "'.$searchTaxon.'") OR (o.sciname = "'.$searchTaxon.'")) ';
+						// $sqlWhereTaxa .= 'OR ((o.family = "'.$searchTaxon.'") OR (o.sciname = "'.$searchTaxon.'")) ';
+						$sqlWhereTaxa .= 'OR ((IFNULL(o.family, od.family) = "'.$searchTaxon.'") OR (IFNULL(o.sciname, od.sciname) = "'.$searchTaxon.'")) ';
 					}
 				}
 				else{
 					if($taxonType == TaxaSearchType::COMMON_NAME){
 						$famArr = $this->setCommonNameWhereTerms($searchArr, $tidInArr);
-						if($famArr) $sqlWhereTaxa .= 'OR (o.family IN("'.implode('","',$famArr).'")) ';
+						if($famArr) $sqlWhereTaxa .= 'OR (IFNULL(o.family, od.family) IN("'.implode('","',$famArr).'")) ';
 					}
 					if(isset($searchArr['TID_BATCH'])){
 						$tidInArr = array_merge($tidInArr, array_keys($searchArr['TID_BATCH']));
@@ -217,22 +229,22 @@ class AssociationManager extends OccurrenceTaxaManager{
 							$tidInArr = array_merge($tidInArr, $tidArr);
 							//Return matches that are not linked to thesaurus
 							if($rankid > 179){
-								if($this->exactMatchOnly) $sqlWhereTaxa .= 'OR (o.sciname = "' . $term . '") ';
-								else $sqlWhereTaxa .= "OR (o.sciname LIKE '" . $term . "%') OR (oa.verbatimsciname LIKE '" . $term . "%') ";
+								if($this->exactMatchOnly) $sqlWhereTaxa .= 'OR (ifnull(o.sciname, od.sciname) = "' . $term . '") ';
+								else $sqlWhereTaxa .= "OR (ifnull(o.sciname, od.sciname) LIKE '" . $term . "%') OR (oa.verbatimsciname LIKE '" . $term . "%') ";
 							}
 						}
 						else{
 							//Protect against someone trying to download big pieces of the occurrence table through the user interface
 							if(strlen($term) < 4) $term .= ' ';
 							if($this->exactMatchOnly){
-								$sqlWhereTaxa .= 'OR (o.sciname = "' . $term . '") OR (oa.verbatimsciname LIKE "' . $term . '%") ';
+								$sqlWhereTaxa .= 'OR (ifnull(o.sciname, od.sciname) = "' . $term . '") OR (oa.verbatimsciname LIKE "' . $term . '%") ';
 							}
 							else{
-								$sqlWhereTaxa .= 'OR (o.sciname LIKE "' . $term . '%") OR (oa.verbatimsciname LIKE "' . $term . '%") ';
+								$sqlWhereTaxa .= 'OR (ifnull(o.sciname, od.sciname) LIKE "' . $term . '%") OR (oa.verbatimsciname LIKE "' . $term . '%") ';
 								if(!strpos($term,' _ ')){
 									//Accommodate for formats of hybrid designations within input and target data (e.g. x, multiplication sign, etc)
 									$term2 = preg_replace('/^([^\s]+\s{1})/', '$1 _ ', $term);
-									$sqlWhereTaxa .= "OR (o.sciname LIKE '" . $term2 . "%')  OR (oa.verbatimsciname LIKE '" . $term . "%') ";
+									$sqlWhereTaxa .= "OR (ifnull(o.sciname, od.sciname) LIKE '" . $term2 . "%')  OR (oa.verbatimsciname LIKE '" . $term . "%') ";
 								}
 							}
 						}
@@ -243,7 +255,7 @@ class AssociationManager extends OccurrenceTaxaManager{
 							if($taxonType == TaxaSearchType::SCIENTIFIC_NAME || $taxonType == TaxaSearchType::COMMON_NAME){
 								foreach($synArr as $synTid => $sciName){
 									if(strpos($sciName,'aceae') || strpos($sciName,'idae')){
-										$sqlWhereTaxa .= 'OR (o.family = "' . $sciName . '") ';
+										$sqlWhereTaxa .= 'OR (ifnull(o.family, od.family) = "' . $sciName . '") ';
 									}
 								}
 							}
