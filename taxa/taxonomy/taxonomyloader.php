@@ -101,14 +101,14 @@ if($isEditor){
 						</select>
 						<script src="../../js/symb/taxa.taxonomyloader.js"> </script>
 					</div>
-					<div>
-						<div class="left-column">
-							<label for="sciname"> 
-								<?php echo $LANG['TAXON_NAME']; ?>: 
-							</label>
+						<div id="sciname-div">
+							<div class="left-column">
+								<label for="sciname"> 
+									<?php echo $LANG['TAXON_NAME']; ?>: 
+								</label>
+							</div>
+							<input type="text" id="sciname" name="sciname" class="search-bar-long" value="" onchange="parseName(this.form)"/>
 						</div>
-						<input type="text" id="sciname" name="sciname" class="search-bar-long" value="" onchange="parseName(this.form)"/>
-					</div>
 					<div>
 						<div class="left-column">
 							<label for="author">
