@@ -364,5 +364,6 @@ document.getElementById("rankid").addEventListener("change", function () {
   } else {
     div3.style.display = "none";
     div4.style.display = "none";
+    scinameDiv.style.display = "block";
   }
 });
