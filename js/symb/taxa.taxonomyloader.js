@@ -338,6 +338,9 @@ document.getElementById("rankid").addEventListener("change", function () {
   const div4 = document.getElementById("div4hide");
   const label = document.getElementById("unitind1label");
   const scinameDiv = document.getElementById("sciname-div");
+  const authorDiv = document.getElementById("author-div");
+  const parentNode = div3hide.parentNode;
+  const genusDiv = document.getElementById("genus-div");
 
   if (selectedValue > 150) {
     div1.style.display = "block";
@@ -361,9 +364,11 @@ document.getElementById("rankid").addEventListener("change", function () {
     div3.style.display = "block";
     div4.style.display = "block";
     scinameDiv.style.display = "none";
+    parentNode.insertBefore(authorDiv, div3hide);
   } else {
     div3.style.display = "none";
     div4.style.display = "none";
     scinameDiv.style.display = "block";
+    parentNode.insertBefore(authorDiv, genusDiv);
   }
 });

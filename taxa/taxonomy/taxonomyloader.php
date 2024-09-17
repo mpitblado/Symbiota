@@ -109,7 +109,7 @@ if($isEditor){
 							</div>
 							<input type="text" id="sciname" name="sciname" class="search-bar-long" value="" onchange="parseName(this.form)"/>
 						</div>
-					<div>
+					<div id="author-div">
 						<div class="left-column">
 							<label for="author">
 								<?php echo $LANG['AUTHOR']; ?>:
@@ -118,7 +118,7 @@ if($isEditor){
 						<input type='text' id='author' name='author' class='search-bar-long' />
 					</div>
 					
-					<div style="clear:both;">
+					<div style="clear:both;" id="genus-div">
 						<div class="left-column">
 							<label id="unitind1label" for="unitind1">
 								<?php echo $LANG['GENUS_NAME']; ?>:
@@ -175,7 +175,7 @@ if($isEditor){
 					}?>
 
 					<div style="clear:both;">
-						<div class="left-column">
+						<div class="left-column" id="parentname-div">
 							<label for="parentname">
 								<?php echo $LANG['PARENT_TAXON']; ?>:
 							</label>
