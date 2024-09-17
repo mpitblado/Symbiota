@@ -36,6 +36,7 @@ class TaxonomyDisplayManager extends Manager{
 		$taxaParentIndex = $this->setTaxa();
 		$this->adjustSubgenericNames();
 		$hierarchyArr = $this->buildHierarchyArr($taxaParentIndex);
+		var_dump($hierarchyArr);
 		if(!$hierarchyArr) return false;
 		$this->echoTaxonArray($hierarchyArr);
 		return true;
