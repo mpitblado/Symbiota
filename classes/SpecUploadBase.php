@@ -1943,6 +1943,7 @@ class SpecUploadBase extends SpecUpload{
 						if(array_key_exists('specificepithet',$recMap) && $recMap['specificepithet']) $sciName .= ' '.$recMap['specificepithet'];
 						if(array_key_exists('infraspecificepithet',$recMap) && $recMap['infraspecificepithet']){
 							if(array_key_exists('taxonrank',$recMap) && $recMap['taxonrank']){
+								// @TODO potential intervention point here?
 								$infraStr = $recMap['taxonrank'];
 								if($infraStr == 'subspecies') $infraStr = 'subsp.';
 								elseif($infraStr == 'ssp.') $infraStr = 'subsp.';
