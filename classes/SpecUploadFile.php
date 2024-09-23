@@ -114,18 +114,46 @@ class SpecUploadFile extends SpecUploadBase{
 			$this->transferCount = 0;
 			$this->outputMsg('<li>Beginning to load records...</li>',1);
 			while($recordArr = $this->getRecordArr($fh)){
+				// var_dump($recordArr);
+				
 				$recMap = Array();
+				$hasCultivarEpithet = false;
+				$hasTradeName = false;
+				$isCultivar = false;
+				$currentOccId = '';
 				foreach($this->occurFieldMap as $symbField => $sMap){
+					// var_dump($symbField);
+					// var_dump($sMap);
 					$indexArr = array_keys($headerArr,$sMap['field']);
 					$index = array_shift($indexArr);
 					if(array_key_exists($index,$recordArr)){
 						$valueStr = $recordArr[$index];
+						// var_dump($valueStr);
+						if($sMap['field'] == 'occurrenceid'){
+							$currentOccId = $valueStr;
+						}
+						if(!empty($valueStr) && $sMap['field'] == 'cultivarepithet'){
+							$hasCultivarEpithet = true;
+						}
+						if(!empty($valueStr) && $sMap['field'] == 'tradename'){
+							$hasTradeName = true;
+						}
+						// var_dump(strtolower($valueStr));
+						// var_dump($sMap['field']);
+						if(strtolower($valueStr) == 'cultivar' && $sMap['field'] == 'taxonrank'){
+							// var_dump('got here e1');
+							$isCultivar = true;
+						}
 						//If value is enclosed by quotes, remove quotes
 						if(substr($valueStr,0,1) == '"' && substr($valueStr,-1) == '"'){
 							$valueStr = substr($valueStr,1,strlen($valueStr)-2);
 						}
 						$recMap[$symbField] = $valueStr;
 					}
+				}
+				// var_dump('$hasCultivarEpithet is: ' . ($hasCultivarEpithet ? 'true' : 'false') . ' and hasTradeName is: ' . ($hasTradeName ? 'true' : 'false') . ' and isCultivar is: ' . ($isCultivar ? 'true' : 'false'));
+				if($isCultivar && !$hasCultivarEpithet && !$hasTradeName){
+					echo 'Unable to complete upload because occurrence ' . $currentOccId . ' is marked as cultivated but is missing both trade name and cultivar epithet, which is not permitted'; exit; // @TODO i8n
 				}
 				if($this->uploadType == $this->SKELETAL && !isset($recMap['catalognumber']) && !isset($recMap['othercatalognumbers'])){
 					//Skip loading record
