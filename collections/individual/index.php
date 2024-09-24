@@ -497,10 +497,12 @@ $traitArr = $indManager->getTraitArr();
 									$taxonEditorObj->setTid($occArr['tidinterpreted']);
 									$taxonEditorObj->setTaxon();
 									$splitSciname = $taxonEditorObj->splitSciname();
+									echo 'split sciname is: ' . $splitSciname;
 									$nonItalicizedScinameComponent = trim((!empty($splitSciname['author']) ? ($splitSciname['author'] . ' ') : '') . (!empty($splitSciname['cultivarEpithet']) ? ("'" . $splitSciname['cultivarEpithet'] . "' ") : '') . (!empty($splitSciname['tradeName']) ? ($splitSciname['tradeName'] . ' ') : ''));
 									echo '<i>' . $splitSciname['base'] . '</i> ' . $nonItalicizedScinameComponent;
 									//echo ' <a href="../../taxa/index.php?taxon=' . $occArr['tidinterpreted'] . '" title="Open Species Profile Page"><img src="" /></a>';
 								} else{
+									var_dump($occArr);
 									echo '<i>' . $occArr['sciname'] .  '</i>';
 								}
 								?>
