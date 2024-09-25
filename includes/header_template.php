@@ -30,9 +30,9 @@ $collectionSearchPage = $SHOULD_USE_HARVESTPARAMS ? '/collections/index.php' : '
 							<?= $LANG['H_CONTACT_US'] ?>
 						</a>
 					</span>
-					<form name="loginForm" method="post" action="<?= $CLIENT_ROOT . "/profile/index.php" ?>>
+					<form name="loginForm" method="post" action="<?= $CLIENT_ROOT . "/profile/index.php" ?>" style="margin:0px; padding:0px; display:inline;">
 						<input name="refurl" type="hidden" value="<?= htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . "?" . htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES) ?>">
-						<button name="loginButton" type="submit"><?= $LANG['H_LOGIN'] ?></button>
+						<button class="button button-secondary" name="loginButton" type="submit"><?= $LANG['H_LOGIN'] ?></button>
 					</form>
 					<span class="button button-secondary">
 						<a href="<?= $CLIENT_ROOT . "/profile/index.php?refurl=" . htmlspecialchars($_SERVER['SCRIPT_NAME'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . "?" . htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES); ?>">
