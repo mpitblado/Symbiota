@@ -8,7 +8,7 @@ include_once('./classes/TaxonomyEditorManager.php');
 
 require_once 'bootstrap.php';
 
-class MyClassTest extends TestCase
+class SplitSciNameTest extends TestCase
 {
     public function testSplitScinameFromOccArrEasy()
     {
@@ -27,6 +27,7 @@ class MyClassTest extends TestCase
 		$expectedResult['cultivarEpithet'] = 'newtest';
 		$expectedResult['tradeName'] = 'FRESH';
 		$expectedResult['author'] = 'FISHER';
+        $expectedResult['nonItal'] = '';
 
         // $result = $str1 . $str2;
 
@@ -47,6 +48,7 @@ class MyClassTest extends TestCase
 		$expectedResult['cultivarEpithet'] = '';
 		$expectedResult['tradeName'] = '';
 		$expectedResult['author'] = 'FISHER';
+        $expectedResult['nonItal'] = 'newtest FRESH';
 
         // $result = $str1 . $str2;
 
@@ -66,8 +68,8 @@ class MyClassTest extends TestCase
 
         $expectedResult = [];
         $expectedResult['base'] = 'Acer rubrum';
-		// $expectedResult['cultivarEpithet'] = 'newtest';
-		// $expectedResult['tradeName'] = 'FRESH';
+		$expectedResult['cultivarEpithet'] = '';
+		$expectedResult['tradeName'] = '';
 		$expectedResult['author'] = '(Walter) W. Stone';
         $expectedResult['nonItal'] = 'subsp. carolinianum';
 

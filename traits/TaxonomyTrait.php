@@ -1,6 +1,6 @@
 <?php
 trait TaxonomyTrait {
-    function splitSciname(){
+    function splitSciname($occArr=null){
 		$scinameBase = $this->sciName;
 		$returnObj = [];
 		if(!empty($this->tradeName)){
@@ -14,6 +14,9 @@ trait TaxonomyTrait {
 		$returnObj['cultivarEpithet'] = $this->cultivarEpithet; // assumes quotes not stored in db
 		$returnObj['tradeName'] = $this->tradeName;
 		$returnObj['author'] = $this->author;
+		if(empty($this->cultivarEpithet) && empty($this->tradeName) && !empty($occArr)){
+			return $this->splitScinameFromOccArr($occArr);
+		}
 
 		return $returnObj;
 	}
@@ -43,12 +46,13 @@ trait TaxonomyTrait {
 			$theStuffBeyondAuthor = trim($splitByAuthorship[1]);
 			$secondSplit = preg_split("/(\w+\.)/", $theStuffBeyondAuthor,-1,PREG_SPLIT_DELIM_CAPTURE);
 			$returnObj['nonItal'] = $secondSplit[count($secondSplit)-1];
-			var_dump($secondSplit);
+			// var_dump($secondSplit);
 		}else{
 			// $theStuffBeyondAuthor = trim($splitByAuthorship[1]);
 			$secondSplit = preg_split("/(\w+\.)/", trim($scinameBase), -1, PREG_SPLIT_DELIM_CAPTURE);
-			var_dump($secondSplit);
-			$returnObj['nonItal'] = $secondSplit[count($secondSplit)-1];
+			// var_dump($secondSplit);
+			$scinameBase = $secondSplit[0];
+			$returnObj['nonItal'] = implode('',array_slice($secondSplit,1));
 		}
 
 
