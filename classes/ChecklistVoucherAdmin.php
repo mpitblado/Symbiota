@@ -276,13 +276,7 @@ class ChecklistVoucherAdmin extends Manager {
 			$locArr = explode(',', $localityStr);
 			foreach($locArr as $str){
 				$str = $this->cleanInStr($str);
-				if(strlen($str) > 4){
-					$locStr .= 'OR (MATCH(f.locality) AGAINST(\'"'.$str.'"\' IN BOOLEAN MODE)) ';
-				}
-				else{
-					$locStr .= 'OR (o.locality LIKE "%'.$str.'%") ';
-				}
-				//$locStr .= 'OR (o.locality LIKE "%'.$this->cleanInStr($str).'%") ';
+				$locStr .= 'OR (MATCH(o.locality) AGAINST(\'"'.$str.'"\' IN BOOLEAN MODE)) ';
 			}
 		}
 		$llStr = '';
@@ -328,7 +322,7 @@ class ChecklistVoucherAdmin extends Manager {
 					$tempArr[] = '(o.recordedby LIKE "%'.$this->cleanInStr($str).'%")';
 				}
 				else{
-					$tempArr[] = '(MATCH(f.recordedby) AGAINST("'.$this->cleanInStr($str).'"))';
+					$tempArr[] = '(MATCH(o.recordedby) AGAINST("'.$this->cleanInStr($str).'" IN BOOLEAN MODE))';
 				}
 			}
 			$sqlFrag .= 'AND ('.implode(' OR ', $tempArr).') ';
