@@ -127,7 +127,19 @@ class TaxonomyUtilities {
 					//cycles through the final terms to evaluate and extract infraspecific data
 					while($sciStr = array_shift($sciNameArr)){
 						if($testArr = self::cleanInfra($sciStr)){
-							self::setInfraNode($sciStr, $sciNameArr, $retArr, $authorArr, $testArr['infra']);
+							if($sciNameArr){
+								$infraStr = array_shift($sciNameArr);
+								if(preg_match('/^[a-z]{3,}$/', $infraStr)){
+									$retArr['unitind3'] = $testArr['infra'];
+									$retArr['unitname3'] = $infraStr;
+									unset($authorArr);
+									$authorArr = array();
+								}
+								else{
+									$authorArr[] = $sciStr;
+									$authorArr[] = $infraStr;
+								}
+							}
 						}
 						elseif($kingdomName == 'Animalia' && !$retArr['unitname3'] && ($rankId == 230 || preg_match('/^[a-z]{3,}$/',$sciStr) || preg_match('/^[A-Z]{3,}$/',$sciStr))){
 							$retArr['unitind3'] = '';
@@ -191,7 +203,10 @@ class TaxonomyUtilities {
 				$retArr['rankid'] = $rankId;
 			}
 			else{
-				if($retArr['unitname3']){
+				if(!empty($retArr['cultivarepithet'])){
+					$retArr['rankid'] = 300;
+				}
+				elseif($retArr['unitname3']){
 					if($retArr['unitind3'] == 'subsp.' || !$retArr['unitind3']){
 						$retArr['rankid'] = 230;
 					}
@@ -230,6 +245,12 @@ class TaxonomyUtilities {
 			}
 			$sciname .= $retArr['unitname2'].' ';
 			$sciname .= trim($retArr['unitind3'].' '.$retArr['unitname3']);
+			if(!empty($retArr['cultivarepithet'])){
+				$sciname .= ' "' . $retArr['cultivarepithet'] . '"';
+			}
+			if(!empty($retArr['tradename'])){
+				$sciname .= ' ' . $retArr['tradename'];
+			}
 			$retArr['sciname'] = trim($sciname);
 		}
 		return $retArr;
@@ -264,22 +285,6 @@ class TaxonomyUtilities {
 			$retArr['rankid'] = 230;
 		}
 		return $retArr;
-	}
-
-	private static function setInfraNode($sciStr, &$sciNameArr, &$retArr, &$authorArr, $rankTag){
-		if($sciNameArr){
-			$infraStr = array_shift($sciNameArr);
-			if(preg_match('/^[a-z]{3,}$/', $infraStr)){
-				$retArr['unitind3'] = $rankTag;
-				$retArr['unitname3'] = $infraStr;
-				unset($authorArr);
-				$authorArr = array();
-			}
-			else{
-				$authorArr[] = $sciStr;
-				$authorArr[] = $infraStr;
-			}
-		}
 	}
 
 	//Taxonomic indexing functions

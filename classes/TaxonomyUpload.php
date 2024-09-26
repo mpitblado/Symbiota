@@ -193,6 +193,13 @@ class TaxonomyUpload{
 										$sciname .= ' '.$inputArr['unitname3'];
 									}
 								}
+								if(!empty($inputArr['cultivarepithet'])){
+									$sciname .= ' "' . $inputArr['cultivarepithet'] . '"';
+									$inputArr['rankid'] = 300;
+								}
+								if(!empty($inputArr['tradename'])){
+									$sciname .= ' ' . $inputArr['tradename'];
+								}
 								$inputArr['sciname'] = trim($sciname);
 							}
 							if(isset($inputArr['rankid']) && $inputArr['rankid'] < 220 && isset($inputArr['sciname']) && !isset($inputArr['unitname1'])){
@@ -544,8 +551,15 @@ class TaxonomyUpload{
 		if(!$this->conn->query($sql)){
 			$this->outputMsg('ERROR (3): '.$this->conn->error,1);
 		}
-
 		$this->outputMsg('Populating and mapping parent taxon... ');
+		//Set parents of cultivar taxa
+		$sql = 'UPDATE uploadtaxa 
+			SET parentstr = CONCAT_WS(" ", unitname1, unitname2, CONCAT_WS(" ", unitind3, unitname3)) 
+			WHERE ((parentstr IS NULL) OR (parentstr LIKE "PENDING:%")) AND (rankid = 300)';
+		if(!$this->conn->query($sql)){
+			$this->outputMsg('ERROR: '.$this->conn->error,1);
+		}
+		//Set parent of infraspecific taxa
 		$sql = 'UPDATE uploadtaxa '.
 			'SET parentstr = CONCAT_WS(" ", unitname1, unitname2) '.
 			'WHERE ((parentstr IS NULL) OR (parentstr LIKE "PENDING:%")) AND (rankid > 220)';
