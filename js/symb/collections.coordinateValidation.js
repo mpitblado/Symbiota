@@ -1,6 +1,9 @@
 function verifyCoordinates(f){
 	//Used within occurrenceeditor.php and observationsubmit.php
-	//Check to see if coordinates are within country/state/county boundaries
+	//Input form contains input elements: country, stateProvince, county, decimalLatitude, and decimalLongitude
+	//Function tiggered whenever decimalLatitude or decimalLongitud fields are modified
+	//Uses GBIF spacial boundary tool to check if coordinates fall within country/state/county boundaries
+	//Following code needs to be modified to use intenal shape spatial indexes associated with the geographic thesaurus 
 	var lngValue = f.decimallongitude.value;
 	var latValue = f.decimallatitude.value;
 	if(latValue && lngValue){

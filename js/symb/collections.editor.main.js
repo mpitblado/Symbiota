@@ -382,13 +382,13 @@ function stateProvinceChanged(stateVal) {
 
 function decimalLatitudeChanged(f) {
 	verifyDecimalLatitude(f);
-	//verifyCoordinates(f);
+	verifyCoordinates(f);
 	fieldChanged('decimallatitude');
 }
 
 function decimalLongitudeChanged(f) {
 	verifyDecimalLongitude(f);
-	//verifyCoordinates(f);
+	verifyCoordinates(f);
 	fieldChanged('decimallongitude');
 }
 
