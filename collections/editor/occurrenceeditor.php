@@ -1111,7 +1111,7 @@ else{
 													$latValue = $occArr['decimallatitude'];
 												}
 												?>
-												<input type="text" id="decimallatitude" name="decimallatitude" maxlength="15" value="<?php echo $latValue; ?>" onchange="decimalLatitudeChanged(this.form)" />
+											<input type="text" id="decimallatitude" name="decimallatitude" maxlength="15" value="<?php echo $latValue; ?>" onchange="decimalLatitudeChanged(this.form, '<?= $CLIENT_ROOT?>')" />
 											</div>
 											<div id="decimalLongitudeDiv" class="field-div">
 												<?php echo $LANG['DECIMAL_LONGITUDE']; ?>
@@ -1122,7 +1122,7 @@ else{
 													$longValue = $occArr["decimallongitude"];
 												}
 												?>
-												<input type="text" id="decimallongitude" name="decimallongitude" maxlength="15" value="<?php echo $longValue; ?>" onchange="decimalLongitudeChanged(this.form);" />
+												<input type="text" id="decimallongitude" name="decimallongitude" maxlength="15" value="<?php echo $longValue; ?>" onchange="decimalLongitudeChanged(this.form, '<?= $CLIENT_ROOT?>');" />
 											</div>
 											<div id="coordinateUncertaintyInMetersDiv" class="field-div">
 												<?php echo $LANG['COORDINATE_UNCERTAINITY_IN_METERS']; ?>
