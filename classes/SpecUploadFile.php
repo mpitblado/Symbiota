@@ -115,6 +115,7 @@ class SpecUploadFile extends SpecUploadBase{
 			$this->outputMsg('<li>Beginning to load records...</li>',1);
 			while($recordArr = $this->getRecordArr($fh)){
 				// var_dump($recordArr);
+				// @TODO intervention point
 				
 				$recMap = Array();
 				$hasCultivarEpithet = false;
@@ -127,6 +128,7 @@ class SpecUploadFile extends SpecUploadBase{
 					$indexArr = array_keys($headerArr,$sMap['field']);
 					$index = array_shift($indexArr);
 					if(array_key_exists($index,$recordArr)){
+						// var_dump($recordArr);
 						$valueStr = $recordArr[$index];
 						// var_dump($valueStr);
 						if($sMap['field'] == 'occurrenceid'){
@@ -160,6 +162,7 @@ class SpecUploadFile extends SpecUploadBase{
 					unset($recMap);
 					continue;
 				}
+				// var_dump($recMap);
 				$this->loadRecord($recMap);
 				unset($recMap);
 			}

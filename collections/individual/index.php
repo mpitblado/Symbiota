@@ -505,7 +505,7 @@ $traitArr = $indManager->getTraitArr();
 									$splitSciname = $taxonEditorObj->splitSciname($occArr);
 									// echo 'split sciname is: ' . $splitSciname;
 									// var_dump($occArr);
-									var_dump($splitSciname);
+									// var_dump($splitSciname);
 									$nonItalicizedEasy = array_key_exists('nonItal', $splitSciname) ? $splitSciname['nonItal'] : '';
 									$nonItalicizedNuanced = trim((!empty($splitSciname['author']) ? ($splitSciname['author'] . ' ') : '') . (!empty($splitSciname['cultivarEpithet']) ? ("'" . $splitSciname['cultivarEpithet'] . "' ") : '') . (!empty($splitSciname['tradeName']) ? ($splitSciname['tradeName'] . ' ') : ''));
 									$nonItalicizedScinameComponent = !empty($nonItalicizedEasy) ? $nonItalicizedEasy : $nonItalicizedNuanced;
@@ -513,8 +513,8 @@ $traitArr = $indManager->getTraitArr();
 									//echo ' <a href="../../taxa/index.php?taxon=' . $occArr['tidinterpreted'] . '" title="Open Species Profile Page"><img src="" /></a>';
 								} else{
 									// var_dump($occArr);
-									$splitSciname = $taxonEditorObj->splitScinameFromOccArr($occArr);
-									var_dump($splitSciname);
+									// $splitSciname = $taxonEditorObj->splitScinameFromOccArr($occArr);
+									// var_dump($splitSciname);
 									echo '<i>' . $occArr['sciname'] .  '</i>';
 								}
 								?>

@@ -708,10 +708,11 @@ class OccurrenceHelper{
 		}
 		else{
 			if(array_key_exists('genus',$recMap) && array_key_exists('specificepithet',$recMap)){
+				// var_dump($recMap);
 				//Build sciname from individual units supplied by source
 				$sciName = trim($recMap['genus'].' '.$recMap['specificepithet']);
 				if(array_key_exists('infraspecificepithet',$recMap)){
-					if(array_key_exists('taxonrank',$recMap)) $sciName .= ' '.$recMap['taxonrank'];
+					if(array_key_exists('taxonrank',$recMap) && strtolower($recMap['taxonrank'])!== 'cultivar') $sciName .= ' '.$recMap['taxonrank'];
 					$sciName .= ' '.$recMap['infraspecificepithet'];
 				}
 				$recMap['sciname'] = trim($sciName);
