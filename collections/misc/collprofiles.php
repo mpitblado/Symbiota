@@ -321,10 +321,9 @@ if ($SYMB_UID) {
 				$deactivateTag = '';
 				$deactivateMsg = '';
 				if ($collData['managementtype'] != 'Live Data'){
-					//Deactivated until these changes can be better reviewed - shooting to re-activate for 3.2
-					//$deactivateStyle = 'style="pointer-events: none"';
-					//$deactivateTag = '&nbsp;(*' . $LANG['DEACTIVATED'] . ')';
-					//$deactivateMsg = '<div>* ' . $LANG['DEACTIVATED_MESSAGE'] . '</div>';
+					$deactivateStyle = 'style="pointer-events: none"';
+					$deactivateTag = '&nbsp;(*' . $LANG['DEACTIVATED'] . ')';
+					$deactivateMsg = '<div>* ' . $LANG['DEACTIVATED_MESSAGE'] . '</div>';
 				}
 				?>
 				<button style="margin-bottom: 0.5rem" type="button" onclick="toggleById('controlpanel');" >
@@ -852,7 +851,7 @@ if ($SYMB_UID) {
 						if($collData['managementtype'] == 'Live Data'){
 							if($GLOBALS['SYMB_UID']){
 								?>
-								<div class="bottom-breathing-room-rel">';
+								<div class="bottom-breathing-room-rel">
 									<span class="label"><?= $LANG['LIVE_DOWNLOAD'] ?>:</span>
 									<a href="../../webservices/dwc/dwcapubhandler.php?collid=<?= $collData['collid'] ?>"><?= $LANG['FULL_DATA'] ?></a>
 								</div>
