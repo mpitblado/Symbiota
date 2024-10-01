@@ -41,46 +41,6 @@ abstract class UploadStrategy {
 	abstract public function remove(string $file): bool;
 }
 
-class MediaFile {
-	public string $name;
-	public string $filepath;
-	public string $extension;
-	public string $mime_type;
-	public MediaType $media_type;
-	public string $is_remote;
-
-	public function __construct(string | array $filepath) {
-		//Array is assumed to be from $_FILES
-		if(is_array($filepath)) {
-			$this->name = $filepath['name'];
-			$this->mime_type = $filepath['type'];
-			$this->extension = Media::mime2ext($filepath['type']);
-
-		} else {
-			$file_name = $filepath;
-
-			//Filepath maybe a url so clear out url query if it exists
-			$query_pos = strpos($file_name,'?');
-			if($query_pos) $file_name = substr($file_name, 0, $query_pos);
-
-			$file_type_pos = strrpos($file_name,'.');
-			$dir_path_pos = strrpos($file_name,'/');
-
-			if($dir_path_pos !== false) $dir_path_pos += 1;
-			if($file_type_pos === false || $file_type_pos < $dir_path_pos) {
-				$file_type_pos = strlen($file_name);
-			}
-
-			$this->name = $Media::cleanFileName(
-				substr($file_name, $dir_path_pos, $file_type_pos - $dir_path_pos)
-			);
-
-			$this->filepath = $filepath;
-			$this->extension = substr($file_name, $file_type_pos + 1);
-		}
-	}
-}
-
 function get_occurrence_upload_path($institutioncode, $collectioncode, $catalognumber) {
 		$root = $institutioncode . ($collectioncode? '_'. $collectioncode: '') . '/';
 
