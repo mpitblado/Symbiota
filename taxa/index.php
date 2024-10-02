@@ -110,8 +110,8 @@ $nonItalicizedScinameComponent = trim((!empty($splitSciname['author']) ? ($split
 								$sciName = $splitSciname['base'];
 								$taxonRankId = $taxonManager->getRankId();
 								if($taxonRankId >= 180) $sciName = '<i>'.$sciName.'</i>';
-								if(isset($splitSciname['cultivarEpithet'])) $sciName .= " '" . $splitSciname['cultivarEpithet'] . "'";
-								if(isset($splitSciname['tradeName'])) $sciName .= " " . $splitSciname['tradeName'];
+								if(!empty($splitSciname['cultivarEpithet'])) $sciName .= " '" . $splitSciname['cultivarEpithet'] . "'";
+								if(!empty($splitSciname['tradeName'])) $sciName .= " " . $splitSciname['tradeName'];
 								$taxonToDisplay = $taxonRankId > 179 ? $sciName : $taxonManager->getTaxonName();
 								echo '<span id="'.($taxonRankId > 179 ? 'sciname':'taxon').'">' . $taxonToDisplay . '</span>'; 
 							?>

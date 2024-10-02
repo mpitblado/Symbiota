@@ -273,8 +273,8 @@ class TaxonomyDisplayManager extends Manager{
 						$sciNameParts = $this->splitScinameByProvided($this->taxaArr[$key]['sciname'], $this->taxaArr[$key]['cultivarEpithet'], $this->taxaArr[$key]['tradeName'], $author);
 						$sciName = $sciNameParts['base'];
 						if($taxonRankId >= 180) $sciName = '<i>'.$sciName.'</i>';
-						if(isset($sciNameParts['cultivarEpithet'])) $sciName .= " '" . $sciNameParts['cultivarEpithet'] . "'";
-						if(isset($sciNameParts['tradeName'])) $sciName .= " " . $sciNameParts['tradeName'];
+						if(!empty($sciNameParts['cultivarEpithet'])) $sciName .= " '" . $sciNameParts['cultivarEpithet'] . "'";
+						if(!empty($sciNameParts['tradeName'])) $sciName .= " " . $sciNameParts['tradeName'];
 					}
 				}
 				elseif(!$key){

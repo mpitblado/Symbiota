@@ -241,10 +241,10 @@ class TaxonomyEditorManager extends Manager{
 			'modifiedUid = '.$GLOBALS['SYMB_UID'].', '.
 			'modifiedTimeStamp = "'.date('Y-m-d H:i:s').'", ' ;
 
-			if(array_key_exists('cultivarEpithet', $postArr) && $postArr['cultivarEpithet']){
+			if(array_key_exists('cultivarEpithet', $postArr) && !empty($postArr['cultivarEpithet'])){
 				$sciname .= " '". $processedCultivarEpithet . "'";
 			}
-			if(array_key_exists('tradeName', $postArr) && $postArr['tradeName']){
+			if(array_key_exists('tradeName', $postArr) && !empty($postArr['tradeName'])){
 				$sciname .= ' ' . $processedTradeName;
 			}
 			$sql .= 'sciname = "' . $this->cleanInStr($sciname) . '" '; 
@@ -554,12 +554,12 @@ class TaxonomyEditorManager extends Manager{
 		//Load new name into taxa table
 		$tid = 0;
 		$processedSciname = trim($dataArr['unitind1'] . $dataArr['unitname1'] . ' ' . $dataArr['unitind2'] . $dataArr['unitname2'] . ' ' . trim($dataArr['unitind3'] . ' ' . $dataArr['unitname3']));
-		$processedCultivarEpithet = $dataArr['cultivarEpithet'] ? trim($dataArr['cultivarEpithet'],"'\`\"") : NULL;
+		$processedCultivarEpithet = $dataArr['cultivarEpithet'] ? trim($dataArr['cultivarEpithet'],"'\`\"") : NULL; // @TODO maybe leverage TaxonomyTrait functions?
 		$processedTradeName = $dataArr['tradeName'] ? strtoupper($dataArr['tradeName']) : 'NULL';
-		if(array_key_exists('cultivarEpithet', $dataArr) && $dataArr['cultivarEpithet']){
+		if(array_key_exists('cultivarEpithet', $dataArr) && !empty($dataArr['cultivarEpithet'])){
 			$processedSciname .= " '". $processedCultivarEpithet . "'";
 		}
-		if(array_key_exists('tradeName', $dataArr) && $dataArr['tradeName']){
+		if(array_key_exists('tradeName', $dataArr) && !empty($dataArr['tradeName'])){
 			$processedSciname .= ' ' . $processedTradeName;
 		}
 		$sqlTaxa = 'INSERT INTO taxa(sciname, author, rankid, unitind1, unitname1, unitind2, unitname2, unitind3, unitname3, cultivarEpithet, tradeName, '.
