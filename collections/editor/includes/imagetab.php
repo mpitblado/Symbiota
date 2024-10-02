@@ -166,7 +166,7 @@ $creatorArray = Media::getCreatorArray();
 					<b><?php echo $LANG['DESCRIBE_IMAGE']; ?></b>
 				</div>
 					<?php
-					$imageTagKeys = Media::getImageTagKeys();
+					$imageTagKeys = Media::getMediaTagKeys();
 					foreach($imageTagKeys as $key => $description) {
 						echo '<div style="margin-left:10px;">';
 						echo '<input name="ch_'.$key.'" type="checkbox" value="1" /> '.$description.'</br>';

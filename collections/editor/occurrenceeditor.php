@@ -229,6 +229,8 @@ if($SYMB_UID){
 				}
 			}
 			elseif($action == 'Submit Image Edits'){
+				Media::update($_POST['imgid'], $_POST);
+				/*
 				$occManager->editImage($_POST);
 				if($errArr = $occManager->getErrorArr()){
 					if(isset($errArr['web'])){
@@ -242,6 +244,7 @@ if($SYMB_UID){
 					}
 					if(isset($errArr['error'])) $statusStr .= $LANG['ERROR_EDITING_IMAGE'].': '.$errArr['error'];
 				}
+*/
 				$tabTarget = 2;
 			}
 			elseif($action == 'Submit New Image') {
@@ -262,7 +265,7 @@ if($SYMB_UID){
 					);
 					Media::add(
 						$_POST, 
-						new LocalUploadStrategy($path),
+						new LocalStorage($path),
 						$_FILES['imgfile'] ?? null
 					);
 					$statusStr = $LANG['IMAGE_ADD_SUCCESS'];
@@ -308,7 +311,7 @@ if($SYMB_UID){
 					intval($_POST['targetoccid']);
 
 				try {
-					$target_occur_manager = new OccurrenceEditorImages();
+					$target_occur_manager = new OccurrenceEditorManager();
 					$target_occur_manager->setOccId($target_occid);
 					$target_occur_map = $target_occur_manager->getOccurMap()[$target_occid];
 					$remap_path	= get_occurrence_upload_path(
@@ -326,8 +329,8 @@ if($SYMB_UID){
 					Media::remap(
 						intval($_POST['imgid']), 
 						$target_occid, 
-						new LocalUploadStrategy($current_path), 
-						new LocalUploadStrategy($remap_path)
+						new LocalStorage($current_path), 
+						new LocalStorage($remap_path)
 					);
 
 					$statusStr = $LANG['IMAGE_REMAP_SUCCESS'] .' <a href="occurrenceeditor.php?occid=' . htmlspecialchars($target_occid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" target="_blank">' . htmlspecialchars($target_occid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a>';

@@ -2,7 +2,7 @@
 include_once($SERVER_ROOT . "/traits/Database.php");
 include_once($SERVER_ROOT . "/classes/Sanitize.php");
 
-abstract class UploadStrategy {
+abstract class StorageStrategy {
     /**
      * If a file is given then return the storage path for that resource otherwise just return the root path.
 	 * @param array $file {name: string, type: string, tmp_name: string, error: int, size: int} 
@@ -39,6 +39,16 @@ abstract class UploadStrategy {
 	 * @throws MediaException(MediaExceptionCase::DuplicateMediaFile)
      */
 	abstract public function remove(string $file): bool;
+
+    /**
+     * Function to handle renaming an existing file.
+	 * @param string $filepath
+	 * @param array $new_filepath
+     * @return bool 
+	 * @throws MediaException(MediaExceptionCase::FileDoesNotExist)
+	 * @throws MediaException(MediaExceptionCase::FileAlreadyExists)
+     */
+	abstract public function rename(string $filepath, string $new_filepath): void;
 }
 
 function get_occurrence_upload_path($institutioncode, $collectioncode, $catalognumber) {
@@ -69,10 +79,9 @@ function get_occurrence_upload_path($institutioncode, $collectioncode, $catalogn
 		}
 
 		return $root;
-
 }
 
-class LocalUploadStrategy extends UploadStrategy {
+class LocalStorage extends StorageStrategy {
 	private string $path;
 
 	public function __construct(string $path) {
@@ -136,8 +145,11 @@ class LocalUploadStrategy extends UploadStrategy {
 
 		return true;
 	}
-
-	static private function on_system($path) {
+    /**
+     * @return bool
+     * @param mixed $path
+     */
+    static private function on_system($path) {
 		//Check if path is absoulte path
 		if(file_exists($path)) {
 			return true;
@@ -156,7 +168,7 @@ class LocalUploadStrategy extends UploadStrategy {
 		//Check Relative Path
 		if($this->file_exists($filename)) {
 			if(!unlink($this->getDirPath($filename))) {
-				error_log("WARNING: File (path: " . $this->getDirPath($filename) . ") failed to delete from server in LocalUploadStrategy->remove");
+				error_log("WARNING: File (path: " . $this->getDirPath($filename) . ") failed to delete from server in LocalStorage->remove");
 				return false;
 			};
 			return true;
@@ -172,13 +184,23 @@ class LocalUploadStrategy extends UploadStrategy {
 		//Check Absolute path
 		if($dir_path !== $filename && file_exists($dir_path)) {
 			if(!unlink($dir_path)) {
-				error_log("WARNING: File (path: " . $dir_path. ") failed to delete from server in LocalUploadStrategy->remove");
+				error_log("WARNING: File (path: " . $dir_path. ") failed to delete from server in LocalStorage->remove");
 				return false;
 			}
 			return true;
 		}
 
 		return false;
+	}	
+
+	public function rename(string $filepath, string $new_filepath): void {
+		if($this->file_exists($new_filepath)) {
+			throw new MediaException(MediaExceptionCase::FileAlreadyExists); 
+		} else if(!$this->file_exists($filepath)) {
+			throw new MediaException(MediaExceptionCase::FileDoesNotExist); 
+		} else {
+			rename($filepath, $new_filepath);
+		}
 	}
 } 
 
@@ -195,6 +217,9 @@ enum MediaType: string {
 enum MediaExceptionCase: string {
 	case InvalidMediaType = 'Invalid Media Type';
 	case DuplicateMediaFile = 'Duplicate Media File';
+	case FileDoesNotExist = 'File does not exist';
+	case FileAlreadyExists = 'File already exists';
+	case InvalidStorageDriver = '';
 }
 
 class MediaException extends Exception {
@@ -208,6 +233,8 @@ class Media {
 	private static $mediaRootPath;
 	private static $mediaRootUrl;
 
+	private static $storage_driver = LocalStorage::class;
+
 	private const DEFAULT_THUMBNAIL_WIDTH_PX = 200;
 	private const DEFAULT_WEB_WIDTH_PX = 1600;
 	private const DEFAULT_LARGE_WIDTH_PX = 3168;
@@ -218,6 +245,10 @@ class Media {
 	private const DEFAULT_GEN_LARGE_IMG = true;
 	private const DEFAULT_GEN_WEB_IMG = true;
 	private const DEFAULT_GEN_THUMBNAIL_IMG = true;
+
+	public static function setStorageDriver(StorageStrategy $storage_driver): void {
+		$this->storage_driver = $storage_driver::class;
+	}
 
 	private static function getMediaRootPath(): string {
 		if(self::$mediaRootPath) {
@@ -246,7 +277,8 @@ class Media {
 	 *
 	 * @param string $filepath Can be a file or url path
 	 * return array<string,mixed> 
-	 */
+* @return array<string,mixed>
+ 	 */
 	public static function parseFileName(string $filepath): array {
 		$file_name = $filepath;
 
@@ -267,8 +299,12 @@ class Media {
 			'extension' => substr($file_name, $file_type_pos + 1),
 		];
 	}
-
-	public static function render_media_item(array $media_arr, $thumbnail=false) {
+    /**
+     * @return string
+     * @param array<int,mixed> $media_arr
+     * @param mixed $thumbnail
+     */
+    public static function render_media_item(array $media_arr, $thumbnail=false) {
 		if($media_arr['media_type'] !== 'image' && !$thumbnail) {
 			$src = $media_arr['url'];
 			$format = $media_arr['format'];
@@ -303,8 +339,11 @@ class Media {
 			return $html;
 		}
 	}
-
-	static function render_media_link($url, $text) {
+    /**
+     * @param mixed $url
+     * @param mixed $text
+     */
+    static function render_media_link($url, $text) {
 		$slash_route = substr($url, 0, 1) == '/';
 		if(array_key_exists('MEDIA_DOMAIN',$GLOBALS) && $slash_route) {
 			$url = $GLOBALS['MEDIA_DOMAIN'] . $url;
@@ -652,11 +691,11 @@ class Media {
 
     /**
      * @param array<int,mixed> $post_arr
-     * @param UploadStrategy $upload_strategy
+     * @param StorageStrategy $storage
 	 * @param array $file {name: string, type: string, tmp_name: string, error: int, size: int} 
      * @return bool
      */
-    public static function add(array $post_arr, UploadStrategy $upload_strategy, array $file): void {
+    public static function add(array $post_arr, StorageStrategy $storage, array $file): void {
 		$clean_post_arr = Sanitize::in($post_arr);
 
 		$copy_to_server = $clean_post_arr['copytoserver']?? false;
@@ -743,8 +782,8 @@ class Media {
 			$keyValuePairs['url'] = $clean_post_arr['weburl']?? $source_url;
 
 		} else {
-			$keyValuePairs['url'] = $upload_strategy->getUrlPath() . $file['name'];
-			$keyValuePairs['originalUrl'] = $upload_strategy->getUrlPath() . $file['name'];
+			$keyValuePairs['url'] = $storage->getUrlPath() . $file['name'];
+			$keyValuePairs['originalUrl'] = $storage->getUrlPath() . $file['name'];
 		}
 		
 		$keys = implode(",", array_keys($keyValuePairs));
@@ -765,17 +804,17 @@ class Media {
 
 			if($should_upload_file) {
 				//Check if file exists
-				if($upload_strategy->file_exists($file)) {
+				if($storage->file_exists($file)) {
 					//Add media_id onto end of file name which should be unique within portal
 					$file['name'] = self::addToFilename($file['name'], '_' . $media_id);
 
 					//Fail case the appended media_id is taken stops after 10 
 					$cnt = 1;
-					while($upload_strategy->file_exists($file) && $cnt < 10) {
+					while($storage->file_exists($file) && $cnt < 10) {
 						$file['name'] = self::addToFilename($file['name'], '_' . $cnt);
 						$cnt++;
 					}
-					$updated_path = $upload_strategy->getUrlPath() . $file['name'];
+					$updated_path = $storage->getUrlPath() . $file['name'];
 
 					//Update source url to reflect new filename
 					self::update_metadata([
@@ -785,13 +824,13 @@ class Media {
 					], $media_id, $conn);
 				}
 
-				$upload_strategy->upload($file);
+				$storage->upload($file);
 
 				//Generate Deriatives if needed
 				if($media_type === MediaType::Image) {
 					//Will download file if its remote. 
 					//This is a naive solution assuming we are upload to our server 
-					$size = getimagesize($upload_strategy->getDirPath($file));
+					$size = getimagesize($storage->getDirPath($file));
 					$metadata = [
 						'pixelXDimension' => $size[0],
 						'pixelXDimension' => $size[1]
@@ -806,13 +845,13 @@ class Media {
 						self::create_image(
 							$file['name'],
 							self::addToFilename($file['name'], '_tn'),
-							$upload_strategy,
+							$storage,
 							$GLOBALS['IMG_TN_WIDTH']?? 200,
 							0
 					   	);
 
-						if($upload_strategy->file_exists($thumb_name)) {
-							$metadata['thumbnailUrl'] = $upload_strategy->getUrlPath($thumb_name);
+						if($storage->file_exists($thumb_name)) {
+							$metadata['thumbnailUrl'] = $storage->getUrlPath($thumb_name);
 						}
 					}
 
@@ -822,13 +861,13 @@ class Media {
 						self::create_image(
 							$file['name'],
 							$med_name,
-							$upload_strategy,
+							$storage,
 							$GLOBALS['IMG_LG_WIDTH']?? 1400,
 							0
 					   	);
 
-						if($upload_strategy->file_exists($med_name)) {
-							$metadata['url'] = $upload_strategy->getUrlPath($med_name);
+						if($storage->file_exists($med_name)) {
+							$metadata['url'] = $storage->getUrlPath($med_name);
 						}
 					}
 					
@@ -853,12 +892,10 @@ class Media {
 			0
 		);
 	}
-
-	public static function remap(
-		int $media_id, int $new_occid, 
-		UploadStrategy $old_strategy,
-		UploadStrategy $new_strategy
-	) {
+    /**
+     * @return void
+     */
+    public static function remap(int $media_id, int $new_occid, StorageStrategy $old_strategy, StorageStrategy $new_strategy): void {
 		$media_arr = self::getMedia($media_id);
 		$update_arr = ['occid' => $new_occid];
 		$move_files = [];
@@ -906,11 +943,61 @@ class Media {
 	}
 
 	//TODO (Logan) Just make a public interface for update_metadata
-	public static function disassociate($media_id) {
+	public static function disassociate($media_id): void {
 		self::update_metadata(['occid' => null], $media_id);
 	}
+    /**
+     * @return void
+     * @param mixed $media_id
+     * @param mixed $tag_arr
+     * @param mixed $conn
+     */
+    private static function update_tags($media_id, $tag_arr, $conn = null): void {
+		$tags =	[
+			"HasOrganism",
+			"HasLabel",
+			"HasIDLabel",
+			"TypedText",
+			"Handwriting",
+			"ShowsHabitat",
+			"HasProblem",
+			"Diagnostic",
+			"ImageOfAdult",
+			"ImageOfImmature",
+		];
 
-	public static function update($media_id, $media_arr) {
+		$remove_tags = [];
+		$add_tags = [];
+		foreach ($tags as $tag) {
+			$new_value = $tag_arr['ch_' . $tag] ?? false;
+			$old_value = $tag_arr['hidden_' . $tag] ?? false;
+			if($new_value !== $old_value) {
+				if($new_value === '1') {
+					array_push($add_tags, $tag);
+				} else {
+					array_push($remove_tags, $tag);
+				}
+			}
+		}
+
+		if(!$conn) {
+			$conn = self::connect('write');
+		}
+
+		foreach($add_tags as $add) {
+			SymbUtil::execute_query($conn, 'INSERT INTO imagetag (imgid, keyvalue) VALUES (?, ?)', [$media_id, $add]);
+		}
+
+		foreach($remove_tags as $remove) {
+			SymbUtil::execute_query($conn, 'DELETE FROM imagetag where imgid = ? and keyvalue = ?', [$media_id, $remove]);
+		}
+	}
+    /**
+     * @return bool
+     * @param mixed $media_id
+     * @param mixed $media_arr
+     */
+    public static function update($media_id, $media_arr, StorageStrategy $storage) {
 		$clean_arr = Sanitize::in($media_arr);
 	
 		$meta_data = [
@@ -955,21 +1042,20 @@ class Media {
 		$conn = self::connect('write');
 		mysqli_begin_transaction($conn);
 		try {
+			$old_metadata = self::getMedia($media_id);
 			self::update_metadata($data, $media_id, $conn);
+			self::update_tags($media_id, $clean_arr, $conn);
 
-			//url
 			if(array_key_exists("renameweburl", $clean_arr)) {
-				//self::remap()
+				$storage->rename($old_metadata['url'], $data['url']);
 			}
 
-			//thumbnailUrl
 			if(array_key_exists("renametnurl", $clean_arr)) {
-				//self::remap()
+				$storage->rename($old_metadata['thumbnailUrl'], $data['thumbnailUrl']);
 			}
 
-			//originalUrl
 			if(array_key_exists("renameorigurl", $clean_arr)) {
-				//self::remap()
+				$storage->rename($old_metadata['thumbnailUrl'], $data['thumbnailUrl']);
 			}
 
 			mysqli_commit($conn);
@@ -990,26 +1076,26 @@ class Media {
 	 *
 	 * @param string $src_file Filename to image base
 	 * @param string $new_file Filename for newly resized image
-	 * @param UploadStrategy $upload_strategy Class that instructs where how how an image should be stored
+	 * @param StorageStrategy $storage Class that instructs where how how an image should be stored
 	 * @param int $new_width Maximum width for the new image if zero will box to height
 	 * @param int $new_height Maximum height for the new image if zero will box to width
 	 */
-	public static function create_image($src_file, $new_file, UploadStrategy $upload_strategy, $new_width, $new_height): void {
+	public static function create_image($src_file, $new_file, StorageStrategy $storage, $new_width, $new_height): void {
 		global $USE_IMAGE_MAGICK;
 
 		if($USE_IMAGE_MAGICK) {
-			self::create_image_imagick($src_file, $new_file, $upload_strategy, $new_width, $new_height);
+			self::create_image_imagick($src_file, $new_file, $storage, $new_width, $new_height);
 		} elseif(extension_loaded('gd') && function_exists('gd_info')) {
-			self::create_image_gd($src_file, $new_file, $upload_strategy, $new_width, $new_height);
+			self::create_image_gd($src_file, $new_file, $storage, $new_width, $new_height);
 		} else {
 			throw new Exception('No image handler for image conversions');
 		}
 
 		//If file doesn't according to the upload strategy then upload it to the correct place. This will only run if the media storage is remote to the server
-		if(!$upload_strategy->file_exists($new_file)) {
-			$upload_strategy->upload([
+		if(!$storage->file_exists($new_file)) {
+			$storage->upload([
 				'name' => $new_file,
-				'tmp_name' => $upload_strategy->getDirPath($new_file),
+				'tmp_name' => $storage->getDirPath($new_file),
 			]);
 		}
 	}
@@ -1023,17 +1109,17 @@ class Media {
 	 * 
 	 * @param string $src_file Filename to image base
 	 * @param string $new_file Filename for newly resized image
-	 * @param UploadStrategy $upload_strategy Class that instructs where how how an image should be stored
+	 * @param StorageStrategy $storage Class that instructs where how how an image should be stored
 	 * @param int $new_width Maximum width for the new image if zero will box to height
 	 * @param int $new_height Maximum height for the new image if zero will box to width
 	 */
 	private static function create_image_imagick(
 		string $src_file, string $new_file, 
-		UploadStrategy $upload_strategy, 
+		StorageStrategy $storage, 
 		int $new_width, int $new_height
 	): void {
-		$src_path = $upload_strategy->getDirPath($src_file);
-		$new_path = $upload_strategy->getDirPath($new_file);
+		$src_path = $storage->getDirPath($src_file);
+		$new_path = $storage->getDirPath($new_file);
 
 		if($new_height === 0 && $new_width === 0) {
 			throw new Exception('Must have width or height as non zero values');
@@ -1072,18 +1158,18 @@ class Media {
 	 * 
 	 * @param string $src_file Filename to image base
 	 * @param string $new_file Filename for newly resized image
-	 * @param UploadStrategy $upload_strategy Class that instructs where how how an image should be stored
+	 * @param StorageStrategy $storage Class that instructs where how how an image should be stored
 	 * @param int $new_width Maximum width for the new image if zero will box to height
 	 * @param int $new_height Maximum height for the new image if zero will box to width
 	 */
 	private static function create_image_gd(
 		string $src_file, string $new_file, 
-		UploadStrategy $upload_strategy, 
+		StorageStrategy $storage, 
 		int $new_width, int $new_height
 	): void {
 
-		$src_path = $upload_strategy->getDirPath($src_file);
-		$new_path = $upload_strategy->getDirPath($new_file);
+		$src_path = $storage->getDirPath($src_file);
+		$new_path = $storage->getDirPath($new_file);
 
 		if($new_width === 0 && $new_height === 0) {
 			throw new Exception('Must have width or height as non zero values');
@@ -1165,6 +1251,10 @@ class Media {
 	}
 
 	//TODO (Logan) rework to use new remove function in upload strategy
+	/**
+	 * @param int $media_id Media_id that will be deleted from Media table
+	 * @param bool $remove_files Database delete will also remove file
+	**/
 	public static function delete($media_id, $remove_files = true): void {
 		$conn = self::connect('write');
 		$result = mysqli_execute_query(
@@ -1275,8 +1365,16 @@ class Media {
      */
     public static function fetchOccurrenceMedia(int $occid, MediaType $media_type = null): Array {
 		if(!$occid) return [];
+		$select = [
+			'm.*',
+			"IFNULL(m.creator,CONCAT_WS(' ',u.firstname,u.lastname)) AS creatorDisplay",
+			't.sciname',
+			't.author',
+			't.rankid'
+		];
+
 		$parameters = [$occid];
-		$sql = 'SELECT * FROM media m ' .
+		$sql = 'SELECT '. implode(',', $select).' FROM media m ' .
 			'LEFT JOIN taxa t ON t.tid = m.tid ' .
 			'LEFT JOIN users u on u.uid = m.creatorUid ' .
 			'WHERE m.occid = ?';
@@ -1293,7 +1391,11 @@ class Media {
 		return Sanitize::out(self::get_media_items($results));
 	}
 
-	private static function get_media_items($results): array {
+    /**
+	 * @param MysqliResult $results
+     * @param mixed $results
+     */
+    private static function get_media_items($results): array {
 		$media_items = Array();
 
 		while($row = $results->fetch_assoc()){
@@ -1304,8 +1406,15 @@ class Media {
 		return $media_items;
 	}
 	
+    /**
+	 * @param int|array $media_id 
+	 * @param Mysqli $conn
+     * @return array<string>
+     */
 	public static function getMediaTags(int|array $media_id, mysqli $conn = null): array {
-		$sql = 'SELECT t.imgid, k.tagkey, k.shortlabel, k.description_en FROM imagetag t INNER JOIN imagetagkey k ON t.keyvalue = k.tagkey WHERE t.imgid ';
+		$sql = 'SELECT t.imgid, k.tagkey, k.shortlabel, k.description_en FROM imagetag t 
+		INNER JOIN imagetagkey k ON t.keyvalue = k.tagkey 
+		WHERE t.imgid ';
 
 		if(is_array($media_id)) {
 			$count = count($media_id);
@@ -1351,11 +1460,10 @@ class Media {
 		return $creators;
 	}
 
-	// TODO (Logan) change this to getMediaTagKeys (will need to rework this table)
     /**
      * @return array<string>
      */
-	public static function getImageTagKeys(): array {
+	public static function getMediaTagKeys(): array {
 		$retArr = Array();
 
 		$sql = <<< SQL
@@ -1369,6 +1477,7 @@ class Media {
 		$result->free();
 		return $retArr;
 	}
+
     /**
      * @param mixed $media_arr
      */
@@ -1394,6 +1503,7 @@ class Media {
 		}
 		return $bool;
 	}
+
     /**
      * @param array<int,mixed> $media_arr
      */

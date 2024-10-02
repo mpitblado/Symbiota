@@ -117,7 +117,7 @@ if($isEditor && $action){
 		try {
 			Media::add(
 				$_POST, 
-				new LocalUploadStrategy($path), 
+				new LocalStorage($path), 
 				$_FILES['imgfile'] ?? null
 			);
 		} catch(Exception $e) {
