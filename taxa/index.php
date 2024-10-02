@@ -105,7 +105,16 @@ $nonItalicizedScinameComponent = trim((!empty($splitSciname['author']) ? ($split
 						}
 						?>
 						<div id="scinameDiv">
-							<?php echo '<span id="'.($taxonManager->getRankId() > 179?'sciname':'taxon').'">'.$taxonManager->getTaxonName().'</span>'; ?>
+							<?php 
+								$splitSciname = $taxonManager->splitSciname();
+								$sciName = $splitSciname['base'];
+								$taxonRankId = $taxonManager->getRankId();
+								if($taxonRankId >= 180) $sciName = '<i>'.$sciName.'</i>';
+								if(isset($splitSciname['cultivarEpithet'])) $sciName .= " '" . $splitSciname['cultivarEpithet'] . "'";
+								if(isset($splitSciname['tradeName'])) $sciName .= " " . $splitSciname['tradeName'];
+								$taxonToDisplay = $taxonRankId > 179 ? $sciName : $taxonManager->getTaxonName();
+								echo '<span id="'.($taxonRankId > 179 ? 'sciname':'taxon').'">' . $taxonToDisplay . '</span>'; 
+							?>
 							<span id="author"><?php echo $taxonManager->getTaxonAuthor(); ?></span>
 							<?php
 							$parentLink = 'index.php?tid='.$taxonManager->getParentTid().'&clid=' . htmlspecialchars($clid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&pid=' . htmlspecialchars($pid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '&taxauthid='.$taxAuthId;
