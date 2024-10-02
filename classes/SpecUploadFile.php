@@ -114,23 +114,16 @@ class SpecUploadFile extends SpecUploadBase{
 			$this->transferCount = 0;
 			$this->outputMsg('<li>Beginning to load records...</li>',1);
 			while($recordArr = $this->getRecordArr($fh)){
-				// var_dump($recordArr);
-				// @TODO intervention point
-				
 				$recMap = Array();
 				$hasCultivarEpithet = false;
 				$hasTradeName = false;
 				$isCultivar = false;
 				$currentOccId = '';
 				foreach($this->occurFieldMap as $symbField => $sMap){
-					// var_dump($symbField);
-					// var_dump($sMap);
 					$indexArr = array_keys($headerArr,$sMap['field']);
 					$index = array_shift($indexArr);
 					if(array_key_exists($index,$recordArr)){
-						// var_dump($recordArr);
 						$valueStr = $recordArr[$index];
-						// var_dump($valueStr);
 						if($sMap['field'] == 'occurrenceid'){
 							$currentOccId = $valueStr;
 						}
@@ -140,10 +133,7 @@ class SpecUploadFile extends SpecUploadBase{
 						if(!empty($valueStr) && $sMap['field'] == 'tradename'){
 							$hasTradeName = true;
 						}
-						// var_dump(strtolower($valueStr));
-						// var_dump($sMap['field']);
 						if(strtolower($valueStr) == 'cultivar' && $sMap['field'] == 'taxonrank'){
-							// var_dump('got here e1');
 							$isCultivar = true;
 						}
 						//If value is enclosed by quotes, remove quotes
@@ -153,7 +143,6 @@ class SpecUploadFile extends SpecUploadBase{
 						$recMap[$symbField] = $valueStr;
 					}
 				}
-				// var_dump('$hasCultivarEpithet is: ' . ($hasCultivarEpithet ? 'true' : 'false') . ' and hasTradeName is: ' . ($hasTradeName ? 'true' : 'false') . ' and isCultivar is: ' . ($isCultivar ? 'true' : 'false'));
 				if($isCultivar && !$hasCultivarEpithet && !$hasTradeName){
 					echo '<span style="color: var(--danger-color);">Unable to complete upload because occurrence ' . $currentOccId . ' is marked as cultivated but is missing both trade name and cultivar epithet, which is not permitted</span>'; exit; // @TODO i8n
 				}
@@ -162,7 +151,6 @@ class SpecUploadFile extends SpecUploadBase{
 					unset($recMap);
 					continue;
 				}
-				// var_dump($recMap);
 				$this->loadRecord($recMap);
 				unset($recMap);
 			}

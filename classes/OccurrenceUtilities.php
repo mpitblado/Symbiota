@@ -716,15 +716,12 @@ class OccurrenceUtilities {
 					$sciName .= ' '.$recMap['infraspecificepithet'];
 				}
 				if(array_key_exists('cultivarepithet',$recMap)){
-					// $clean_string = trim($recMap['cultivarepithet'], "'\"");
 					$clean_string = preg_replace('/(^["\'“]+)|(["\'”]+$)/', '', $recMap['cultivarepithet']);
-					var_dump($clean_string);
 					$sciName .= " '" . $clean_string . "'";
 				}
 				if(array_key_exists('tradename',$recMap)){
 					$sciName .= ' '.strtoupper($recMap['tradename']);
 				}
-				// @TODO add cultivar and tradename stuff here
 				$recMap['sciname'] = trim($sciName);
 			}
 			elseif(array_key_exists('scientificname',$recMap)){
