@@ -14,9 +14,11 @@ trait TaxonomyTrait {
 		$returnObj['cultivarEpithet'] = $this->cultivarEpithet; // assumes quotes not stored in db
 		$returnObj['tradeName'] = $this->tradeName;
 		$returnObj['author'] = $this->author;
-		if(empty($this->cultivarEpithet) && empty($this->tradeName) && !empty($occArr)){
-			return $this->splitScinameFromOccArr($occArr);
-		}
+
+		// @TODO decide if we even want to attempt to parse scinames where no tidInterpreted is available to compose sciname with
+		// if(empty($this->cultivarEpithet) && empty($this->tradeName) && !empty($occArr)){
+		// 	return $this->splitScinameFromOccArr($occArr);
+		// }
 
 		return $returnObj;
 	}
@@ -39,18 +41,14 @@ trait TaxonomyTrait {
 			$scinameBase = str_replace($cultivarEpithet, '', trim($scinameBase));
 		}
 		$splitByAuthorship = explode(ucfirst(strtolower($scientificnameauthorship)), trim($scinameBase));
-		// var_dump($splitByAuthorship);
 		if(count($splitByAuthorship)==2){
 			$scinameBase = trim($splitByAuthorship[0]);
-			// var_dump($secondSplit);
 			$theStuffBeyondAuthor = trim($splitByAuthorship[1]);
 			$secondSplit = preg_split("/(\w+\.)/", $theStuffBeyondAuthor,-1,PREG_SPLIT_DELIM_CAPTURE);
 			$returnObj['nonItal'] = $secondSplit[count($secondSplit)-1];
-			// var_dump($secondSplit);
 		}else{
 			// $theStuffBeyondAuthor = trim($splitByAuthorship[1]);
 			$secondSplit = preg_split("/(\w+\.)/", trim($scinameBase), -1, PREG_SPLIT_DELIM_CAPTURE);
-			// var_dump($secondSplit);
 			$scinameBase = $secondSplit[0];
 			$returnObj['nonItal'] = implode('',array_slice($secondSplit,1));
 		}
@@ -95,6 +93,23 @@ trait TaxonomyTrait {
 		
 		return $returnObj;
 
+	}
+
+	public static function standardizeCultivarEpithet($unstandardizedCultivarEpithet){
+		if(!empty($unstandardizedCultivarEpithet)){
+			$clean_string = preg_replace('/(^["\'“]+)|(["\'”]+$)/', '', $unstandardizeCultivarEpithet);
+			return "'" . $clean_string . "'";
+		} else{
+			return '';
+		}
+	}
+
+	public static function standardizeTradeName($unstandardizedTradeName){
+		if(!empty($unstandardizedTradeName)){
+			return strtoupper($unstandardizedTradeName);
+		} else{
+			return '';
+		}
 	}
 }
 ?>

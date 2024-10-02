@@ -1,8 +1,11 @@
 <?php
 include_once($SERVER_ROOT.'/classes/GPoint.php');
 include_once($SERVER_ROOT.'/classes/TaxonomyUtilities.php');
+include_once($SERVER_ROOT.'/traits/TaxonomyTrait.php');
 
 class OccurrenceUtilities {
+
+	use TaxonomyTrait;
 
 	static $monthRoman = array('I'=>'01','II'=>'02','III'=>'03','IV'=>'04','V'=>'05','VI'=>'06','VII'=>'07','VIII'=>'08','IX'=>'09','X'=>'10','XI'=>'11','XII'=>'12');
 	static $monthNames = array('jan'=>'01','ene'=>'01','feb'=>'02','mar'=>'03','abr'=>'04','apr'=>'04','may'=>'05','jun'=>'06','jul'=>'07','ago'=>'08',
@@ -716,11 +719,10 @@ class OccurrenceUtilities {
 					$sciName .= ' '.$recMap['infraspecificepithet'];
 				}
 				if(array_key_exists('cultivarepithet',$recMap)){
-					$clean_string = preg_replace('/(^["\'“]+)|(["\'”]+$)/', '', $recMap['cultivarepithet']);
-					$sciName .= " '" . $clean_string . "'";
+					$sciName .= " " . self::standardizeCultivarEpithet($recMap['cultivarepithet']);
 				}
 				if(array_key_exists('tradename',$recMap)){
-					$sciName .= ' '.strtoupper($recMap['tradename']);
+					$sciName .= ' ' . self::standardizeTradeName($recMap['tradename']);
 				}
 				$recMap['sciname'] = trim($sciName);
 			}

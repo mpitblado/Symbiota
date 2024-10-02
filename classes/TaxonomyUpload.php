@@ -3,8 +3,11 @@ include_once($SERVER_ROOT.'/config/dbconnection.php');
 include_once($SERVER_ROOT.'/classes/TaxonomyUtilities.php');
 include_once($SERVER_ROOT.'/classes/TaxonomyHarvester.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceMaintenance.php');
+include_once($SERVER_ROOT.'/traits/TaxonomyTrait.php');
 
 class TaxonomyUpload{
+
+	use TaxonomyTrait;
 
 	private $conn;
 	private $uploadFileName = '';
@@ -194,11 +197,11 @@ class TaxonomyUpload{
 									}
 								}
 								if(!empty($inputArr['cultivarepithet'])){
-									$sciname .= ' "' . $inputArr['cultivarepithet'] . '"';
+									$sciname .= " " . self::standardizeCultivarEpithet($inputArr['cultivarepithet']);
 									$inputArr['rankid'] = 300;
 								}
 								if(!empty($inputArr['tradename'])){
-									$sciname .= ' ' . $inputArr['tradename'];
+									$sciname .= ' ' . self::standardizeTradeName($inputArr['tradename']);
 								}
 								$inputArr['sciname'] = trim($sciname);
 							}

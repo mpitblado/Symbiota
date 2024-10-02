@@ -1,8 +1,10 @@
 <?php
 include_once($SERVER_ROOT.'/config/dbconnection.php');
+include_once($SERVER_ROOT.'/traits/TaxonomyTrait.php');
 
 class TaxonomyUtilities {
 
+	use TaxonomyTrait;
 	/*
 	 * INPUT: String representing a verbatim scientific name
 	 *        Name may have imbedded authors, cf, aff, hybrid
@@ -246,10 +248,11 @@ class TaxonomyUtilities {
 			$sciname .= $retArr['unitname2'].' ';
 			$sciname .= trim($retArr['unitind3'].' '.$retArr['unitname3']);
 			if(!empty($retArr['cultivarepithet'])){
-				$sciname .= ' "' . $retArr['cultivarepithet'] . '"';
+				$sciname .= ' ' . self::standardizeCultivarEpithet($retArr['cultivarepithet']);
 			}
 			if(!empty($retArr['tradename'])){
-				$sciname .= ' ' . $retArr['tradename'];
+				$sciname .= ' ' . self::standardizeTradeName($retArr['tradename']);
+				
 			}
 			$retArr['sciname'] = trim($sciname);
 		}
