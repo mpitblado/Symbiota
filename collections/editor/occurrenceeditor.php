@@ -257,8 +257,12 @@ if($SYMB_UID){
 						new LocalStorage($path),
 						$_FILES['imgfile'] ?? null
 					);
-					$statusStr = $LANG['IMAGE_ADD_SUCCESS'];
-				} catch(Exception $e ) {
+					if($errors = Media::getErrors()) {
+						$statusStr = "ERROR: " . array_pop($errors);
+					} else {
+						$statusStr = $LANG['IMAGE_ADD_SUCCESS'];
+					}
+				} catch(Exception $e) {
 					$statusStr = $e->getMessage();
 				} finally {
 					$tabTarget = 2;

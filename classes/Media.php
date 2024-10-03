@@ -60,8 +60,8 @@ function get_occurrence_upload_path($institutioncode, $collectioncode, $catalogn
 
 			//Grab any characters in the range of 0-8 then any amount digits
 			if(preg_match('/^(\D{0,8}\d{4,})/', $derived_cat_num, $matches)){
-				// TODO (Logan) figure out why this is here
-				//$derived_cat_num = substr($matches[1], 0, -3);
+				//Truncate cat number to keep directories from getting out of hand
+				$derived_cat_num = substr($matches[1], 0, -3);
 
 				//If derived catalog number is a number less then five pad front with 0's
 				if(is_numeric($derived_cat_num) && strlen($derived_cat_num) < 5) {
@@ -558,7 +558,6 @@ class Media {
 	 * return array | bool
 	 */
 	public static function getRemoteFileInfo(string $url): array|bool {
-		//TODO (Logan) Alternative Method exists to curl?
 		if(!function_exists('curl_init')) throw new Exception('Curl is not installed');
 		$ch = curl_init($url);
 
@@ -630,9 +629,6 @@ class Media {
 		if(strlen($file_name) > 30) {
 			$file_name = substr($file_name, 0, 30);
 		}
-
-		//TODO (Logan) Make sure this is not needed
-		//$file_name .= '_'.time();
 
 		return $file_name;
 	}
@@ -840,7 +836,7 @@ class Media {
 					$size = getimagesize($storage->getDirPath($file));
 					$metadata = [
 						'pixelXDimension' => $size[0],
-						'pixelXDimension' => $size[1]
+						'pixelYDimension' => $size[1]
 					];
 
 					$width = $size[0];
@@ -869,7 +865,7 @@ class Media {
 							$file['name'],
 							$med_name,
 							$storage,
-							$GLOBALS['IMG_LG_WIDTH']?? 1400,
+							$GLOBALS['IMG_WEB_WIDTH']?? 1400,
 							0
 					   	);
 
@@ -883,11 +879,9 @@ class Media {
 			}
 
 			mysqli_commit($conn);
-		} catch(Exception $e) {
+		} catch(Throwable $e) {
 			mysqli_rollback($conn);
-			//TODO (Logan) figure out if this is too lazy
-			//TODO (Logan) maybe add file cleanup on failure? 
-			throw new Exception($e->getMessage());
+			array_push(self::$errors, $e->getMessage());
 		} 
 	}
 
@@ -949,10 +943,10 @@ class Media {
 		}
 	}
 
-	//TODO (Logan) Just make a public interface for update_metadata
 	public static function disassociate($media_id): void {
 		self::update_metadata(['occid' => null], $media_id);
 	}
+
     /**
      * @return void
      * @param mixed $media_id
@@ -1001,7 +995,9 @@ class Media {
 	}
 
 	static function getErrors() {
-		return self::$errors ?? [];
+		$errors = self::$errors ?? [];
+		self::$errors = [];
+		return $errors;
 	}
 
     /**
@@ -1206,6 +1202,7 @@ class Media {
 			$height = intval(($new_width / $width) * $height);
 			$width = $new_width;
 		}
+
 
 		$new_image = imagecreatetruecolor($width, $height);
 
