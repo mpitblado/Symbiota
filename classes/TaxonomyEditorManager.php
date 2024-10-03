@@ -222,8 +222,8 @@ class TaxonomyEditorManager extends Manager{
 	public function submitTaxonEdits($postArr){
 		$statusStr = '';
 		$sciname = trim($postArr['unitind1'] . $postArr['unitname1'] . ' ' . $postArr['unitind2'] . $postArr['unitname2'] . ' ' . trim($postArr['unitind3'] . ' ' . $postArr['unitname3']));
-		$processedCultivarEpithet = $postArr['cultivarEpithet'] ? trim($postArr['cultivarEpithet'],"'\`\"") : '';
-		$processedTradeName = $postArr['tradeName'] ? strtoupper($postArr['tradeName']) : '';
+		$processedCultivarEpithet = $this->standardizeCultivarEpithet($postArr['cultivarEpithet']);
+		$processedTradeName = $this->standardizeTradeName($postArr['tradeName']);
 		$sql = 'UPDATE taxa SET '.
 			'unitind1 = '.($postArr['unitind1']?'"'.$this->cleanInStr($postArr['unitind1']).'"':'NULL').', '.
 			'unitname1 = "'.$this->cleanInStr($postArr['unitname1']).'",'.
@@ -231,7 +231,7 @@ class TaxonomyEditorManager extends Manager{
 			'unitname2 = '.($postArr['unitname2']?'"'.$this->cleanInStr($postArr['unitname2']).'"':'NULL').', '.
 			'unitind3 = '.($postArr['unitind3']?'"'.$this->cleanInStr($postArr['unitind3']).'"':'NULL').', '.
 			'unitname3 = '.($postArr['unitname3']?'"'.$this->cleanInStr($postArr['unitname3']).'"':'NULL').', '.
-			'cultivarEpithet = "'.($postArr['cultivarEpithet'] ? ($this->cleanInStr($processedCultivarEpithet)) : '') . '", ' .
+			'cultivarEpithet = "'.($postArr['cultivarEpithet'] ? ($this->cleanInStr($processedCultivarEpithet)) : '') . '", ' . // @TODO won't this set this value as blank quotes if empty?
 			'tradeName = "' . ($postArr['tradeName'] ? $this->cleanInStr($processedTradeName) : '') . '", ' .
 			'author = "'.($postArr['author']?$this->cleanInStr($postArr['author']):'').'", '.
 			'rankid = '.(is_numeric($postArr['rankid'])?$postArr['rankid']:'NULL').', '.
@@ -554,10 +554,10 @@ class TaxonomyEditorManager extends Manager{
 		//Load new name into taxa table
 		$tid = 0;
 		$processedSciname = trim($dataArr['unitind1'] . $dataArr['unitname1'] . ' ' . $dataArr['unitind2'] . $dataArr['unitname2'] . ' ' . trim($dataArr['unitind3'] . ' ' . $dataArr['unitname3']));
-		$processedCultivarEpithet = $dataArr['cultivarEpithet'] ? trim($dataArr['cultivarEpithet'],"'\`\"") : NULL; // @TODO maybe leverage TaxonomyTrait functions?
-		$processedTradeName = $dataArr['tradeName'] ? strtoupper($dataArr['tradeName']) : 'NULL';
+		$processedCultivarEpithet = $this->standardizeCultivarEpithet($dataArr['cultivarEpithet']);
+		$processedTradeName = $this->standardizeTradeName($dataArr['tradeName']);
 		if(array_key_exists('cultivarEpithet', $dataArr) && !empty($dataArr['cultivarEpithet'])){
-			$processedSciname .= " '". $processedCultivarEpithet . "'";
+			$processedSciname .= " ". $processedCultivarEpithet;
 		}
 		if(array_key_exists('tradeName', $dataArr) && !empty($dataArr['tradeName'])){
 			$processedSciname .= ' ' . $processedTradeName;
@@ -573,7 +573,7 @@ class TaxonomyEditorManager extends Manager{
 			($dataArr['unitname2']?'"'.$this->cleanInStr($dataArr['unitname2']).'"':'NULL').','.
 			($dataArr['unitind3']?'"'.$this->cleanInStr($dataArr['unitind3']).'"':'NULL').','.
 			($dataArr['unitname3']?'"'.$this->cleanInStr($dataArr['unitname3']).'"':'NULL').','.
-			($dataArr['cultivarEpithet'] ? ('"' . $this->cleanInStr($processedCultivarEpithet) . '"') : '""') . ',' .
+			($dataArr['cultivarEpithet'] ? ('"' . $this->cleanInStr(preg_replace('/(^["\'“]+)|(["\'”]+$)/', '', $processedCultivarEpithet)) . '"') : '""') . ',' .
 			($dataArr['tradeName'] ? ('"' . $this->cleanInStr($processedTradeName) . '"') : '""') . ',' .
 			($dataArr['source']? '"'.$this->cleanInStr($dataArr['source']).'"':'NULL').','.
 			($dataArr['notes']?'"'.$this->cleanInStr($dataArr['notes']).'"':'NULL').','.

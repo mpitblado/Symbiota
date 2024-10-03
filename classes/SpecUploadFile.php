@@ -144,7 +144,7 @@ class SpecUploadFile extends SpecUploadBase{
 					}
 				}
 				if($isCultivar && !$hasCultivarEpithet && !$hasTradeName){
-					echo '<span style="color: var(--danger-color);">Unable to complete upload because occurrence ' . $currentOccId . ' is marked as cultivated but is missing both trade name and cultivar epithet, which is not permitted</span>'; exit; // @TODO i8n
+					echo '<span style="color: var(--danger-color);">Unable to complete upload because occurrence ' . $currentOccId . ' is marked as cultivated but is missing both trade name and cultivar epithet, which is not permitted</span>'; exit;
 				}
 				if($this->uploadType == $this->SKELETAL && !isset($recMap['catalognumber']) && !isset($recMap['othercatalognumbers'])){
 					//Skip loading record

@@ -718,10 +718,10 @@ class OccurrenceUtilities {
 					if(array_key_exists('taxonrank',$recMap) && strtolower($recMap['taxonrank'])!== 'cultivar') $sciName .= ' '.$recMap['taxonrank'];
 					$sciName .= ' '.$recMap['infraspecificepithet'];
 				}
-				if(array_key_exists('cultivarepithet',$recMap)){
+				if(array_key_exists('cultivarepithet',$recMap) && !empty($recMap['cultivarepithet']) ){
 					$sciName .= " " . self::standardizeCultivarEpithet($recMap['cultivarepithet']);
 				}
-				if(array_key_exists('tradename',$recMap)){
+				if(array_key_exists('tradename',$recMap) && !empty($recMap['tradename'])){
 					$sciName .= ' ' . self::standardizeTradeName($recMap['tradename']);
 				}
 				$recMap['sciname'] = trim($sciName);
