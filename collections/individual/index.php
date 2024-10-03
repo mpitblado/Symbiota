@@ -503,18 +503,14 @@ $traitArr = $indManager->getTraitArr();
 									$taxonEditorObj->setTid($occArr['tidinterpreted']);
 									$taxonEditorObj->setTaxon();
 									$splitSciname = $taxonEditorObj->splitSciname($occArr);
-									// echo 'split sciname is: ' . $splitSciname;
-									// var_dump($occArr);
-									// var_dump($splitSciname);
-									$nonItalicizedEasy = array_key_exists('nonItal', $splitSciname) ? $splitSciname['nonItal'] : '';
-									$nonItalicizedNuanced = trim((!empty($splitSciname['author']) ? ($splitSciname['author'] . ' ') : '') . (!empty($splitSciname['cultivarEpithet']) ? ("'" . $splitSciname['cultivarEpithet'] . "' ") : '') . (!empty($splitSciname['tradeName']) ? ($splitSciname['tradeName'] . ' ') : ''));
-									$nonItalicizedScinameComponent = !empty($nonItalicizedEasy) ? $nonItalicizedEasy : $nonItalicizedNuanced;
+									$author = !empty($splitSciname['author']) ? ($splitSciname['author'] . ' ') : '';
+									$cultivarEpithet = !empty($splitSciname['cultivarEpithet']) ? ($taxonEditorObj->standardizeCultivarEpithet($splitSciname['cultivarEpithet'])) . ' ' : '';
+									$tradeName = !empty($splitSciname['tradeName']) ? ($taxonEditorObj->standardizeTradeName($splitSciname['tradeName']) . ' ') : '';
+									$nonItalicizedScinameComponent = $author . $cultivarEpithet . $tradeName;
 									echo '<i>' . $splitSciname['base'] . '</i> ' . $nonItalicizedScinameComponent;
 									//echo ' <a href="../../taxa/index.php?taxon=' . $occArr['tidinterpreted'] . '" title="Open Species Profile Page"><img src="" /></a>';
 								} else{
-									// var_dump($occArr);
-									// $splitSciname = $taxonEditorObj->splitScinameFromOccArr($occArr);
-									// var_dump($splitSciname);
+									// $splitSciname = $taxonEditorObj->splitScinameFromOccArr($occArr); // @TODO decide if we want to even handle this or if the misformatting herein is a good reminder to end users to attach entries from the taxonomy thesuarus to their occurrences https://github.com/BioKIC/Symbiota/issues/528#issuecomment-2384276915
 									echo '<i>' . $occArr['sciname'] .  '</i>';
 								}
 								?>

@@ -130,7 +130,10 @@ if($isEditor){
 		<h1 class="page-heading">
 			<?php 
 			$splitSciname = $taxonEditorObj->splitSciname();
-			$nonItalicizedScinameComponent = trim((!empty($splitSciname['author']) ? ($splitSciname['author'] . ' ') : '') . (!empty($splitSciname['cultivarEpithet']) ? ("'" . $splitSciname['cultivarEpithet'] . "' ") : '') . (!empty($splitSciname['tradeName']) ? ($splitSciname['tradeName'] . ' ') : ''));
+			$author = !empty($splitSciname['author']) ? ($splitSciname['author'] . ' ') : '';
+			$cultivarEpithet = !empty($splitSciname['cultivarEpithet']) ? ($taxonEditorObj->standardizeCultivarEpithet($splitSciname['cultivarEpithet'])) . ' ' : '';
+			$tradeName = !empty($splitSciname['tradeName']) ? ($taxonEditorObj->standardizeTradeName($splitSciname['tradeName']) . ' ') : '';
+			$nonItalicizedScinameComponent = $author . $cultivarEpithet . $tradeName;
 			echo $LANG['TAX_EDITOR'] . ': <i>' . htmlspecialchars($splitSciname['base'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</i> ' . htmlspecialchars($nonItalicizedScinameComponent . ' [' . $taxonEditorObj->getTid() . ']', ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); 
 			?>
 		</h1>

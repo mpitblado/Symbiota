@@ -1,11 +1,14 @@
 <?php
 include_once($SERVER_ROOT.'/classes/OccurrenceEditorManager.php');
 include_once($SERVER_ROOT.'/utilities/SymbUtil.php');
+include_once($SERVER_ROOT.'/traits/TaxonomyTrait.php');
 
 if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/classes/OccurrenceEditorDeterminations.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/classes/OccurrenceEditorDeterminations.'.$LANG_TAG.'.php');
 else include_once($SERVER_ROOT.'/content/lang/classes/OccurrenceEditorDeterminations.en.php');
 
 class OccurrenceEditorDeterminations extends OccurrenceEditorManager{
+
+	use TaxonomyTrait;
 
 	public function __construct(){
  		parent::__construct();
@@ -92,16 +95,14 @@ class OccurrenceEditorDeterminations extends OccurrenceEditorManager{
 
 							$detData['nonItalicized'] = '';
 							if (!empty($row3['cultivarEpithet']))
-								$nonItalicized = "'" . $row3['cultivarEpithet'] . "'";
+								$nonItalicized = $this->standardizeCultivarEpithet($row3['cultivarEpithet']);
 							if (!empty($row3['tradeName'])) {
 								if (!empty($nonItalicized))
-									$nonItalicized .= ' ';
-								$nonItalicized .= $row3['tradeName'];
+									$nonItalicized .= ' '  . $this->standardizeTradeName($row3['tradeName']);
 							}
 							if (!empty($nonItalicized)) {
 								if (!empty($detData['nonItalicized']))
-									$detData['nonItalicized'] .= ' ';
-								$detData['nonItalicized'] .= $nonItalicized;
+									$detData['nonItalicized'] .= ' ' . $nonItalicized;
 							}
 						}
 					}

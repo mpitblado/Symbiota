@@ -78,7 +78,9 @@ $displayLeftMenu = false;
 include($SERVER_ROOT.'/includes/header.php');
 
 $splitSciname = $taxonManager->splitSciname();
-$nonItalicizedScinameComponent = trim((!empty($splitSciname['author']) ? ($splitSciname['author'] . ' ') : '') . (!empty($splitSciname['cultivarEpithet']) ? ("'" . $splitSciname['cultivarEpithet'] . "' ") : '') . (!empty($splitSciname['tradeName']) ? ($splitSciname['tradeName'] . ' ') : ''));
+$cultivarEpithet = !empty($splitSciname['cultivarEpithet']) ? (' ' . $taxonManager->standardizeCultivarEpithet($splitSciname['cultivarEpithet'])) . ' ' : '';
+$tradeName = !empty($splitSciname['tradeName']) ? ($taxonManager->standardizeTradeName($splitSciname['tradeName']) . ' ') : '';
+$nonItalicizedScinameComponent = $cultivarEpithet . $tradeName;
 ?>
 <div id="popup-innertext">
 	<h1 class="page-heading screen-reader-only"><?= $taxonManager->getTaxonName() ?></h1>
@@ -110,8 +112,12 @@ $nonItalicizedScinameComponent = trim((!empty($splitSciname['author']) ? ($split
 								$sciName = $splitSciname['base'];
 								$taxonRankId = $taxonManager->getRankId();
 								if($taxonRankId >= 180) $sciName = '<i>'.$sciName.'</i>';
-								if(!empty($splitSciname['cultivarEpithet'])) $sciName .= " '" . $splitSciname['cultivarEpithet'] . "'";
-								if(!empty($splitSciname['tradeName'])) $sciName .= " " . $splitSciname['tradeName'];
+								$cultivarEpithet = !empty($splitSciname['cultivarEpithet']) ? (' ' . $taxonManager->standardizeCultivarEpithet($splitSciname['cultivarEpithet'])) . ' ' : '';
+								$tradeName = !empty($splitSciname['tradeName']) ? ($taxonManager->standardizeTradeName($splitSciname['tradeName']) . ' ') : '';
+								$nonItalicizedScinameComponent = $cultivarEpithet . $tradeName;
+								$sciName .= $nonItalicizedScinameComponent;
+								// if(!empty($splitSciname['cultivarEpithet'])) $sciName .= " '" . $splitSciname['cultivarEpithet'] . "'";
+								// if(!empty($splitSciname['tradeName'])) $sciName .= " " . $splitSciname['tradeName'];
 								$taxonToDisplay = $taxonRankId > 179 ? $sciName : $taxonManager->getTaxonName();
 								echo '<span id="'.($taxonRankId > 179 ? 'sciname':'taxon').'">' . $taxonToDisplay . '</span>'; 
 							?>

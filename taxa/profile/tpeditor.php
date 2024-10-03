@@ -191,7 +191,10 @@ if($isEditor && $action){
 	<div role="main" id="innertext">
 		<h1 class="page-heading"><?php
 		 $splitSciname = $tEditor->splitSciname();
-		 $nonItalicizedScinameComponent = trim((!empty($splitSciname['author']) ? ($splitSciname['author'] . ' ') : '') . (!empty($splitSciname['cultivarEpithet']) ? ("'" . $splitSciname['cultivarEpithet'] . "' ") : '') . (!empty($splitSciname['tradeName']) ? ($splitSciname['tradeName'] . ' ') : ''));
+		 $author = !empty($splitSciname['author']) ? ($splitSciname['author'] . ' ') : '';
+		 $cultivarEpithet = !empty($splitSciname['cultivarEpithet']) ? ($tEditor->standardizeCultivarEpithet($splitSciname['cultivarEpithet'])) . ' ' : '';
+		 $tradeName = !empty($splitSciname['tradeName']) ? ($tEditor->standardizeTradeName($splitSciname['tradeName']) . ' ') : '';
+		 $nonItalicizedScinameComponent = $author . $cultivarEpithet . $tradeName;
 
 		 echo $LANG['TAX_PROF_EDITOR'] . ': <i>' . $splitSciname['base'] . '</i> ' . $nonItalicizedScinameComponent; 
 		 ?></h1>

@@ -14,6 +14,8 @@ trait TaxonomyTrait {
 		$returnObj['cultivarEpithet'] = $this->cultivarEpithet; // assumes quotes not stored in db
 		$returnObj['tradeName'] = $this->tradeName;
 		$returnObj['author'] = $this->author;
+		// @TODO decide whether we want to add a ['nonItal'] element to this array.
+
 
 		// @TODO decide if we even want to attempt to parse scinames where no tidInterpreted is available to compose sciname with
 		// if(empty($this->cultivarEpithet) && empty($this->tradeName) && !empty($occArr)){

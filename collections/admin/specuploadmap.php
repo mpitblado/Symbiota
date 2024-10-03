@@ -115,8 +115,6 @@ if($isEditor && $collid){
 	<script src="../../js/symb/shared.js" type="text/javascript"></script>
 	<script>
 		function verifyMappingForm(f){
-			console.log('deleteMe form is: ');
-			console.log(f);
 			var sfArr = [];
 			var idSfArr = [];
 			var imSfArr = [];
@@ -124,27 +122,10 @@ if($isEditor && $collid){
 			var idTfArr = [];
 			var imTfArr = [];
 			var catalogNumberIndex = 0;
-			let hasCultivarEpithet = false;
-			let hasTradeName = false;
-			let isCultivar = false;
 			var possibleMappingErr = false;
-			// console.log('deleteMe sfArr is: ');
-			// console.log(sfArr);
 			for(var i=0;i<f.length;i++){
 				var obj = f.elements[i];
-				console.log('deleteMe obj is: ');
-				console.log(obj);
-				// console.log(obj.name);
-				// console.log(obj.value);
-				// if(obj.name)
-				if(obj.value === 'cultivarepithet'){
-					hasCultivarEpithet = true;
-				}
-				if(obj.value === 'tradename'){
-					hasTradeName = true;
-				}
 				if(obj.name == "sf[]"){
-					// @TOOD possible intervention point
 					if(sfArr.indexOf(obj.value) > -1){
 						alert("<?php echo (isset($LANG['ERR_UNIQUE_D']) ? $LANG['ERR_UNIQUE_D'] : 'ERROR: Source field names must be unique (duplicate field: '); ?>"+obj.value+")");
 						return false;
@@ -185,8 +166,6 @@ if($isEditor && $collid){
 				}
 				else if(obj.value != "" && obj.value != "unmapped"){
 					if(obj.name == "tf[]"){
-						console.log('deleteMe tfArr is: ');
-						console.log(tfArr);
 						if(tfArr.indexOf(obj.value) > -1){
 							alert("<?php echo (isset($LANG['SAME_TARGET_D']) ? $LANG['SAME_TARGET_D'] : 'ERROR: Can\'t map to the same target field more than once ( '); ?>"+obj.value+")");
 							return false;

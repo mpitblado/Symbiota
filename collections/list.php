@@ -276,7 +276,10 @@ $_SESSION['citationvar'] = $searchVar;
 									$taxonEditorObj->setTid($fieldArr['tid']);
 									$taxonEditorObj->setTaxon();
 									$splitSciname = $taxonEditorObj->splitSciname();
-									$nonItalicizedScinameComponent = trim((!empty($splitSciname['author']) ? ($splitSciname['author'] . ' ') : '') . (!empty($splitSciname['cultivarEpithet']) ? ("'" . $splitSciname['cultivarEpithet'] . "' ") : '') . (!empty($splitSciname['tradeName']) ? ($splitSciname['tradeName'] . ' ') : ''));
+									$author = !empty($splitSciname['author']) ? ($splitSciname['author'] . ' ') : '';
+									$cultivarEpithet = !empty($splitSciname['cultivarEpithet']) ? ($taxonEditorObj->standardizeCultivarEpithet($splitSciname['cultivarEpithet'])) . ' ' : '';
+									$tradeName = !empty($splitSciname['tradeName']) ? ($taxonEditorObj->standardizeTradeName($splitSciname['tradeName']) . ' ') : '';
+									$nonItalicizedScinameComponent = $author . $cultivarEpithet . $tradeName;
 									if ($collId != $prevCollid) {
 										$prevCollid = $collId;
 										$isEditor = false;
