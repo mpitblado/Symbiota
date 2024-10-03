@@ -1,11 +1,13 @@
 <?php
 /*
  * This Trait is used for classes that do not extend Manager;
+ * Note this will make a new connection per class that uses this but mysqli does pooling
+ * Behind the scenes so there should be too much to worrya about and a manager class
+ * would make a connection per instance which was usually one so it isn't any less 
+ * effecient just more convient.
  */
 include_once($SERVER_ROOT.'/config/dbconnection.php');
 
-// Currently will make a connection evertime new class is used TODO (Logan) change this to a static class?
-// Maybe we want differnt connections per class? It is like this already anyway
 trait Database {
 	protected static $conns = [];
     /**

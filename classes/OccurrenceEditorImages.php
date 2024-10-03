@@ -147,7 +147,6 @@ class OccurrenceEditorImages extends OccurrenceEditorManager {
 		if($fieldArr){
 			$fieldArr[] = 'specimen';
 			$fieldArr[] = $imgId;
-			// TODO media (Logan) find out a place in the media table for imagetype
 			$sql .= 'imagetype=? WHERE (media_id= ?)';
 			$types .= 'si';
 			$imgUpdateStatus = false;

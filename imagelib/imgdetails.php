@@ -14,7 +14,6 @@ $eMode = array_key_exists('emode',$_REQUEST)?filter_var($_REQUEST['emode'], FILT
 
 $imgManager = new ImageDetailManager($imgId,($action?'write':'readonly'));
 
-//$imgArr = $imgManager->getImageMetadata();
 $imgArr = Media::getMedia($imgId);
 $creatorArray = Media::getCreatorArray();
 
@@ -27,33 +26,21 @@ $status = '';
 
 if($isEditor){
 	if($action == 'Submit Image Edits'){
-		Media::update($imgId, $_POST);
-
-		//$status = $imgManager->editImage($_POST);
-		//This case literall cannot happen?
-		//if(is_numeric($status)) header( 'Location: ../taxa/profile/tpeditor.php?tid='.$status.'&tabindex=1' );
+		Media::update($imgId, $_POST, new LocalStorage());
 	}
 	elseif($action == 'Transfer Image'){
 		Media::update($imgId, ['tid' => $_REQUEST['targettid']]);
-		//$imgManager->changeTaxon($_REQUEST['targettid'],$_REQUEST['sourcetid']);
 		header( 'Location: ../taxa/profile/tpeditor.php?tid='.$_REQUEST['targettid'].'&tabindex=1' );
 	}
 	elseif($action == 'Delete Image'){
 		$remove_files = $_REQUEST['removeimg'] ?? false;
 		Media::delete(intval($_REQUEST['imgid']), boolval($remove_files));
-		/* TODO (Logan) media remove
-		$imgDel = $_REQUEST['imgid'];
-		$removeImg = (array_key_exists('removeimg',$_REQUEST)?$_REQUEST['removeimg']:0);
-		$status = $imgManager->deleteImage($imgDel, $removeImg);
-		if(is_numeric($status)){
-			header( 'Location: ../taxa/profile/tpeditor.php?tid='.$status.'&tabindex=1' );
-		}*/
 	}
-	//$imgArr = $imgManager->getImageMetadata($imgId);
 	$imgArr = Media::getMedia($imgId);
 }
-
+// TODO (Logan) once basic utils for domain image manager can be removed 
 $serverPath = $imgManager->getDomain();
+
 if($imgArr){
 	$imgUrl = $imgArr['url'];
 	$origUrl = $imgArr['originalUrl'];

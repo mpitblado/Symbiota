@@ -1261,7 +1261,6 @@ class Media {
 		);
 	}
 
-	//TODO (Logan) rework to use new remove function in upload strategy
 	/**
 	 * @param int $media_id Media_id that will be deleted from Media table
 	 * @param bool $remove_files Database delete will also remove file
