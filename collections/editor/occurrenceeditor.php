@@ -229,22 +229,11 @@ if($SYMB_UID){
 				}
 			}
 			elseif($action == 'Submit Image Edits'){
-				Media::update($_POST['imgid'], $_POST);
-				/*
-				$occManager->editImage($_POST);
-				if($errArr = $occManager->getErrorArr()){
-					if(isset($errArr['web'])){
-						if(!$errArr['web']) $statusStr .= $LANG['ERROR_UPDATING_IMAGE'].': web image<br />';
-					}
-					if(isset($errArr['tn'])){
-						if(!$errArr['tn']) $statusStr .= $LANG['ERROR_UPDATING_IMAGE'].': thumbnail<br />';
-					}
-					if(isset($errArr['orig'])){
-						if(!$errArr['orig']) $statusStr .= $LANG['ERROR_UPDATING_IMAGE'].': large image<br />';
-					}
-					if(isset($errArr['error'])) $statusStr .= $LANG['ERROR_EDITING_IMAGE'].': '.$errArr['error'];
+				Media::update($_POST['imgid'], $_POST, new LocalStorage());
+
+				if($errors = Media::getErrors()) {
+					$statusStr = 'ERROR: ' . array_pop($errors);
 				}
-*/
 				$tabTarget = 2;
 			}
 			elseif($action == 'Submit New Image') {
@@ -274,19 +263,8 @@ if($SYMB_UID){
 				} finally {
 					$tabTarget = 2;
 				}
-
-				/*
-				if($occManager->addImage($_POST)){
-					$statusStr = (isset($LANG['IMAGE_ADD_SUCCESS'])?$LANG['IMAGE_ADD_SUCCESS']:'Image added successfully');
-					$tabTarget = 2;
-				}
-				if($occManager->getErrorStr()){
-					$statusStr .= $occManager->getErrorStr();
-				}
-				*/
 			}
 			elseif($action == 'Delete Image'){
-				//$removeImg = (array_key_exists('removeimg',$_POST)?$_POST['removeimg']:0);
 				try {
 					Media::delete($_POST['imgid'], $_POST['removeimg']?? false);
 					$statusStr = $LANG['IMAGE_DEL_SUCCESS'];
@@ -295,15 +273,6 @@ if($SYMB_UID){
 				} finally {
 					$tabTarget = 2;
 				}
-				/*
-
-				if($occManager->deleteImage($_POST["imgid"], $removeImg)){
-					$statusStr = (isset($LANG['IMAGE_DEL_SUCCESS'])?$LANG['IMAGE_DEL_SUCCESS']:'Image deleted successfully');
-					$tabTarget = 2;
-				}
-				else{
-					$statusStr = $occManager->getErrorStr();
-				}*/
 			}
 			elseif($action == 'Remap Image' || $action == 'remapImageToNewRecord'){
 				$target_occid = $action == 'remapImageToNewRecord' ? 
@@ -339,25 +308,7 @@ if($SYMB_UID){
 						$LANG['NEW_IMAGE_ERROR']: $LANG['IMAGE_REMAP_ERROR']) .
 						': '. $e->getMessage();
 				}
-/*
-				if($occManager->remapImage($_POST['imgid'], $_POST['targetoccid'])){
-					$statusStr = (isset($LANG['IMAGE_REMAP_SUCCESS'])?$LANG['IMAGE_REMAP_SUCCESS']:'SUCCESS: Image remapped to record').' <a href="occurrenceeditor.php?occid=' . htmlspecialchars($_POST["targetoccid"], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" target="_blank">' . htmlspecialchars($_POST["targetoccid"], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a>';
-				}
-				else{
-					$statusStr = (isset($LANG['IMAGE_REMAP_ERROR'])?$LANG['IMAGE_REMAP_ERROR']:'ERROR linking image to new specimen').': '.$occManager->getErrorStr();
-				}*/
 			}
-			/*
-			elseif($action == 'remapImageToNewRecord'){
-				$newOccid = $occManager->remapImage($_POST['imgid'], 'new');
-				if($newOccid){
-					$statusStr = (isset($LANG['IMAGE_REMAP_SUCCESS'])?$LANG['IMAGE_REMAP_SUCCESS']:'SUCCESS: Image remapped to record').' <a href="occurrenceeditor.php?occid=' . htmlspecialchars($newOccid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" target="_blank">' . htmlspecialchars($newOccid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a>';
-				}
-				else{
-					$statusStr = (isset($LANG['NEW_IMAGE_ERROR'])?$LANG['NEW_IMAGE_ERROR']:'ERROR linking image to new blank specimen').': '.$occManager->getErrorStr();
-				}
-			}
-			*/
 			elseif($action == "Disassociate Image"){
 				try {
 					$media_id = intval($_POST["imgid"]);
@@ -367,14 +318,6 @@ if($SYMB_UID){
 				} catch(Exception $e) {
 					$statusStr = $LANG['DISASS_ERORR'] .': '.$e->getMessage();
 				}
-				/*
-				if($occManager->remapImage($_POST["imgid"])){
-					$statusStr = (isset($LANG['DISASS_SUCCESS'])?$LANG['DISASS_SUCCESS']:'SUCCESS disassociating image').' <a href="../../imagelib/imgdetails.php?imgid=' . htmlspecialchars($_POST["imgid"], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" target="_blank">#' . htmlspecialchars($_POST["imgid"], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '</a>';
-				}
-				else{
-					$statusStr = (isset($LANG['DISASS_ERORR'])?$LANG['DISASS_ERORR']:'ERROR disassociating image').': '.$occManager->getErrorStr();
-				}*/
-
 			}
 			elseif($action == "Apply Determination"){
 				$makeCurrent = 0;

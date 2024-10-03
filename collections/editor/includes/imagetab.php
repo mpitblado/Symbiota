@@ -362,29 +362,29 @@ $creatorArray = Media::getCreatorArray();
 													<input type="checkbox" name="renameweburl" value="1" />
 													<?php echo $LANG['RENAME_FILE']; ?>
 												</div>
-												<input name='oldurl' type='hidden' value='<?php echo $imgArr["url"];?>' />
+												<input name='old_url' type='hidden' value='<?php echo $imgArr["url"];?>' />
 											<?php } ?>
 										</div>
 										<div>
 											<b><?php echo $LANG['LARGE_IMG_URL']; ?>: </b><br/>
-											<input name="origurl" type="text" value="<?php echo $imgArr["originalUrl"]; ?>" style="width:95%;" />
+											<input name="originalUrl" type="text" value="<?php echo $imgArr["originalUrl"]; ?>" style="width:95%;" />
 											<?php if(stripos($imgArr['originalUrl'], $MEDIA_ROOT_URL) === 0){ ?>
 												<div style="margin-left:10px;">
 													<input type="checkbox" name="renameorigurl" value="1" />
 													<?php echo $LANG['RENAME_LARGE']; ?>
 												</div>
-												<input name='originalUrl' type='hidden' value='<?php echo $imgArr["originalUrl"];?>' />
+												<input name='old_originalUrl' type='hidden' value='<?php echo $imgArr["originalUrl"];?>' />
 											<?php } ?>
 										</div>
 										<div>
 											<b><?php echo $LANG['THUMB_URL']; ?>: </b><br/>
-											<input name="tnurl" type="text" value="<?php echo $imgArr["thumbnailUrl"]; ?>" style="width:95%;" />
+											<input name="thumbnailUrl" type="text" value="<?php echo $imgArr["thumbnailUrl"]; ?>" style="width:95%;" />
 											<?php if($imgArr['thumbnailUrl'] && stripos($imgArr['thumbnailUrl'], $MEDIA_ROOT_URL) === 0){ ?>
 												<div style="margin-left:10px;">
 													<input type="checkbox" name="renametnurl" value="1" />
 													<?php echo $LANG['RENAME_THUMB']; ?>
 												</div>
-												<input name='oldtnurl' type='hidden' value='<?php echo $imgArr["thumbnailUrl"];?>' />
+												<input name='old_thumbnailUrl' type='hidden' value='<?php echo $imgArr["thumbnailUrl"];?>' />
 											<?php } ?>
 										</div>
 										<div>

@@ -84,8 +84,8 @@ function get_occurrence_upload_path($institutioncode, $collectioncode, $catalogn
 class LocalStorage extends StorageStrategy {
 	private string $path;
 
-	public function __construct(string $path) {
-		$this->path = $path;
+	public function __construct(string | null $path = '') {
+		$this->path = $path ?? '';
 	}
 
 	public function getDirPath(array | string $file = null): string {
@@ -194,12 +194,18 @@ class LocalStorage extends StorageStrategy {
 	}	
 
 	public function rename(string $filepath, string $new_filepath): void {
+		//Remove MEDIA_ROOT_PATH + Path from filepath if it exists
+		global $SERVER_ROOT;
+		$dir_path = $this->getDirPath() . $this->path;
+		$filepath = str_replace($dir_path, '', $GLOBALS['SERVER_ROOT']. $filepath);
+		$new_filepath = str_replace($dir_path, '', $GLOBALS['SERVER_ROOT'] . $new_filepath);
+		//Constrain Rename to Scope of MEDIA_ROOT_PATH + Storage Path
 		if($this->file_exists($new_filepath)) {
 			throw new MediaException(MediaExceptionCase::FileAlreadyExists); 
 		} else if(!$this->file_exists($filepath)) {
 			throw new MediaException(MediaExceptionCase::FileDoesNotExist); 
 		} else {
-			rename($filepath, $new_filepath);
+			rename($dir_path . $filepath, $dir_path . $new_filepath);
 		}
 	}
 } 
@@ -233,6 +239,7 @@ class Media {
 	private static $mediaRootPath;
 	private static $mediaRootUrl;
 
+	private static $errors = [];
 	private static $storage_driver = LocalStorage::class;
 
 	private const DEFAULT_THUMBNAIL_WIDTH_PX = 200;
@@ -992,6 +999,11 @@ class Media {
 			SymbUtil::execute_query($conn, 'DELETE FROM imagetag where imgid = ? and keyvalue = ?', [$media_id, $remove]);
 		}
 	}
+
+	static function getErrors() {
+		return self::$errors ?? [];
+	}
+
     /**
      * @return bool
      * @param mixed $media_id
@@ -1039,31 +1051,33 @@ class Media {
 				$data[$key] = $clean_arr[$key];
 			}
 		}
+
 		$conn = self::connect('write');
 		mysqli_begin_transaction($conn);
 		try {
-			$old_metadata = self::getMedia($media_id);
 			self::update_metadata($data, $media_id, $conn);
 			self::update_tags($media_id, $clean_arr, $conn);
 
 			if(array_key_exists("renameweburl", $clean_arr)) {
-				$storage->rename($old_metadata['url'], $data['url']);
+				$storage->rename($clean_arr['old_url'], $data['url']);
 			}
 
 			if(array_key_exists("renametnurl", $clean_arr)) {
-				$storage->rename($old_metadata['thumbnailUrl'], $data['thumbnailUrl']);
+				$storage->rename($clean_arr['old_thumbnailUrl'], $data['thumbnailUrl']);
 			}
 
 			if(array_key_exists("renameorigurl", $clean_arr)) {
-				$storage->rename($old_metadata['thumbnailUrl'], $data['thumbnailUrl']);
+				$storage->rename($clean_arr['old_originalUrl'], $data['originalUrl']);
 			}
 
 			mysqli_commit($conn);
 			return true;
 		} catch(Exception $e) {
+			array_push(self::$errors, $e->getMessage());
+
 			mysqli_rollback($conn);
 			error_log('ERROR: Media update failed on media_id ' 
-				. $media_id . ' ' .$e->getMessage()
+				. $media_id . ' ' . $e->getMessage()
 			);
 			return false;
 		}
