@@ -778,12 +778,11 @@ class Media {
 		];
 
 		//What is url for files
-		if($isRemoteMedia && $media_type === MediaType::Image) {
+		if($isRemoteMedia) {
 			//Required to exist
 			$source_url = $clean_post_arr['imgurl'];
 			$keyValuePairs['originalUrl'] =  $source_url;
 			$keyValuePairs['url'] = $clean_post_arr['weburl']?? $source_url;
-
 		} else {
 			$keyValuePairs['url'] = $storage->getUrlPath() . $file['name'];
 			$keyValuePairs['originalUrl'] = $storage->getUrlPath() . $file['name'];
