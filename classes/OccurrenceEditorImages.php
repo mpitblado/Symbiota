@@ -363,7 +363,7 @@ class OccurrenceEditorImages extends OccurrenceEditorManager {
 			}
 		}
 		else{
-			$sql = 'UPDATE media SET occid = NULL WHERE (imgid = '.$imgId.')';
+			$sql = 'UPDATE media SET occid = NULL WHERE (media_id = '.$imgId.')';
 			if(!$this->conn->query($sql)){
 				$this->errorArr[] = $LANG['UNABLE_DISSOCIATE'].': '.$this->conn->error;
 				return false;

@@ -294,7 +294,7 @@ class ImageProcessor {
 										$sql2 = 'UPDATE media '.
 											'SET url = "'.$url.'", originalurl = "'.$originalUrl.'", thumbnailurl = '.($thumbnailUrl?'"'.$thumbnailUrl.'"':'NULL').', '.
 											'sourceurl = '.($sourceUrl?'"'.$sourceUrl.'"':'NULL').' '.
-											'WHERE imgid = '.$r1->imgid;
+											'WHERE media_id = '.$r1->imgid;
 										if($this->conn->query($sql2)){
 											$this->logOrEcho('Existing image replaced with new image mapping: <a href="../editor/occurrenceeditor.php?occid=' . htmlspecialchars($occid, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" target="_blank">'.($catalogNumber?$catalogNumber:$otherCatalogNumbers).'</a>',1);
 											//Delete physical images it previous version was mapped locally
@@ -411,7 +411,7 @@ class ImageProcessor {
 					}
 					//Grab existing images for that occurrence
 					$imgArr = array();
-					$sqlTest = 'SELECT imgid, sourceidentifier FROM media WHERE (occid = '.$occid.') ';
+					$sqlTest = 'SELECT media_id as imgid, sourceidentifier FROM media WHERE (occid = '.$occid.') ';
 					$rsTest = $this->conn->query($sqlTest);
 					while($rTest = $rsTest->fetch_object()){
 						$imgArr[$rTest->imgid] = $rTest->sourceidentifier;
@@ -447,7 +447,7 @@ class ImageProcessor {
 								elseif($fileExt == 'jpg' && in_array($fnExt,$highResList)){
 									//$this->logOrEcho('NOTICE: Replacing exist map of high-res with this JPG version ('.$fileName.'; #'.$occLink.')',2);
 									//Replace high res source with JPG by deleteing high res from database
-									$this->conn->query('DELETE FROM media WHERE imgid = '.$imgId);
+									$this->conn->query('DELETE FROM media WHERE media_id = '.$imgId);
 								}
 							}
 						}
@@ -519,7 +519,7 @@ class ImageProcessor {
 			foreach($targetFieldArr as $fieldName => $value){
 				$sqlFrag .= $fieldName.' = '.($value?'"'.$this->cleanInStr($value).'"':'NULL').',';
 			}
-			$sql = 'UPDATE media SET '.trim($sqlFrag,' ,').' WHERE (imgid = '.$imgid.')';
+			$sql = 'UPDATE media SET '.trim($sqlFrag,' ,').' WHERE (media_id = '.$imgid.')';
 			if($this->conn->query($sql)){
 				$this->logOrEcho('Existing image data updated '.(isset($targetFieldArr['sourceIdentifier'])?'('.$targetFieldArr['sourceIdentifier'].')':''),2);
 			}
