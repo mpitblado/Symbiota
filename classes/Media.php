@@ -675,40 +675,23 @@ class Media {
 		return $file && !empty($file) && isset($file['error']) && $file['error'] === 0;
 	}
 
-	/** $post_arr Keys:
-	 * imgurl 
-	 * weburl
-	 * sourceurl
-	 * tnurl
-	 * photographeruid
-	 * photographer
-	 * notes
-	 * copyright
-	 * sortoccurrence
-	 * occid
-	 * occidindex
-	 * csmode
-	 * tabindex
-	 * action = "Submit New Images
-	**/
-
     /**
      * @param array<int,mixed> $post_arr
-     * @param StorageStrategy $storage
-	 * @param array $file {name: string, type: string, tmp_name: string, error: int, size: int} 
+     * @param StorageStrategy $storage Class where and how to save files. If left empty will not store files
+	 * @param array $file {name: string, type: string, tmp_name: string, error: int, size: int} Post file data, if none given will assume remote resource 
      * @return bool
-     */
-    public static function add(array $post_arr, StorageStrategy $storage, array $file): void {
+    **/
+    public static function add(array $post_arr, StorageStrategy|Null $storage = null, array|null $file = null): void {
 		$clean_post_arr = Sanitize::in($post_arr);
 
 		$copy_to_server = $clean_post_arr['copytoserver']?? false;
 		$mapLargeImg = !($clean_post_arr['nolgimage']?? true);
-		$isRemoteMedia = isset($clean_post_arr['imgurl']) && $clean_post_arr['imgurl'];
-		$should_upload_file = self::isValidFile($file) || $copy_to_server;
+		$isRemoteMedia = isset($clean_post_arr['originalUrl']) && $clean_post_arr['originalUrl'];
+		$should_upload_file = (self::isValidFile($file) || $copy_to_server) && $storage;
 
 		//If no file is given and downloads from urls are enabled
 		if(!self::isValidFile($file) && $isRemoteMedia) {
-			$file = self::getRemoteFileInfo($clean_post_arr['imgurl']);
+			$file = self::getRemoteFileInfo($clean_post_arr['originalUrl']);
 		}
 
 		//If that didn't popluate then return;
@@ -743,44 +726,45 @@ class Media {
 		$media_type = MediaType::tryFrom($media_type_str);
 
 		if(!$media_type) throw new MediaException(MediaExceptionCase::InvalidMediaType);
-		
+
 		$keyValuePairs = [
 			"tid" => $clean_post_arr["tid"] ?? null,
-			"occid" => $clean_post_arr["occid"],
+			"occid" => $clean_post_arr["occid"] ?? null,
 			"url" => null,
-			"thumbnailUrl" => $clean_post_arr["tnurl"]?? null,
-			//This is a very bad name that refers to source or downloaded url
-			"originalUrl" => $clean_post_arr["sourceurl"]?? null,
-			"archiveUrl" => $clean_post_arr["archiverurl"]?? null,// Only Occurrence import
-			"sourceUrl" => $clean_post_arr["sourceurl"]?? null,// TPImageEditorManager / Occurrence import
-			"referenceUrl" => $clean_post_arr["referenceurl"]?? null,// check keys again might not be one,
-			"creator" => $clean_post_arr["photographer"],
-			"creatorUid" => OccurrenceUtilities::verifyUser($clean_post_arr["photographeruid"], $conn) ,
-			"format" => $file["type"],
-			"caption" => $clean_post_arr["caption"]?? null,
-			"owner" => $clean_post_arr["owner"]??null, //TPImageEditorManager / Occurrence import
-			"locality" => $clean_post_arr["locality"]?? null, //Only in the TPImageEditorManager
-			"anatomy" => null, //Only Occurrent import
-			"notes" => $clean_post_arr["notes"]?? null,
+			"thumbnailUrl" => $clean_post_arr["thumbnailUrl"] ?? null,
+			// Will get popluated below
+			"originalUrl" => null,
+			"archiveUrl" => $clean_post_arr["archiverurl"] ?? null,// Only Occurrence import
+			// This is a very bad name that refers to source or downloaded url
+			"sourceUrl" => $clean_post_arr["sourceurl"] ?? null,// TPImageEditorManager / Occurrence import
+			"referenceUrl" => $clean_post_arr["referenceurl"] ?? null,// check keys again might not be one,
+			"creator" => $clean_post_arr["photographer"] ?? null,
+			"creatorUid" => OccurrenceUtilities::verifyUser($clean_post_arr["photographeruid"] ?? null, $conn),
+			"format" =>  $file["type"] ?? $clean_post_arr['format'],
+			"caption" => $clean_post_arr["caption"] ?? null,
+			"owner" => $clean_post_arr["owner"] ?? null,
+			"locality" => $clean_post_arr["locality"] ?? null,
+			"anatomy" => $clean_post_arr["anatomy"] ?? null,
+			"notes" => $clean_post_arr["notes"] ?? null,
 			"username" => Sanitize::in($GLOBALS['USERNAME']),
 			"sortsequence" => array_key_exists('sortsequence', $clean_post_arr) && is_numeric($clean_post_arr['sortsequence']) ? $clean_post_arr['sortsequence'] : null,
-			//check if its is_numeric?
-			"sortOccurrence" => $clean_post_arr['sortoccurrence']?? null,
-			"sourceIdentifier" => 'filename: ' . $file['name'],
-			"rights" => null, // Only Occurrence import
-			"accessrights" => null, // Only Occurrence import
-			"copyright" => $clean_post_arr['copyright'],
-			"hashFunction" => null, // Only Occurrence import
-			"hashValue" => null, // Only Occurrence import
-			"mediaMD5" => null,// Only Occurrence import
-			"recordID" => UuidFactory::getUuidV4(),
+			// check if its is_numeric?
+			"sortOccurrence" => $clean_post_arr['sortoccurrence'] ?? null,
+			"sourceIdentifier" => $clean_post_arr['sourceIdentifier'] ?? ('filename: ' . $file['name']),
+			"rights" => $clean_post_arr['rights'] ?? null,
+			"accessrights" => $clean_post_arr['rights'] ?? null,
+			"copyright" => $clean_post_arr['copyright'] ?? null,
+			"hashFunction" => $clean_post_arr['hashfunction'] ?? null,
+			"hashValue" => $clean_post_arr['hashValue'] ?? null,
+			"mediaMD5" => $clean_post_arr['mediamd5'] ?? null,
+			"recordID" => $clean_post_arr['recordID'] ?? UuidFactory::getUuidV4(),
 			"media_type" => $media_type_str,
 		];
 
 		//What is url for files
 		if($isRemoteMedia) {
 			//Required to exist
-			$source_url = $clean_post_arr['imgurl'];
+			$source_url = $clean_post_arr['originalUrl'];
 			$keyValuePairs['originalUrl'] =  $source_url;
 			$keyValuePairs['url'] = $clean_post_arr['weburl']?? $source_url;
 		} else {
@@ -821,7 +805,6 @@ class Media {
 					//Update source url to reflect new filename
 					self::update_metadata([
 						'url' => $updated_path, 
-						'sourceUrl' => $updated_path, 
 						'originalUrl' => $updated_path
 					], $media_id, $conn);
 				}
@@ -841,7 +824,7 @@ class Media {
 					$width = $size[0];
 					$height = $size[1];
 
-					$thumb_url = $clean_post_arr['tnurl']?? null;
+					$thumb_url = $clean_post_arr['thumbnailUrl'] ?? null;
 					if(!$thumb_url) {
 						$thumb_name = self::addToFilename($file['name'], '_tn');
 						self::create_image(
@@ -857,7 +840,7 @@ class Media {
 						}
 					}
 
-					$med_url = $clean_post_arr['weburl']?? null;
+					$med_url = $clean_post_arr['weburl'] ?? null;
 					if(!$med_url) {
 						$med_name =	self::addToFilename($file['name'], '_lg');
 						self::create_image(

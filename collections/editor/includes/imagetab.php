@@ -97,7 +97,7 @@ $creatorArray = Media::getCreatorArray();
 						</div>
 						<div>
 							<b><?php echo $LANG['IMG_URL']; ?>:</b><br/>
-							<input type='text' name='imgurl' size='70'/>
+							<input type='text' name='originalUrl' size='70'/>
 						</div>
 						<div>
 							<b><?php echo $LANG['MED_VERS'].(isset($IMG_WEB_WIDTH) && $IMG_WEB_WIDTH?', +-'.$IMG_WEB_WIDTH.'px':''); ?>):</b><br/>
@@ -105,7 +105,7 @@ $creatorArray = Media::getCreatorArray();
 						</div>
 						<div>
 							<b><?php echo $LANG['THUMB_VERS'].(isset($IMG_TN_WIDTH) && $IMG_TN_WIDTH?', +-'.$IMG_TN_WIDTH.'px':''); ?>):</b><br/>
-							<input type='text' name='tnurl' size='70'/>
+							<input type='text' name='thumbnailUrl' size='70'/>
 						</div>
 						<div style="float:right;text-decoration:underline;font-weight:bold;">
 							<a href="#" onclick="toggle('targetdiv');return false;">

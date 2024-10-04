@@ -6,6 +6,7 @@ include_once('OmAssociations.php');
 include_once('OmDeterminations.php');
 include_once('OccurrenceMaintenance.php');
 include_once('UuidFactory.php');
+include_once('Media.php');
 
 class OccurrenceImport extends UtilitiesFileImport{
 
@@ -81,7 +82,45 @@ class OccurrenceImport extends UtilitiesFileImport{
 				$this->errorMessage = 'large url (originalUrl) is null (required)';
 				return false;
 			}
+
+			$fields = [
+				 //'tid',
+				'thumbnailurl',
+				'archiveurl',
+				'referenceurl',
+				'photographer',
+				'photographeruid',
+				'caption',
+				'owner',
+				'anatomy',
+				'notes',
+				'format',
+				'sourceidentifier',
+				'hashfunction',
+				'hashvalue',
+				'mediamd5',
+				'copyright',
+				'accessrights',
+				'rights',
+				'sortoccurrence'
+			];
+
+			//var_dump($recordArr, $occidArr, $postArr);
 			foreach($occidArr as $occid){
+				$data = [
+					"occid" => $occid,
+					"originalUrl" => $recordArr[$this->fieldMap['originalurl']],
+				];
+				foreach($fields as $key => $value) {
+					$record_idx = $this->fieldMap[$key] ?? false;
+					if($record_idx && $recordArr[$record_idx]) {
+						$data[$key] = $recordArr[$record_idx];
+					}
+				}
+
+				// Will Not store files on the server unless StorageStrategy is provided
+				Media::add($data);
+				/*
 				$importManager->setOccid($occid);
 				//$importManager->setTid($tid);
 				$importManager->setImgLgUrl($recordArr[$this->fieldMap['originalurl']]);
@@ -112,6 +151,9 @@ class OccurrenceImport extends UtilitiesFileImport{
 					$this->logOrEcho('ERROR loading image: '.$importManager->getErrStr(), 1);
 				}
 				$importManager->reset();
+				*/
+
+					
 			}
 		}
 		elseif($this->importType == self::IMPORT_DETERMINATIONS){
