@@ -105,13 +105,12 @@ class OccurrenceImport extends UtilitiesFileImport{
 				'sortoccurrence'
 			];
 
-			//var_dump($recordArr, $occidArr, $postArr);
 			foreach($occidArr as $occid){
 				$data = [
 					"occid" => $occid,
 					"originalUrl" => $recordArr[$this->fieldMap['originalurl']],
 				];
-				foreach($fields as $key => $value) {
+				foreach($fields as $key) {
 					$record_idx = $this->fieldMap[$key] ?? false;
 					if($record_idx && $recordArr[$record_idx]) {
 						$data[$key] = $recordArr[$record_idx];
