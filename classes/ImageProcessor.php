@@ -280,7 +280,7 @@ class ImageProcessor {
 							$origUrl = substr($originalUrl, 5);
 							$baseUrl = substr($url, 5);
 							foreach($occArr as $occid => $tid){
-								$sql1 = 'SELECT imgid, url, originalurl, thumbnailurl FROM media WHERE (occid = '.$occid.')';
+								$sql1 = 'SELECT media_id as imgid, url, originalurl, thumbnailurl FROM media WHERE (occid = '.$occid.')';
 								$rs1 = $this->conn->query($sql1);
 								while($r1 = $rs1->fetch_object()){
 									$testOrigUrl = substr($r1->originalurl,5);
