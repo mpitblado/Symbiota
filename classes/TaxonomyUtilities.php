@@ -180,7 +180,7 @@ class TaxonomyUtilities {
 					}
 				}
 				//Check the retArr[author] array for cultivar epithet, tradename, author
-				if (preg_match('/["]([^"]+)["]/', $retArr['author'], $matches)) {
+				if (preg_match("/'([^']+)'/", $retArr['author'], $matches)) {
 					$retArr['cultivarepithet'] = $matches[1];
 					$retArr['author'] = str_replace($matches[0], '', $retArr['author']);
 				}
