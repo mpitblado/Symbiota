@@ -186,7 +186,7 @@ if($isEditor){
 								<?php echo ($taxonEditorObj->getRankName() ? $taxonEditorObj->getRankName() : $LANG['NON_RANKED_NODE']); ?>
 							</div>
 							<div class="editfield" style="display:none;">
-								<select id="rankid" name="rankid">
+								<select id="rankid" name="rankid" style="margin-bottom: 0.5rem;">
 									<option value="0"><?php echo $LANG['NON_RANKED_NODE']; ?></option>
 									<option value="">---------------------------------</option>
 									<?php
@@ -201,7 +201,12 @@ if($isEditor){
 							</div>
 						</div>
 						<div class="editDiv">
-							<div class="editLabel"><?php echo $LANG['UNITNAME1']; ?>: </div>
+							<div class="editLabel" id="genus-div">
+								<!-- <?php echo $LANG['UNITNAME1']; ?>:  -->
+								 <label id="unitind1label" for="unitind1">
+									<?php echo $LANG['GENUS_NAME']; ?>:
+								</label>
+							</div>
 							<div class="editfield">
 								<?php
 								$unitInd1 = $taxonEditorObj->getUnitInd1();
@@ -209,7 +214,7 @@ if($isEditor){
 								?>
 							</div>
 							<div class="editfield" style="display:none;">
-								<select name="unitind1">
+								<select id="unitind1-select" name="unitind1">
 									<option value=""></option>
 									<option value="&#215;" <?php echo ($unitInd1 && (mb_ord($unitInd1)==215 || strtolower($unitInd1) == 'x')?'selected':''); ?>>&#215;</option>
 									<option value="&#8224;" <?php echo ($unitInd1 && mb_ord($unitInd1)==8224?'selected':''); ?>>&#8224;</option>
@@ -217,7 +222,7 @@ if($isEditor){
 								<input type="text" id="unitname1" name="unitname1" style="width:300px;border-style:inset;" value="<?php echo $taxonEditorObj->getUnitName1(); ?>" />
 							</div>
 						</div>
-						<div class="editDiv">
+						<div id="div1hide" class="editDiv">
 							<div class="editLabel"><?php echo $LANG['UNITNAME2']; ?>: </div>
 							<div class="editfield">
 								<?php
@@ -233,7 +238,7 @@ if($isEditor){
 								<input type="text" id="unitname2" name="unitname2" style="width:300px;border-style:inset;" value="<?php echo $taxonEditorObj->getUnitName2(); ?>" />
 							</div>
 						</div>
-						<div class="editDiv">
+						<div id="div2hide" class="editDiv">
 							<div class="editLabel"><?php echo $LANG['UNITNAME3']; ?>: </div>
 							<div class="editfield">
 								<?php echo $taxonEditorObj->getUnitInd3()." ".$taxonEditorObj->getUnitName3();?>
@@ -243,7 +248,7 @@ if($isEditor){
 								<input type="text" id="unitname3" name="unitname3" style="width:300px;border-style:inset;" value="<?php echo $taxonEditorObj->getUnitName3(); ?>" />
 							</div>
 						</div>
-						<div class="editDiv">
+						<div id="div3hide" class="editDiv">
 							<div class="editLabel"><?php echo $LANG['UNITNAME4']; ?>: </div>
 							<div class="editfield">
 								<?php echo htmlspecialchars($taxonEditorObj->getCultivarEpithet() ?? '', ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);?>
@@ -252,7 +257,7 @@ if($isEditor){
 								<input placeholder="e.g., cultivar epithet (no quotes)" aria-placeholder="Cultivar epithet. Do not include quotations." type="text" id="cultivarEpithet" name="cultivarEpithet" style="width:300px;border-style:inset;" value="<?php echo htmlspecialchars($taxonEditorObj->getCultivarEpithet() ?? '', ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>" />
 							</div>
 						</div>
-						<div class="editDiv">
+						<div id="div4hide" class="editDiv">
 							<div class="editLabel"><?php echo $LANG['UNITNAME5']; ?>: </div>
 							<div class="editfield">
 								<?php echo htmlspecialchars($taxonEditorObj->getTradeName() ?? '', ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);?>
@@ -261,7 +266,7 @@ if($isEditor){
 								<input placeholder="e.g., TRADENAME" aria-placeholder="Entry will be converted to uppercase letters per trade name convention" type="text" id="tradeName" name="tradeName" style="width:300px;border-style:inset;" value="<?php echo htmlspecialchars($taxonEditorObj->getTradeName() ?? '', ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>" />
 							</div>
 						</div>
-						<div class="editDiv">
+						<div id="author-div" class="editDiv">
 							<div class="editLabel"><?php echo $LANG['AUTHOR']; ?>: </div>
 							<div class="editfield">
 								<?php echo $taxonEditorObj->getAuthor();?>

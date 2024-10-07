@@ -329,7 +329,7 @@ function acceptanceChanged(f) {
 // listener for taxon rank
 
 document.getElementById("rankid").addEventListener("change", function () {
-  const selectedValue = this.value; // Get the chosen value
+  const selectedValue = Number(this.value); // Get the chosen value
   $rankId = selectedValue;
 
   const div1 = document.getElementById("div1hide");
