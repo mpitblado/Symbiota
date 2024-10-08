@@ -221,13 +221,13 @@ class TaxonomyEditorManager extends Manager{
 	//Edit Functions
 	public function submitTaxonEdits($postArr){
 		$statusStr = '';
-		$sciname = trim($postArr['unitind1'] . $postArr['unitname1'] . ' ' . $postArr['unitind2'] . $postArr['unitname2'] . ' ' . trim($postArr['unitind3'] . ' ' . $postArr['unitname3']));
+		$sciname = trim($postArr['unitind1'] . $postArr['unitname1'] . ' ' . (array_key_exists('unitind2', $postArr) ? $postArr['unitind2'] : '') . $postArr['unitname2'] . ' ' . trim($postArr['unitind3'] . ' ' . $postArr['unitname3']));
 		$processedCultivarEpithet = $this->standardizeCultivarEpithet($postArr['cultivarEpithet']);
 		$processedTradeName = $this->standardizeTradeName($postArr['tradeName']);
 		$sql = 'UPDATE taxa SET '.
 			'unitind1 = '.($postArr['unitind1']?'"'.$this->cleanInStr($postArr['unitind1']).'"':'NULL').', '.
 			'unitname1 = "'.$this->cleanInStr($postArr['unitname1']).'",'.
-			'unitind2 = '.($postArr['unitind2']?'"'.$this->cleanInStr($postArr['unitind2']).'"':'NULL').', '.
+			'unitind2 = '.((array_key_exists('unitind2', $postArr) && $postArr['unitind2']) ? '"' . $this->cleanInStr($postArr['unitind2']) . '"' : 'NULL').', '.
 			'unitname2 = '.($postArr['unitname2']?'"'.$this->cleanInStr($postArr['unitname2']).'"':'NULL').', '.
 			'unitind3 = '.($postArr['unitind3']?'"'.$this->cleanInStr($postArr['unitind3']).'"':'NULL').', '.
 			'unitname3 = '.($postArr['unitname3']?'"'.$this->cleanInStr($postArr['unitname3']).'"':'NULL').', '.
