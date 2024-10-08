@@ -122,9 +122,13 @@ function showOnlyRelevantFields(rankId) {
     section: 200,
     subsection: 210,
   }; // not 190 (subgenera)
-  rankIdsToHideUnit3From = { ...rankIdsToHideUnit2From, genus: 190 };
+  const { ...rest } = rankIdsToHideUnit2From;
+  rankIdsToHideUnit3From = { ...rest, subgenus: 190 };
+  // console.log("deleteMe rankIdsToHideUnit3From is: ");
+  // console.log(rankIdsToHideUnit3From);
+  const { ...rest2 } = rankIdsToHideUnit3From;
   rankIdsToHideUnit4From = {
-    ...rankIdsToHideUnit3From,
+    ...rest2,
     species: 220,
     subspecies: 230,
     variety: 240,
@@ -132,9 +136,12 @@ function showOnlyRelevantFields(rankId) {
     form: 260,
     subform: 270,
   };
-  rankIdsToHideUnit5From = { ...rankIdsToHideUnit4From };
+  const { ...rest3 } = rankIdsToHideUnit4From;
+  rankIdsToHideUnit5From = { ...rest3 };
 
-  allRankIds = { rankIdsToHideUnit5From, cultivar: 300 };
+  allRankIds = { ...rest3, cultivar: 300 };
+  console.log("deleteMe allRankIds is: ");
+  console.log(allRankIds);
 
   if (Object.values(rankIdsToHideUnit2From).includes(rankId)) {
     div2Hide.style.display = "none";
@@ -160,9 +167,18 @@ function showOnlyRelevantFields(rankId) {
   if (rankId <= rankIdsToHideUnit2From.genus) {
     // Get the name of selected option
     const rankIdSelector = document.getElementById("rankid");
+    const optionIdx = rankIdSelector.options.selectedIndex;
+    // console.log("deleteMe options are: ");
+    // console.log(options);
+    // console.log(typeof options);
+    // targetOption = options.find((opt) => {
+    //   opt.value === rankId;
+    // });
+    // console.log("deleteMe targetOption is: ");
+    // console.log(targetOption);
+
     // const selectedOption = this.options[this.selectedIndex];
-    const selectedOption = rankIdSelector.options[rankId];
-    const selectedOptionText = selectedOption.textContent.trim();
+    const selectedOptionText = rankIdSelector.options[optionIdx].text.trim();
 
     // Set the label for "UnitName1" based on the selected option text
     label.textContent = selectedOptionText + " Name";
@@ -172,58 +188,79 @@ function showOnlyRelevantFields(rankId) {
 
   // if (rankId < allRankIds.genus) {
   if (Object.values(rankIdsToHideUnit2From).includes(rankId)) {
-    console.log("deleteMe got here c1");
+    // console.log("deleteMe got here c1");
     unitind1Select.style.display = "none";
   } else {
-    console.log("deleteMe got here c2");
+    // console.log("deleteMe got here c2");
     unitind1Select.style.display = "inline-block";
+  }
+
+  if (Object.values(rankIdsToHideUnit2From).includes(rankId)) {
+    document.getElementById("unitname2").value = null;
+    document.getElementById("unitind2-select").value = null;
+    // document.getElementById("unitind3").value = null;
+  }
+
+  if (Object.values(rankIdsToHideUnit3From).includes(rankId)) {
+    // document.getElementById("unitname2").value = null;
+    // document.getElementById("unitind2-select").value = null;
+    document.getElementById("unitind3").value = null;
   }
 
   if (
     Object.values(rankIdsToHideUnit5From).includes(rankId)
     //   < rankIdsToHideUnit4From.species
   ) {
-    console.log("deleteMe got here b1");
+    // console.log("deleteMe got here b1");
     //set the unit 2-5 values to '', because this taxon rank doesn't have them
-    document.getElementById("unitname2").value = null;
-    document.getElementById("unitind2").value = null;
-    document.getElementById("unitind3").value = null;
+
     document.getElementById("div4-input").value = null;
-    document.getElementById("div5-input").value = null;
+    // document.getElementById("div5-input").value = null;
   }
   // if (rankId < 300) {
   if (Object.values(rankIdsToHideUnit5From).includes(rankId)) {
-    console.log("deleteMe got here b1");
+    // console.log("deleteMe got here b1");
     //set the unit 4-5 values to '', because this taxon rank doesn't have them
-    document.getElementById("div4-input").value = null;
+    // document.getElementById("div4-input").value = null;
     document.getElementById("div5-input").value = null;
   }
 
+  // console.log("deleteMe allRankIds.subgenus is: ");
+  // console.log(allRankIds.subgenus);
+
+  const unit2NameLabel = document.getElementById("unit-2-name-label");
+  if (rankId === allRankIds.subgenus) {
+    console.log("deleteMe unit2NameLabel is: ");
+    console.log(unit2NameLabel);
+    unit2NameLabel.textContent = "Subgenus Name: ";
+  } else {
+    unit2NameLabel.textContent = "Specific Epithet: ";
+  }
   // if (rankId >= 220) {
   //   toggle("div2hide");
   //   div4Display.style.display = "inline-block";
   //   toggle("unit3Display");
   // }
 
-  console.log("deleteMe got here x and rankId is: ");
-  console.log(rankId);
+  // console.log("deleteMe got here x and rankId is: ");
+  // console.log(rankId);
 
   if (rankId == allRankIds.cultivar) {
-    console.log("got here d2");
+    // console.log("got here d2");
     div4Display.style.display = "inline-block";
     div5Display.style.display = "inline-block";
     div4Hide.style.display = "block";
     div5Hide.style.display = "block";
-    parentNode.insertBefore(authorDiv, div5Hide);
+    parentNode.insertBefore(authorDiv, div4Hide);
   } else {
-    console.log("got here d1");
+    // console.log("got here d1");
     div4Hide.style.display = "none";
     div5Hide.style.display = "none";
     //   console.log("deleteMe div4Hide is: ");
     //   console.log(div4Hide);
     document.getElementById("div4-input").value = null;
-    document.getElementById("div5-input").value = null; // @TODO
-    parentNode.insertBefore(authorDiv, genusDiv);
+    document.getElementById("div5-input").value = null;
+    // parentNode.insertBefore(authorDiv, genusDiv); // @TODO maybe insert below unit2 if that exists and other wise below unit1
   }
 }
 

@@ -204,8 +204,8 @@ if($isEditor){
 								</select>
 							</div>
 						</div>
-						<div class="editDiv">
-							<div class="editLabel" id="genus-div">
+						<div class="editDiv" id="genus-div">
+							<div class="editLabel">
 								<!-- <?php echo $LANG['UNITNAME1']; ?>:  -->
 								 <label id="unitind1label" for="unitind1">
 									<?php echo $LANG['GENUS_NAME']; ?>:
@@ -227,7 +227,7 @@ if($isEditor){
 							</div>
 						</div>
 						<div id="div2hide" style="display: <?php echo empty($taxonEditorObj->getUnitName2()) ? 'none' : 'block'; ?>" class="editDiv">
-							<div class="editLabel"><?php echo $LANG['UNITNAME2']; ?>: </div>
+							<div id="unit-2-name-label" class="editLabel"><?php echo $LANG['UNITNAME2']; ?>: </div>
 							<div class="editfield">
 								<?php
 								$unitInd2 = $taxonEditorObj->getUnitInd2();
@@ -235,7 +235,7 @@ if($isEditor){
 								?>
 							</div>
 							<div class="editfield" style="display:none;">
-								<select name="unitind2">
+								<select name="unitind2" id="unitind2-select">
 									<option value=""></option>
 									<option value="&#215;" <?php echo (ord($unitInd2 ?? '') == 195 || strtolower($unitInd2 ?? '') == 'x'?'selected':''); ?>>&#215;</option>
 								</select>
