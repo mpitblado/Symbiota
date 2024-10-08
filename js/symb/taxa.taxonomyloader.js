@@ -332,14 +332,14 @@ document.getElementById("rankid").addEventListener("change", function () {
   const selectedValue = Number(this.value); // Get the chosen value
   $rankId = selectedValue;
 
-  const div1 = document.getElementById("div1hide");
-  const div2 = document.getElementById("div2hide");
-  const div3 = document.getElementById("div3hide");
-  const div4 = document.getElementById("div4hide");
+  const div1 = document.getElementById("div2hide");
+  const div2 = document.getElementById("div3hide");
+  const div3 = document.getElementById("div4hide");
+  const div4 = document.getElementById("div5hide");
   const label = document.getElementById("unitind1label");
   const scinameDiv = document.getElementById("sciname-div");
   const authorDiv = document.getElementById("author-div");
-  const parentNode = div3hide.parentNode;
+  const parentNode = div4hide.parentNode;
   const genusDiv = document.getElementById("genus-div");
 
   if (selectedValue > 150) {
@@ -364,7 +364,7 @@ document.getElementById("rankid").addEventListener("change", function () {
     div3.style.display = "block";
     div4.style.display = "block";
     scinameDiv.style.display = "none";
-    parentNode.insertBefore(authorDiv, div3hide);
+    parentNode.insertBefore(authorDiv, div4hide);
   } else {
     div3.style.display = "none";
     div4.style.display = "none";

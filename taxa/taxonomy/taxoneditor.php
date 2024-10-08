@@ -8,6 +8,8 @@ if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/taxa/taxonomy/ta
 
 if(!$SYMB_UID) header('Location: '.$CLIENT_ROOT.'/profile/index.php?refurl=../taxa/taxonomy/taxoneditor.php?'.htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
 
+
+var_dump($_REQUEST);
 $tid = $_REQUEST['tid'] ?? 0;
 $taxAuthId = array_key_exists('taxauthid', $_REQUEST)?$_REQUEST['taxauthid']:1;
 $tabIndex = array_key_exists('tabindex',$_REQUEST)?$_REQUEST['tabindex']:0;
@@ -24,6 +26,8 @@ $taxonEditorObj->setTaxAuthId($taxAuthId);
 
 $isEditor = false;
 if($IS_ADMIN || array_key_exists("Taxonomy",$USER_RIGHTS)) $isEditor = true;
+
+var_dump($_POST);
 
 $statusStr = '';
 if($isEditor){
@@ -222,7 +226,7 @@ if($isEditor){
 								<input type="text" id="unitname1" name="unitname1" style="width:300px;border-style:inset;" value="<?php echo $taxonEditorObj->getUnitName1(); ?>" />
 							</div>
 						</div>
-						<div id="div1hide" class="editDiv">
+						<div id="div2hide" style="display: <?php echo empty($taxonEditorObj->getUnitName2()) ? 'none' : 'block'; ?>" class="editDiv">
 							<div class="editLabel"><?php echo $LANG['UNITNAME2']; ?>: </div>
 							<div class="editfield">
 								<?php
@@ -238,7 +242,7 @@ if($isEditor){
 								<input type="text" id="unitname2" name="unitname2" style="width:300px;border-style:inset;" value="<?php echo $taxonEditorObj->getUnitName2(); ?>" />
 							</div>
 						</div>
-						<div id="div2hide" class="editDiv">
+						<div id="div3hide" style="display: <?php echo empty($taxonEditorObj->getUnitName3()) ? 'none' : 'block'; ?>" class="editDiv">
 							<div class="editLabel"><?php echo $LANG['UNITNAME3']; ?>: </div>
 							<div class="editfield">
 								<?php echo $taxonEditorObj->getUnitInd3()." ".$taxonEditorObj->getUnitName3();?>
@@ -248,22 +252,26 @@ if($isEditor){
 								<input type="text" id="unitname3" name="unitname3" style="width:300px;border-style:inset;" value="<?php echo $taxonEditorObj->getUnitName3(); ?>" />
 							</div>
 						</div>
-						<div id="div3hide" class="editDiv">
-							<div class="editLabel"><?php echo $LANG['UNITNAME4']; ?>: </div>
-							<div class="editfield">
-								<?php echo htmlspecialchars($taxonEditorObj->getCultivarEpithet() ?? '', ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);?>
-							</div>
-							<div class="editfield" style="display:none;">
-								<input placeholder="e.g., cultivar epithet (no quotes)" aria-placeholder="Cultivar epithet. Do not include quotations." type="text" id="cultivarEpithet" name="cultivarEpithet" style="width:300px;border-style:inset;" value="<?php echo htmlspecialchars($taxonEditorObj->getCultivarEpithet() ?? '', ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>" />
+						<div id="div4hide" class="editDiv">
+							<div id="unit4Display" style="display: <?php echo empty($taxonEditorObj->getCultivarEpithet()) ? 'none' : 'block'; ?>">
+								<div class="editLabel"><?php echo $LANG['UNITNAME4']; ?>: </div>
+								<div class="editfield">
+									<?php echo htmlspecialchars($taxonEditorObj->getCultivarEpithet() ?? '', ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);?>
+								</div>
+								<div class="editfield" style="display:none;">
+									<input id="div4-input" placeholder="e.g., cultivar epithet (no quotes)" aria-placeholder="Cultivar epithet. Do not include quotations." type="text" id="cultivarEpithet" name="cultivarEpithet" style="width:300px;border-style:inset;" value="<?php echo htmlspecialchars($taxonEditorObj->getCultivarEpithet() ?? '', ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>" />
+								</div>
 							</div>
 						</div>
-						<div id="div4hide" class="editDiv">
-							<div class="editLabel"><?php echo $LANG['UNITNAME5']; ?>: </div>
-							<div class="editfield">
-								<?php echo htmlspecialchars($taxonEditorObj->getTradeName() ?? '', ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);?>
-							</div>
-							<div class="editfield" style="display:none;">
-								<input placeholder="e.g., TRADENAME" aria-placeholder="Entry will be converted to uppercase letters per trade name convention" type="text" id="tradeName" name="tradeName" style="width:300px;border-style:inset;" value="<?php echo htmlspecialchars($taxonEditorObj->getTradeName() ?? '', ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>" />
+						<div id="div5hide" class="editDiv">
+							<div id="unit5Display" style="display: <?php echo empty($taxonEditorObj->getTradeName()) ? 'none' : 'block'; ?>">
+								<div class="editLabel"><?php echo $LANG['UNITNAME5']; ?>: </div>
+								<div class="editfield">
+									<?php echo htmlspecialchars($taxonEditorObj->getTradeName() ?? '', ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);?>
+								</div>
+								<div class="editfield" style="display:none;">
+									<input id="div5-input" placeholder="e.g., TRADENAME" aria-placeholder="Entry will be converted to uppercase letters per trade name convention" type="text" id="tradeName" name="tradeName" style="width:300px;border-style:inset;" value="<?php echo htmlspecialchars($taxonEditorObj->getTradeName() ?? '', ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>" />
+								</div>
 							</div>
 						</div>
 						<div id="author-div" class="editDiv">

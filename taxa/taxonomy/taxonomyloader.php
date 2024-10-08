@@ -134,7 +134,7 @@ if($isEditor){
 					<?php
 					if ($rankId > 150){
 						?>
-							<div id="div1hide" style="clear:both;">
+							<div id="div2hide" style="clear:both;">
 								<div class="left-column">
 									<label for="unitind2">
 										<?php echo $LANG['UNITNAME2']; ?>:
@@ -146,7 +146,7 @@ if($isEditor){
 								</select>
 								<input type='text' id='unitname2' name='unitname2' onchange="updateFullname(this.form)" class='search-bar' aria-label="<?php echo (isset($LANG['SPECIF_EPITHET_FIELD']) ? $LANG['SPECIF_EPITHET_FIELD'] : 'Specific Epithet Field'); ?>" title="<?php echo (isset($LANG['SPECIF_EPITHET_FIELD']) ? $LANG['SPECIF_EPITHET_FIELD'] : 'Specific Epithet Field'); ?>"/>
 							</div>
-							<div id="div2hide" style="clear:both;">
+							<div id="div3hide" style="clear:both;">
 								<div class="left-column">
 									<label for="unitind3">
 										<?php echo $LANG['UNITNAME3']; ?>:
@@ -155,7 +155,7 @@ if($isEditor){
 								<input type='text' id='unitind3' name='unitind3' onchange="updateFullname(this.form)" class='search-bar-extraShort' aria-label='<?php echo $LANG['UNITNAME3']; ?>:' title='<?php echo $LANG['RANK_FIELD']; ?>'/>
 								<input type='text' id='unitname3' name='unitname3' onchange="updateFullname(this.form)" class='search-bar' aria-label="<?php echo $LANG['INFRA_EPITHET_FIELD']; ?>" title="<?php echo $LANG['INFRA_EPITHET_FIELD']; ?>" />
 							</div>
-							<div id="div3hide" style="clear:both;display:none;">
+							<div id="div4hide" style="clear:both;display:none;">
 								<div class="left-column">
 									<label for="">
 										<?php echo $LANG['UNITNAME4']; ?>:
@@ -163,7 +163,7 @@ if($isEditor){
 								</div>
 								<input type='text' id='cultivarEpithet' name='cultivarEpithet' onchange="updateFullname(this.form)" class='search-bar' aria-label="<?php echo $LANG['UNITNAME4']; ?>" title="<?php echo $LANG['UNITNAME4']; ?>" />
 							</div>
-							<div id="div4hide" style="clear:both;display:none;">
+							<div id="div5hide" style="clear:both;display:none;">
 								<div class="left-column">
 									<label for="tradeName">
 										<?php echo $LANG['UNITNAME5']; ?>:
