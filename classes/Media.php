@@ -1,6 +1,7 @@
 <?php
 include_once($SERVER_ROOT . "/traits/Database.php");
 include_once($SERVER_ROOT . "/classes/Sanitize.php");
+include_once($SERVER_ROOT . "/utilities/SymbUtil.php");
 
 abstract class StorageStrategy {
     /**
@@ -712,7 +713,7 @@ class Media {
 		WHERE tidinterpreted IS NOT NULL AND occid = ? 
 		SQL;
 
-		$taxon_result = mysqli_execute_query(
+		$taxon_result = SymbUtil::execute_query(
 			$conn,
 			$sql, 
 			[$clean_post_arr['occid']]
@@ -783,7 +784,7 @@ class Media {
 		mysqli_begin_transaction($conn);
 		try {
 			//insert media
-			$result = mysqli_execute_query($conn, $sql, array_values($keyValuePairs));
+			$result = SymbUtil::execute_query($conn, $sql, array_values($keyValuePairs));
 			//Insert to other tables as needed like imagetags...
 
 			$media_id = $conn->insert_id;
@@ -1236,7 +1237,7 @@ class Media {
 		array_push($values, $media_id);
 
 		$sql = 'UPDATE media set '. $parameter_str . ' where media_id = ?';
-		mysqli_execute_query(
+		SymbUtil::execute_query(
 			$conn ?? self::connect('write'), 
 			$sql, 
 			$values
@@ -1249,7 +1250,7 @@ class Media {
 	**/
 	public static function delete($media_id, $remove_files = true): void {
 		$conn = self::connect('write');
-		$result = mysqli_execute_query(
+		$result = SymbUtil::execute_query(
 			$conn, 
 			'SELECT url, thumbnailUrl, originalUrl from media where media_id = ?', 
 			[$media_id]
@@ -1264,7 +1265,7 @@ class Media {
 		mysqli_begin_transaction($conn);
 		try {
 			foreach ($queries as $query) {
-				mysqli_execute_query($conn, $query, [$media_id]);
+				SymbUtil::execute_query($conn, $query, [$media_id]);
 			}
 
 			//Unlink all files
@@ -1310,7 +1311,7 @@ class Media {
 		}
 
 		$sql .= ' ORDER BY sortoccurrence ASC';
-		$results = mysqli_execute_query(self::connect('readonly'), $sql, $parameters);
+		$results = SymbUtil::execute_query(self::connect('readonly'), $sql, $parameters);
 		$media = self::get_media_items($results);
 		if(count($media) <= 0) {
 			return [];
@@ -1346,7 +1347,7 @@ class Media {
 		}
 
 		$sql .= ' ORDER BY sortsequence IS NULL ASC, sortsequence ASC';
-		$results = mysqli_execute_query(self::connect('readonly'), $sql, $parameters);
+		$results = SymbUtil::execute_query(self::connect('readonly'), $sql, $parameters);
 
 		return Sanitize::out(self::get_media_items($results));
 	}
@@ -1378,7 +1379,7 @@ class Media {
 
 		$sql .= ' ORDER BY sortoccurrence IS NULL ASC, sortoccurrence ASC';
 
-		$results = mysqli_execute_query(self::connect('readonly'), $sql, $parameters);
+		$results = SymbUtil::execute_query(self::connect('readonly'), $sql, $parameters);
 
 		return Sanitize::out(self::get_media_items($results));
 	}
@@ -1418,7 +1419,7 @@ class Media {
 			$sql .= '= ?';
 		}
 
-		$res = mysqli_execute_query(
+		$res = SymbUtil::execute_query(
 			$conn?? self::connect('readonly'), 
 			$sql, 
 			is_array($media_id)? $media_id: [$media_id]
@@ -1442,7 +1443,7 @@ class Media {
 		ORDER BY u.lastname, u.firstname 
 		SQL;
 
-		$result = mysqli_execute_query(self::connect('readonly'), $sql);
+		$result = SymbUtil::execute_query(self::connect('readonly'), $sql);
 		$creators = array();
 
 		while($row = $result->fetch_object()){
@@ -1462,7 +1463,7 @@ class Media {
 		SELECT tagkey, description_en FROM imagetagkey ORDER BY sortorder;
 		SQL;
 
-		$result = mysqli_execute_query(self::connect('readonly'), $sql);
+		$result = SymbUtil::execute_query(self::connect('readonly'), $sql);
 		while($r = $result->fetch_object()){
 			$retArr[$r->tagkey] = Sanitize::out($r->description_en);
 		}
@@ -1508,7 +1509,7 @@ class Media {
 		//Load identifiers
 		$idArr = array();
 		$sql = 'SELECT o.catalogNumber, o.otherCatalogNumbers, i.identifierValue FROM omoccurrences o LEFT JOIN omoccuridentifiers i ON o.occid = i.occid WHERE o.occid = ?';
-		$rs = mysqli_execute_query(self::connect('readonly'), $sql, [$occid]);
+		$rs = SymbUtil::execute_query(self::connect('readonly'), $sql, [$occid]);
 		$cnt = 0;
 		while($r = $rs->fetch_object()){
 			if(!$cnt){
