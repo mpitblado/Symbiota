@@ -271,7 +271,12 @@ if($SYMB_UID){
 			elseif($action == 'Delete Image'){
 				try {
 					Media::delete($_POST['imgid'], $_POST['removeimg']?? false);
-					$statusStr = $LANG['IMAGE_DEL_SUCCESS'];
+
+					if($errors = Media::getErrors()) {
+						$statusStr = "ERROR: " . array_pop($errors);
+					} else {
+						$statusStr = $LANG['IMAGE_DEL_SUCCESS'];
+					}
 				} catch(Exception $e) {
 					$statusStr = $e->getMessage();
 				} finally {

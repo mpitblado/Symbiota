@@ -1277,6 +1277,7 @@ class Media {
 			mysqli_commit($conn);
 		} catch(Exception $e) {
 			error_log("Error: couldnt' remove media of media_id " . $media_id .": " . $e->getMessage());
+			array_push(self::$errors, $e->getMessage());
 			mysqli_rollback($conn);
 		}
 	}
