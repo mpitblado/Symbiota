@@ -1,3 +1,6 @@
+INSERT INTO `schemaversion` (versionnumber) values ("3.2");
+
+-- Define helper function to alter coordinates
 DROP FUNCTION IF EXISTS `swap_wkt_coords`;
 
 DELIMITER |
@@ -50,6 +53,7 @@ BEGIN
  
   RETURN flipped;
 END
+|
 DELIMITER ;
 
 -- Add and update checklist footprints to be geoJson
@@ -68,5 +72,3 @@ ALTER TABLE omoccurpoints MODIFY IF EXISTS lngLatPoint POINT NOT NULL;
 ALTER TABLE omoccurpoints ADD SPATIAL INDEX(lngLatPoint);
 
 DROP FUNCTION IF EXISTS `swap_wkt_coords`;
-INSERT INTO `schemaversion` (versionnumber) values ("3.2");
-
