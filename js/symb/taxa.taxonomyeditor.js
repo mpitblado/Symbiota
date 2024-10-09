@@ -167,10 +167,10 @@ function showOnlyRelevantFields(rankId) {
   }
 
   if (Object.values(rankIdsToHideUnit4From).includes(rankId)) {
-    document.getElementById("div4-input").value = null;
+    document.getElementById("cultivarEpithet").value = null;
   }
   if (Object.values(rankIdsToHideUnit5From).includes(rankId)) {
-    document.getElementById("div5-input").value = null;
+    document.getElementById("tradeName").value = null;
   }
 
   const unit2NameLabel = document.getElementById("unit-2-name-label");
@@ -189,8 +189,8 @@ function showOnlyRelevantFields(rankId) {
   } else {
     div4Hide.style.display = "none";
     div5Hide.style.display = "none";
-    document.getElementById("div4-input").value = null;
-    document.getElementById("div5-input").value = null;
+    document.getElementById("cultivarEpithet").value = null;
+    document.getElementById("tradeName").value = null;
     // parentNode.insertBefore(authorDiv, genusDiv); // @TODO maybe insert below unit2 if that exists and other wise below unit1
   }
 }

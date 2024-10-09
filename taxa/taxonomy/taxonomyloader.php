@@ -21,6 +21,7 @@ if($IS_ADMIN || array_key_exists('Taxonomy',$USER_RIGHTS)){
 }
 
 if($isEditor){
+	// var_dump($_POST);
 	if(array_key_exists('sciname',$_POST)){
 		$status = $loaderObj->loadNewName($_POST);
 		if(is_int($status)){
@@ -136,7 +137,7 @@ if($isEditor){
 						?>
 							<div id="div2hide" style="clear:both;">
 								<div class="left-column">
-									<label for="unitind2">
+									<label id="unit-2-name-label" for="unitind2">
 										<?php echo $LANG['UNITNAME2']; ?>:
 									</label>
 								</div>
@@ -156,20 +157,24 @@ if($isEditor){
 								<input type='text' id='unitname3' name='unitname3' onchange="updateFullname(this.form)" class='search-bar' aria-label="<?php echo $LANG['INFRA_EPITHET_FIELD']; ?>" title="<?php echo $LANG['INFRA_EPITHET_FIELD']; ?>" />
 							</div>
 							<div id="div4hide" style="clear:both;display:none;">
-								<div class="left-column">
-									<label for="">
-										<?php echo $LANG['UNITNAME4']; ?>:
-									</label>
+								<div id="unit4Display" style="display: <?php echo empty($loaderObj->getCultivarEpithet()) ? 'none' : 'block'; ?>">
+									<div class="left-column">
+										<label for="">
+											<?php echo $LANG['UNITNAME4']; ?>:
+										</label>
+									</div>
+									<input type='text' id="cultivarEpithet" name='cultivarEpithet' onchange="updateFullname(this.form)" class='search-bar' aria-label="<?php echo $LANG['UNITNAME4']; ?>" title="<?php echo $LANG['UNITNAME4']; ?>" />
 								</div>
-								<input type='text' id='cultivarEpithet' name='cultivarEpithet' onchange="updateFullname(this.form)" class='search-bar' aria-label="<?php echo $LANG['UNITNAME4']; ?>" title="<?php echo $LANG['UNITNAME4']; ?>" />
 							</div>
 							<div id="div5hide" style="clear:both;display:none;">
-								<div class="left-column">
-									<label for="tradeName">
-										<?php echo $LANG['UNITNAME5']; ?>:
-									</label>
+								<div id="unit5Display" style="display: <?php echo empty($loaderObj->getTradeName()) ? 'none' : 'block'; ?>">
+									<div class="left-column">
+										<label for="tradeName">
+											<?php echo $LANG['UNITNAME5']; ?>:
+										</label>
+									</div>
+									<input type='text' id='tradeName' name='tradeName' onchange="updateFullname(this.form)" class='search-bar' aria-label="<?php echo $LANG['UNITNAME5']; ?>" title="<?php echo $LANG['UNITNAME5']; ?>" />
 								</div>
-								<input type='text' id='tradeName' name='tradeName' onchange="updateFullname(this.form)" class='search-bar' aria-label="<?php echo $LANG['UNITNAME5']; ?>" title="<?php echo $LANG['UNITNAME5']; ?>" />
 							</div>
 					<?php
 					}?>
