@@ -21,13 +21,10 @@ $occManager = null;
 if(strpos($action,'Determination') || strpos($action,'Verification')){
 	include_once($SERVER_ROOT.'/classes/OccurrenceEditorDeterminations.php');
 	$occManager = new OccurrenceEditorDeterminations();
-}
-elseif(strpos($action,'Image')){
-	include_once($SERVER_ROOT . "/classes/Media.php");
-	include_once($SERVER_ROOT.'/classes/OccurrenceEditorImages.php');
-	$occManager = new OccurrenceEditorImages();
-}
-else{
+} else{
+	if(strpos($action,'Image')) {
+		include_once($SERVER_ROOT . "/classes/Media.php");
+	}
 	include_once($SERVER_ROOT.'/classes/OccurrenceEditorManager.php');
 	$occManager = new OccurrenceEditorManager();
 }
