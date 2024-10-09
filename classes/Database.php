@@ -8,7 +8,7 @@
  */
 include_once($SERVER_ROOT.'/config/dbconnection.php');
 
-trait Database {
+class Database {
 	protected static $conns = [];
     /**
      * @param string $conn_type Type of db connection either 'write' or 'read'

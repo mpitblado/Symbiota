@@ -1,11 +1,10 @@
 <?php
+include_once($SERVER_ROOT . "/classes/Database.php");
 
 /*This is 
  * This is a static class used to make santizing variables "in" to the databse and "out" to the client webpage easy to use, compact, and secure
  */
 class Sanitize {
-	use Database;
-
 	public static function out(Mixed $val): Mixed {
 		if(is_array($val)) {
 			return array_map(fn ($v) => self::out($v), $val);
@@ -30,7 +29,7 @@ class Sanitize {
 			if(!$str) return null;
 
 			return mysqli_real_escape_string(
-				self::connect('readonly'), 
+				Database::connect('readonly'), 
 				preg_replace('/\s\s+/', ' ', $str)
 			);
 		} else if(is_bool($val)) {

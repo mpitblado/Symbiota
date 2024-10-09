@@ -1,5 +1,5 @@
 <?php
-include_once($SERVER_ROOT . "/traits/Database.php");
+include_once($SERVER_ROOT . "/classes//Database.php");
 include_once($SERVER_ROOT . "/classes/Sanitize.php");
 include_once($SERVER_ROOT . "/utilities/SymbUtil.php");
 
@@ -236,7 +236,6 @@ class MediaException extends Exception {
 }
 
 class Media {
-	use Database;
 	private static $mediaRootPath;
 	private static $mediaRootUrl;
 
@@ -705,7 +704,7 @@ class Media {
 			throw new Exception('Error: File is to large to upload');
 		}
 
-		$conn = self::connect('write');
+		$conn = Database::connect('write');
 
 		$sql = <<< SQL
 		SELECT tidinterpreted 
@@ -780,7 +779,7 @@ class Media {
 		INSERT INTO media($keys) VALUES ($parameters)
 		SQL;
 
-		$conn = self::connect('write');
+		$conn = Database::connect('write');
 		mysqli_begin_transaction($conn);
 		try {
 			//insert media
@@ -965,7 +964,7 @@ class Media {
 		}
 
 		if(!$conn) {
-			$conn = self::connect('write');
+			$conn = Database::connect('write');
 		}
 
 		foreach($add_tags as $add) {
@@ -1031,7 +1030,7 @@ class Media {
 			}
 		}
 
-		$conn = self::connect('write');
+		$conn = Database::connect('write');
 		mysqli_begin_transaction($conn);
 		try {
 			self::update_metadata($data, $media_id, $conn);
@@ -1238,7 +1237,7 @@ class Media {
 
 		$sql = 'UPDATE media set '. $parameter_str . ' where media_id = ?';
 		SymbUtil::execute_query(
-			$conn ?? self::connect('write'), 
+			$conn ?? Database::connect('write'), 
 			$sql, 
 			$values
 		);
@@ -1249,7 +1248,7 @@ class Media {
 	 * @param bool $remove_files Database delete will also remove file
 	**/
 	public static function delete($media_id, $remove_files = true): void {
-		$conn = self::connect('write');
+		$conn = Database::connect('write');
 		$result = SymbUtil::execute_query(
 			$conn, 
 			'SELECT url, thumbnailUrl, originalUrl from media where media_id = ?', 
@@ -1311,7 +1310,7 @@ class Media {
 		}
 
 		$sql .= ' ORDER BY sortoccurrence ASC';
-		$results = SymbUtil::execute_query(self::connect('readonly'), $sql, $parameters);
+		$results = SymbUtil::execute_query(Database::connect('readonly'), $sql, $parameters);
 		$media = self::get_media_items($results);
 		if(count($media) <= 0) {
 			return [];
@@ -1347,7 +1346,7 @@ class Media {
 		}
 
 		$sql .= ' ORDER BY sortsequence IS NULL ASC, sortsequence ASC';
-		$results = SymbUtil::execute_query(self::connect('readonly'), $sql, $parameters);
+		$results = SymbUtil::execute_query(Database::connect('readonly'), $sql, $parameters);
 
 		return Sanitize::out(self::get_media_items($results));
 	}
@@ -1379,7 +1378,7 @@ class Media {
 
 		$sql .= ' ORDER BY sortoccurrence IS NULL ASC, sortoccurrence ASC';
 
-		$results = SymbUtil::execute_query(self::connect('readonly'), $sql, $parameters);
+		$results = SymbUtil::execute_query(Database::connect('readonly'), $sql, $parameters);
 
 		return Sanitize::out(self::get_media_items($results));
 	}
@@ -1420,7 +1419,7 @@ class Media {
 		}
 
 		$res = SymbUtil::execute_query(
-			$conn?? self::connect('readonly'), 
+			$conn?? Database::connect('readonly'), 
 			$sql, 
 			is_array($media_id)? $media_id: [$media_id]
 		);
@@ -1443,7 +1442,7 @@ class Media {
 		ORDER BY u.lastname, u.firstname 
 		SQL;
 
-		$result = SymbUtil::execute_query(self::connect('readonly'), $sql);
+		$result = SymbUtil::execute_query(Database::connect('readonly'), $sql);
 		$creators = array();
 
 		while($row = $result->fetch_object()){
@@ -1463,7 +1462,7 @@ class Media {
 		SELECT tagkey, description_en FROM imagetagkey ORDER BY sortorder;
 		SQL;
 
-		$result = SymbUtil::execute_query(self::connect('readonly'), $sql);
+		$result = SymbUtil::execute_query(Database::connect('readonly'), $sql);
 		while($r = $result->fetch_object()){
 			$retArr[$r->tagkey] = Sanitize::out($r->description_en);
 		}
@@ -1509,7 +1508,7 @@ class Media {
 		//Load identifiers
 		$idArr = array();
 		$sql = 'SELECT o.catalogNumber, o.otherCatalogNumbers, i.identifierValue FROM omoccurrences o LEFT JOIN omoccuridentifiers i ON o.occid = i.occid WHERE o.occid = ?';
-		$rs = SymbUtil::execute_query(self::connect('readonly'), $sql, [$occid]);
+		$rs = SymbUtil::execute_query(Database::connect('readonly'), $sql, [$occid]);
 		$cnt = 0;
 		while($r = $rs->fetch_object()){
 			if(!$cnt){
