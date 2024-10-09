@@ -3,6 +3,12 @@ include_once($SERVER_ROOT . "/classes//Database.php");
 include_once($SERVER_ROOT . "/classes/Sanitize.php");
 include_once($SERVER_ROOT . "/utilities/SymbUtil.php");
 
+if(file_exists($SERVER_ROOT.'/content/lang/classes/Media.'.$LANG_TAG.'.php')) {
+	include_once($SERVER_ROOT.'/content/lang/classes/Media.'.$LANG_TAG.'.php');
+} else {
+	include_once($SERVER_ROOT.'/content/lang/classes/Media.en.php');
+}
+
 abstract class StorageStrategy {
     /**
      * If a file is given then return the storage path for that resource otherwise just return the root path.
@@ -234,13 +240,13 @@ class MediaType {
 }
 
 class MediaException extends Exception {
-	public const InvalidMediaType = 'Invalid Media Type';
-	public const DuplicateMediaFile = 'Duplicate Media File';
-	public const FileDoesNotExist = 'File does not exist';
-	public const FileAlreadyExists = 'File already exists';
+	public const InvalidMediaType = 'INVALID_MEDIA_TYPE';
+	public const DuplicateMediaFile = 'DUPLICATE_MEDIA_FILE';
+	public const FileDoesNotExist = 'FILE_DOES_NOT_EXIST';
+	public const FileAlreadyExists = 'FILE_ALREADY_EXISTS';
 
     function __construct(string $case){
-		parent::__construct($case);
+		parent::__construct($LANG[$case]);
     }
 }
 
