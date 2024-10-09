@@ -88,4 +88,10 @@ const HTML_SPECIAL_CHARS_FLAGS = ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE;
 
 $CSS_VERSION = '16';
 
+// Used for what media is allowed to be uploaded. Does not restrict external links
+$ALLOWED_MEDIA_MIME_TYPES = [
+	"image/jpeg", "image/png",
+	"audio/mpeg", "audio/wav", "audio/ogg"
+];
+
 ?>
