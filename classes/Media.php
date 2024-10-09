@@ -29,7 +29,7 @@ abstract class StorageStrategy {
      * Function to handle how a file should be uploaded.
 	 * @param array $file {name: string, type: string, tmp_name: string, error: int, size: int} 
      * @return bool 
-	 * @throws MediaException(MediaExceptionCase::DuplicateMediaFile)
+	 * @throws MediaException(MediaException::DuplicateMediaFile)
      */
 	abstract public function upload(array $file): bool;
 
@@ -37,7 +37,7 @@ abstract class StorageStrategy {
      * Function to handle how a file should be removed.
 	 * @param array $file {name: string, type: string, tmp_name: string, error: int, size: int} 
      * @return bool 
-	 * @throws MediaException(MediaExceptionCase::DuplicateMediaFile)
+	 * @throws MediaException(MediaException::DuplicateMediaFile)
      */
 	abstract public function remove(string $file): bool;
 
@@ -46,8 +46,8 @@ abstract class StorageStrategy {
 	 * @param string $filepath
 	 * @param array $new_filepath
      * @return bool 
-	 * @throws MediaException(MediaExceptionCase::FileDoesNotExist)
-	 * @throws MediaException(MediaExceptionCase::FileAlreadyExists)
+	 * @throws MediaException(MediaException::FileDoesNotExist)
+	 * @throws MediaException(MediaException::FileAlreadyExists)
      */
 	abstract public function rename(string $filepath, string $new_filepath): void;
 }
@@ -129,7 +129,7 @@ class LocalStorage extends StorageStrategy {
 		}
 		
 		if(file_exists($file_path)) {
-			throw new MediaException(MediaExceptionCase::DuplicateMediaFile);
+			throw new MediaException(MediaException::DuplicateMediaFile);
 		}
 
 		//If Uploaded from $_POST then move file to new path
@@ -202,36 +202,45 @@ class LocalStorage extends StorageStrategy {
 		$new_filepath = str_replace($dir_path, '', $GLOBALS['SERVER_ROOT'] . $new_filepath);
 		//Constrain Rename to Scope of MEDIA_ROOT_PATH + Storage Path
 		if($this->file_exists($new_filepath)) {
-			throw new MediaException(MediaExceptionCase::FileAlreadyExists); 
+			throw new MediaException(MediaException::FileAlreadyExists); 
 		} else if(!$this->file_exists($filepath)) {
-			throw new MediaException(MediaExceptionCase::FileDoesNotExist); 
+			throw new MediaException(MediaException::FileDoesNotExist); 
 		} else {
 			rename($dir_path . $filepath, $dir_path . $new_filepath);
 		}
 	}
 } 
 
-enum MediaType: string {
-	case Image = 'image'; 
-	case Audio = 'audio';
-	case Video = 'video' ; 
+class MediaType {
+	public const Image = 'image'; 
+	public const Audio = 'audio';
+	public const Video = 'video' ; 
+
+	public static function tryFrom(string $value) {
+		if($value === self::Image || $value === self::Audio || $value === self::Video) {
+			return $value;
+		} else {
+			return null;
+		}
+	}
 
 	public static function values(): array {
-       return array_column(self::cases(), 'value');
+		return [
+			self::Image, 
+			self::Audio, 
+			self::Video
+		];
     }
 }
 
-enum MediaExceptionCase: string {
-	case InvalidMediaType = 'Invalid Media Type';
-	case DuplicateMediaFile = 'Duplicate Media File';
-	case FileDoesNotExist = 'File does not exist';
-	case FileAlreadyExists = 'File already exists';
-	case InvalidStorageDriver = '';
-}
-
 class MediaException extends Exception {
-    function __construct(private MediaExceptionCase $case){
-		parent::__construct($case->value);
+	public const InvalidMediaType = 'Invalid Media Type';
+	public const DuplicateMediaFile = 'Duplicate Media File';
+	public const FileDoesNotExist = 'File does not exist';
+	public const FileAlreadyExists = 'File already exists';
+
+    function __construct(string $case){
+		parent::__construct($case);
     }
 }
 
@@ -633,18 +642,6 @@ class Media {
 		return $file_name;
 	}
 
-    /**
-     * @param MediaType $media_type
-     * @return string
-     */
-    private static function getMediaTypeString(MediaType $media_type): string {
-		switch($media_type) {
-			case MediaType::Image: return 'image';
-			case MediaType::Audio: return 'audio';
-			case MediaType::Video: return 'video';
-			default: throw new Exception("Invalid Media Type", 1);
-		}
-	}
 	/**
       * This function returns the maximum files size that can be uploaded 
       * in PHP
@@ -725,7 +722,7 @@ class Media {
 		$media_type_str = explode('/', $file['type'])[0];
 		$media_type = MediaType::tryFrom($media_type_str);
 
-		if(!$media_type) throw new MediaException(MediaExceptionCase::InvalidMediaType);
+		if(!$media_type) throw new MediaException(MediaException::InvalidMediaType);
 
 		$keyValuePairs = [
 			"tid" => $clean_post_arr["tid"] ?? null,
@@ -1286,9 +1283,9 @@ class Media {
 
     /**
      * @param int $media_id
-     * @param MediaType $media_type
+     * @param string media_type Should use MediaType Constants
      */
-    public static function getMedia(int $media_id, MediaType $media_type = null): Array {
+    public static function getMedia(int $media_id, string $media_type = null): Array {
 		if(!$media_id) return [];
 		$parameters = [$media_id];
 		$select = [
@@ -1306,7 +1303,7 @@ class Media {
 
 		if($media_type) {
 			$sql .= ' AND media_type = ?';
-			array_push($parameters, self::getMediaTypeString($media_type));
+			array_push($parameters, $media_type);
 		}
 
 		$sql .= ' ORDER BY sortoccurrence ASC';
@@ -1321,9 +1318,9 @@ class Media {
 
     /**
      * @param int $tid
-     * @param MediaType $media_type
+     * @param string $media_type Should use MediaType Constants
      */
-    public static function getByTid(int $tid, MediaType $media_type = null): Array {
+    public static function getByTid(int $tid, string $media_type = null): Array {
 		if(!$tid) return [];
 		$parameters = [$tid];
 
@@ -1342,7 +1339,7 @@ class Media {
 
 		if($media_type) {
 			$sql .= ' AND media_type = ?';
-			array_push($parameters, self::getMediaTypeString($media_type));
+			array_push($parameters, $media_type);
 		}
 
 		$sql .= ' ORDER BY sortsequence IS NULL ASC, sortsequence ASC';
@@ -1353,9 +1350,9 @@ class Media {
 
     /**
      * @param int $occid
-     * @param MediaType $media_type
+     * @param string $media_type Should use MediaType constants
      */
-    public static function fetchOccurrenceMedia(int $occid, MediaType $media_type = null): Array {
+    public static function fetchOccurrenceMedia(int $occid, string $media_type = null): Array {
 		if(!$occid) return [];
 		$select = [
 			'm.*',
@@ -1373,7 +1370,7 @@ class Media {
 
 		if($media_type) {
 			$sql .= ' AND m.media_type = ?';
-			array_push($parameters, self::getMediaTypeString($media_type));
+			array_push($parameters, $media_type);
 		}
 
 		$sql .= ' ORDER BY sortoccurrence IS NULL ASC, sortoccurrence ASC';
