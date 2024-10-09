@@ -7,7 +7,7 @@ header('Content-Type: text/html; charset=' . $CHARSET);
 
 $taxonType = isset($_REQUEST['taxontype']) ? filter_var($_REQUEST['taxontype'], FILTER_SANITIZE_NUMBER_INT) : 0;
 $useThes = array_key_exists('usethes',$_REQUEST) ? filter_var($_REQUEST['usethes'], FILTER_SANITIZE_NUMBER_INT) : 0;
-$taxaStr = isset($_REQUEST['taxa']) ? $_REQUEST['taxa'] : '';
+$taxaStr = isset($_REQUEST['taxa']) ? htmlspecialchars($_REQUEST['taxa'], ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) : '';
 $phUid = array_key_exists('phuid',$_REQUEST) ? filter_var($_REQUEST['phuid'], FILTER_SANITIZE_NUMBER_INT) : 0;
 $tagExistance = array_key_exists('tagExistance',$_REQUEST) ? filter_var($_REQUEST['tagExistance'], FILTER_SANITIZE_NUMBER_INT) : 1;
 $tag = array_key_exists('tag',$_REQUEST) ? $_REQUEST['tag'] : '';
@@ -15,7 +15,7 @@ $keywords = array_key_exists('keywords',$_REQUEST) ? $_REQUEST['keywords'] : '';
 $imageCount = isset($_REQUEST['imagecount']) ? $_REQUEST['imagecount'] : 'all';
 $imageType = isset($_REQUEST['imagetype']) ? filter_var($_REQUEST['imagetype'], FILTER_SANITIZE_NUMBER_INT) : 0;
 $pageNumber = array_key_exists('page', $_REQUEST) ? filter_var($_REQUEST['page'], FILTER_SANITIZE_NUMBER_INT) : 1;
-$cntPerPage = array_key_exists('cntperpage', $_REQUEST) ? filter_var($_REQUEST['cntperpage'], FILTER_SANITIZE_NUMBER_INT) : 200;
+$cntPerPage = array_key_exists('cntperpage', $_REQUEST) && is_numeric($_REQUEST['cntperpage']) ? filter_var($_REQUEST['cntperpage'], FILTER_SANITIZE_NUMBER_INT) : 200;
 
 $action = $_REQUEST['submitaction'] ?? '';
 
@@ -59,19 +59,18 @@ if($action == 'batchAssignTag'){
 	include_once($SERVER_ROOT . '/includes/head.php');
 	include_once($SERVER_ROOT . '/includes/googleanalytics.php');
 	?>
-
 	<link href="<?= $CSS_BASE_PATH ?>/jquery-ui.min.css" type="text/css" rel="stylesheet">
 	<link href="<?= $CSS_BASE_PATH; ?>/symbiota/collections/listdisplay.css" type="text/css" rel="stylesheet" />
 	<link href="<?= $CSS_BASE_PATH; ?>/symbiota/collections/sharedCollectionStyling.css" type="text/css" rel="stylesheet" />
 	<style>
 		fieldset{ padding: 15px }
 		fieldset legend{ font-weight:bold }
-		.load-button {
-			margin-top: 0.75rem;
-		}
+		label{ font-weight:bold }
+		.row-div{ clear: both; margin: 3px; }
+		#action-status-div{ padding: 15px; }
 	</style>
-	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
-	<script src="<?php echo $CLIENT_ROOT; ?>/js/jquery-ui.min.js" type="text/javascript"></script>
+	<script src="<?= $CLIENT_ROOT; ?>/js/jquery-3.7.1.min.js" type="text/javascript"></script>
+	<script src="<?= $CLIENT_ROOT; ?>/js/jquery-ui.min.js" type="text/javascript"></script>
 	<script src="../js/symb/collections.index.js?ver=2" type="text/javascript"></script>
 	<script type="text/javascript">
 		var clientRoot = "<?= $CLIENT_ROOT; ?>";
@@ -108,13 +107,6 @@ if($action == 'batchAssignTag'){
 	</script>
 	<script src="../js/symb/api.taxonomy.taxasuggest.js?ver=4" type="text/javascript"></script>
 	<script src="../js/symb/imagelib.search.js?ver=3b" type="text/javascript"></script>
-	<style type="text/css">
-		fieldset{ padding: 15px }
-		fieldset legend{ font-weight:bold }
-		label{ font-weight:bold }
-		.row-div{ clear: both; margin: 3px; }
-		#action-status-div{ padding: 15px; }
-	</style>
 </head>
 <body>
 	<?php
@@ -165,6 +157,7 @@ if($action == 'batchAssignTag'){
 								<input id="taxa" name="taxa" type="text" style="width:450px;" value="<?= $imgLibManager->getTaxaStr() ?>" title="<?= $LANG['SEPARATE_MULTIPLE'] ?>" autocomplete="off" >
 							</div>
 							<div style="float:left;margin-left:10px;" >
+								<input type="hidden" name="usethes" value="0">
 								<input id="usethes" name="usethes" type="checkbox" value="1" <?php if(!$action || $imgLibManager->getUseThes()) echo 'CHECKED'; ?> > <label for="usethes"><?= $LANG['INCLUDE_SYN'] ?></label>
 							</div>
 						</div>
@@ -400,8 +393,12 @@ if($action == 'batchAssignTag'){
 											if($imgArr['occid']){
 												$collid = $occArr[$imgArr['occid']]['collid'];
 												if($collid){
-													if(isset($USER_RIGHTS['CollAdmin'][$collid])) $isEditorOfThisImage = true;
-													elseif(isset($USER_RIGHTS['CollEditor'][$collid])) $isEditorOfThisImage = true;
+													if(isset($USER_RIGHTS['CollAdmin']) && in_array($collid, $USER_RIGHTS['CollAdmin'])){
+														$isEditorOfThisImage = true;
+													}
+													elseif(isset($USER_RIGHTS['CollEditor']) && in_array($collid, $USER_RIGHTS['CollEditor'])){
+														$isEditorOfThisImage = true;
+													}
 												}
 											}
 											else{

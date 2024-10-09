@@ -58,6 +58,9 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 	protected function setSqlWhere(){
 		$sqlWhere = '';
 		if(array_key_exists("targetclid",$this->searchTermArr) && is_numeric($this->searchTermArr["targetclid"])){
+			if(!$this->voucherManager){
+				$this->setChecklistVariables($this->searchTermArr['targetclid']);
+			}
 			$voucherVariableArr = $this->voucherManager->getQueryVariableArr();
 			if($voucherVariableArr){
 				if(isset($voucherVariableArr['collid'])) $this->searchTermArr['db'] = $voucherVariableArr['collid'];
@@ -98,22 +101,28 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 			//$this->displaySearchArr[] = $this->voucherManager->getQueryVariableStr();
 		}
 		elseif(array_key_exists('clid',$this->searchTermArr) && preg_match('/^[0-9,]+$/', $this->searchTermArr['clid'])){
-			if(isset($this->searchTermArr["cltype"]) && $this->searchTermArr["cltype"] == 'all'){
-				$sqlWhere .= 'AND (cl.clid IN('.$this->searchTermArr['clid'].')) ';
+			$clidStr = $this->getClidStrWithChildren($this->searchTermArr['clid']);
+			if(isset($this->searchTermArr['cltype']) && $this->searchTermArr['cltype'] == 'all'){
+				$sqlWhere .= 'AND (cl.clid IN(' . $clidStr . ')) ';
 			}
 			else{
-				$sqlWhere .= 'AND (ctl.clid IN('.$this->searchTermArr['clid'].')) ';
+				$sqlWhere .= 'AND (ctl.clid IN(' . $clidStr . ')) ';
 			}
 			$this->displaySearchArr[] = $this->LANG['CHECKLIST_ID'] . ': ' . $this->searchTermArr['clid'];
 		}
 		elseif(array_key_exists('db',$this->searchTermArr) && $this->searchTermArr['db']){
-			$sqlWhere .= OccurrenceSearchSupport::getDbWhereFrag($this->cleanInStr($this->searchTermArr['db']));
+			$pattern = '/[^\d,]/';
+			if (preg_match($pattern, $this->searchTermArr['db'])==0) {
+				$sqlWhere .= OccurrenceSearchSupport::getDbWhereFrag($this->cleanInStr($this->searchTermArr['db']));
+			}
 		}
 		if(array_key_exists('datasetid',$this->searchTermArr)){
+
 			$sqlWhere .= 'AND (ds.datasetid IN('.$this->searchTermArr['datasetid'].')) ';
 			$this->displaySearchArr[] = $this->LANG['DATASETS'] . ': ' . $this->getDatasetTitle($this->searchTermArr['datasetid']);
 		}
 		$sqlWhere .= $this->getTaxonWhereFrag();
+
 		if(array_key_exists('country',$this->searchTermArr)){
 			$countryArr = explode(";",$this->searchTermArr["country"]);
 			$tempArr = Array();
@@ -155,6 +164,7 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 				else{
 					$term = $this->cleanInStr(trim(str_ireplace(' county',' ',$value),'%'));
 					//if(strlen($term) < 4) $term .= ' ';
+
 					$tempArr[] = '(o.county LIKE "'.$term.'%")';
 				}
 			}
@@ -498,6 +508,27 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 		return $retArr;
 	}
 
+	public function getClidStrWithChildren($clid){
+		$retStr = $clid;
+		if(is_numeric($clid)){
+			$sqlBase = 'SELECT ch.clidchild
+				FROM fmchecklists cl INNER JOIN fmchklstchildren ch ON cl.clid = ch.clid
+				INNER JOIN fmchecklists cl2 ON ch.clidchild = cl2.clid
+				WHERE (cl2.type != "excludespp") AND (ch.clid != ch.clidchild) AND cl.clid IN(';
+			$sql = $sqlBase . $clid . ')';
+			do{
+				$childStr = '';
+				$rsChild = $this->conn->query($sql);
+				while($r = $rsChild->fetch_object()){
+					$childStr .= ',' . $r->clidchild;
+					$retStr .= ',' . $r->clidchild;
+				}
+				$sql = $sqlBase . substr($childStr, 1) . ')';
+			}while($childStr);
+		}
+		return $retStr;
+	}
+
 	protected function formatDate($inDate){
 		$retDate = OccurrenceUtilities::formatDate($inDate);
 		return $retDate;
@@ -520,7 +551,7 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 			if(strpos($sqlWhere,'e.taxauthid')){
 				$sqlJoin .= 'INNER JOIN taxaenumtree e ON o.tidinterpreted = e.tid ';
 			}
-			if(strpos($sqlWhere,'ts.family')){
+			if(strpos($sqlWhere,'ts.')){
 				$sqlJoin .= 'LEFT JOIN taxstatus ts ON o.tidinterpreted = ts.tid ';
 			}
 			if(strpos($sqlWhere,'ds.datasetid')){
@@ -622,10 +653,13 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 		$retStr = '';
 		foreach($this->searchTermArr as $k => $v){
 			if(is_array($v)) $v = implode(',', $v);
-			if($v) $retStr .= '&'.$this->cleanOutStr($k).'='.$this->cleanOutStr($v);
+			if($v) $retStr .= '&'. $this->cleanOutStr($k) . '=' . $this->cleanOutStr($v);
 		}
 		if(isset($this->taxaArr['search'])){
-			$retStr .= '&taxa='.$this->cleanOutStr($this->taxaArr['search']);
+			$patternTaxonChars = '/^[a-zA-Z0-9\s\-\,\.×†]*$/';
+			if (preg_match($patternTaxonChars, $this->getTaxaSearchTerm())==1) {
+				$retStr .= '&taxa=' . $this->getTaxaSearchTerm();
+			}
 			if($this->taxaArr['usethes']) $retStr .= '&usethes=1';
 			if(is_numeric($this->taxaArr['taxontype'])) {
 				$retStr .= '&taxontype=' . intval($this->taxaArr['taxontype']);
@@ -662,7 +696,8 @@ class OccurrenceManager extends OccurrenceTaxaManager {
 		if(array_key_exists('searchvar',$_REQUEST)){
 			$parsedArr = array();
 			$taxaArr = array();
-			parse_str($_REQUEST['searchvar'], $parsedArr);
+			$searchVar = str_replace('&amp;', '&', $_REQUEST['searchvar']);
+			parse_str($searchVar, $parsedArr);
 
 			if(isset($parsedArr['taxa'])){
 				$taxaArr['taxa'] = $this->cleanInputStr($parsedArr['taxa']);

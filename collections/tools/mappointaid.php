@@ -1,7 +1,8 @@
 <?php
 include_once('../../config/symbini.php');
-header("Content-Type: text/html; charset=".$CHARSET);
-include_once($SERVER_ROOT.'/content/lang/collections/tools/mapaids.'.$LANG_TAG.'.php');
+header('Content-Type: text/html; charset=' . $CHARSET);
+if($LANG_TAG == 'en' || !file_exists($SERVER_ROOT.'/content/lang/collections/tools/mapaids.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT . '/content/lang/collections/tools/mapaids.en.php');
+else include_once($SERVER_ROOT . '/content/lang/collections/tools/mapaids.' . $LANG_TAG . '.php');
 
 if($MAPPING_BOUNDARIES){
 	$boundaryArr = explode(";",$MAPPING_BOUNDARIES);
@@ -13,6 +14,7 @@ if($MAPPING_BOUNDARIES){
 }
 
 $errMode = array_key_exists("errmode",$_REQUEST)?$_REQUEST["errmode"]:1;
+$shouldUseMinimalMapHeader = $SHOULD_USE_MINIMAL_MAP_HEADER ?? false;
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $LANG_TAG ?>">
@@ -96,8 +98,8 @@ $errMode = array_key_exists("errmode",$_REQUEST)?$_REQUEST["errmode"]:1;
 		function leafletInit() {
 			//Setup Map Canvas
 			map = new LeafletMap('map_canvas', {
-				center: [latCenter, lngCenter], 
-				zoom: 7,
+				center: [latCenter, lngCenter],
+				zoom: 15,
 				lang: "<?php echo $LANG_TAG; ?>"
 			});
 
@@ -141,20 +143,21 @@ $errMode = array_key_exists("errmode",$_REQUEST)?$_REQUEST["errmode"]:1;
 
 			function createMarker(lat, lng)  {
 				drawnItems.clearLayers();
-				errRadius = parseFloat(document.getElementById("errRadius").value);
+				const errorRadInput = document.getElementById("errRadius");
+				errRadius = errorRadInput? parseFloat(errorRadInput.value): 0;
 
 				latlng = [lat,lng];
 
 				setLatLngForm(lat, lng);
 
 				circ = errRadius && errRadius > 0?
-					L.circle(latlng, errRadius): 
+					L.circle(latlng, errRadius):
 					false;
 				marker = L.marker(latlng);
 
 				function enableEdit() {
 					try {
-						//Very Jank and all the other ways current are also Jank 
+						//Very Jank and all the other ways current are also Jank
 						drawControl._toolbars.edit._modes.edit.button.click()
 					} catch(e) {
 						console.log("Failed to enable edit")
@@ -206,11 +209,11 @@ $errMode = array_key_exists("errmode",$_REQUEST)?$_REQUEST["errmode"]:1;
 				}
 
 				map.mapLayer
-					.on('draw:deleted', e => { 
+					.on('draw:deleted', e => {
 						errRadius = 0;
 						clearForm();
 					})
-					.on('draw:deletestop', e => { 
+					.on('draw:deletestop', e => {
 						const hasCircle = circ && drawnItems.hasLayer(circ);
 						const hasMarker = drawnItems.hasLayer(marker);
 						//Add Back marker or Circle if change Reverted and were present
@@ -243,10 +246,10 @@ $errMode = array_key_exists("errmode",$_REQUEST)?$_REQUEST["errmode"]:1;
 							map.mapLayer.fitBounds(circ.getBounds())
 						} else if(radius) {
 							if(!editOn) errRadius = radius;
-							circ = L.circle(latlng, radius); 
+							circ = L.circle(latlng, radius);
 							addCircleEvents(circ);
 							map.mapLayer.fitBounds(circ.getBounds())
-						} 
+						}
 
 					});
 				}
@@ -259,12 +262,12 @@ $errMode = array_key_exists("errmode",$_REQUEST)?$_REQUEST["errmode"]:1;
 
 				latInput.addEventListener("change", onFormChange);
 				lngInput.addEventListener("change", onFormChange);
-			} 
-			onFormChange = (event) => { 
-				if(!marker) { 
+			}
+			onFormChange = (event) => {
+				if(!marker) {
 					const pos = getLatLng();
 					createMarker();
-				} 
+				}
 			}
 			latInput.addEventListener("change", onFormChange);
 			lngInput.addEventListener("change", onFormChange);
@@ -289,7 +292,7 @@ $errMode = array_key_exists("errmode",$_REQUEST)?$_REQUEST["errmode"]:1;
 		function googleInit() {
 			//Setup Map Canvas
 			map = new GoogleMap('map_canvas', {
-				center: new google.maps.LatLng(latCenter, lngCenter), 
+				center: new google.maps.LatLng(latCenter, lngCenter),
 				zoom: 7
 			});
 
@@ -354,7 +357,7 @@ $errMode = array_key_exists("errmode",$_REQUEST)?$_REQUEST["errmode"]:1;
 			}
 
 
-			onFormChange = (event) => { 
+			onFormChange = (event) => {
 				errRadius = parseFloat(event.target.value);
 				const pos = getLatLng();
 				if(pos) createMarker(pos[0], pos[1]);
@@ -375,7 +378,7 @@ $errMode = array_key_exists("errmode",$_REQUEST)?$_REQUEST["errmode"]:1;
 			if(errRadius) {
 					drawError();
 				}
-			}) 
+			})
 		}
 
 		function initialize() {
@@ -404,7 +407,7 @@ $errMode = array_key_exists("errmode",$_REQUEST)?$_REQUEST["errmode"]:1;
 
 			<?php if(empty($GOOGLE_MAP_KEY)): ?> 
 			leafletInit();
-			<?php } else { ?> 
+			<?php } else { ?>
 			googleInit();
 			<?php } ?>
 		}
@@ -437,25 +440,33 @@ $errMode = array_key_exists("errmode",$_REQUEST)?$_REQUEST["errmode"]:1;
 		<style>
          body { padding:0; margin:0 }
 			html, body, #map_canvas { width:100%; height: 100%;}
-         .screen-reader-only{ 
+         .screen-reader-only{
             position: absolute;
             left: -10000px;
          }
+		 <?php if($shouldUseMinimalMapHeader){ ?>
+			.minimal-header-margin{
+			   margin-top: 6rem;
+			}
+		<?php } ?>
       </style>
 	</head>
 	<body style="display:flex; flex-direction: column;background-color:#ffffff;" onload="initialize()">
+		<?php
+		if($shouldUseMinimalMapHeader) include_once($SERVER_ROOT . '/includes/minimalheader.php');
+		?>
 		<h1 class="page-heading screen-reader-only">Point-Radius Aid</h1>
 		<div
-			id="service-container" 
-			class="service-container" 
+			id="service-container"
+			class="service-container"
 			data-lat="<?= htmlspecialchars($latCenter)?>"
 			data-lng="<?= htmlspecialchars($lngCenter)?>"
 			>
 		</div>
-		<form style="padding:0.5rem" name="coordform" action="" method="post" onsubmit="return false">
+		<form class="minimal-header-margin" style="padding:0.5rem" name="coordform" action="" method="post" onsubmit="return false">
 			<div style="float:right;">
 				<button name="addcoords" type="button" onclick="updateParentForm(this.form);">
-					<b><?php echo isset($LANG['SUBMIT'])? $LANG['SUBMIT']: 'Submit' ?></b> 
+					<b><?php echo isset($LANG['SUBMIT'])? $LANG['SUBMIT']: 'Submit' ?></b>
 				</button><br/>
 			</div>
 			<div style="margin:3px 20px 3px 0px;">
@@ -463,9 +474,9 @@ $errMode = array_key_exists("errmode",$_REQUEST)?$_REQUEST["errmode"]:1;
 			<?php if($errMode) echo isset($LANG['MPR_UNCERTAINTY_INSTRUCTIONS']) ?$LANG['MPR_UNCERTAINTY_INSTRUCTIONS']: 'Enter uncertainty to create an error radius circle around the marker. '?>
 			</div>
 			<div style="margin-right:10px;">
-				<b><?php echo isset($LANG['MPR_LAT'])? $LANG['MPR_LAT']: 'Latitude' ?>:</b> 
+				<b><?php echo isset($LANG['MPR_LAT'])? $LANG['MPR_LAT']: 'Latitude' ?>:</b>
 				<input type="text" id="latbox" name="lat" style="width:100px" />
-				<b><?php echo isset($LANG['MPR_LNG'])? $LANG['MPR_LNG']: 'Longitude' ?>:</b> 
+				<b><?php echo isset($LANG['MPR_LNG'])? $LANG['MPR_LNG']: 'Longitude' ?>:</b>
 				<input type="text" id="lngbox" name="lon" style="width:100px" />
 				<?php if($errMode):?>
 				<b>

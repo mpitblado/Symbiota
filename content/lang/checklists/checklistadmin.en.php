@@ -34,11 +34,14 @@ $LANG['PERMREMOVECHECK'] = 'Permanently Remove Checklist';
 $LANG['REMOVEUSERCHECK'] = 'Before a checklist can be deleted, all editors (except yourself) and inventory project assignments must be removed.
 							Inventory project assignments can only be removed by active managers of the project or a system administrator. ';
 $LANG['WARNINGNOUN'] = 'WARNING: Action cannot be undone.';
+$LANG['EDITOR_DELETE'] = 'Are you sure you want to delete this editor:';
+$LANG['PROJECT_DELETE'] = 'Are you sure you want to unlink this checklist from';
 $LANG['CONFIRMDELETE'] = 'Are you sure you want to permanently remove checklist? This action cannot be undone!';
 $LANG['CREATECHECKDET'] = 'Create New Checklist';
 $LANG['EDITCHECKDET'] = 'Edit Checklist Details';
 $LANG['CHECKNAME'] = 'Checklist Name';
 $LANG['CHECKTYPE'] = 'Checklist Type';
+$LANG['EXCLUDESPP'] = 'Species Exclusion List';
 $LANG['RARETHREAT'] = 'Rare, threatened, protected species list';
 $LANG['GENCHECK'] = 'General Checklist';
 $LANG['EXTSERVICE'] = 'External Service (e.g., iNaturalist) to associate with this checklist';

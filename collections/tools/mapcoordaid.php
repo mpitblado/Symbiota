@@ -14,11 +14,10 @@ $mapModeStrict = array_key_exists("map_mode_strict",$_REQUEST) && is_bool(boolva
 $polygonInputId = array_key_exists("polygon_input_id", $_REQUEST)? htmlspecialchars($_REQUEST["polygon_input_id"]):"footprintwkt";
 $outputType= array_key_exists("polygon_text_type", $_REQUEST)? htmlspecialchars($_REQUEST["polygon_text_type"]):"wkt";
 
-$clManager = new ChecklistAdmin();
-$clManager->setClid($clid);
-
 if($formSubmit){
 	if($formSubmit == 'save'){
+		$clManager = new ChecklistAdmin();
+		$clManager->setClid($clid);
 		$clManager->savePolygon($_POST['footprintwkt']);
 		$formSubmit = "exit";
 	}
@@ -64,9 +63,9 @@ else{
 		</style>
 	</head>
 	<body style="background-color:#ffffff; display:flex; flex-direction:column;">
-		<h1 class="page-heading" style="margin-left:5px;">Taxon Map</h1>
+		<h1 class="page-heading screen-reader-only" style="margin-left:5px;">Taxon Map</h1>
 		<div style="float:right;margin-top:5px;margin-bottom:5px;margin-right:15px;margin-left:5px;">
-			<button name="closebutton" type="button" onclick="self.close()">
+			<button name="closebutton" type="button" onclick="saveCoordAid()">
 				<?php echo isset($LANG['SAVE_N_CLOSE'])? $LANG['SAVE_N_CLOSE'] :'Save and Close'?>
 			</button>
 			<?php echo isset($LANG['COORD_AID_HELP_TEXT'])? $LANG['COORD_AID_HELP_TEXT'] :'Click the map to start drawing or select from the shape controls to draw bounds of that shape'?>
@@ -135,6 +134,12 @@ else{
 				const elem = opener.document.getElementById(id);
 				if(elem) elem.value = buffer[id];
 			}
+		}
+
+		function saveCoordAid() {
+			const leaflet_save = document.querySelector(".leaflet-draw-actions li a[title='Save changes']");
+			if(leaflet_save) leaflet_save.click();
+			self.close();
 		}
 
 		const setField = (id, v) => {
@@ -329,6 +334,8 @@ else{
 				marker: false,
 				drawColor: {opacity: 0.85, fillOpacity: 0.55, color: '#000' }
 				}, setShapeToSearchForm);
+
+			map.mapLayer.on("draw:edited", saveCoordAid);
 
 			if(formShape) {
 				map.drawShape(formShape);

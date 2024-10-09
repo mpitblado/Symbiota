@@ -1,14 +1,16 @@
 <?php
 include_once('../../config/symbini.php');
-include_once($SERVER_ROOT.'/content/lang/collections/tools/mapaids.'.$LANG_TAG.'.php');
-header("Content-Type: text/html; charset=".$CHARSET);
+header('Content-Type: text/html; charset=' . $CHARSET);
+if($LANG_TAG == 'en' || !file_exists($SERVER_ROOT.'/content/lang/collections/tools/mapaids.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT . '/content/lang/collections/tools/mapaids.en.php');
+else include_once($SERVER_ROOT . '/content/lang/collections/tools/mapaids.' . $LANG_TAG . '.php');
 
-$formName = array_key_exists("formname",$_REQUEST)?$_REQUEST["formname"]:"";
-$latName = array_key_exists("latname",$_REQUEST)?$_REQUEST["latname"]:"";
-$longName = array_key_exists("longname",$_REQUEST)?$_REQUEST["longname"]:"";
-$latDef = array_key_exists("latdef",$_REQUEST)?$_REQUEST["latdef"]:0;
-$lngDef = array_key_exists("lngdef",$_REQUEST)?$_REQUEST["lngdef"]:0;
-$zoom = array_key_exists("zoom",$_REQUEST)&&$_REQUEST["zoom"]?$_REQUEST["zoom"]:5;
+$formName = array_key_exists('formname', $_REQUEST) ? htmlspecialchars($_REQUEST['formname'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$latName = array_key_exists('latname', $_REQUEST) ? htmlspecialchars($_REQUEST['latname'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$longName = array_key_exists('longname', $_REQUEST) ? htmlspecialchars($_REQUEST['longname'], HTML_SPECIAL_CHARS_FLAGS) : '';
+$latDef = array_key_exists('latdef', $_REQUEST) ? filter_var($_REQUEST['latdef'], FILTER_SANITIZE_NUMBER_FLOAT) : 0;
+$lngDef = array_key_exists('lngdef', $_REQUEST) ? filter_var($_REQUEST['lngdef'], FILTER_SANITIZE_NUMBER_FLOAT) : 0;
+$zoom = !empty($_REQUEST['zoom']) ? filter_var($_REQUEST['zoom'], FILTER_SANITIZE_NUMBER_INT) : 5;
+
 if($latDef == 0 && $lngDef == 0){
 	$latDef = '';
 	$lngDef = '';
@@ -28,6 +30,8 @@ else{
 	$lat = 42.877742;
 	$lng = -97.380979;
 }
+
+$shouldUseMinimalMapHeader = $SHOULD_USE_MINIMAL_MAP_HEADER ?? false;
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $LANG_TAG ?>">
@@ -35,7 +39,7 @@ else{
 		<title><?php echo $DEFAULT_TITLE; ?> - Coordinate Aid</title>
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 
-		<?php 
+		<?php
 		if(empty($GOOGLE_MAP_KEY)) {
 			include_once($SERVER_ROOT.'/includes/leafletMap.php');
 		} else {
@@ -50,6 +54,11 @@ else{
 			position: absolute;
 			left: -10000px;
 		}
+		<?php if($shouldUseMinimalMapHeader){ ?>
+			.minimal-header-margin{
+			   margin-top: 6rem;
+			}
+		<?php } ?>
 		</style>
 		<script type="text/javascript">
 		var map;
@@ -127,9 +136,9 @@ else{
 			});
 		}
 		function initialize() {
-			<?php if(empty($GOOGLE_MAP_KEY)): ?> 
+			<?php if(empty($GOOGLE_MAP_KEY)): ?>
 				leafletInit();
-			<?php else:?> 
+			<?php else:?>
 				googleInit();
 			<?php endif ?>
 		}
@@ -169,8 +178,11 @@ else{
 		</script>
 	</head>
 	<body style="display:flex; flex-direction: column; background-color:#ffffff;" onload="initialize()">
+		<?php
+		if($shouldUseMinimalMapHeader) include_once($SERVER_ROOT . '/includes/minimalheader.php');
+		?>
 		<h1 class="page-heading screen-reader-only">Map Point Helper</h1>
-		<div style="padding:0.5rem; width: fit-content; height:fit-content">
+		<div style="padding:0.5rem; width: fit-content; height:fit-content" class="minimal-header-margin">
 			<div>
 				<?php echo isset($LANG['MPR_INSTRUCTIONS']) ?$LANG['MPR_INSTRUCTIONS']: 'Click once to capture coordinates. Click on the submit button to transfer coordinates.' ?>
 			</div>

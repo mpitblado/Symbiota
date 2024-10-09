@@ -34,6 +34,8 @@ foreach($coordArr as $tid => $taxaCoords) {
 $coordJson = json_encode($coords);
 $metaJson = json_encode($clMeta);
 
+$shouldUseMinimalMapHeader = $SHOULD_USE_MINIMAL_MAP_HEADER ?? false;
+
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $LANG_TAG ?>">
@@ -191,7 +193,7 @@ $metaJson = json_encode($clMeta);
                   "Content-Type": "application/json",
                }
             })
-            const records = await response.json(); 
+            const records = await response.json();
             const resultLimit = 10000;
             const totalResults = records.total_results > resultLimit? resultLimit: records.total_results;
             const maxPage = Math.floor(totalResults / 200);
@@ -200,7 +202,7 @@ $metaJson = json_encode($clMeta);
                page,
                per_page: 200,
                results: [],
-               total_results: 0 
+               total_results: 0
             }
 
             if(page !== maxPage) {
@@ -249,13 +251,16 @@ $metaJson = json_encode($clMeta);
             margin: 0;
             padding: 0;
          }
-         .screen-reader-only{ 
+         .screen-reader-only{
             position: absolute;
             left: -10000px;
          }
       </style>
    </head>
    <body style="background-color:#ffffff;" onload="initialize();">
+      <?php
+			if($shouldUseMinimalMapHeader) include_once($SERVER_ROOT . '/includes/minimalheader.php');
+		?>
       <h1 class="page-heading screen-reader-only"><?= $LANG['MAP_SECTION'] . ' ' . $clName; ?></h1>
       <?php
          if(!$coordArr){

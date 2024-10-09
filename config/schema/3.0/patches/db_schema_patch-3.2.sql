@@ -68,3 +68,5 @@ ALTER TABLE omoccurpoints MODIFY IF EXISTS lngLatPoint POINT NOT NULL;
 ALTER TABLE omoccurpoints ADD SPATIAL INDEX(lngLatPoint);
 
 DROP FUNCTION IF EXISTS `swap_wkt_coords`;
+INSERT INTO `schemaversion` (versionnumber) values ("3.2");
+
