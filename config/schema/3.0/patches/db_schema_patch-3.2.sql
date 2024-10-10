@@ -1,5 +1,7 @@
 INSERT INTO `schemaversion` (versionnumber) values ("3.2");
 
+-- Drop deprecated_media (This causes FOREIGN KEY conflicts with media CONSTRAINTS)
+DROP TABLE IF EXISTS `deprecated_media`;
 -- Define media
 DROP TABLE IF EXISTS `media`;
 CREATE TABLE `media` (
