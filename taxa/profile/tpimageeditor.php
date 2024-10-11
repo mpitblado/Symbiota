@@ -191,7 +191,7 @@ if($tid){
 								<input name='photographer' type='text' value='' size='37' maxlength='100'><br/>
 								* <?php echo $LANG['PHOTOGRAPHER_OVERRIDE_EXPLAIN']; ?>
 							</div>
-							<div style="margin-top:2px;" title="Use if manager is different than photographer">
+							<div style="margin-top:2px;" title="Use if manager is different than creator">
 								<b><?php echo $LANG['MANAGER']; ?>:</b>
 								<input name='owner' type='text' value='' size='35' maxlength='100'>
 							</div>
