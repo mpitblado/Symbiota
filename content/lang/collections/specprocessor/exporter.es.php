@@ -49,7 +49,7 @@ $LANG['SYMB_NATIVE_EXPLAIN'] = 'Los archivos nativos de Symbiota son muy similar
 $LANG['DWC_EXPLAIN'] = 'Darwin Core es un estándar específico para conjuntos de datos de biodiversidad, respaldado por TDWG.					Para más información, visite el sitio web de <a href=';
 $LANG['DATA_EXTENSIONS'] = 'Extensiones de Datos';
 $LANG['INCLUDE_DET'] = 'incluir Historia de Determinación';
-$LANG['INCLUDE_IMAGES'] = 'incluir registros multimedia';
+$LANG['INCLUDE_IMAGES'] = 'incluir registros medios';
 $LANG['INCLUDE_ATTRIBUTES'] = 'incluir Atributos de Características de Ocurrencia (extensión MeasurementOrFact)';
 $LANG['OUTPUT_COMPRESSED'] = 'El archivo generado debe ser comprimido';
 $LANG['ACCESS_DENIED'] = 'Acceso denegado';

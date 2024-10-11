@@ -48,7 +48,7 @@ $LANG['SYMB_NATIVE_EXPLAIN'] = 'Symbiota native is very similar to Darwin Core e
 $LANG['DWC_EXPLAIN'] = 'Darwin Core is a TDWG endorsed exchange standard specifically for biodiversity datasets.					For more information, visit the <a href=';
 $LANG['DATA_EXTENSIONS'] = 'Data Extensions';
 $LANG['INCLUDE_DET'] = 'include Determination History';
-$LANG['INCLUDE_IMAGES'] = 'include Multimedia Records';
+$LANG['INCLUDE_IMAGES'] = 'include Media Records';
 $LANG['INCLUDE_ATTRIBUTES'] = 'include Occurrence Trait Attributes (MeasurementOrFact extension)';
 $LANG['OUTPUT_COMPRESSED'] = 'Output must be a compressed archive';
 $LANG['ACCESS_DENIED'] = 'Access denied';
