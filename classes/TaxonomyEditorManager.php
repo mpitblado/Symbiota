@@ -563,7 +563,13 @@ class TaxonomyEditorManager extends Manager{
 	public function loadNewName($dataArr){
 		//Load new name into taxa table
 		$tid = 0;
-		$processedSciname = trim($dataArr['unitind1'] . $dataArr['unitname1'] . ' ' . $dataArr['unitind2'] . $dataArr['unitname2'] . ' ' . trim($dataArr['unitind3'] . ' ' . $dataArr['unitname3']));
+		$unitind1 = array_key_exists('unitind1', $dataArr) ? $dataArr['unitind1'] : '';
+		$unitname1 = array_key_exists('unitname1', $dataArr) ? $dataArr['unitname1'] : '';
+		$unitind2 = array_key_exists('unitind2', $dataArr) ? $dataArr['unitind2'] : '';
+		$unitname2 = array_key_exists('unitname2', $dataArr) ? $dataArr['unitname2'] : '';
+		$unitind3 = array_key_exists('unitind3', $dataArr) ? $dataArr['unitind3'] : '';
+		$unitname3 = array_key_exists('unitname3', $dataArr) ? $dataArr['unitname3'] : '';
+		$processedSciname = trim( $unitind1 . $unitname1 . ' ' . $unitind2 . $unitname2 . ' ' . trim($unitind3 . ' ' . $unitname3));
 		$processedTradeName = '';
 		$processedCultivarEpithet = '';
 		if(array_key_exists('cultivarEpithet', $dataArr) && !empty($dataArr['cultivarEpithet'])){

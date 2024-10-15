@@ -365,11 +365,12 @@ function showOnlyRelevantFields(rankId) {
     tribe: 160,
     subtribe: 170,
     genus: 180,
+    subgenus: 190,
     section: 200,
     subsection: 210,
-  }; // not 190 (subgenera)
+  };
   const { ...rest } = rankIdsToHideUnit2From;
-  rankIdsToHideUnit3From = { ...rest, subgenus: 190, species: 220 };
+  rankIdsToHideUnit3From = { ...rest, species: 220 };
   const { ...rest2 } = rankIdsToHideUnit3From;
   rankIdsToHideUnit4From = {
     ...rest2,
@@ -396,7 +397,7 @@ function showOnlyRelevantFields(rankId) {
     div3Hide.style.display = "block";
   }
 
-  if (rankId <= allRankIds.genus) {
+  if (rankId <= allRankIds.subsection) {
     const rankIdSelector = document.getElementById("rankid");
     const optionIdx = rankIdSelector.options.selectedIndex;
     const selectedOptionText = rankIdSelector.options[optionIdx].text.trim();
@@ -430,12 +431,12 @@ function showOnlyRelevantFields(rankId) {
     document.getElementById("tradeName").value = null;
   }
 
-  const unit2NameLabel = document.getElementById("unit-2-name-label");
-  if (rankId === allRankIds.subgenus) {
-    unit2NameLabel.textContent = "Subgenus Name: ";
-  } else {
-    unit2NameLabel.textContent = "Specific Epithet: ";
-  }
+  // const unit2NameLabel = document.getElementById("unit-2-name-label");
+  // if (rankId === allRankIds.subgenus) {
+  //   unit2NameLabel.textContent = "Subgenus Name: ";
+  // } else {
+  //   unit2NameLabel.textContent = "Specific Epithet: ";
+  // }
 
   if (rankId == allRankIds.cultivar) {
     div4Display.style.display = "inline-block";
