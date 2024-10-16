@@ -53,10 +53,10 @@ $(document).ready(function () {
 });
 
 function verifyLoadForm(f) {
-  if (f.sciname.value == "") {
-    alert("Scientific Name field required.");
-    return false;
-  }
+  // if (f.sciname.value == "") {
+  //   alert("Scientific Name field required.");
+  //   return false;
+  // }
   if (f.unitname1.value == "") {
     alert("Unit Name 1 (genus or uninomial) field required.");
     return false;
@@ -93,7 +93,10 @@ function parseName(f) {
   if (f.rankid.value === "300") {
     return;
   }
-  let sciNameInput = f.sciname.value;
+  if (!f.quickparser.value) {
+    return;
+  }
+  let sciNameInput = f.quickparser - parser.value;
   sciNameInput = sciNameInput.replace(/^\s+|\s+$/g, "");
   f.reset();
   let sciNameArr = new Array();
@@ -253,6 +256,7 @@ function parseName(f) {
   }
   if (parentName != "") setParent(parentName, f.unitind1.value);
   updateFullname(f);
+  f.quickparser.value = "";
 }
 
 function setParent(parentName, unitind1) {
@@ -298,6 +302,7 @@ function updateFullname(f) {
     sciname = sciname + (f.unitind3.value + " " + f.unitname3.value).trim();
   }
   f.sciname.value = sciname.trim();
+  f.scinamedisplay.value = sciname.trim();
   checkNameExistence(f);
 }
 

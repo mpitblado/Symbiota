@@ -78,9 +78,28 @@ if($isEditor){
 		if($isEditor){
 			?>
 			<form id="loaderform" name="loaderform" action="taxonomyloader.php" method="post" onsubmit="return verifyLoadForm(this)">
+				<div>
+					<h2>Sciname will be saved as: <span id="scinamedisplay" name="scinamedisplay"></span></h2>
+				</div>
+				<input type="hidden" id="sciname" name="sciname" class="search-bar-long" value="" />
+				<fieldset class="bottom-breathing-room-rel">
+					<legend><b><?php echo $LANG['QUICK_PARSER_LABEL']; ?></b></legend>
+					<div style="display: flex; flex-direction: column;">
+						<div class="gridlike-form-row" style="gap:0;">
+							<div class="left-column">
+								<label for="sciname"> 
+									<?php echo $LANG['TAXON_NAME']; ?>: 
+								</label>
+							</div>
+							<input style="margin-bottom: 0;" type="text" id="quickparser" name="quickparser" value="" onchange="parseName(this.form)"/>
+							<div class="left-breathing-room-rel">
+								<button onclick="event.preventDefault(); parseName(this.form);" name="quick-parse-button" id="quick-parse-button" ><?php echo $LANG['RUN_QUICK_PARSE']; ?></button>
+							</div>
+						</div>
+					</div>
+				</fieldset>
 				<fieldset>
-					<!-- TODO add button for autoparsing with accessibility in mind -->
-					<legend><b><?php echo (isset($LANG['ADD_NEW_TAXON']) ? $LANG['ADD_NEW_TAXON'] : 'Add a New Taxon'); ?></b></legend>
+					<legend><b><?php echo $LANG['ADD_NEW_TAXON']; ?></b></legend>
 					<div style="clear:both;">
 						<div class="left-column"> 
 							<label for="rankid">
@@ -102,14 +121,6 @@ if($isEditor){
 						</select>
 						<script src="../../js/symb/taxa.taxonomyloader.js"> </script>
 					</div>
-						<div id="sciname-div">
-							<div class="left-column">
-								<label for="sciname"> 
-									<?php echo $LANG['TAXON_NAME']; ?>: 
-								</label>
-							</div>
-							<input type="text" id="sciname" name="sciname" class="search-bar-long" value="" onchange="parseName(this.form)"/>
-						</div>
 					<div id="author-div">
 						<div class="left-column">
 							<label for="author">
