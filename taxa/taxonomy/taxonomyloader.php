@@ -91,7 +91,7 @@ if($isEditor){
 									<?php echo $LANG['TAXON_NAME']; ?>: 
 								</label>
 							</div>
-							<input style="margin-bottom: 0;" type="text" id="quickparser" name="quickparser" value="" onchange="parseName(this.form)"/>
+							<input class='search-bar-long' style="margin-bottom: 0;" type="text" id="quickparser" name="quickparser" value="" onchange="parseName(this.form)"/>
 							<div class="left-breathing-room-rel">
 								<button onclick="event.preventDefault(); parseName(this.form);" name="quick-parse-button" id="quick-parse-button" ><?php echo $LANG['RUN_QUICK_PARSE']; ?></button>
 							</div>

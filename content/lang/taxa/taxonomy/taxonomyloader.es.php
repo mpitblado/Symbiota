@@ -7,7 +7,7 @@ Language: Español
 
 include_once($SERVER_ROOT.'/content/lang/taxa/taxonomy/taxoneditor.'.$LANG_TAG.'.php');
 
-$LANG['TAXON_LOADER'] = 'Cargador de Taxón';
+$LANG['TAXON_LOADER'] = 'Añadir Nuevo Taxón';
 $LANG['TAXONOMY_LOADER'] = 'Cargador de Taxonomía';
 $LANG['TAXON_NAME'] = 'Analizador Rápido';
 $LANG['TAXON_RANK'] = 'Rango de Taxón';

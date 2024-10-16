@@ -7,7 +7,7 @@ Language: English
 
 include_once($SERVER_ROOT.'/content/lang/taxa/taxonomy/taxoneditor.'.$LANG_TAG.'.php');
 
-$LANG['TAXON_LOADER'] = 'Taxon Loader';
+$LANG['TAXON_LOADER'] = 'Add New Taxon';
 $LANG['TAXONOMY_LOADER'] = 'Taxonomy Loader';
 $LANG['TAXON_NAME'] = 'Paste name here for parsing';
 $LANG['TAXON_RANK'] = 'Taxon Rank';
