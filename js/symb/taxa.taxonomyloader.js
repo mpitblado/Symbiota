@@ -96,7 +96,7 @@ function parseName(f) {
   if (!f.quickparser.value) {
     return;
   }
-  let sciNameInput = f.quickparser - parser.value;
+  let sciNameInput = f.quickparser.value;
   sciNameInput = sciNameInput.replace(/^\s+|\s+$/g, "");
   f.reset();
   let sciNameArr = new Array();
@@ -104,7 +104,7 @@ function parseName(f) {
   let activeIndex = 0;
   let rankId = "";
 
-  if (sciNameArr[activeIndex].length == 1) {
+  if (sciNameArr.length > 0 && sciNameArr[activeIndex].length == 1) {
     //Is a generic hybrid or extinct
     f.unitind1.value = sciNameArr[activeIndex];
     if (
@@ -131,8 +131,8 @@ function parseName(f) {
       activeIndex = activeIndex + 1;
     }
     if (
-      sciNameArr[activeIndex].substring(0, 1) == "(" &&
-      sciNameArr[activeIndex].substring(sciNameArr[activeIndex].length - 1) ==
+      sciNameArr[activeIndex]?.substring(0, 1) == "(" &&
+      sciNameArr[activeIndex]?.substring(sciNameArr[activeIndex].length - 1) ==
         ")"
     ) {
       //active unit is a subgeneric designation, append to unitname1
@@ -259,6 +259,26 @@ function parseName(f) {
   f.quickparser.value = "";
 }
 
+function standardizeCultivarEpithet(unstandardizedCultivarEpithet) {
+  if (unstandardizedCultivarEpithet) {
+    const cleanString = unstandardizedCultivarEpithet.replace(
+      "/(^[\"'“]+)|([\"'”]+$)/",
+      ""
+    );
+    return "'" + cleanString + "'";
+  } else {
+    return "";
+  }
+}
+
+function standardizeTradeName(unstandardizedTradeName) {
+  if (unstandardizedTradeName) {
+    return unstandardizedTradeName.toUpperCase();
+  } else {
+    return "";
+  }
+}
+
 function setParent(parentName, unitind1) {
   $.ajax({
     type: "POST",
@@ -301,8 +321,15 @@ function updateFullname(f) {
   if (f.unitname3.value) {
     sciname = sciname + (f.unitind3.value + " " + f.unitname3.value).trim();
   }
+  if (f.cultivarEpithet.value) {
+    sciname += " " + standardizeCultivarEpithet(f.cultivarEpithet.value);
+  }
+  if (f.tradeName.value) {
+    sciname += " " + standardizeTradeName(f.tradeName.value);
+  }
   f.sciname.value = sciname.trim();
-  f.scinamedisplay.value = sciname.trim();
+  const scinameDisplay = document.getElementById("scinamedisplay");
+  scinameDisplay.textContent = sciname.trim();
   checkNameExistence(f);
 }
 
