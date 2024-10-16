@@ -22,7 +22,6 @@ function verifyCoordinates(f, client_root) {
 						70: 'county',
 						80: 'municipality',
 					}
-
 				for(let match of data) {
 						if(geocode_form_map[match.geoLevel]) {
 							const form_name = geocode_form_map[match.geoLevel];
@@ -36,9 +35,11 @@ function verifyCoordinates(f, client_root) {
 
 						}
 				}
-					if(!coord_valid) {
-						alert("Are coordinates accurate? They currently map to: " + data.map(d => d.geoterm).join(', ') + " which differs from what is in the form. Click globe symbol to display coordinates in map.");
-					}
+				if(!coord_valid) {
+					alert("Are the coordinates accurate? They currently map to: " + data.map(d => d.geoterm).join(', ') + " which differs from what is in the form. Click globe symbol to display coordinates in map.");
+				} else if(data && !data.length) {
+					alert("Are the coordinates accurate? There are no matching localities tracked by this portal. Could mean that Geographic Thesaurus needs to be update or coordinates are in the ocean. Click globe symbol to display coordinates in map.");
+				}
 			}
 		});
 	}
