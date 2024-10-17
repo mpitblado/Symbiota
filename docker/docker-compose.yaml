@@ -1,0 +1,30 @@
+version: '3.3'
+services:
+  web:
+    image: php:apache 
+    restart: 'always'
+      #    depends_on:
+      #- mariadb
+    build: .
+    ports:
+      - 8000:80
+    volumes:
+      - ./../:/var/www/html/
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  mariadb:
+    env_file:
+      - .env
+    image: "mariadb:${MARIADB_VERSION}"
+    command: --max_allowed_packet=512M
+    restart: 'always'
+    volumes: 
+      - "${DB_DUMP}:/docker-entrypoint-initdb.d/datadump.sql"
+      - /var/docker/mariadb/conf:/etc/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE}"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+    ports:
+      - "${MYSQL_PORT_NUMBER:-3306}:3306"
