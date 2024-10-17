@@ -233,7 +233,6 @@ class TaxonomyHelper {
 		$testStr = strtolower(trim($testStr,'.'));
 		if($testStr == 'cultivated' || $testStr == 'cv' ){
 			$retArr['infra'] = 'cv.';
-			$retArr['rankid'] = 300;
 		}
 		elseif($testStr == 'subform' || $testStr == 'subforma' || $testStr == 'subf' || $testStr == 'subfo'){
 			$retArr['infra'] = 'subf.';

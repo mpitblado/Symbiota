@@ -13,7 +13,7 @@ class TaxonomyUtilities {
 	 */
 	public static function parseScientificName($inStr, $conn = null, $rankId = 0, $kingdomName = null){
 		//Converts scinetific name with author embedded into separate fields
-		$retArr = array('unitname1'=>'','unitname2'=>'','unitind3'=>'','unitname3'=>'');
+		$retArr = array('unitname1'=>'','unitname2'=>'','unitind3'=>'','unitname3'=>'', 'cultivarEpithet'=>'', 'tradeName'=>'');
 		//Remove UTF-8 NO-BREAK SPACE codepoints
 		$inStr = trim(str_replace(chr(194).chr(160), ' ', $inStr));
 		if($inStr && is_string($inStr)){
@@ -45,6 +45,8 @@ class TaxonomyUtilities {
 			//Remove extra spaces
 			$inStr = preg_replace('/\s\s+/',' ',$inStr);
 			if(!$inStr) return $retArr;
+			// $singleQuotePattern = "/(['‘’][^'‘’]+?['‘’])|(\S+)/";
+			// preg_match_all($singleQuotePattern, $inStr, $matches);
 			$sciNameArr = explode(' ',trim($inStr));
 			$okToCloseConn = true;
 			if($conn !== null) $okToCloseConn = false;
@@ -205,10 +207,7 @@ class TaxonomyUtilities {
 				$retArr['rankid'] = $rankId;
 			}
 			else{
-				if(!empty($retArr['cultivarepithet'])){
-					$retArr['rankid'] = 300;
-				}
-				elseif($retArr['unitname3']){
+				if($retArr['unitname3']){
 					if($retArr['unitind3'] == 'subsp.' || !$retArr['unitind3']){
 						$retArr['rankid'] = 230;
 					}
@@ -256,6 +255,7 @@ class TaxonomyUtilities {
 			}
 			$retArr['sciname'] = trim($sciname);
 		}
+		// @TODO possible add cultivarEpithet and tradeName here?
 		return $retArr;
 	}
 
@@ -265,7 +265,6 @@ class TaxonomyUtilities {
 		$testStr = strtolower(trim($testStr,'.'));
 		if($testStr == 'cultivated' || $testStr == 'cv' ){
 			$retArr['infra'] = 'cv.';
-			$retArr['rankid'] = 300;
 		}
 		elseif($testStr == 'subform' || $testStr == 'subforma' || $testStr == 'subf' || $testStr == 'subfo'){
 			$retArr['infra'] = 'subf.';

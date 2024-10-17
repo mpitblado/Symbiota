@@ -186,6 +186,7 @@ class TaxonomyUpload{
 						}
 						//Insert record into uploadtaxa table
 						if(array_key_exists('scinameinput', $inputArr)){
+							
 							if(!isset($inputArr['sciname']) && isset($inputArr['unitname1']) && $inputArr['unitname1']){
 								//Build sciname
 								$sciname = $inputArr['unitname1'];
@@ -198,7 +199,6 @@ class TaxonomyUpload{
 								}
 								if(!empty($inputArr['cultivarepithet'])){
 									$sciname .= " " . self::standardizeCultivarEpithet($inputArr['cultivarepithet']);
-									$inputArr['rankid'] = 300;
 								}
 								if(!empty($inputArr['tradename'])){
 									$sciname .= ' ' . self::standardizeTradeName($inputArr['tradename']);
@@ -466,7 +466,7 @@ class TaxonomyUpload{
 		//Link names already in theusaurus
 		$this->outputMsg('Linking names already in thesaurus... ');
 		$sql = 'UPDATE uploadtaxa u INNER JOIN taxa t ON u.sciname = t.sciname SET u.tid = t.tid
-			WHERE (u.tid IS NULL) AND (t.kingdomname = "'.$this->kingdomName.'" OR t.sciname = "'.$this->kingdomName.'" OR t.rankid < 10) ';
+			WHERE (u.tid IS NULL) AND (t.kingdomname = "'.$this->kingdomName.'" OR t.sciname = "'.$this->kingdomName.'" OR t.rankid < 10) '; // @TODO this might need to
 		if(!$this->conn->query($sql)){
 			$this->outputMsg('ERROR: '.$this->conn->error,1);
 		}
