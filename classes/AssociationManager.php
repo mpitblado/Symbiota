@@ -229,22 +229,22 @@ class AssociationManager extends OccurrenceTaxaManager{
 							$tidInArr = array_merge($tidInArr, $tidArr);
 							//Return matches that are not linked to thesaurus
 							if($rankid > 179){
-								if($this->exactMatchOnly) $sqlWhereTaxa .= 'OR (ifnull(o.sciname, od.sciname) = "' . $term . '") ';
-								else $sqlWhereTaxa .= "OR (ifnull(o.sciname, od.sciname) LIKE '" . $term . "%') OR (oa.verbatimsciname LIKE '" . $term . "%') ";
+								if($this->exactMatchOnly) $sqlWhereTaxa .= 'OR (o.sciname = "' . $term . '") ';
+								else $sqlWhereTaxa .= "OR (o.sciname LIKE '" . $term . "%' AND od.isCurrent=1) OR (oa.verbatimsciname LIKE '" . $term . "%') ";
 							}
 						}
 						else{
 							//Protect against someone trying to download big pieces of the occurrence table through the user interface
 							if(strlen($term) < 4) $term .= ' ';
 							if($this->exactMatchOnly){
-								$sqlWhereTaxa .= 'OR (ifnull(o.sciname, od.sciname) = "' . $term . '") OR (oa.verbatimsciname LIKE "' . $term . '%") ';
+								$sqlWhereTaxa .= 'OR (o.sciname = "' . $term . '") OR (oa.verbatimsciname LIKE "' . $term . '%") ';
 							}
 							else{
-								$sqlWhereTaxa .= 'OR (ifnull(o.sciname, od.sciname) LIKE "' . $term . '%") OR (oa.verbatimsciname LIKE "' . $term . '%") ';
+								$sqlWhereTaxa .= 'OR (o.sciname LIKE "' . $term . '%"  AND od.isCurrent=1) OR (oa.verbatimsciname LIKE "' . $term . '%") ';
 								if(!strpos($term,' _ ')){
 									//Accommodate for formats of hybrid designations within input and target data (e.g. x, multiplication sign, etc)
 									$term2 = preg_replace('/^([^\s]+\s{1})/', '$1 _ ', $term);
-									$sqlWhereTaxa .= "OR (ifnull(o.sciname, od.sciname) LIKE '" . $term2 . "%')  OR (oa.verbatimsciname LIKE '" . $term . "%') ";
+									$sqlWhereTaxa .= "OR (o.sciname LIKE '" . $term2 . "%'  AND od.isCurrent=1)  OR (oa.verbatimsciname LIKE '" . $term . "%') ";
 								}
 							}
 						}
@@ -255,7 +255,7 @@ class AssociationManager extends OccurrenceTaxaManager{
 							if($taxonType == TaxaSearchType::SCIENTIFIC_NAME || $taxonType == TaxaSearchType::COMMON_NAME){
 								foreach($synArr as $synTid => $sciName){
 									if(strpos($sciName,'aceae') || strpos($sciName,'idae')){
-										$sqlWhereTaxa .= 'OR (ifnull(o.family, od.family) = "' . $sciName . '") ';
+										$sqlWhereTaxa .= 'OR (o.family = "' . $sciName . '") ';
 									}
 								}
 							}
