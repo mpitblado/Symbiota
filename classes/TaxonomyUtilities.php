@@ -13,7 +13,7 @@ class TaxonomyUtilities {
 	 */
 	public static function parseScientificName($inStr, $conn = null, $rankId = 0, $kingdomName = null){
 		//Converts scinetific name with author embedded into separate fields
-		$retArr = array('unitname1'=>'','unitname2'=>'','unitind3'=>'','unitname3'=>'', 'cultivarEpithet'=>'', 'tradeName'=>'');
+		$retArr = array('unitname1'=>'','unitname2'=>'','unitind3'=>'','unitname3'=>'');
 		//Remove UTF-8 NO-BREAK SPACE codepoints
 		$inStr = trim(str_replace(chr(194).chr(160), ' ', $inStr));
 		if($inStr && is_string($inStr)){
@@ -182,7 +182,9 @@ class TaxonomyUtilities {
 					}
 				}
 				//Check the retArr[author] array for cultivar epithet, tradename, author
-				if (preg_match("/'([^']+)'/", $retArr['author'], $matches)) {
+				// misformatting of $matches[0] happens if the single quotes aren't standardized
+				$retArr['author'] = str_replace(['‘', '’'], "'", $retArr['author']);
+				if (preg_match("/['‘’]([^‘’']+)['‘’]/", $retArr['author'], $matches)) {
 					$retArr['cultivarepithet'] = $matches[1];
 					$retArr['author'] = str_replace($matches[0], '', $retArr['author']);
 				}
