@@ -256,7 +256,7 @@ $_SESSION['citationvar'] = $searchVar;
 							echo '<div><b>' . $LANG['ASSOCIATIONS'] . ':</b> ' . $associationSearchStr . '</div>';
 							// echo '<div><span>' . "Didn't find what you were looking for? Try " . '<form name="establish-inverse-relationships" id="establish-inverse-relationships" action="list.php" method="post" onsubmit="return establishInverseRelationshipRecords()"><button type="submit">populating your database with inverse relationships</button></form>' . ". Note that this may take serveral minutes." . '</span></div>';
 							?>
-							<div>
+							<!-- <div>
 								<span>Didn't find what you were looking for?</span>
 								<form name="establish-inverse-relationships" id="establish-inverse-relationships" action="list.php" method="post">
 									<input name="comingFrom" type="hidden" value="<?php echo $comingFrom; ?>" />
@@ -264,7 +264,7 @@ $_SESSION['citationvar'] = $searchVar;
 									<button type="submit" class="top-breathing-room-rel bottom-breathing-room-rel">Populate your Database with Inverse Relationships</button>
 								</form>
 								<span>And try your search again. Note that this may take serveral minutes.</span>
-							</div>
+							</div> -->
 							<?php
 						}
 						if ($localSearchStr = $collManager->getLocalSearchStr()) {
