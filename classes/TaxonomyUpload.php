@@ -758,7 +758,7 @@ class TaxonomyUpload{
 		do{
 			$this->outputMsg('Starting loop '.$loopCnt);
 			$this->outputMsg('Transferring taxa to taxon table... ',1);
-			$sql = 'INSERT IGNORE INTO taxa(kingdomName, SciName, RankId, UnitInd1, UnitName1, UnitInd2, UnitName2, UnitInd3, UnitName3, cultivarEpithet,  tradeName, Author, Source, Notes) '.
+			$sql = 'INSERT IGNORE INTO taxa(kingdomName, SciName, RankId, UnitInd1, UnitName1, UnitInd2, UnitName2, UnitInd3, UnitName3, cultivarEpithet, tradeName, Author, Source, Notes) '.
 				'SELECT DISTINCT "'.$this->kingdomName.'", SciName, RankId, UnitInd1, UnitName1, UnitInd2, UnitName2, UnitInd3, UnitName3, cultivarEpithet, tradeName, Author, Source, Notes '.
 				'FROM uploadtaxa '.
 				'WHERE (tid IS NULL) AND (parenttid IS NOT NULL) AND (rankid IS NOT NULL) AND (ErrorStatus IS NULL) '.
@@ -812,7 +812,7 @@ class TaxonomyUpload{
 			$this->conn->query($sql);
 			if(!$this->conn->affected_rows) break;
 
-			//Update parentTids
+			//Update parentTids // @TODO deleteMe this is where uploadtaxa entry gets deleted
 			$sql = 'UPDATE uploadtaxa ut1 INNER JOIN uploadtaxa ut2 ON ut1.sourceparentid = ut2.sourceid '.
 				'INNER JOIN taxa t ON ut2.sciname = t.sciname '.
 				'SET ut1.parenttid = t.tid '.
