@@ -407,9 +407,9 @@ $shouldUseMinimalMapHeader = $SHOULD_USE_MINIMAL_MAP_HEADER ?? false;
 
 			<?php if(empty($GOOGLE_MAP_KEY)): ?> 
 			leafletInit();
-			<?php } else { ?>
+			<?php else: ?>
 			googleInit();
-			<?php } ?>
+			<?php endif ?>
 		}
 
 		function updateParentForm(f) {

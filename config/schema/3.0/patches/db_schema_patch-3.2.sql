@@ -72,3 +72,41 @@ ALTER TABLE omoccurpoints MODIFY IF EXISTS lngLatPoint POINT NOT NULL;
 ALTER TABLE omoccurpoints ADD SPATIAL INDEX(lngLatPoint);
 
 DROP FUNCTION IF EXISTS `swap_wkt_coords`;
+
+DELIMITER //
+DROP TRIGGER IF EXISTS `omoccurrencesfulltext_insert`//
+DROP TRIGGER IF EXISTS `omoccurrencesfulltextpoint_insert`//
+DROP TRIGGER IF EXISTS `omoccurrences_insert`//
+CREATE TRIGGER `omoccurrences_insert` AFTER INSERT ON `omoccurrences`
+FOR EACH ROW BEGIN
+	IF NEW.`decimalLatitude` IS NOT NULL AND NEW.`decimalLongitude` IS NOT NULL THEN
+		INSERT INTO omoccurpoints (`occid`,`point`, `lngLatPoint`) 
+		VALUES (NEW.`occid`,Point(NEW.`decimalLatitude`, NEW.`decimalLongitude`), Point(NEW.`decimalLongitude`, NEW.`decimalLatitude`));
+	END IF;
+	INSERT INTO omoccurrencesfulltext (`occid`,`recordedby`,`locality`) 
+	VALUES (NEW.`occid`,NEW.`recordedby`,NEW.`locality`);
+END
+//
+
+DROP TRIGGER IF EXISTS `omoccurrencesfulltext_update`//
+DROP TRIGGER IF EXISTS `omoccurrencesfulltextpoint_update`//
+DROP TRIGGER IF EXISTS `omoccurrences_update`//
+CREATE TRIGGER `omoccurrences_update` AFTER UPDATE ON `omoccurrences`
+FOR EACH ROW BEGIN
+	IF NEW.`decimalLatitude` IS NOT NULL AND NEW.`decimalLongitude` IS NOT NULL THEN
+		IF EXISTS (SELECT `occid` FROM omoccurpoints WHERE `occid`=NEW.`occid`) THEN
+			UPDATE omoccurpoints 
+			SET `point` = Point(NEW.`decimalLatitude`, NEW.`decimalLongitude`),
+				`lngLatPoint` = Point(NEW.`decimalLongitude`, NEW.`decimalLatitude`)
+			WHERE `occid` = NEW.`occid`;
+		ELSE 
+			INSERT INTO omoccurpoints (`occid`,`point`, `lngLatPoint`) 
+			VALUES (NEW.`occid`, Point(NEW.`decimalLatitude`, NEW.`decimalLongitude`), Point(NEW.`decimalLongitude`, NEW.`decimalLatitude`));
+		END IF;
+	END IF;
+	UPDATE omoccurrencesfulltext 
+	SET `recordedby` = NEW.`recordedby`,`locality` = NEW.`locality`
+	WHERE `occid` = NEW.`occid`;
+END
+//
+DELIMITER ;
