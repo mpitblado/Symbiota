@@ -181,10 +181,10 @@ class TaxonomyUtilities {
 						if(!isset($retArr['rankid']) || !$retArr['rankid']) $retArr['rankid'] = 220;
 					}
 				}
-				// misformatting of $matches[0] happens if the single quotes aren't standardized
-				$retArr['author'] = str_replace(['‘', '’'], "'", $retArr['author']);
 				
 				//Check the retArr[author] array for cultivar epithet, tradename, author
+				// misformatting happens with cultivarEpithet if the single quotes aren't standardized
+				$retArr['author'] = str_replace(['‘', '’'], "'", $retArr['author']);
 				 if (preg_match("/'([^']+)'/", $retArr['author'], $matches)){
 					$retArr['cultivarepithet'] = $matches[1];
 					$retArr['author'] = str_replace($matches[0], '', $retArr['author']);
