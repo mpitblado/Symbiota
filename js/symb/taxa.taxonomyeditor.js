@@ -79,6 +79,7 @@ function toggleEditFields() {
 }
 
 function showOnlyRelevantFields(rankId) {
+  const isCultivated = document.getElementById("is-cultivated");
   const label = document.getElementById("unitind1label");
   const unitind1Select = document.getElementById("unitind1-select");
   const div2Hide = document.getElementById("div2hide");
@@ -115,18 +116,18 @@ function showOnlyRelevantFields(rankId) {
   const { ...rest } = rankIdsToHideUnit2From;
   rankIdsToHideUnit3From = { ...rest, species: 220 };
   const { ...rest2 } = rankIdsToHideUnit3From;
-  rankIdsToHideUnit4From = {
-    ...rest2,
-    subspecies: 230,
-    variety: 240,
-    subvariety: 250,
-    form: 260,
-    subform: 270,
-  };
-  const { ...rest3 } = rankIdsToHideUnit4From;
-  rankIdsToHideUnit5From = { ...rest3 };
+  // rankIdsToHideUnit4From = {
+  //   ...rest2,
+  //   subspecies: 230,
+  //   variety: 240,
+  //   subvariety: 250,
+  //   form: 260,
+  //   subform: 270,
+  // };
+  // const { ...rest3 } = rankIdsToHideUnit4From;
+  // rankIdsToHideUnit5From = { ...rest3 };
 
-  allRankIds = { ...rest3, cultivar: 300 };
+  allRankIds = { ...rest3};
 
   if (Object.values(rankIdsToHideUnit2From).includes(rankId)) {
     div2Hide.style.display = "none";
@@ -167,12 +168,12 @@ function showOnlyRelevantFields(rankId) {
     document.getElementById("unitname3").value = null;
   }
 
-  if (Object.values(rankIdsToHideUnit4From).includes(rankId)) {
-    document.getElementById("cultivarEpithet").value = null;
-  }
-  if (Object.values(rankIdsToHideUnit5From).includes(rankId)) {
-    document.getElementById("tradeName").value = null;
-  }
+  // if (Object.values(rankIdsToHideUnit4From).includes(rankId)) {
+  //   document.getElementById("cultivarEpithet").value = null;
+  // }
+  // if (Object.values(rankIdsToHideUnit5From).includes(rankId)) {
+  //   document.getElementById("tradeName").value = null;
+  // }
 
   // const unit2NameLabel = document.getElementById("unit-2-name-label");
   // if (rankId === allRankIds.subgenus) {
@@ -181,7 +182,7 @@ function showOnlyRelevantFields(rankId) {
   //   unit2NameLabel.textContent = "Specific Epithet: ";
   // }
 
-  if (rankId == allRankIds.cultivar) {
+  if (isCultivated) {
     div4Display.style.display = "inline-block";
     div5Display.style.display = "inline-block";
     div4Hide.style.display = "block";
