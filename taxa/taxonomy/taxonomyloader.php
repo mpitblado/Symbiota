@@ -121,6 +121,13 @@ if($isEditor){
 						</select>
 						<script src="../../js/symb/taxa.taxonomyloader.js"> </script>
 					</div>
+					<div id="cultivated-div" >
+						<label for="is-cultivated">
+							Has cultivar epithet or tradename?
+						</label>
+						<!-- <?php echo (!empty($loaderObj->getCultivarEpithet()) || !empty($loaderObj->getTradeName())) ? 'true' : 'false'; ?> -->
+						<input class="bottom-breathing-room-rel" id="is-cultivated" type="checkbox" />
+					</div>
 					<div id="author-div">
 						<div class="left-column">
 							<label for="author">
