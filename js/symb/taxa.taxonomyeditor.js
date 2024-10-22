@@ -26,6 +26,30 @@ $(document).ready(function () {
     showOnlyRelevantFields(selectedValue);
   });
 
+  document
+    .getElementById("is-cultivated")
+    .addEventListener("change", function () {
+      console.log("deleteMe got here a1");
+      const div4Hide = document.getElementById("div4hide");
+      const div5Hide = document.getElementById("div5hide");
+      const div4Display = document.getElementById("unit4Display");
+      const div5Display = document.getElementById("unit5Display");
+      const authorDiv = document.getElementById("author-div");
+      const parentNode = div5Hide.parentNode;
+      if (this.checked) {
+        div4Display.style.display = "inline-block";
+        div5Display.style.display = "inline-block";
+        div4Hide.style.display = "block";
+        div5Hide.style.display = "block";
+        parentNode.insertBefore(authorDiv, div4Hide);
+      } else {
+        div4Hide.style.display = "none";
+        div5Hide.style.display = "none";
+        document.getElementById("cultivarEpithet").value = null;
+        document.getElementById("tradeName").value = null;
+      }
+    });
+
   $("#aefacceptedstr").autocomplete({
     source: "rpc/getacceptedsuggest.php",
     dataType: "json",
@@ -74,12 +98,14 @@ $(document).ready(function () {
 function toggleEditFields() {
   toggle("editfield");
   toggle("kingdomdiv");
+  toggle("is-cultivated");
+  toggle("is-cultivated-status-display");
   const selectedValue = Number(document.getElementById("rankid").value);
   showOnlyRelevantFields(selectedValue);
 }
 
 function showOnlyRelevantFields(rankId) {
-  const isCultivated = document.getElementById("is-cultivated");
+  // const isCultivatedElem = document.getElementById("is-cultivated");
   const label = document.getElementById("unitind1label");
   const unitind1Select = document.getElementById("unitind1-select");
   const div2Hide = document.getElementById("div2hide");
@@ -127,7 +153,9 @@ function showOnlyRelevantFields(rankId) {
   // const { ...rest3 } = rankIdsToHideUnit4From;
   // rankIdsToHideUnit5From = { ...rest3 };
 
-  allRankIds = { ...rest3};
+  // isCultivatedElem.style.display = "block";
+
+  allRankIds = { ...rest2 };
 
   if (Object.values(rankIdsToHideUnit2From).includes(rankId)) {
     div2Hide.style.display = "none";
@@ -182,19 +210,19 @@ function showOnlyRelevantFields(rankId) {
   //   unit2NameLabel.textContent = "Specific Epithet: ";
   // }
 
-  if (isCultivated) {
-    div4Display.style.display = "inline-block";
-    div5Display.style.display = "inline-block";
-    div4Hide.style.display = "block";
-    div5Hide.style.display = "block";
-    parentNode.insertBefore(authorDiv, div4Hide);
-  } else {
-    div4Hide.style.display = "none";
-    div5Hide.style.display = "none";
-    document.getElementById("cultivarEpithet").value = null;
-    document.getElementById("tradeName").value = null;
-    // parentNode.insertBefore(authorDiv, genusDiv); // @TODO maybe insert below unit2 if that exists and other wise below unit1
-  }
+  // if (isCultivatedElem.value) {
+  //   div4Display.style.display = "inline-block";
+  //   div5Display.style.display = "inline-block";
+  //   div4Hide.style.display = "block";
+  //   div5Hide.style.display = "block";
+  //   parentNode.insertBefore(authorDiv, div4Hide);
+  // } else {
+  //   div4Hide.style.display = "none";
+  //   div5Hide.style.display = "none";
+  //   document.getElementById("cultivarEpithet").value = null;
+  //   document.getElementById("tradeName").value = null;
+  //   // parentNode.insertBefore(authorDiv, genusDiv); // @TODO maybe insert below unit2 if that exists and other wise below unit1
+  // }
 }
 
 function toggle(target) {
