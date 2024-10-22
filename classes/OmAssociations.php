@@ -31,7 +31,7 @@ class OmAssociations extends Manager{
 		$uidArr = array();
 		$sql = 'SELECT assocID, occid, '.implode(', ', array_keys($this->schemaMap)).', modifiedUid, modifiedTimestamp, createdUid, initialTimestamp FROM omoccurassociations WHERE ';
 		if($excludeScriptGenerated){
-			$sql .= "basisOfRecord IS NULL OR basisOfRecord != 'scriptGenerated' AND ";
+			$sql .= "(basisOfRecord IS NULL OR basisOfRecord != 'scriptGenerated') AND ";
 		}
 		if($this->assocID) $sql .= '(assocID = '.$this->assocID.') ';
 		elseif($filter == 'FULL')$sql .= '(occid = '.$this->occid.' OR occidAssociate = '.$this->occid.') ';
@@ -145,7 +145,7 @@ class OmAssociations extends Manager{
 									$this->errorMessage = 'Record not found after insertion.';
 								}
 								$fetchStmt->close();
-							} 
+							}
 						}
 						else $this->errorMessage = $stmt->error;
 					}
