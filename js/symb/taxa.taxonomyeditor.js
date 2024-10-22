@@ -29,7 +29,6 @@ $(document).ready(function () {
   document
     .getElementById("is-cultivated")
     .addEventListener("change", function () {
-      console.log("deleteMe got here a1");
       const div4Hide = document.getElementById("div4hide");
       const div5Hide = document.getElementById("div5hide");
       const div4Display = document.getElementById("unit4Display");
@@ -105,18 +104,10 @@ function toggleEditFields() {
 }
 
 function showOnlyRelevantFields(rankId) {
-  // const isCultivatedElem = document.getElementById("is-cultivated");
   const label = document.getElementById("unitind1label");
   const unitind1Select = document.getElementById("unitind1-select");
   const div2Hide = document.getElementById("div2hide");
   const div3Hide = document.getElementById("div3hide");
-  const div4Hide = document.getElementById("div4hide");
-  const div5Hide = document.getElementById("div5hide");
-  const div4Display = document.getElementById("unit4Display");
-  const div5Display = document.getElementById("unit5Display");
-  const authorDiv = document.getElementById("author-div");
-  const parentNode = div5Hide.parentNode; // @TODO confirm
-  const genusDiv = document.getElementById("genus-div");
 
   rankIdsToHideUnit2From = {
     "non-ranked node": 0,
@@ -142,18 +133,6 @@ function showOnlyRelevantFields(rankId) {
   const { ...rest } = rankIdsToHideUnit2From;
   rankIdsToHideUnit3From = { ...rest, species: 220 };
   const { ...rest2 } = rankIdsToHideUnit3From;
-  // rankIdsToHideUnit4From = {
-  //   ...rest2,
-  //   subspecies: 230,
-  //   variety: 240,
-  //   subvariety: 250,
-  //   form: 260,
-  //   subform: 270,
-  // };
-  // const { ...rest3 } = rankIdsToHideUnit4From;
-  // rankIdsToHideUnit5From = { ...rest3 };
-
-  // isCultivatedElem.style.display = "block";
 
   allRankIds = { ...rest2 };
 
@@ -195,34 +174,6 @@ function showOnlyRelevantFields(rankId) {
     document.getElementById("unitind3").value = null;
     document.getElementById("unitname3").value = null;
   }
-
-  // if (Object.values(rankIdsToHideUnit4From).includes(rankId)) {
-  //   document.getElementById("cultivarEpithet").value = null;
-  // }
-  // if (Object.values(rankIdsToHideUnit5From).includes(rankId)) {
-  //   document.getElementById("tradeName").value = null;
-  // }
-
-  // const unit2NameLabel = document.getElementById("unit-2-name-label");
-  // if (rankId === allRankIds.subgenus) {
-  //   unit2NameLabel.textContent = "Subgenus Name: ";
-  // } else {
-  //   unit2NameLabel.textContent = "Specific Epithet: ";
-  // }
-
-  // if (isCultivatedElem.value) {
-  //   div4Display.style.display = "inline-block";
-  //   div5Display.style.display = "inline-block";
-  //   div4Hide.style.display = "block";
-  //   div5Hide.style.display = "block";
-  //   parentNode.insertBefore(authorDiv, div4Hide);
-  // } else {
-  //   div4Hide.style.display = "none";
-  //   div5Hide.style.display = "none";
-  //   document.getElementById("cultivarEpithet").value = null;
-  //   document.getElementById("tradeName").value = null;
-  //   // parentNode.insertBefore(authorDiv, genusDiv); // @TODO maybe insert below unit2 if that exists and other wise below unit1
-  // }
 }
 
 function toggle(target) {

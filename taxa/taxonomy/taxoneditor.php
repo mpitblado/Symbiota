@@ -259,7 +259,7 @@ if($isEditor){
 							</div>
 						</div>
 						<div id="div4hide" class="editDiv">
-							<div id="unit4Display" style="display: <?php echo empty($taxonEditorObj->getCultivarEpithet()) ? 'none' : 'block'; ?>">
+							<div id="unit4Display" style="display: <?php echo (empty($taxonEditorObj->getCultivarEpithet()) && empty($taxonEditorObj->getTradeName()))  ? 'none' : 'block'; ?>">
 								<div class="editLabel"><?php echo $LANG['UNITNAME4']; ?>: </div>
 								<div class="editfield">
 									<?php echo htmlspecialchars($taxonEditorObj->getCultivarEpithet() ?? '', ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);?>
@@ -270,7 +270,7 @@ if($isEditor){
 							</div>
 						</div>
 						<div id="div5hide" class="editDiv">
-							<div id="unit5Display" style="display: <?php echo empty($taxonEditorObj->getTradeName()) ? 'none' : 'block'; ?>">
+							<div id="unit5Display" style="display: <?php echo (empty($taxonEditorObj->getTradeName()) && empty($taxonEditorObj->getCultivarEpithet())) ? 'none' : 'block'; ?>">
 								<div class="editLabel"><?php echo $LANG['UNITNAME5']; ?>: </div>
 								<div class="editfield">
 									<?php echo htmlspecialchars($taxonEditorObj->getTradeName() ?? '', ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE);?>
