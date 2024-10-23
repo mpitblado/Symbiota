@@ -13,6 +13,9 @@ ALTER TABLE `uploadspectemp` ADD COLUMN `tradeName` VARCHAR(50) NULL AFTER culti
 ALTER TABLE `uploadtaxa` ADD COLUMN `cultivarEpithet` VARCHAR(50) NULL AFTER `UnitName3`;
 ALTER TABLE `uploadtaxa` ADD COLUMN `tradeName` VARCHAR(50) NULL AFTER `cultivarEpithet`;
 
-#Rename cultivated to cultivar
+# Rename cultivated to cultivar
 
 update taxonunits set rankname='Cultivar' where rankname='Cultivated';
+
+# Remove Cultivar from taxonunits
+delete from taxonunits where rankname='Cultivar';
