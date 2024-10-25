@@ -495,6 +495,10 @@ class OccurrenceEditorManager {
 					//Used when Modified By comes from custom field search within basic query form
 					$customField = 'u.username';
 				}
+				elseif(in_array($customField,$this->fieldArr['omoccurpaleo'])){
+					//Used for paleo fields
+					$customField = 'p.'.$customField;
+				}
 				else{
 					$customField = 'o.'.$customField;
 				}
@@ -671,7 +675,9 @@ class OccurrenceEditorManager {
 		}
 		elseif($this->sqlWhere){
 			$this->addTableJoins($sqlFrag);
-			$sqlFrag .= 'LEFT JOIN omoccurpaleo p ON p.occid = o.occid ';
+			if (strpos($sqlFrag, 'LEFT JOIN omoccurpaleo') === false) {
+				$sqlFrag .= ' LEFT JOIN omoccurpaleo p ON o.occid = p.occid ';
+			}
 			$sqlFrag .= $this->sqlWhere;
 			if($limit){
 				$this->setSqlOrderBy($sqlFrag);
@@ -768,6 +774,9 @@ class OccurrenceEditorManager {
 		}
 		if($this->crowdSourceMode){
 			$sql .= 'INNER JOIN omcrowdsourcequeue q ON q.occid = o.occid ';
+		}
+		if (strpos($this->sqlWhere, 'p.')) {
+			$sql .= 'LEFT JOIN omoccurpaleo p ON o.occid = p.occid ';
 		}
 	}
 
