@@ -89,7 +89,6 @@ function showOnlyRelevantFields(rankId) {
   const div5Display = document.getElementById("unit5Display");
   const authorDiv = document.getElementById("author-div");
   const parentNode = div5Hide.parentNode;
-  const genusDiv = document.getElementById("genus-div");
 
   rankIdsToHideUnit2From = {
     "non-ranked node": 0,
@@ -169,7 +168,8 @@ function showOnlyRelevantFields(rankId) {
 
   if (Object.values(rankIdsToHideUnit4From).includes(rankId)) {
     document.getElementById("cultivarEpithet").value = null;
-- }
+  }
+
   if (Object.values(rankIdsToHideUnit5From).includes(rankId)) {
     document.getElementById("tradeName").value = null;
   }
