@@ -255,6 +255,7 @@ function parseName(f) {
     }
   }
   if (parentName != "") setParent(parentName, f.unitind1.value);
+  showOnlyRelevantFields(rankId);
   updateFullname(f);
   f.quickparser.value = "";
 }
