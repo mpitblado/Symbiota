@@ -113,7 +113,7 @@ if (isset($_POST['formsubmit'])) {
 		<h1 class="page-heading"><?php echo $LANG['ACTION_REQUEST']; ?></h1>
 		<div id="tabs" style="margin:0px;">
 	        <?php
-	        if($RequestTrackingIsActive!=1){
+	        if($REQUEST_TRACKING_IS_ACTIVE != 1){
                 // request tracking module is not enabled
                 echo "<h2>Action Request management is not enabled in this symbiota instance</h2>";
 	        } elseif($actionrequestid==null){

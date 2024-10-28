@@ -11,6 +11,7 @@ class MediaResolutionTools extends Manager {
 	private $deleteOriginal = false;
 
 	//Image migration variables
+	private $collid;
 	private $collMetaArr;
 	private $transferThumbnail = false;
 	private $transferWeb = false;

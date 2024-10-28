@@ -450,12 +450,12 @@ else{
     <?php
     if($crowdSourceMode == 1){
 		?>
-		<link href="includes/config/occureditorcrowdsource.css?ver=2" type="text/css" rel="stylesheet" id="editorCssLink" />
+		<link href="includes/config/occureditorcrowdsource.css?ver=5" type="text/css" rel="stylesheet" id="editorCssLink" />
 		<?php
     }
     else{
 		?>
-		<link href="<?= $CSS_BASE_PATH ?>/symbiota/collections/editor/occurrenceeditor.css?ver=8" type="text/css" rel="stylesheet" id="editorCssLink" >
+		<link href="<?= $CSS_BASE_PATH ?>/symbiota/collections/editor/occurrenceeditor.css?ver=9" type="text/css" rel="stylesheet" id="editorCssLink" >
 		<?php
 		if(isset($CSSARR)){
 			foreach($CSSARR as $cssVal){
@@ -517,31 +517,46 @@ else{
 	<script src="../../js/jquery.imagetool-1.7.js?ver=140310" type="text/javascript"></script>
 	<script src="../../js/symb/collections.editor.query.js?ver=6" type="text/javascript"></script>
 	<style type="text/css">
-		fieldset{ padding:15px }
 		fieldset > legend{ font-weight:bold; }
-		.fieldGroupDiv{ clear:both; margin-bottom: 1rem; overflow: auto}
-		.fieldDiv{ float:left; margin-right: 1rem;}
-		select{ height: 20px; margin-bottom: 2px; }
+		select{ margin-bottom: 2px; }
 		#identifierDiv img{ width:10px; margin-left: 5px; }
 		#innertext{ background-color: white; margin: 0px 10px; }
+		.fieldGroupDiv {
+			display: flex;
+			align-items: center;
+			gap: 0.75rem;
+			margin-bottom: 1rem;
+			input {
+				margin: 0
+			}
+			a {
+				display: flex;
+			}
+		}
+		.fieldDiv{
+			display: inline;
+		}
 
 		.editimg{ width: 15px; }
-		
+
 		.button-toggle {
-			background-color: transparent; 
-			color: var(--body-text-color); 
+			background-color: transparent;
+			color: var(--body-text-color);
 			border-radius: 5px;
 			border: 2px solid var(--darkest-color);
 
 			&.active {
-				background-color: var(--darkest-color); 
-				color: white; 
+				background-color: var(--darkest-color);
+				color: white;
 			}
 			&:hover {
 				background-color: var(--medium-color);
 				border: 2px solid var(--medium-color);
 				color: var(--light-color);
 			}
+		}
+		#labelProcFieldset{
+			padding:15px;
 		}
 	</style>
 </head>
@@ -1266,7 +1281,7 @@ else{
 											<input type="text" name="substrate" maxlength="500" value="<?php echo array_key_exists('substrate',$occArr)?$occArr['substrate']:''; ?>" onchange="fieldChanged('substrate');" />
 										</div>
 										<?php
-										if(isset($QuickHostEntryIsActive) && $QuickHostEntryIsActive) { // Quick host field
+										if(!empty($QUICK_HOST_ENTRY_IS_ACTIVE)) { // Quick host field
 											$quickHostArr = $occManager->getQuickHost();
 											?>
 											<div id="hostDiv" class="field-div">
@@ -1338,12 +1353,12 @@ else{
 												<?php echo $LANG['REPRODUCTIVE_CONDITION']; ?>
 												<a href="#" onclick="return dwcDoc('reproductiveCondition')" tabindex="-1"><img class="docimg" src="../../images/qmark.png" /></a><br/>
 												<?php
-												if(isset($reproductiveConditionTerms) && $reproductiveConditionTerms){
+												if(!empty($REPRODUCTIVE_CONDITION_TERMS)){
 													?>
 													<select name="reproductivecondition" onchange="fieldChanged('reproductivecondition');">
 														<option value="">-----------------</option>
 														<?php
-														foreach($reproductiveConditionTerms as $term){
+														foreach($REPRODUCTIVE_CONDITION_TERMS as $term){
 															echo '<option value="'.$term.'" '.(isset($occArr['reproductivecondition']) && $term==$occArr['reproductivecondition']?'SELECTED':'').'>'.$term.'</option>';
 														}
 														?>
@@ -1370,10 +1385,12 @@ else{
 												<a href="#" onclick="return dwcDoc('establishmentMeans')" tabindex="-1"><img class="docimg" src="../../images/qmark.png" /></a><br/>
 												<input type="text" name="establishmentmeans" maxlength="32" value="<?php echo array_key_exists('establishmentmeans',$occArr)?$occArr['establishmentmeans']:''; ?>" onchange="fieldChanged('establishmentmeans');" />
 											</div>
+											<div>
 											<div id="cultivationStatusDiv" class="field-div">
 												<?php $hasValue = array_key_exists("cultivationstatus",$occArr)&&$occArr["cultivationstatus"]?1:0; ?>
 												<input type="checkbox" name="cultivationstatus" value="1" <?php echo $hasValue?'CHECKED':''; ?> onchange="fieldChanged('cultivationstatus');" />
 												<?php echo $LANG['CULTIVATION_STATUS']; ?>
+											</div>
 											</div>
 										</div>
 									</fieldset>

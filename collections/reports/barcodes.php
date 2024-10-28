@@ -5,7 +5,7 @@ if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/repo
 else include_once($SERVER_ROOT.'/content/lang/collections/reports/barcodes.en.php');
 header("Content-Type: text/html; charset=".$CHARSET);
 
-$collid = filter($_POST['collid'], FILTER_SANITIZE_NUMBER_INT);
+$collid = filter_var($_POST['collid'], FILTER_SANITIZE_NUMBER_INT);
 $action = array_key_exists('submitaction',$_POST)?$_POST['submitaction']:'';
 
 $labelManager = new OccurrenceLabel();
