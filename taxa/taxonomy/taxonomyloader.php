@@ -133,7 +133,7 @@ if($isEditor){
 					<div style="clear:both;" id="genus-div">
 						<div class="left-column">
 							<label id="unitind1label" for="unitind1">
-								<?php echo $LANG['GENUS_NAME']; ?>:
+								<?php echo $LANG['GENUS_NAME'] . ': '; ?>:
 							</label>
 						</div>
 						<select id="unitind1" name="unitind1" onchange="updateFullname(this.form)">
