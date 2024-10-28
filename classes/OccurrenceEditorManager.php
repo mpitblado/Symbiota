@@ -2003,18 +2003,18 @@ class OccurrenceEditorManager {
 				}
 
 				$sqlWhere = 'WHERE occid IN('.implode(',',$occidArr).')';
-				//Add edits to the omoccuredit table
-				$sql = 'INSERT INTO omoccuredits(occid,fieldName,fieldValueOld,fieldValueNew,appliedStatus,uid,editType) '.
-					'SELECT occid, "'.$fn.'" AS fieldName, IFNULL('.$fn.',"") AS oldValue, IFNULL('.$nvSqlFrag.',"") AS newValue, '.
-					'1 AS appliedStatus, '.$GLOBALS['SYMB_UID'].' AS uid, 1 FROM omoccurrences '.$sqlWhere;
-				if(!$this->conn->query($sql)){
-					$statusStr = $LANG['ERROR_ADDING_UPDATE'].': '.$this->conn->error;
-				}
-				//Apply edits to core tables
-				if(isset($this->collMap['paleoActivated']) && array_key_exists($fn, $this->fieldArr['omoccurpaleo'])){
+				if(in_array($fn, $this->fieldArr['omoccurpaleo'])){
 					$sql = 'UPDATE omoccurpaleo SET '.$fn.' = '.$nvSqlFrag.' '.$sqlWhere;
 				}
-				else{
+				else {
+					//Add edits to the omoccuredit table
+					$sql = 'INSERT INTO omoccuredits(occid,fieldName,fieldValueOld,fieldValueNew,appliedStatus,uid,editType) '.
+						'SELECT occid, "'.$fn.'" AS fieldName, IFNULL('.$fn.',"") AS oldValue, IFNULL('.$nvSqlFrag.',"") AS newValue, '.
+						'1 AS appliedStatus, '.$GLOBALS['SYMB_UID'].' AS uid, 1 FROM omoccurrences '.$sqlWhere;
+					if(!$this->conn->query($sql)){
+						$statusStr = $LANG['ERROR_ADDING_UPDATE'].': '.$this->conn->error;
+					}
+					//Apply edits to core tables
 					$sql = 'UPDATE omoccurrences SET '.$fn.' = '.$nvSqlFrag.' '.$sqlWhere;
 				}
 				if(!$this->conn->query($sql)){
@@ -2050,11 +2050,17 @@ class OccurrenceEditorManager {
 		$sql = $this->sqlWhere;
 
 		if(!$buMatch || $ov===''){
-			$sql .= ' AND (o.'.$fn.' '.($ov===''?'IS NULL':'= "'.$ov.'"').') ';
+			if (in_array($fn, $this->fieldArr['omoccurpaleo']))
+				$sql .= ' AND (p.'.$fn.' '.($ov===''?'IS NULL':'= "'.$ov.'"').') ';
+			else
+				$sql .= ' AND (o.'.$fn.' '.($ov===''?'IS NULL':'= "'.$ov.'"').') ';
 		}
 		else{
 			//Selected "Match any part of field"
-			$sql .= ' AND (o.'.$fn.' LIKE "%'.$ov.'%") ';
+			if (in_array($fn, $this->fieldArr['omoccurpaleo']))
+			$sql .= ' AND (p.'.$fn.' LIKE "%'.$ov.'%") ';
+			else
+				$sql .= ' AND (o.'.$fn.' LIKE "%'.$ov.'%") ';
 		}
 		return $sql;
 	}
