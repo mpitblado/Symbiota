@@ -151,7 +151,7 @@ if(isset($_REQUEST['llpoint'])) {
 <html lang="<?php echo $LANG_TAG ?>">
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title><?php echo $DEFAULT_TITLE; ?> - Map Interface</title>
+		<title><?php echo DEFAULT_TITLE; ?> - <?= $LANG['MAP_INTERFACE'] ?></title>
 		<?php
 		include_once($SERVER_ROOT.'/includes/head.php');
 		?>
