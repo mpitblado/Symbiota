@@ -201,15 +201,6 @@ if($isEditor){
 								</select>
 							</div>
 						</div>
-						<div id="cultivated-div" class="editDiv">
-							<label style="font-weight: bold;" for="is-cultivated">
-								Has cultivar epithet or tradename? <span id="is-cultivated-status-display" style="font-weight: normal;"><?php echo ($taxonEditorObj->getCultivarEpithet() || $taxonEditorObj->getTradeName()) ? 'Yes' : 'No' ?></span>
-							</label>
-							<!-- <?php echo (!empty($taxonEditorObj->getCultivarEpithet()) || !empty($taxonEditorObj->getTradeName())) ? 'true' : 'false'; ?> -->
-							<input class="bottom-breathing-room-rel" style="display: none;" id="is-cultivated" type="checkbox" 
-								<?php echo (!empty($taxonEditorObj->getCultivarEpithet()) || !empty($taxonEditorObj->getTradeName())) ? 'checked' : '' ?>
-							/>
-						</div>
 						<div class="editDiv" id="genus-div">
 							<div class="editLabel">
 								<!-- <?php echo $LANG['UNITNAME1']; ?>:  -->
