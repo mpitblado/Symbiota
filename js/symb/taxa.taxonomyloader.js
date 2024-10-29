@@ -60,24 +60,23 @@ $(document).ready(function () {
 });
 
 async function handleFieldChange(form, silent = false) {
-  console.log("deleteMe got here and form is: ");
-  console.log(form);
+  // console.log("deleteMe got here and form is: ");
+  // console.log(form);
   const submitButton = document.getElementById("submitaction");
   submitButton.disabled = true;
   submitButton.textContent = "Checking for existing entry...";
   const isOk = await verifyLoadForm(form, silent);
   // const isOk = await checkNameExistence(form, true);
-  console.log("deleteMe isOk is: ");
-  console.log(isOk);
+  // console.log("deleteMe isOk is: ");
+  // console.log(isOk);
   if (!isOk) {
-    submitButton.textContent = "Button Disabled";
+    submitButton.textContent = "Duplicate Detected - Button Disabled";
     submitButton.disabled = true;
   } else {
     submitButton.textContent = "Submit New Name";
     submitButton.disabled = false;
   }
   // console.log(`Field ${event.target.name} changed to: ${event.target.value}`);
-  // Additional logic for handling the change can go here
 }
 
 function debounce(func, delay) {
@@ -91,8 +90,6 @@ function debounce(func, delay) {
 
 async function verifyLoadForm(f, silent = false) {
   const isUniqueEntry = await checkNameExistence(f, silent);
-  console.log("deleteMe isUniqueEntry is: ");
-  console.log(isUniqueEntry);
 
   if (!isUniqueEntry) {
     return false;
@@ -380,6 +377,7 @@ function updateFullname(f) {
 }
 
 function checkNameExistence(f, silent = false) {
+  console.log("deleteMe checkNameExistence called");
   return new Promise((resolve, reject) => {
     if (!f?.sciname?.value || !f?.rankid?.value) {
       resolve(false);
@@ -428,6 +426,10 @@ function acceptanceChanged(f) {
 
 // listener for taxon rank
 function showOnlyRelevantFields(rankId) {
+  console.log("deleteMe showOnlyRelevantFields called");
+  const currentCultivarEpithet =
+    document.getElementById("cultivarEpithet").value;
+  const currentTradeName = document.getElementById("tradeName").value;
   const label = document.getElementById("unitind1label");
   const unitind1Select = document.getElementById("unitind1");
   const div2Hide = document.getElementById("div2hide");
@@ -515,11 +517,19 @@ function showOnlyRelevantFields(rankId) {
     document.getElementById("unitind3").value = null;
     document.getElementById("unitname3").value = null;
   }
+  // console.log("deleteMe rankId is: " + rankId);
+  // console.log("deleteMe rankIdsToHideUnit4From is: ");
+  // console.log(rankIdsToHideUnit4From);
 
   if (Object.values(rankIdsToHideUnit4From).includes(rankId)) {
+    // console.log('deleteMe document.getElementById("cultivarEpithet") is: ');
+    // console.log(document.getElementById("cultivarEpithet").value);
+    // console.log(typeof document.getElementById("cultivarEpithet").value);
+    removeFromSciName(standardizeCultivarEpithet(currentCultivarEpithet));
     document.getElementById("cultivarEpithet").value = null;
   }
   if (Object.values(rankIdsToHideUnit5From).includes(rankId)) {
+    removeFromSciName(standardizeTradeName(currentTradeName));
     document.getElementById("tradeName").value = null;
   }
 
@@ -537,3 +547,33 @@ function showOnlyRelevantFields(rankId) {
     // parentNode.insertBefore(authorDiv, genusDiv); // @TODO maybe insert below unit2 if that exists and other wise below unit1
   }
 }
+
+function removeFromSciName(targetForRemoval) {
+  console.log("deleteMe targetForRemoval is: ");
+  console.log(targetForRemoval);
+  const oldValue = document.getElementById("sciname").value;
+  console.log("deleteMe oldValue is: ");
+  console.log(oldValue);
+  const newValue = oldValue
+    .replace(targetForRemoval, "")
+    .replace("  ", " ")
+    .trim();
+  console.log("deleteMe newValue is: ");
+  console.log(newValue);
+  document.getElementById("sciname").value = newValue;
+  document.getElementById("scinamedisplay").textContent = newValue;
+}
+
+// function removeCultivarEpithetFromSciname(targetCultivarEpithet) {
+//   const oldValue = document.getElementById("sciname").value;
+//   const newValue = oldValue.replace(targetCultivarEpithet, "").trim();
+//   document.getElementById("sciname").value = newValue;
+//   document.getElementById("scinamedisplay").value = newValue;
+// }
+
+// function removeTradeNameFromSciname(targetTradeName) {
+//   const oldValue = document.getElementById("sciname").value;
+//   const newValue = oldValue.replace(targetTradeName, "").trim();
+//   document.getElementById("sciname").value = newValue;
+//   document.getElementById("scinamedisplay").value = newValue;
+// }
