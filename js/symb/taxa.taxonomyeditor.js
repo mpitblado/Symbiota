@@ -1,7 +1,13 @@
 $(document).ready(function () {
   const currentRankId = Number(document.getElementById("rankid").value);
-  console.log("deleteMe currentRankId is: " + currentRankId);
   showOnlyRelevantFields(currentRankId);
+
+  const form = document.getElementById("taxoneditform");
+  form.querySelectorAll("input, select, textarea").forEach((element) => {
+    const debouncedChange = debounce(() => handleFieldChange(form, true), 2000);
+    element.addEventListener("input", debouncedChange);
+    element.addEventListener("change", debouncedChange);
+  });
 
   $("#tabs").tabs({ active: tabIndex });
 
@@ -79,6 +85,9 @@ function toggleEditFields() {
 }
 
 function showOnlyRelevantFields(rankId) {
+  const currentCultivarEpithet =
+    document.getElementById("cultivarEpithet").value;
+  const currentTradeName = document.getElementById("tradeName").value;
   const label = document.getElementById("unitind1label");
   const unitind1Select = document.getElementById("unitind1-select");
   const div2Hide = document.getElementById("div2hide");
@@ -167,10 +176,12 @@ function showOnlyRelevantFields(rankId) {
   }
 
   if (Object.values(rankIdsToHideUnit4From).includes(rankId)) {
+    removeFromSciName(standardizeCultivarEpithet(currentCultivarEpithet));
     document.getElementById("cultivarEpithet").value = null;
   }
 
   if (Object.values(rankIdsToHideUnit5From).includes(rankId)) {
+    removeFromSciName(standardizeTradeName(currentTradeName));
     document.getElementById("tradeName").value = null;
   }
 
@@ -194,6 +205,43 @@ function showOnlyRelevantFields(rankId) {
     document.getElementById("tradeName").value = null;
     // parentNode.insertBefore(authorDiv, genusDiv); // @TODO maybe insert below unit2 if that exists and other wise below unit1
   }
+}
+
+function removeFromSciName(targetForRemoval) {
+  console.log("deleteMe targetForRemoval is: ");
+  console.log(targetForRemoval);
+  const oldValue = document.getElementById("sciname").value;
+  console.log("deleteMe oldValue is: ");
+  console.log(oldValue);
+  const newValue = oldValue
+    .replace(targetForRemoval, "")
+    .replace("  ", " ")
+    .trim();
+  console.log("deleteMe newValue is: ");
+  console.log(newValue);
+  document.getElementById("sciname").value = newValue;
+  // document.getElementById("scinamedisplay").textContent = newValue;
+}
+
+function updateFullname(f) {
+  let sciname =
+    f.unitind1.value +
+    f.unitname1.value +
+    " " +
+    f.unitind2.value +
+    f.unitname2.value +
+    " ";
+  if (f.unitname3.value) {
+    sciname = sciname + (f.unitind3.value + " " + f.unitname3.value).trim();
+  }
+  if (f.cultivarEpithet.value) {
+    sciname += " " + standardizeCultivarEpithet(f.cultivarEpithet.value);
+  }
+  if (f.tradeName.value) {
+    sciname += " " + standardizeTradeName(f.tradeName.value);
+  }
+  f.sciname.value = sciname.trim();
+  checkNameExistence(f);
 }
 
 function toggle(target) {
@@ -244,31 +292,149 @@ function validateTaxonEditForm(f) {
   return true;
 }
 
-function checkNameExistence(f) {
-  $.ajax({
-    type: "POST",
-    url: "rpc/gettid.php",
-    async: false,
-    data: {
-      sciname: f.sciname.value,
-      rankid: f.rankid.value,
-      author: f.author.value,
-    },
-  }).done(function (msg) {
-    if (msg != "0") {
-      alert(
-        "Taxon " +
-          f.sciname.value +
-          " " +
-          f.author.value +
-          " (" +
-          msg +
-          ") already exists in database"
-      );
-      return false;
+async function handleFieldChange(form, silent = false) {
+  updateFullname(form);
+  console.log("deleteMe a1 handleFieldChange called");
+  const submitButton = document.getElementById("taxoneditsubmit");
+  submitButton.disabled = true;
+  submitButton.textContent = "Checking for existing entry...";
+  const isOk = await verifyLoadForm(form, silent);
+  if (!isOk) {
+    submitButton.textContent = "Duplicate Detected - Button Disabled";
+    submitButton.disabled = true;
+  } else {
+    submitButton.textContent = "Submit Edits";
+    submitButton.disabled = false;
+  }
+}
+
+async function verifyLoadForm(f, silent = false) {
+  console.log("deleteMe verifyLoadForm called. F is: ");
+  console.log(f);
+  const isUniqueEntry = await checkNameExistence(f, silent);
+  console.log("deleteMe isUniqueEntry is: ");
+  console.log(isUniqueEntry);
+
+  if (!isUniqueEntry) {
+    return false;
+  }
+  // if (f.sciname.value == "") {
+  //   alert("Scientific Name field required.");
+  //   return false;
+  // }
+  if (f.unitname1.value == "") {
+    alert("Unit Name 1 (genus or uninomial) field required.");
+    return false;
+  }
+  var rankId = f.rankid.value;
+  if (rankId == "") {
+    alert("Taxon rank field required.");
+    return false;
+  }
+  // if (f.parentname.value == "" && rankId > "10") {
+  //   alert("Parent taxon required");
+  //   return false;
+  // }
+  // if (f.parenttid.value == "" && rankId > "10") {
+  //   alert(
+  //     "Parent identifier is not set! Make sure to select parent taxon from the list"
+  //   );
+  //   return false;
+  // }
+
+  //If name is not accepted, verify accetped name
+  // var accStatusObj = f.acceptstatus;
+  // if (accStatusOb=j[0].checked == false) {
+  //   if (f.acceptedstr.value == "") {
+  //     alert("Accepted name needs to have a value");
+  //     return false;
+  //   }
+  // }
+
+  return true;
+}
+
+function debounce(func, delay) {
+  // thanks for the idea, chatGtp!
+  let timeout;
+  return function (...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), delay);
+  };
+}
+
+function checkNameExistence(f, silent = false) {
+  console.log("deleteMe checkNameExistence called");
+  console.log("deleteMe f.sciname.value is: ");
+  console.log(f.sciname.value);
+  console.log("deleteMe f.rankid.value is: ");
+  console.log(f.rankid.value);
+  console.log("deleteMe f.author.value is: ");
+  console.log(f.author.value);
+  return new Promise((resolve, reject) => {
+    if (!f?.sciname?.value || !f?.rankid?.value) {
+      resolve(false);
+    } else {
+      $.ajax({
+        type: "POST",
+        url: "rpc/gettid.php",
+        data: {
+          sciname: f.sciname.value,
+          rankid: f.rankid.value,
+          author: f.author.value,
+        },
+        success: function (msg) {
+          if (msg != "0") {
+            if (!silent) {
+              alert(
+                "Taxon " +
+                  f.sciname.value +
+                  " " +
+                  f.author.value +
+                  " (" +
+                  msg +
+                  ") already exists in database"
+              );
+            }
+            resolve(false);
+          } else {
+            resolve(true);
+          }
+        },
+        error: function (error) {
+          console.error("Error during AJAX request", error);
+          reject(error);
+        },
+      });
     }
   });
 }
+
+// function checkNameExistence(f) {
+//   $.ajax({
+//     type: "POST",
+//     url: "rpc/gettid.php",
+//     async: false,
+//     data: {
+//       sciname: f.sciname.value,
+//       rankid: f.rankid.value,
+//       author: f.author.value,
+//     },
+//   }).done(function (msg) {
+//     if (msg != "0") {
+//       alert(
+//         "Taxon " +
+//           f.sciname.value +
+//           " " +
+//           f.author.value +
+//           " (" +
+//           msg +
+//           ") already exists in database"
+//       );
+//       return false;
+//     }
+//   });
+// }
 
 function verifyChangeToNotAcceptedForm(f) {
   if (f.acceptedstr.value == "") {
@@ -311,4 +477,24 @@ function submitTaxStatusForm(f) {
       f.submit();
     }
   });
+}
+
+function standardizeCultivarEpithet(unstandardizedCultivarEpithet) {
+  if (unstandardizedCultivarEpithet) {
+    const cleanString = unstandardizedCultivarEpithet.replace(
+      "/(^[\"'“]+)|([\"'”]+$)/",
+      ""
+    );
+    return "'" + cleanString + "'";
+  } else {
+    return "";
+  }
+}
+
+function standardizeTradeName(unstandardizedTradeName) {
+  if (unstandardizedTradeName) {
+    return unstandardizedTradeName.toUpperCase();
+  } else {
+    return "";
+  }
 }

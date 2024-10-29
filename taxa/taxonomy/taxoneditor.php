@@ -181,6 +181,7 @@ if($isEditor){
 						<img style='width:1.3em;border:0px;' src='../../images/edit.png'/>
 					</div>
 					<form id="taxoneditform" name="taxoneditform" action="taxoneditor.php" method="post" onsubmit="return validateTaxonEditForm(this)">
+						<input type="hidden" id="sciname" name="sciname" class="search-bar-long" value="" />
 						<div class="editDiv">
 							<div class="editLabel"><?php echo (isset($LANG['RANK_NAME'])?$LANG['RANK_NAME']:'Rank Name'); ?>: </div>
 							<div class="editfield">
