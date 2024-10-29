@@ -2,6 +2,13 @@ $(document).ready(function () {
   const currentRankId = Number(document.getElementById("rankid").value);
   showOnlyRelevantFields(currentRankId);
 
+  const form = document.getElementById("loaderform");
+  form.querySelectorAll("input, select, textarea").forEach((element) => {
+    const debouncedChange = debounce(() => handleFieldChange(form), 2000);
+    element.addEventListener("input", debouncedChange);
+    element.addEventListener("change", debouncedChange);
+  });
+
   $("#acceptedstr").autocomplete({
     source: "rpc/getacceptedsuggest.php",
     focus: function (event, ui) {
@@ -52,7 +59,44 @@ $(document).ready(function () {
   });
 });
 
-function verifyLoadForm(f) {
+async function handleFieldChange(form) {
+  console.log("deleteMe got here and form is: ");
+  console.log(form);
+  const submitButton = document.getElementById("submitaction");
+  submitButton.disabled = true;
+  submitButton.textContent = "Checking for existing entry...";
+  const isOk = await verifyLoadForm(form, true);
+  // const isOk = await checkNameExistence(form, true);
+  console.log("deleteMe isOk is: ");
+  console.log(isOk);
+  if (!isOk) {
+    submitButton.textContent = "Button Disabled";
+    submitButton.disabled = true;
+  } else {
+    submitButton.textContent = "Submit New Name";
+    submitButton.disabled = false;
+  }
+  // console.log(`Field ${event.target.name} changed to: ${event.target.value}`);
+  // Additional logic for handling the change can go here
+}
+
+function debounce(func, delay) {
+  // thanks for the idea, chatGtp!
+  let timeout;
+  return function (...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), delay);
+  };
+}
+
+async function verifyLoadForm(f, silent = false) {
+  const isUniqueEntry = await checkNameExistence(f, slient);
+  console.log("deleteMe isUniqueEntry is: ");
+  console.log(isUniqueEntry);
+
+  if (!isUniqueEntry) {
+    return false;
+  }
   // if (f.sciname.value == "") {
   //   alert("Scientific Name field required.");
   //   return false;
@@ -334,28 +378,90 @@ function updateFullname(f) {
   checkNameExistence(f);
 }
 
-function checkNameExistence(f) {
-  $.ajax({
-    type: "POST",
-    url: "rpc/gettid.php",
-    async: false,
-    data: {
-      sciname: f.sciname.value,
-      rankid: f.rankid.value,
-      author: f.author.value,
-    },
-  }).done(function (msg) {
-    if (msg != "0") {
-      alert(
-        "Taxon " +
-          f.sciname.value +
-          " " +
-          f.author.value +
-          " (" +
-          msg +
-          ") already exists in database"
-      );
-      return false;
+// function checkNameExistence(f) {
+//   if (!f?.sciname?.value || !f?.rankid?.value || !f?.author?.value) {
+//     return false;
+//   } else {
+//     $.ajax({
+//       type: "POST",
+//       url: "rpc/gettid.php",
+//       async: false,
+//       data: {
+//         sciname: f.sciname.value,
+//         rankid: f.rankid.value,
+//         author: f.author.value,
+//       },
+//     }).done(function (msg) {
+//       console.log("deleteMe msg is: ");
+//       console.log(msg);
+//       if (msg != "0") {
+//         alert(
+//           "Taxon " +
+//             f.sciname.value +
+//             " " +
+//             f.author.value +
+//             " (" +
+//             msg +
+//             ") already exists in database"
+//         );
+//         return false;
+//       } else {
+//         console.log("deleteMe got here");
+//         return true;
+//       }
+//     });
+//   }
+// }
+
+function checkNameExistence(f, silent = false) {
+  console.log("deleteMe f is: ");
+  console.log(f);
+  return new Promise((resolve, reject) => {
+    console.log("deleteMe f?.sciname?.value is: ");
+    console.log(f?.sciname?.value);
+    console.log("deleteMe f?.rankid?.value is: ");
+    console.log(f?.rankid?.value);
+    console.log("deleteMe f?.author?.value is: ");
+    console.log(f?.author?.value);
+    if (!f?.sciname?.value || !f?.rankid?.value) {
+      console.log("deleteMe got here 1");
+      resolve(false);
+    } else {
+      console.log("deleteMe got here 2");
+      $.ajax({
+        type: "POST",
+        url: "rpc/gettid.php",
+        data: {
+          sciname: f.sciname.value,
+          rankid: f.rankid.value,
+          author: f.author.value,
+        },
+        success: function (msg) {
+          console.log("deleteMe msg is: ");
+          console.log(msg);
+          if (msg != "0") {
+            if (!silent) {
+              alert(
+                "Taxon " +
+                  f.sciname.value +
+                  " " +
+                  f.author.value +
+                  " (" +
+                  msg +
+                  ") already exists in database"
+              );
+            }
+            resolve(false);
+          } else {
+            console.log("deleteMe got here 3");
+            resolve(true);
+          }
+        },
+        error: function (error) {
+          console.error("Error during AJAX request", error);
+          reject(error);
+        },
+      });
     }
   });
 }

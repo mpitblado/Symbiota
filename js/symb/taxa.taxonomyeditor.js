@@ -234,11 +234,40 @@ function toggle(target) {
 }
 
 function validateTaxonEditForm(f) {
+  if (!checkNameExistence(f)) {
+    return false;
+  }
   if (f.unitname1.value.trim() == "") {
     alert("Unitname 1 field must have a value");
     return false;
   }
   return true;
+}
+
+function checkNameExistence(f) {
+  $.ajax({
+    type: "POST",
+    url: "rpc/gettid.php",
+    async: false,
+    data: {
+      sciname: f.sciname.value,
+      rankid: f.rankid.value,
+      author: f.author.value,
+    },
+  }).done(function (msg) {
+    if (msg != "0") {
+      alert(
+        "Taxon " +
+          f.sciname.value +
+          " " +
+          f.author.value +
+          " (" +
+          msg +
+          ") already exists in database"
+      );
+      return false;
+    }
+  });
 }
 
 function verifyChangeToNotAcceptedForm(f) {

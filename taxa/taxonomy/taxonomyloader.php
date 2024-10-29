@@ -256,7 +256,7 @@ if($isEditor){
 						</fieldset>
 					</div>
 					<div class="top-breathing-room-rel">
-						<button type="submit" name="submitaction" value="submitNewName" ><?php echo $LANG['SUBMIT_NEW_NAME']; ?></button>
+						<button type="submit" id="submitaction" name="submitaction" value="submitNewName" ><?php echo $LANG['SUBMIT_NEW_NAME']; ?></button>
 					</div>
 				</fieldset>
 			</form>
