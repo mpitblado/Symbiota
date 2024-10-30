@@ -121,7 +121,7 @@ if($isEditor){
 						</select>
 						<script src="../../js/symb/taxa.taxonomyloader.js"> </script>
 					</div>
-					<div id="author-div">
+					<div id="author-div" style="clear: both;">
 						<div class="left-column">
 							<label for="author">
 								<?php echo $LANG['AUTHOR']; ?>:
