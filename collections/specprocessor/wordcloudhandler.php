@@ -1,8 +1,8 @@
 <?php
 include_once('../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/WordCloud.php');
-if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/specprocessor/specprocessor_tools.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/collections/specprocessor/specprocessor_tools.'.$LANG_TAG.'.php');
-else include_once($SERVER_ROOT.'/content/lang/collections/specprocessor/specprocessor_tools.en.php');
+if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/specprocessor/specprocessor_tools.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT.'/content/lang/collections/specprocessor/specprocessor_tools.' . $LANG_TAG . '.php');
+else include_once($SERVER_ROOT . '/content/lang/collections/specprocessor/specprocessor_tools.en.php');
 
 header("Content-Type: text/html; charset=".$CHARSET);
 
@@ -14,7 +14,7 @@ $csMode = array_key_exists('csmode',$_REQUEST)?$_REQUEST['csmode']:false;
 <html lang="<?php echo $LANG_TAG ?>">
 	<head>
 	    <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $CHARSET;?>">
-		<title><?php echo $DEFAULT_TITLE; ?> - Word Cloud Handler Collections</title>
+		<title><?php echo $DEFAULT_TITLE . ' - ' . $LANG['WORD_CLOUD_HANDLER'] ?></title>
 		<?php
 
 		include_once($SERVER_ROOT.'/includes/head.php');
@@ -39,7 +39,7 @@ $csMode = array_key_exists('csmode',$_REQUEST)?$_REQUEST['csmode']:false;
 					echo '<div class="url-div"><a href="' . htmlspecialchars($url, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE) . '" target="_blank">' . htmlspecialchars($url, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE).'</a></div>';
 				}
 			}
-			else echo '<div>No collid target submitted</div>';
+			else echo '<div>' . $LANG['NO_COLLID'] . '</div>';
 			?>
 		</div>
 	</body>

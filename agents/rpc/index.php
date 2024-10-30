@@ -1,7 +1,7 @@
 <?php
 include_once('../../config/symbini.php');
-if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/agents/rpc/index.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT.'/content/lang/agents/rpc/index.' . $LANG_TAG . '.php');
-else include_once($SERVER_ROOT . '/content/lang/agents/rpc/index.en.php');
+if($LANG_TAG != 'en' && file_exists($SERVER_ROOT . '/content/lang/prohibit.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT.'/content/lang/prohibit.' . $LANG_TAG . '.php');
+else include_once($SERVER_ROOT . '/content/lang/prohibit.en.php');
 
 header("Content-Type: text/html; charset=".$CHARSET);
 header("Location: ".$CLIENT_ROOT."/index.php");
@@ -23,10 +23,10 @@ header("Location: ".$CLIENT_ROOT."/index.php");
 		<div role="main" id="innertext">
 			<h1 class="page-heading"><?php echo $LANG['FORBIDDEN']; ?></h1>
 			<div style="font-weight:bold;">
-				You don't have permission to access this page.
+				<?php echo $LANG['NO_PERMISSION']; ?>
 			</div>
 			<div style="font-weight:bold;margin:10px;">
-				<a href="<?php echo htmlspecialchars($CLIENT_ROOT, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>/index.php">Return to index page</a>
+				<a href="<?php echo htmlspecialchars($CLIENT_ROOT, ENT_COMPAT | ENT_HTML401 | ENT_SUBSTITUTE); ?>/index.php"><?php echo $LANG['RETURN']; ?></a>
 			</div>
 		</div>
 		<?php

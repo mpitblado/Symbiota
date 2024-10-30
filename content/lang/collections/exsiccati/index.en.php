@@ -83,3 +83,4 @@ $LANG['TARGET_EXS_NUM'] = 'Target Exsiccata Number';
 $LANG['TRANSFER_SPEC'] = 'Transfer Specimen';
 $LANG['NO_SPECS_WITH_EX_NUM'] = 'There are no specimens linked to this exsiccata number';
 
+?>

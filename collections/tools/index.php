@@ -9,7 +9,7 @@ header('Location: '.$CLIENT_ROOT.'/index.php');
 <!DOCTYPE html>
 <html lang="<?php echo $LANG_TAG ?>">
 	<head>
-		<title>Forbidden</title>
+		<title><?php echo $LANG['FORBIDDEN']; ?></title>
 		<?php
 		include_once($SERVER_ROOT.'/includes/head.php');
 		?>
@@ -23,10 +23,10 @@ header('Location: '.$CLIENT_ROOT.'/index.php');
 		<div role="main" id="innertext">
 			<h1 class="page-heading"><?php echo $LANG['FORBIDDEN']; ?></h1>
 			<div style="font-weight:bold;">
-				You don't have permission to access this page.
+				<?php echo $LANG['NO_PERMISSION']; ?>
 			</div>
 			<div style="font-weight:bold;margin:10px;">
-				<a href="<?php echo $CLIENT_ROOT; ?>/index.php">Return to index page</a>
+				<a href="<?php echo $CLIENT_ROOT; ?>/index.php"><?php echo $LANG['RETURN']; ?></a>
 			</div>
 		</div>
 		<?php

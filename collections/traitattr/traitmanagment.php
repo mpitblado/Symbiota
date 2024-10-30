@@ -1,8 +1,6 @@
 <?php
 include_once('../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceAttributes.php');
-if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/traitattr/traitmanagment.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/collections/traitattr/traitmanagment.'.$LANG_TAG.'.php');
-else include_once($SERVER_ROOT.'/content/lang/collections/traitattr/traitmanagment.en.php');
 header("Content-Type: text/html; charset=".$CHARSET);
 
 if(!$SYMB_UID) header('Location: '.$CLIENT_ROOT.'/profile/index.php?refurl=../collections/editor/extras/attributemining.php?'.htmlspecialchars($_SERVER['QUERY_STRING'], ENT_QUOTES));
@@ -75,7 +73,7 @@ if($isEditor){
 		?>
 		<!-- This is inner text! -->
 		<div role="main" id="innertext">
-			<h1 class="page-heading screen-reader-only"><?php echo $LANG['TRAIT_MANAGEMENT_TOOLS']; ?></h1>
+			<h1 class="page-heading screen-reader-only">Trait Management Tools</h1>
 		</div>
 	</body>
 </html>

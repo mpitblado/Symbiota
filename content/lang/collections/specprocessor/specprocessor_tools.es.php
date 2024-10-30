@@ -224,11 +224,8 @@ $LANG['LOAD_OCR_FILES'] = 'Cargar archivos OCR';
 //processor.php
 $LANG['SPEC_PROCESSOR_CONTROL_PANEL'] = 'Panel de Control del Procesador de Muestras';
 
-//reports.php
-
-$LANG['REPORTS'] = 'Informes';
-
 //wordcloudhandler.php
 $LANG['WORD_CLOUD_HANDLER'] = 'Manejador de Nube de Palabras';
+$LANG['NO_COLLID'] = 'No se envió ninguna collid de destino';
 
 ?>

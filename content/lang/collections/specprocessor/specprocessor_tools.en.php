@@ -223,10 +223,8 @@ $LANG['LOAD_OCR_FILES'] = 'Load OCR Files';
 //processor.php
 $LANG['SPEC_PROCESSOR_CONTROL_PANEL'] = 'Specimen Processor Control Panel';
 
-//reports.php
-$LANG['REPORTS'] = 'Reports';
-
 //wordcloudhandler.php
 $LANG['WORD_CLOUD_HANDLER'] = 'Word Cloud Handler';
+$LANG['NO_COLLID'] = 'No collid target submitted';
 
 ?>
