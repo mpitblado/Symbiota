@@ -49,7 +49,7 @@ if($SYMB_UID){
 						$labelCnt++;
 					}
 				}
-				if(!$labelCnt) echo '<div style="font-weight:bold;text-size: 120%">No records were retrieved. Perhaps the quantity values were all set to 0?</div>';
+				if(!$labelCnt) echo '<div style="font-weight:bold;text-size: 120%">' . $LANG['NO_RECORDS_RETRIEVED'] . '</div>';
 			}
 			?>
 		</div>

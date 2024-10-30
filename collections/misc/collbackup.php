@@ -41,7 +41,7 @@ elseif($collid && isset($USER_RIGHTS['CollAdmin']) && in_array($collid, $USER_RI
 </head>
 <body>
 	<div role="main" id="innertext">
-		<h1 class="page-heading"><?php echo $LANG['DOWNLOADING']; ?></h1>
+		<h1 class="page-heading screen-reader-only"><?php echo $LANG['DOWNLOAD_MODULE']; ?></h1>
 		<?php
 		if($isEditor){
 			?>

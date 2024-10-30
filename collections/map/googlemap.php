@@ -330,7 +330,7 @@ if(array_key_exists('taxa', $taxaArr)){
 	</script>
 </head>
 <body style="width:100%; min-width: 900px" onload="initialize();">
-	<h1 class="page-heading"><?php echo $LANG['GOOGLE_MAP']; ?></h1>
+	<h1 class="page-heading screen-reader-only"><?php echo $LANG['GOOGLE_MAP']; ?></h1>
 	<?php
 	if(!$coordArr){
 		?>

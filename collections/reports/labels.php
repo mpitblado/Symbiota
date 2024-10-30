@@ -1,8 +1,8 @@
 <?php
 include_once('../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/OccurrenceLabel.php');
-if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/reports/labels.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/collections/reports/labels.'.$LANG_TAG.'.php');
-else include_once($SERVER_ROOT.'/content/lang/collections/reports/labels.en.php');
+if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/reports/labels.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT.'/content/lang/collections/reports/labels.' . $LANG_TAG . '.php');
+else include_once($SERVER_ROOT . '/content/lang/collections/reports/labels.en.php');
 
 header("Content-Type: text/html; charset=".$CHARSET);
 
@@ -38,7 +38,7 @@ else{
 	<!DOCTYPE html>
 	<html lang="<?php echo $LANG_TAG ?>">
 		<head>
-			<title><?php echo $DEFAULT_TITLE; ?> Labels</title>
+			<title><?php echo $DEFAULT_TITLE . ' ' . $LANG['LABELS'] ?></title>
 			<style type="text/css">
 				body { background-color:#ffffff; font-size:10pt; }
 
@@ -284,7 +284,7 @@ else{
 								if($occArr['associatedtaxa']){
 									?>
 									<div>
-										Associated species:
+										<?= $LANG['ASSOCIATED_TAXA'] ?>:
 										<span class="associatedtaxa"><?php echo $occArr['associatedtaxa']; ?></span>
 									</div>
 									<?php
@@ -312,7 +312,7 @@ else{
 									if($occArr['associatedcollectors']){
 										?>
 										<div class="associatedcollectors" style="clear:both;margin-left:10px;">
-											With: <?php echo $occArr['associatedcollectors']; ?>
+											<?= $LANG['WITH'] ?>: <?php echo $occArr['associatedcollectors']; ?>
 										</div>
 										<?php
 									}
@@ -380,7 +380,7 @@ else{
 						}
 					}
 					echo '</tr></table>';
-					if(!$labelCnt) echo '<div style="font-weight:bold;text-size: 120%">No records were retrieved. Perhaps the quantity values were all set to 0?</div>';
+					if(!$labelCnt) echo '<div style="font-weight:bold;text-size: 120%">' . $LANG['NO_RECS_RETRIEVED'] . '</div>';
 				}
 				?>
 			</div>

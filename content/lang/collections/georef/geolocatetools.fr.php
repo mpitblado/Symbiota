@@ -4,5 +4,5 @@
 Language: Français (French)
 ------------------
 */
-$LANG['GEO_LOCATE_PROCESSES'] = 'Géolocaliser les Processus par Lots';
+$LANG['GEO_LOCATE_PROCESSES'] = 'GEOLocate les Processus par Lots';
 ?>

@@ -67,7 +67,7 @@ if($SYMB_UID){
 <!DOCTYPE html>
 <html lang="<?php echo $LANG_TAG ?>">
 	<head>
-		<title><?php echo $DEFAULT_TITLE; ?> <?php echo $LANG['LABELS']; ?></title>
+		<title><?php echo $DEFAULT_TITLE . ' ' . $LANG['LABELS']; ?></title>
 		<style type="text/css">
 			.row { display: flex; flex-wrap: nowrap; margin-left: auto; margin-right: auto;}
 			.label { page-break-before: auto; page-break-inside: avoid; }
@@ -244,12 +244,12 @@ if($SYMB_UID){
 				}
 			}
 			echo '</div>'; //Closing row
-			if(!$labelCnt) echo '<div style="font-weight:bold;text-size: 120%">No records were retrieved. Perhaps the quantity values were all set to 0?</div>';
+			if(!$labelCnt) echo '<div style="font-weight:bold;text-size: 120%">' . $LANG['NO_RECORDS_RETRIEVED'] . '</div>';
 		}
 		else{
 			echo '<div style="font-weight:bold;text-size: 120%">';
-			if($targetLabelFormatArr) echo 'ERROR: Unable to parse JSON that defines the label format profile ';
-			else 'ERROR: Permissions issue';
+			if($targetLabelFormatArr) echo $LANG['UNABLE_PARSE_JSON'];
+			else $LANG['ERROR_PERMISSIONS'];
 			echo '</div>';
 		}
 		echo '</div>';

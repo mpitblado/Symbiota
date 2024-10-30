@@ -1,9 +1,6 @@
 <?php
 include_once('../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/SpecProcNlpProfiles.php');
-if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/collections/specprocessor/nlpprofiles.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/collections/specprocessor/nlpprofiles.'.$LANG_TAG.'.php');
-else include_once($SERVER_ROOT.'/content/lang/collections/specprocessor/nlpprofiles.en.php');
-
 
 
 header("Content-Type: text/html; charset=".$CHARSET);
@@ -87,7 +84,7 @@ if($isEditor){
 		?>
 		<!-- This is inner text! -->
 		<div role="main" id="innertext">
-			<h1 class="page-heading"><?php echo $LANG['SPEC_NPL_PROFILE_MANAGER']; ?></h1>
+			<h1 class="page-heading">Specimen NLP Profile Manager</h1>
 			<?php
 			if($status){
 				?>
