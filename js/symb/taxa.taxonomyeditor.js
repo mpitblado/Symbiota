@@ -28,7 +28,7 @@ $(document).ready(function () {
   });
 
   document.getElementById("rankid").addEventListener("change", function () {
-    const selectedValue = Number(this.value); // Get the chosen value
+    const selectedValue = Number(this.value);
     showOnlyRelevantFields(selectedValue);
   });
 
@@ -156,7 +156,7 @@ function showOnlyRelevantFields(rankId) {
     // Set the label for "UnitName1" based on the selected option text
     label.textContent = selectedOptionText + " Name";
   } else {
-    label.textContent = "Genus Name"; // @TODO decide if this is still the best logic
+    label.textContent = "Genus Name";
   }
 
   if (Object.values(rankIdsToHideUnit2From).includes(rankId)) {
@@ -185,13 +185,6 @@ function showOnlyRelevantFields(rankId) {
     document.getElementById("tradeName").value = null;
   }
 
-  // const unit2NameLabel = document.getElementById("unit-2-name-label");
-  // if (rankId === allRankIds.subgenus) {
-  //   unit2NameLabel.textContent = "Subgenus Name: ";
-  // } else {
-  //   unit2NameLabel.textContent = "Specific Epithet: ";
-  // }
-
   if (rankId == allRankIds.cultivar) {
     div4Display.style.display = "inline-block";
     div5Display.style.display = "inline-block";
@@ -203,24 +196,16 @@ function showOnlyRelevantFields(rankId) {
     div5Hide.style.display = "none";
     document.getElementById("cultivarEpithet").value = null;
     document.getElementById("tradeName").value = null;
-    // parentNode.insertBefore(authorDiv, genusDiv); // @TODO maybe insert below unit2 if that exists and other wise below unit1
   }
 }
 
 function removeFromSciName(targetForRemoval) {
-  console.log("deleteMe targetForRemoval is: ");
-  console.log(targetForRemoval);
   const oldValue = document.getElementById("sciname").value;
-  console.log("deleteMe oldValue is: ");
-  console.log(oldValue);
   const newValue = oldValue
     .replace(targetForRemoval, "")
     .replace("  ", " ")
     .trim();
-  console.log("deleteMe newValue is: ");
-  console.log(newValue);
   document.getElementById("sciname").value = newValue;
-  // document.getElementById("scinamedisplay").textContent = newValue;
 }
 
 function updateFullname(f) {
@@ -294,7 +279,6 @@ function validateTaxonEditForm(f) {
 
 async function handleFieldChange(form, silent = false) {
   updateFullname(form);
-  console.log("deleteMe a1 handleFieldChange called");
   const submitButton = document.getElementById("taxoneditsubmit");
   submitButton.disabled = true;
   submitButton.textContent = "Checking for existing entry...";
@@ -309,19 +293,10 @@ async function handleFieldChange(form, silent = false) {
 }
 
 async function verifyLoadForm(f, silent = false) {
-  console.log("deleteMe verifyLoadForm called. F is: ");
-  console.log(f);
   const isUniqueEntry = await checkNameExistence(f, silent);
-  console.log("deleteMe isUniqueEntry is: ");
-  console.log(isUniqueEntry);
-
   if (!isUniqueEntry) {
     return false;
   }
-  // if (f.sciname.value == "") {
-  //   alert("Scientific Name field required.");
-  //   return false;
-  // }
   if (f.unitname1.value == "") {
     alert("Unit Name 1 (genus or uninomial) field required.");
     return false;
@@ -331,25 +306,6 @@ async function verifyLoadForm(f, silent = false) {
     alert("Taxon rank field required.");
     return false;
   }
-  // if (f.parentname.value == "" && rankId > "10") {
-  //   alert("Parent taxon required");
-  //   return false;
-  // }
-  // if (f.parenttid.value == "" && rankId > "10") {
-  //   alert(
-  //     "Parent identifier is not set! Make sure to select parent taxon from the list"
-  //   );
-  //   return false;
-  // }
-
-  //If name is not accepted, verify accetped name
-  // var accStatusObj = f.acceptstatus;
-  // if (accStatusOb=j[0].checked == false) {
-  //   if (f.acceptedstr.value == "") {
-  //     alert("Accepted name needs to have a value");
-  //     return false;
-  //   }
-  // }
 
   return true;
 }
@@ -364,13 +320,6 @@ function debounce(func, delay) {
 }
 
 function checkNameExistence(f, silent = false) {
-  console.log("deleteMe checkNameExistence called");
-  console.log("deleteMe f.sciname.value is: ");
-  console.log(f.sciname.value);
-  console.log("deleteMe f.rankid.value is: ");
-  console.log(f.rankid.value);
-  console.log("deleteMe f.author.value is: ");
-  console.log(f.author.value);
   return new Promise((resolve, reject) => {
     if (!f?.sciname?.value || !f?.rankid?.value) {
       resolve(false);
@@ -409,32 +358,6 @@ function checkNameExistence(f, silent = false) {
     }
   });
 }
-
-// function checkNameExistence(f) {
-//   $.ajax({
-//     type: "POST",
-//     url: "rpc/gettid.php",
-//     async: false,
-//     data: {
-//       sciname: f.sciname.value,
-//       rankid: f.rankid.value,
-//       author: f.author.value,
-//     },
-//   }).done(function (msg) {
-//     if (msg != "0") {
-//       alert(
-//         "Taxon " +
-//           f.sciname.value +
-//           " " +
-//           f.author.value +
-//           " (" +
-//           msg +
-//           ") already exists in database"
-//       );
-//       return false;
-//     }
-//   });
-// }
 
 function verifyChangeToNotAcceptedForm(f) {
   if (f.acceptedstr.value == "") {

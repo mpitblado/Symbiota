@@ -60,15 +60,10 @@ $(document).ready(function () {
 });
 
 async function handleFieldChange(form, silent = false) {
-  // console.log("deleteMe got here and form is: ");
-  // console.log(form);
   const submitButton = document.getElementById("submitaction");
   submitButton.disabled = true;
   submitButton.textContent = "Checking for existing entry...";
   const isOk = await verifyLoadForm(form, silent);
-  // const isOk = await checkNameExistence(form, true);
-  // console.log("deleteMe isOk is: ");
-  // console.log(isOk);
   if (!isOk) {
     submitButton.textContent = "Duplicate Detected - Button Disabled";
     submitButton.disabled = true;
@@ -76,7 +71,6 @@ async function handleFieldChange(form, silent = false) {
     submitButton.textContent = "Submit New Name";
     submitButton.disabled = false;
   }
-  // console.log(`Field ${event.target.name} changed to: ${event.target.value}`);
 }
 
 function debounce(func, delay) {
@@ -131,9 +125,6 @@ async function verifyLoadForm(f, silent = false) {
 }
 
 function parseName(f) {
-  // if (f.rankid.value === "300") {
-  //   return;
-  // }
   handleFieldChange(f);
   if (!f.quickparser.value) {
     return;
@@ -377,7 +368,6 @@ function updateFullname(f) {
 }
 
 function checkNameExistence(f, silent = false) {
-  console.log("deleteMe checkNameExistence called");
   return new Promise((resolve, reject) => {
     if (!f?.sciname?.value || !f?.rankid?.value) {
       resolve(false);
@@ -424,9 +414,7 @@ function acceptanceChanged(f) {
   else document.getElementById("accdiv").style.display = "block";
 }
 
-// listener for taxon rank
 function showOnlyRelevantFields(rankId) {
-  console.log("deleteMe showOnlyRelevantFields called");
   const currentCultivarEpithet =
     document.getElementById("cultivarEpithet").value;
   const currentTradeName = document.getElementById("tradeName").value;
@@ -439,7 +427,7 @@ function showOnlyRelevantFields(rankId) {
   const div4Display = document.getElementById("unit4Display");
   const div5Display = document.getElementById("unit5Display");
   const authorDiv = document.getElementById("author-div");
-  const parentNode = div5Hide.parentNode; // @TODO confirm
+  const parentNode = div5Hide.parentNode;
 
   rankIdsToHideUnit2From = {
     "non-ranked node": 0,
@@ -499,7 +487,7 @@ function showOnlyRelevantFields(rankId) {
     // Set the label for "UnitName1" based on the selected option text
     label.textContent = selectedOptionText + " Name: ";
   } else {
-    label.textContent = "Genus Name: "; // @TODO decide if this is still the best logic
+    label.textContent = "Genus Name: ";
   }
 
   if (Object.values(rankIdsToHideUnit2From).includes(rankId)) {
@@ -517,14 +505,8 @@ function showOnlyRelevantFields(rankId) {
     document.getElementById("unitind3").value = null;
     document.getElementById("unitname3").value = null;
   }
-  // console.log("deleteMe rankId is: " + rankId);
-  // console.log("deleteMe rankIdsToHideUnit4From is: ");
-  // console.log(rankIdsToHideUnit4From);
 
   if (Object.values(rankIdsToHideUnit4From).includes(rankId)) {
-    // console.log('deleteMe document.getElementById("cultivarEpithet") is: ');
-    // console.log(document.getElementById("cultivarEpithet").value);
-    // console.log(typeof document.getElementById("cultivarEpithet").value);
     removeFromSciName(standardizeCultivarEpithet(currentCultivarEpithet));
     document.getElementById("cultivarEpithet").value = null;
   }
@@ -544,36 +526,15 @@ function showOnlyRelevantFields(rankId) {
     div5Hide.style.display = "none";
     document.getElementById("cultivarEpithet").value = null;
     document.getElementById("tradeName").value = null;
-    // parentNode.insertBefore(authorDiv, genusDiv); // @TODO maybe insert below unit2 if that exists and other wise below unit1
   }
 }
 
 function removeFromSciName(targetForRemoval) {
-  console.log("deleteMe targetForRemoval is: ");
-  console.log(targetForRemoval);
   const oldValue = document.getElementById("sciname").value;
-  console.log("deleteMe oldValue is: ");
-  console.log(oldValue);
   const newValue = oldValue
     .replace(targetForRemoval, "")
     .replace("  ", " ")
     .trim();
-  console.log("deleteMe newValue is: ");
-  console.log(newValue);
   document.getElementById("sciname").value = newValue;
   document.getElementById("scinamedisplay").textContent = newValue;
 }
-
-// function removeCultivarEpithetFromSciname(targetCultivarEpithet) {
-//   const oldValue = document.getElementById("sciname").value;
-//   const newValue = oldValue.replace(targetCultivarEpithet, "").trim();
-//   document.getElementById("sciname").value = newValue;
-//   document.getElementById("scinamedisplay").value = newValue;
-// }
-
-// function removeTradeNameFromSciname(targetTradeName) {
-//   const oldValue = document.getElementById("sciname").value;
-//   const newValue = oldValue.replace(targetTradeName, "").trim();
-//   document.getElementById("sciname").value = newValue;
-//   document.getElementById("scinamedisplay").value = newValue;
-// }
