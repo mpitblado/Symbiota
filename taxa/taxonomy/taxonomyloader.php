@@ -121,14 +121,14 @@ if($isEditor){
 						</select>
 						<script src="../../js/symb/taxa.taxonomyloader.js"> </script>
 					</div>
-					<div id="author-div" style="clear: both;">
+					<!-- <div id="author-div" style="clear: both;">
 						<div class="left-column">
 							<label for="author">
 								<?php echo $LANG['AUTHOR']; ?>:
 							</label>
 						</div>
 						<input type='text' id='author' name='author' class='search-bar-long' />
-					</div>
+					</div> -->
 					
 					<div style="clear:both;" id="genus-div">
 						<div class="left-column">
@@ -189,7 +189,14 @@ if($isEditor){
 							</div>
 					<?php
 					}?>
-
+					<div id="author-div" style="clear: both;">
+						<div class="left-column">
+							<label for="author">
+								<?php echo $LANG['AUTHOR']; ?>:
+							</label>
+						</div>
+						<input type='text' id='author' name='author' class='search-bar-long' />
+					</div>
 					<div style="clear:both;">
 						<div class="left-column" id="parentname-div">
 							<label for="parentname">
