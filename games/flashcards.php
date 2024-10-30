@@ -2,8 +2,6 @@
 //error_reporting(E_ALL);
 include_once('../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/GamesManager.php');
-if($LANG_TAG != 'en' && file_exists($SERVER_ROOT.'/content/lang/games/flashcards.' . $LANG_TAG . '.php')) include_once($SERVER_ROOT.'/content/lang/games/flashcards.' . $LANG_TAG . '.php');
-else include_once($SERVER_ROOT . '/content/lang/games/flashcards.en.php');
 
 header('Content-Type: text/html; charset='.$CHARSET);
 
@@ -159,7 +157,7 @@ $sciArr = array();
 	?>
 	<!-- This is inner text! -->
 	<div id='innertext'>
-		<h1 class="page-heading screen-reader-only"><?php echo $LANG['FLASH_CARDS']; ?></h1>
+		<h1 class="page-heading screen-reader-only">Flash Cards</h1>
 		<div style="width:420px;margin-left:auto;margin-right:auto;">
 			<div style="width:420px;height:420px;text-align:center;">
 				<div>

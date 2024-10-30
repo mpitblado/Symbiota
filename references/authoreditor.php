@@ -73,14 +73,14 @@ if(!$addAuth){
 		?>
 		<div class='navpath'>
 			<a href='../index.php'>Home</a> &gt;&gt;
-			<a href='authoreditor.php'> <b><?php echo $LANG['AUTHOR_MANAGEMENT']; ?></b></a>
+			<a href='authoreditor.php'> <b>Author Management</b></a>
 		</div>
 		<?php
 	}
 	?>
 	<!-- This is inner text! -->
 	<div role="main" id="innertext">
-		<h1 class="page-heading"><?php echo $LANG['AUTHOR_MANAGEMENT']; ?></h1>
+		<h1 class="page-heading">Author Management</h1>
 		<?php
 		if($isEditor){
 			if($statusStr){

@@ -1,8 +1,6 @@
 <?php
 include_once('../../config/symbini.php');
 include_once($SERVER_ROOT.'/classes/KeyCharAdmin.php');
-if($LANG_TAG == 'en' || !file_exists($SERVER_ROOT.'/content/lang/ident/admin/chardetails.'.$LANG_TAG.'.php')) include_once($SERVER_ROOT.'/content/lang/ident/admin/chardetails.en.php');
-else include_once($SERVER_ROOT.'/content/lang/ident/admin/chardetails.'.$LANG_TAG.'.php');
 
 header("Content-Type: text/html; charset=".$CHARSET);
 
@@ -255,7 +253,7 @@ if(!$cid) header('Location: index.php');
 	</div>
 	<!-- This is inner text! -->
 	<div role="main" id="innertext">
-		<h1 class="page-heading"><?php echo $LANG['TAXON_CHARACTER_ADMINISTRATOR']; ?></h1>
+		<h1 class="page-heading">Taxon Character Administration</h1>
 		<?php
 		if($isEditor){
 			if($statusStr){
