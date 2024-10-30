@@ -13,18 +13,10 @@ class OmDeterminations extends Manager{
 
 	public function __construct($conn){
 		parent::__construct(null, 'write', $conn);
-		/*
-		 $this->fieldMap = array('identifiedBy' => 's', 'identifiedByAgentID' => 'i', 'identifiedByID' => 's', 'dateIdentified' => 's', 'dateIdentifiedInterpreted' => 's',
-		 'higherClassification' => 's', 'family' => 's', 'sciname' => 's', 'verbatimIdentification' => 's', 'scientificNameAuthorship' => 's', 'tidInterpreted' => 'i',
-		 'identificationUncertain' => 'i', 'identificationQualifier' => 's', 'genus' => 's', 'specificEpithet' => 's', 'verbatimTaxonRank' => 's', 'taxonRank' => 's',
-		 'infraSpecificEpithet' => 's', 'isCurrent' => 'i', 'printQueue' => 'i', 'appliedStatus' => 'i', 'securityStatus' => 'i', 'securityStatusReason' => 's',
-		 'detType' => 's', 'identificationReferences' => 's', 'identificationRemarks' => 's', 'taxonRemarks' => 's', 'identificationVerificationStatus' => 's',
-		 'taxonConceptID' => 's', 'sourceIdentifier' => 's', 'sortSequence' => 'i', 'recordID' => 's', 'createdUid' => 'i', 'modifiedUid' => 'i', 'dateLastModified' => 's');
-		 */
-		$this->schemaMap = array('identifiedBy' => 's', 'dateIdentified' => 's', 'higherClassification' => 's', 'family' => 's', 'sciname' => 's', 'verbatimIdentification' => 's',
-			'scientificNameAuthorship' => 's', 'identificationQualifier' => 's', 'isCurrent' => 'i', 'printQueue' => 'i', 'appliedStatus' => 'i',
+		$this->schemaMap = array('identifiedBy' => 's', 'dateIdentified' => 's', 'dateIdentifiedInterpreted' => 's', 'higherClassification' => 's', 'family' => 's', 'sciname' => 's', 'verbatimIdentification' => 's',
+			'scientificNameAuthorship' => 's', 'tidInterpreted' => 'i', 'identificationuncertain' => 'i', 'identificationQualifier' => 's', 'isCurrent' => 'i', 'printQueue' => 'i', 'appliedStatus' => 'i',
 			'securityStatus' => 'i', 'securityStatusReason' => 's', 'detType' => 's', 'identificationReferences' => 's', 'identificationRemarks' => 's', 'taxonRemarks' => 's',
-			'identificationVerificationStatus' => 's', 'taxonConceptID' => 's', 'sourceIdentifier' => 's', 'sortSequence' => 'i');
+			'identificationVerificationStatus' => 's', 'taxonConceptID' => 's', 'sourceIdentifier' => 's', 'sortSequence' => 'i', 'createdUid' => 'i', 'modifiedUid' => 'i');
 	}
 
 	public function __destruct(){
@@ -54,8 +46,8 @@ class OmDeterminations extends Manager{
 			if($rs = $stmt->get_result()){
 				while($r = $rs->fetch_assoc()){
 					$retArr[$r['detID']] = $r;
-					$uidArr[$r['createdUid']] = $r['createdUid'];
-					$uidArr[$r['modifiedUid']] = $r['modifiedUid'];
+					if($r['createdUid']) $uidArr[$r['createdUid']] = $r['createdUid'];
+					if($r['modifiedUid']) $uidArr[$r['modifiedUid']] = $r['modifiedUid'];
 				}
 				$rs->free();
 			}
@@ -99,8 +91,8 @@ class OmDeterminations extends Manager{
 				if($rs = $stmt->get_result()){
 					while($r = $rs->fetch_assoc()){
 						$retArr[$r['occid']][$r['detID']] = $r;
-						$uidArr[$r['createdUid']] = $r['createdUid'];
-						$uidArr[$r['modifiedUid']] = $r['modifiedUid'];
+						if($r['createdUid']) $uidArr[$r['createdUid']] = $r['createdUid'];
+						if($r['modifiedUid']) $uidArr[$r['modifiedUid']] = $r['modifiedUid'];
 					}
 					$rs->free();
 				}
@@ -125,8 +117,10 @@ class OmDeterminations extends Manager{
 	}
 
 	private function getUserNames($uidArr){
+		print_r($uidArr);
 		$retArr = array();
 		$sql = 'SELECT uid, firstname, lastname, username FROM users WHERE uid IN('.implode(',', $uidArr).')';
+		echo $sql;
 		if($rs = $this->conn->query($sql)){
 			while($r = $rs->fetch_object()){
 				$retArr[$r->uid] = $r->lastname . ($r->firstname ? ', ' . $r->firstname : '');
@@ -212,18 +206,15 @@ class OmDeterminations extends Manager{
 				$value = trim($inputArr[$postField]);
 				if($value){
 					$postField = strtolower($postField);
-					if($postField == 'establisheddate') $value = OccurrenceUtil::formatDate($value);
 					if($postField == 'modifieduid') $value = OccurrenceUtil::verifyUser($value, $this->conn);
-					if($postField == 'createduid') $value = OccurrenceUtil::verifyUser($value, $this->conn);
-					if($postField == 'identificationuncertain' || $postField == 'iscurrent' || $postField == 'printqueue' || $postField == 'appliedstatus' || $postField == 'securitystatus'){
+					elseif($postField == 'createduid') $value = OccurrenceUtil::verifyUser($value, $this->conn);
+					elseif($type == 'i'){
 						if(!is_numeric($value)){
 							$value = strtolower($value);
 							if($value == 'yes' || $value == 'true') $value = 1;
 							else $value = 0;
 						}
-					}
-					if($postField == 'sortsequence'){
-						if(!is_numeric($value)) $value = 10;
+						if($postField == 'sortsequence') $value = 10;
 					}
 				}
 				else $value = null;
