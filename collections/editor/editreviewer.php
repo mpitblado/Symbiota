@@ -97,7 +97,7 @@ $navStr .= '</div>';
 <!DOCTYPE html>
 <html lang="<?php echo $LANG_TAG ?>">
 	<head>
-		<title><?php echo $LANG['EDIT_REVIEWER']; ?></title>
+		<title><?php echo $LANG['OCCUR_EDIT_REVIEWER']; ?></title>
 		<link href="<?php echo $CSS_BASE_PATH; ?>/jquery-ui.css" type="text/css" rel="stylesheet">
 		<?php
 		include_once($SERVER_ROOT.'/includes/head.php');
