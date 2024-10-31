@@ -519,17 +519,19 @@ $traitArr = $indManager->getTraitArr();
 							?>
 							<div id="identby-div" class="identby-div bottom-breathing-room-rel-sm">
 								<?php
-								echo '<label>'.(isset($LANG['DETERMINER'])?$LANG['DETERMINER']:'Determiner').': </label>'.$indManager->activateOrcidID($occArr['identifiedby']);
+								echo '<label>' . $LANG['DETERMINER'] . ': </label>'.$indManager->activateOrcidID($occArr['identifiedby']);
 								?>
 							</div>
-							<?php if($occArr['dateidentified']): ?>
-								<div id="identby-div" class="identby-div bottom-breathing-room-rel-sm">
-								<?php
-									echo '<label>'.$LANG['DATE_DET']  . ': '. '</label>' . $occArr['dateidentified'];
-								?>
-							</div>
-							<?php endif; ?>
 							<?php
+							if($occArr['dateidentified']){
+								?>
+								<div id="dateident-div" class="dateident-div bottom-breathing-room-rel-sm">
+									<?php
+									echo '<label>'.$LANG['DATE_DET']  . ': '. '</label>' . $occArr['dateidentified'];
+									?>
+								</div>
+								<?php
+							}
 						}
 						if($occArr['taxonremarks']){
 							?>
@@ -586,7 +588,7 @@ $traitArr = $indManager->getTraitArr();
 													echo $detArr['identifiedBy'];
 													?>
 												</div>
-												<div class="identdate-div">
+												<div class="dateident-div">
 													<?php
 													echo '<label>'.$LANG['DATE'].': </label>';
 													echo $detArr['dateIdentified'];
