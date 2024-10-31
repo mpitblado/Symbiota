@@ -149,4 +149,12 @@ ALTER TABLE `kmdescr`
   ADD CONSTRAINT `FK_descr_cs`  FOREIGN KEY (`cid` , `cs`)  REFERENCES `kmcs` (`cid` , `cs`)  ON DELETE CASCADE  ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_descr_tid`  FOREIGN KEY (`tid`)  REFERENCES `taxa` (`TID`)  ON DELETE CASCADE  ON UPDATE CASCADE;
 
+#Adjust FK to remove associations on deletion of either internal occurrence 
+ALTER TABLE `omoccurassociations`
+	DROP FOREIGN KEY `FK_occurassoc_occidassoc`;
+
+ALTER TABLE `omoccurassociations`
+	ADD CONSTRAINT `FK_occurassoc_occidassoc` FOREIGN KEY (`occidAssociate`) REFERENCES `omoccurrences` (`occid`) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
 
