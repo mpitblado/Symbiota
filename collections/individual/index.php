@@ -268,31 +268,31 @@ $traitArr = $indManager->getTraitArr();
 				var marker = new google.maps.Marker({
 					position: mLatLng,
 					map: map
-			});
+				});
 
-			if(coordError > 0) {
-			   new google.maps.Circle({
-				  center: mLatLng,
-				  radius: coordError,
-				  map: map
-			   })
-			}
+				if(coordError > 0) {
+					new google.maps.Circle({
+						center: mLatLng,
+						radius: coordError,
+						map: map
+					})
+				}
 			}
 
 			function leafletInit() {
 				let mLatLng = [<?php echo $occArr['decimallatitude'].",".$occArr['decimallongitude']; ?>];
 
-            map = new LeafletMap("map_canvas", {
-               center: mLatLng,
-               zoom: 8,
-            });
+				map = new LeafletMap("map_canvas", {
+					center: mLatLng,
+					zoom: 8,
+				});
 
-			if(coordError > 0) {
-			   map.enableDrawing({...map.DEFAULT_DRAW_OPTIONS, control: false})
-			   map.drawShape({type: "circle", radius: coordError, latlng: mLatLng})
-			}
+				if(coordError > 0) {
+					map.enableDrawing({...map.DEFAULT_DRAW_OPTIONS, control: false})
+					map.drawShape({type: "circle", radius: coordError, latlng: mLatLng})
+				}
 				const marker = L.marker(mLatLng).addTo(map.mapLayer);
-			map.mapLayer.setZoom(8)
+				map.mapLayer.setZoom(8);
 			}
 
 			function initializeMap(){
@@ -319,7 +319,7 @@ $traitArr = $indManager->getTraitArr();
 		if($shouldUseMinimalMapHeader){
 			?>
 			.minimal-header-margin{
-			   margin-top: 6rem;
+				margin-top: 6rem;
 			}
 			<?php
 		}
@@ -416,7 +416,7 @@ $traitArr = $indManager->getTraitArr();
 					<div id="title1-div" class="title1-div">
 						<?php echo $collMetadata['collectionname'].' ('.$instCode.')'; ?>
 					</div>
-					<div  id="occur-div">
+					<div id="occur-div">
 						<?php
 						if(array_key_exists('loan',$occArr)){
 							?>
