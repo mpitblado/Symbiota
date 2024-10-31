@@ -415,6 +415,8 @@ function acceptanceChanged(f) {
 }
 
 function showOnlyRelevantFields(rankId) {
+  console.log("deleteMe rankId selected is: ");
+  console.log(rankId);
   const currentCultivarEpithet =
     document.getElementById("cultivarEpithet").value;
   const currentTradeName = document.getElementById("tradeName").value;
@@ -479,15 +481,22 @@ function showOnlyRelevantFields(rankId) {
     div3Hide.style.display = "block";
   }
 
+  const genusName = "Genus Name";
   if (rankId <= allRankIds.subsection) {
+    const purelyAestheticRankNames = [
+      "--------------------------------",
+      "Select Taxon Rank",
+    ];
     const rankIdSelector = document.getElementById("rankid");
     const optionIdx = rankIdSelector.options.selectedIndex;
     const selectedOptionText = rankIdSelector.options[optionIdx].text.trim();
-
-    // Set the label for "UnitName1" based on the selected option text
-    label.textContent = selectedOptionText + " Name: ";
+    if (!purelyAestheticRankNames.includes(selectedOptionText)) {
+      label.textContent = selectedOptionText + " Name: ";
+    } else {
+      label.textContent = genusName;
+    }
   } else {
-    label.textContent = "Genus Name: ";
+    label.textContent = genusName;
   }
 
   if (Object.values(rankIdsToHideUnit2From).includes(rankId)) {
